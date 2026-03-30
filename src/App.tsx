@@ -8,12 +8,12 @@ import { supabase } from './lib/supabase';
 import {
   Play, Pause, SkipBack, SkipForward, Volume2, Volume1, VolumeX,
   Search, Settings, Music, CloudRain, CloudLightning, Clock,
-  User, Edit2, Repeat, Shuffle, ChevronLeft, ChevronRight,
+  User, Repeat, Shuffle, ChevronLeft, ChevronRight,
   Lock, Moon, Flame, Waves, Wind, MoonStar,
   TreePine, AudioLines, Coffee, BookOpen, Youtube, Brain,
   Piano, X, Activity, AlarmClock, Timer, Globe, ExternalLink, MessageCircle, Tv,
   Mail, Radio, Sparkles, Smartphone, TreeDeciduous, Library,
-  Heart, History, LogOut
+  Heart, History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { OpenSheetMusicDisplay } from 'opensheetmusicdisplay';
@@ -233,30 +233,37 @@ export default function App() {
   }, []);
   const [activeSceneId, setActiveSceneId] = useState<string>('tideHaven');
   const [showPracticePanel, setShowPracticePanel] = useState(false);
+  const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+  const showDevTierPreview = import.meta.env.DEV || isLocalPreview;
   // DEV: pass ?premium=1 in URL to test premium behaviour without a real auth system
   const [isPremium, setIsPremium] = useState(() =>
     new URLSearchParams(window.location.search).get('premium') === '1'
   );
+  const [devAccountTier, setDevAccountTier] = useState<'guest' | 'basic' | 'premium' | null>(null);
+  const [showGuestFeaturePrompt, setShowGuestFeaturePrompt] = useState(false);
+  const accountTier = devAccountTier ?? (isPremium ? 'premium' : 'basic');
+  const isGuest = accountTier === 'guest';
+  const hasPremiumAccess = accountTier === 'premium';
 
   // ── Global Ambient Engine (survives page navigation) ───────────────
   const AMBIENT_AUDIO_URLS: Record<string, string> = {
     window_rain: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/windowrain.mp3',
     thunderstorm: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/thunderstorm.mp3',
     ocean: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/ocean.mp3',
-    nature: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/forest.mp3',
-    fire: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/fireplace.mp3',
-    cafe: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/cafe.mp3',
+    forest: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/forest.mp3',
+    white_noise: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/white%20noise.mp3',
+    night_ambient: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/night.mp3',
     library: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/library.mp3',
-    night: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/night.mp3',
-    noise: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/white%20noise.mp3',
+    fireplace: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/fireplace.mp3',
+    cafe: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/cafe.mp3',
   };
   const AMBIENT_LIMIT_FREE = 1;
   const AMBIENT_LIMIT_PREMIUM = 3;
 
   const [activeAmbiences, setActiveAmbiences] = useState<string[]>([]);
   const [ambienceVolumes, setAmbienceVolumes] = useState<Record<string, number>>({
-    window_rain: 50, thunderstorm: 50, ocean: 50, nature: 50,
-    fire: 50, cafe: 50, library: 50, night: 50, noise: 50,
+    window_rain: 50, thunderstorm: 50, ocean: 50, forest: 50,
+    white_noise: 50, night_ambient: 50, library: 50, fireplace: 50, cafe: 50,
   });
   const [ambienceToast, setAmbienceToast] = useState<string | null>(null);
   const ambienceAudioRefs = React.useRef<Record<string, HTMLAudioElement>>({});
@@ -269,12 +276,16 @@ export default function App() {
   };
 
   const toggleAmbience = (id: string) => {
-    const limit = isPremium ? AMBIENT_LIMIT_PREMIUM : AMBIENT_LIMIT_FREE;
+    if (isGuest) {
+      setShowGuestFeaturePrompt(true);
+      return;
+    }
+    const limit = hasPremiumAccess ? AMBIENT_LIMIT_PREMIUM : AMBIENT_LIMIT_FREE;
     if (activeAmbiences.includes(id)) {
       setActiveAmbiences(prev => prev.filter(a => a !== id));
     } else {
       if (activeAmbiences.length >= limit) {
-        if (isPremium) {
+        if (hasPremiumAccess) {
           showAmbienceToast(`Max ${AMBIENT_LIMIT_PREMIUM} ambiences reached for Premium members`);
         } else {
           showAmbienceToast(t.common.ambienceLimit);
@@ -383,15 +394,31 @@ export default function App() {
             setActiveSceneId={setActiveSceneId}
             setActiveView={setActiveView}
             activeAmbiences={activeAmbiences}
+            setActiveAmbiences={setActiveAmbiences}
             ambienceVolumes={ambienceVolumes}
             setAmbienceVolumes={setAmbienceVolumes}
             toggleAmbience={toggleAmbience}
-            isPremium={isPremium}
+            isPremium={hasPremiumAccess}
+            isGuest={isGuest}
+            onGuestFeatureBlocked={() => setShowGuestFeaturePrompt(true)}
             showAmbienceToast={showAmbienceToast}
             t={t}
           />
         )}
-        {activeView === 'settings' && <SettingsTab isPremium={isPremium} setIsPremium={setIsPremium} setActiveView={setActiveView} setShowSheetOptions={setShowSheetOptions} currentLang={currentLang} t={t} />}
+        {activeView === 'settings' && (
+          <SettingsTab
+            isPremium={hasPremiumAccess}
+            setIsPremium={setIsPremium}
+            isGuest={isGuest}
+            accountTier={accountTier}
+            showDevPreview={showDevTierPreview}
+            setDevAccountTier={setDevAccountTier}
+            setActiveView={setActiveView}
+            setShowSheetOptions={setShowSheetOptions}
+            currentLang={currentLang}
+            t={t}
+          />
+        )}
         {activeView === 'admin' && <AdminTab tracks={tracks} setTracks={setTracks} artistsData={artistsData} setArtistsData={setArtistsData} />}
         {/* ── WeChat QR Modal (Pure Supplemental Entry) ── */}
         <AnimatePresence>
@@ -438,6 +465,54 @@ export default function App() {
           )}
         </AnimatePresence>
       </main>
+
+      <AnimatePresence>
+        {showGuestFeaturePrompt && (
+          <div className="fixed inset-0 z-[320] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowGuestFeaturePrompt(false)}
+              className="absolute inset-0 bg-[rgba(245,236,226,0.38)] backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              className="relative w-full max-w-md rounded-[32px] border border-white/40 bg-[rgba(255,250,245,0.72)] px-8 py-8 shadow-[0_24px_60px_rgba(92,68,44,0.18)] backdrop-blur-xl"
+            >
+              <div className="flex flex-col gap-4 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/50 bg-white/55 text-[var(--color-mist-text)]/78">
+                  <User className="h-6 w-6" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-2xl font-semibold tracking-tight text-[var(--color-mist-text)]">
+                    {t.settings.guestPromptTitle}
+                  </h3>
+                  <p className="text-sm leading-6 text-[var(--color-mist-text)]/72">
+                    {t.settings.guestPromptDesc}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+                  <button
+                    onClick={() => setShowGuestFeaturePrompt(false)}
+                    className="flex-1 rounded-2xl bg-white/82 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white"
+                  >
+                    {t.common.signUp}
+                  </button>
+                  <button
+                    onClick={() => setShowGuestFeaturePrompt(false)}
+                    className="flex-1 rounded-2xl border border-white/36 bg-white/34 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)]/86 transition-colors hover:bg-white/48"
+                  >
+                    {t.common.logIn}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {showPracticePanel && (
         <PracticePanel
@@ -1528,6 +1603,11 @@ function TopNav({ activeView, setActiveView, tracks, onSelectTrack, currentLang,
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const normalizeSearchText = (value: unknown) => {
+    if (typeof value === 'string') return value.toLowerCase();
+    if (value == null) return '';
+    return String(value).toLowerCase();
+  };
 
 
   const languages = [
@@ -1594,8 +1674,8 @@ function TopNav({ activeView, setActiveView, tracks, onSelectTrack, currentLang,
                     className="absolute top-full left-0 right-0 mt-3 glass-panel p-2 flex flex-col gap-1 min-w-[240px] shadow-2xl border border-white/20 z-[60] max-h-[400px] overflow-y-auto no-scrollbar"
                   >
                     {tracks.filter(t =>
-                      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      t.artist.toLowerCase().includes(searchQuery.toLowerCase())
+                      normalizeSearchText(t?.title).includes(normalizeSearchText(searchQuery)) ||
+                      normalizeSearchText(t?.artist).includes(normalizeSearchText(searchQuery))
                     ).map(track => (
                       <button
                         key={track.id}
@@ -1614,8 +1694,8 @@ function TopNav({ activeView, setActiveView, tracks, onSelectTrack, currentLang,
                       </button>
                     ))}
                     {tracks.filter(t =>
-                      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      t.artist.toLowerCase().includes(searchQuery.toLowerCase())
+                      normalizeSearchText(t?.title).includes(normalizeSearchText(searchQuery)) ||
+                      normalizeSearchText(t?.artist).includes(normalizeSearchText(searchQuery))
                     ).length === 0 && (
                         <div className="p-4 text-center text-xs text-[var(--color-mist-text)]/40 italic">No matches found</div>
                       )}
@@ -2033,59 +2113,85 @@ function MusicTab({
   t: any,
   currentLang: string
 }) {
+  const normalizeText = (value: unknown) => {
+    if (typeof value === 'string') return value;
+    if (value == null) return '';
+    return String(value);
+  };
+  const normalizeSearchValue = (value: unknown) => normalizeText(value).trim().toLowerCase();
+  const normalizeCategoryKey = (value: unknown) => normalizeSearchValue(value).replace(/[^a-z0-9]+/g, '');
+  const parseDurationToSeconds = (value: unknown) => {
+    const [minsRaw, secsRaw] = normalizeText(value).split(':');
+    const mins = Number.parseInt(minsRaw ?? '', 10);
+    const secs = Number.parseInt(secsRaw ?? '', 10);
+    return (Number.isFinite(mins) ? mins : 0) * 60 + (Number.isFinite(secs) ? secs : 0);
+  };
+  const MUSIC_ALL_CATEGORY = 'all';
+  const artistCategoryOptions = [
+    { value: 'all', label: t.categories.all },
+    { value: 'male', label: t.categories.male },
+    { value: 'female', label: t.categories.female },
+    { value: 'group', label: t.categories.group },
+    { value: 'solo', label: t.categories.solo },
+    { value: 'us', label: t.categories.us },
+    { value: 'korea', label: t.categories.korea },
+    { value: 'japan', label: t.categories.japan },
+    { value: 'china', label: t.categories.china },
+    { value: 'global', label: t.categories.global }
+  ];
+  const songCategoryOptions = [
+    { value: MUSIC_ALL_CATEGORY, label: t.categories.all },
+    { value: 'cpop', label: t.categories.cpop },
+    { value: 'kpop', label: t.categories.kpop },
+    { value: 'jpop', label: t.categories.jpop },
+    { value: 'western', label: t.categories.western },
+    { value: 'anime', label: t.categories.anime },
+    { value: 'film', label: t.categories.film },
+    { value: 'game', label: t.categories.game },
+    { value: 'instrumental', label: t.categories.instrumental },
+    { value: 'originals', label: 'Originals' }
+  ];
   const [musicView, setMusicView] = useState<'artists' | 'songs' | 'artist_detail'>('artists');
   const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(['All']);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([MUSIC_ALL_CATEGORY]);
   const [sortBy, setSortBy] = useState<'recently_played' | 'a_z' | 'duration'>('recently_played');
 
   const [artistSearchQuery, setArtistSearchQuery] = useState('');
-  const [selectedArtistCategories, setSelectedArtistCategories] = useState<string[]>(['All']);
+  const [selectedArtistCategories, setSelectedArtistCategories] = useState<string[]>(['all']);
   const [artistSortBy, setArtistSortBy] = useState<'a_z' | 'z_a' | 'most_songs'>('a_z');
-
-  const categories = ['All', 'C-pop', 'K-pop', 'J-pop', 'Western', 'Anime', 'Film', 'Game', 'Originals'];
-  const artistCategoriesList = [
-    t.categories.all,
-    t.categories.male,
-    t.categories.female,
-    t.categories.group,
-    t.categories.solo,
-    t.categories.us,
-    t.categories.korea,
-    t.categories.japan,
-    t.categories.china,
-    t.categories.global
-  ];
 
   const artistsMap = new Map<string, { name: string, displayName: string, songCount: number, coverUrl: string, region: string, gender: string, type: string }>();
 
   // 1. Initialize from true artistsData
   artistsData.forEach(a => {
-    const fallbackArtistAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(a.name) + '&background=random&color=fff&size=200';
+    const artistName = normalizeText(a?.name).trim() || 'Unknown Artist';
+    const fallbackArtistAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(artistName) + '&background=random&color=fff&size=200';
     const coverUrl = (a.metadata_status === 'approved' && a.source_artist_image_url) ? a.source_artist_image_url : fallbackArtistAvatar;
-    const displayName = (a.metadata_status === 'approved' && a.source_artist_name) ? a.source_artist_name : a.name;
+    const displayName = normalizeText((a.metadata_status === 'approved' && a.source_artist_name) ? a.source_artist_name : artistName).trim() || artistName;
 
-    artistsMap.set(a.name, {
-      name: a.name,
+    artistsMap.set(artistName, {
+      name: artistName,
       displayName: displayName,
       songCount: 0,
       coverUrl: coverUrl,
-      region: a.source_region || a.region || 'Global',
-      gender: a.gender || 'Mixed',
-      type: a.type || 'Group'
+      region: normalizeText(a.source_region || a.region || 'Global').trim() || 'Global',
+      gender: normalizeText(a.gender || 'Mixed').trim() || 'Mixed',
+      type: normalizeText(a.type || 'Group').trim() || 'Group'
     });
   });
 
   // 2. Aggregate song count purely based on tracks array
   tracks.forEach(t => {
-    if (artistsMap.has(t.artist)) {
-      artistsMap.get(t.artist)!.songCount++;
+    const artistName = normalizeText(t?.artist).trim() || 'Unknown Artist';
+    if (artistsMap.has(artistName)) {
+      artistsMap.get(artistName)!.songCount++;
     } else {
       // 容错：防止有孤儿数据
-      const fallbackArtistAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(t.artist) + '&background=random&color=fff&size=200';
-      artistsMap.set(t.artist, {
-        name: t.artist,
-        displayName: t.artist,
+      const fallbackArtistAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(artistName) + '&background=random&color=fff&size=200';
+      artistsMap.set(artistName, {
+        name: artistName,
+        displayName: artistName,
         songCount: 1,
         coverUrl: fallbackArtistAvatar,
         region: 'Global',
@@ -2098,13 +2204,13 @@ function MusicTab({
   const artists = Array.from(artistsMap.values());
 
   const toggleCategory = (cat: string) => {
-    if (cat === 'All') {
-      setSelectedCategories(['All']);
+    if (cat === MUSIC_ALL_CATEGORY) {
+      setSelectedCategories([MUSIC_ALL_CATEGORY]);
     } else {
-      let newCats = selectedCategories.filter(c => c !== 'All');
+      let newCats = selectedCategories.filter(c => c !== MUSIC_ALL_CATEGORY);
       if (newCats.includes(cat)) {
         newCats = newCats.filter(c => c !== cat);
-        if (newCats.length === 0) newCats = ['All'];
+        if (newCats.length === 0) newCats = [MUSIC_ALL_CATEGORY];
       } else {
         newCats.push(cat);
       }
@@ -2113,13 +2219,13 @@ function MusicTab({
   };
 
   const toggleArtistCategory = (cat: string) => {
-    if (cat === 'All') {
-      setSelectedArtistCategories(['All']);
+    if (cat === 'all') {
+      setSelectedArtistCategories(['all']);
     } else {
-      let newCats = selectedArtistCategories.filter(c => c !== 'All');
+      let newCats = selectedArtistCategories.filter(c => c !== 'all');
       if (newCats.includes(cat)) {
         newCats = newCats.filter(c => c !== cat);
-        if (newCats.length === 0) newCats = ['All'];
+        if (newCats.length === 0) newCats = ['all'];
       } else {
         newCats.push(cat);
       }
@@ -2129,20 +2235,22 @@ function MusicTab({
 
   const renderArtists = () => {
     let filteredArtists = artists.filter(a => {
-      const matchesSearch = a.name.toLowerCase().includes(artistSearchQuery.toLowerCase());
-
-      const matchesCategory = selectedArtistCategories.includes('All') ||
-        selectedArtistCategories.includes(a.gender) ||
-        selectedArtistCategories.includes(a.type) ||
-        selectedArtistCategories.includes(a.region);
+      const matchesSearch = normalizeSearchValue(a.name).includes(normalizeSearchValue(artistSearchQuery));
+      const artistTokens = [
+        normalizeCategoryKey(a.gender),
+        normalizeCategoryKey(a.type),
+        normalizeCategoryKey(a.region)
+      ];
+      const matchesCategory = selectedArtistCategories.includes('all') ||
+        selectedArtistCategories.some(selected => artistTokens.includes(selected));
 
       return matchesSearch && matchesCategory;
     });
 
     if (artistSortBy === 'a_z') {
-      filteredArtists.sort((a, b) => a.name.localeCompare(b.name));
+      filteredArtists.sort((a, b) => normalizeText(a.name).localeCompare(normalizeText(b.name)));
     } else if (artistSortBy === 'z_a') {
-      filteredArtists.sort((a, b) => b.name.localeCompare(a.name));
+      filteredArtists.sort((a, b) => normalizeText(b.name).localeCompare(normalizeText(a.name)));
     } else if (artistSortBy === 'most_songs') {
       filteredArtists.sort((a, b) => b.songCount - a.songCount);
     }
@@ -2176,16 +2284,16 @@ function MusicTab({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {artistCategoriesList.map(cat => (
+            {artistCategoryOptions.map(option => (
               <button
-                key={cat}
-                onClick={() => toggleArtistCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${selectedArtistCategories.includes(cat)
+                key={option.value}
+                onClick={() => toggleArtistCategory(option.value)}
+                className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${selectedArtistCategories.includes(option.value)
                   ? 'bg-white/30 border-white/40 text-[var(--color-mist-text)] shadow-sm'
                   : 'bg-white/10 border-white/20 text-[var(--color-mist-text)]/70 hover:bg-white/20'
                   }`}
               >
-                {cat}
+                {option.label}
               </button>
             ))}
           </div>
@@ -2198,7 +2306,7 @@ function MusicTab({
               onClick={() => {
                 setSelectedArtist(artist.name);
                 setMusicView('artist_detail');
-                setSelectedCategories(['All']);
+                setSelectedCategories([MUSIC_ALL_CATEGORY]);
                 setSearchQuery('');
               }}
               className="glass-panel p-6 rounded-3xl cursor-pointer hover:bg-white/10 transition-colors flex flex-col items-center text-center gap-4 group"
@@ -2227,30 +2335,29 @@ function MusicTab({
 
   const renderSongsList = (artistFilter: string | null) => {
     let filteredTracks = tracks.filter(t => {
-      if (artistFilter && t.artist !== artistFilter) return false;
+      const trackArtist = normalizeText(t?.artist).trim();
+      if (artistFilter && trackArtist !== artistFilter) return false;
 
-      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (t.tags && t.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
+      const normalizedSearch = normalizeSearchValue(searchQuery);
+      const categoryKey = normalizeCategoryKey(t?.category);
+      const tagKeys = Array.isArray(t?.tags) ? t.tags.map(tag => normalizeCategoryKey(tag)).filter(Boolean) : [];
+      const matchesSearch = normalizedSearch === '' ||
+        normalizeSearchValue(t?.title).includes(normalizedSearch) ||
+        categoryKey.includes(normalizedSearch.replace(/[^a-z0-9]+/g, '')) ||
+        normalizeSearchValue(trackArtist).includes(normalizedSearch) ||
+        tagKeys.some(tag => tag.includes(normalizedSearch.replace(/[^a-z0-9]+/g, '')));
 
-      const matchesCategory = selectedCategories.includes('all') ||
-        selectedCategories.some(sel => sel.toLowerCase().replace(/-/g, '') === t.category.toLowerCase().replace(/-/g, '')) ||
-        (t.tags && t.tags.some(tag => selectedCategories.includes(tag.toLowerCase().replace(/-/g, ''))));
+      const matchesCategory = selectedCategories.includes(MUSIC_ALL_CATEGORY) ||
+        selectedCategories.includes(categoryKey) ||
+        tagKeys.some(tag => selectedCategories.includes(tag));
 
       return matchesSearch && matchesCategory;
     });
 
     if (sortBy === 'a_z') {
-      filteredTracks.sort((a, b) => a.title.localeCompare(b.title));
+      filteredTracks.sort((a, b) => normalizeText(a?.title).localeCompare(normalizeText(b?.title)));
     } else if (sortBy === 'duration') {
-      filteredTracks.sort((a, b) => {
-        const timeA = a.duration.split(':').map(Number);
-        const timeB = b.duration.split(':').map(Number);
-        const secA = timeA[0] * 60 + timeA[1];
-        const secB = timeB[0] * 60 + timeB[1];
-        return secA - secB;
-      });
+      filteredTracks.sort((a, b) => parseDurationToSeconds(a?.duration) - parseDurationToSeconds(b?.duration));
     }
 
     return (
@@ -2294,31 +2401,19 @@ function MusicTab({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {['all', 'cpop', 'kpop', 'jpop', 'western', 'anime', 'film', 'game', 'instrumental'].map(catKey => {
-              const label = t.categories[catKey as keyof typeof t.categories] || catKey;
-              const isSelected = selectedCategories.includes(catKey);
+            {songCategoryOptions.map(option => {
+              const isSelected = selectedCategories.includes(option.value);
 
               return (
                 <button
-                  key={catKey}
-                  onClick={() => {
-                    if (catKey === 'all') {
-                      setSelectedCategories(['all']);
-                    } else {
-                      const withoutAll = selectedCategories.filter(c => c !== 'all');
-                      if (withoutAll.includes(catKey)) {
-                        setSelectedCategories(withoutAll.filter(c => c !== catKey));
-                      } else {
-                        setSelectedCategories([...withoutAll, catKey]);
-                      }
-                    }
-                  }}
+                  key={option.value}
+                  onClick={() => toggleCategory(option.value)}
                   className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${isSelected
                     ? 'bg-white/25 border-white/30 text-[var(--color-mist-text)] shadow-sm'
                     : 'bg-white/10 border-white/20 text-[var(--color-mist-text)]/60 hover:bg-white/20'
                     }`}
                 >
-                  {label}
+                  {option.label}
                 </button>
               );
             })}
@@ -2359,17 +2454,17 @@ function MusicTab({
                   <div className="col-span-6 flex items-center gap-4">
                     <img src={(track.metadataStatus === 'approved' && track.sourceCoverUrl) ? track.sourceCoverUrl : (track.coverUrl || 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=200&auto=format&fit=crop')} alt={track.title} className="w-10 h-10 rounded-md object-cover shadow-sm" referrerPolicy="no-referrer" />
                     <div className="flex flex-col overflow-hidden">
-                      <span className={`font-medium truncate ${isActive ? 'text-[var(--color-mist-text)] underline decoration-amber-600/30 underline-offset-4' : 'text-[var(--color-mist-text)]'}`}>{track.title}</span>
-                      <span className="text-xs text-[var(--color-mist-text)]/60 truncate">{track.artist}</span>
+                      <span className={`font-medium truncate ${isActive ? 'text-[var(--color-mist-text)] underline decoration-amber-600/30 underline-offset-4' : 'text-[var(--color-mist-text)]'}`}>{normalizeText(track.title) || 'Untitled'}</span>
+                      <span className="text-xs text-[var(--color-mist-text)]/60 truncate">{normalizeText(track.artist) || 'Unknown Artist'}</span>
                     </div>
                   </div>
                   <div className="col-span-3 flex items-center">
                     <span className="px-3 py-1 rounded-full bg-white/20 text-xs text-[var(--color-mist-text)]/80 border border-white/20">
-                      {t.categories[track.category.toLowerCase().replace(/-/g, '') as keyof typeof t.categories] || track.category}
+                      {songCategoryOptions.find(option => option.value === normalizeCategoryKey(track.category))?.label || normalizeText(track.category) || 'Uncategorized'}
                     </span>
                   </div>
                   <div className="col-span-2 text-right text-[var(--color-mist-text)]/60 text-sm font-mono">
-                    {track.duration}
+                    {normalizeText(track.duration) || '00:00'}
                   </div>
                 </div>
               );
@@ -2482,10 +2577,13 @@ function FocusTab({
   setActiveSceneId,
   setActiveView,
   activeAmbiences,
+  setActiveAmbiences,
   ambienceVolumes,
   setAmbienceVolumes,
   toggleAmbience,
   isPremium,
+  isGuest,
+  onGuestFeatureBlocked,
   showAmbienceToast,
   t
 }: {
@@ -2496,10 +2594,13 @@ function FocusTab({
   setActiveSceneId: (id: string) => void,
   setActiveView: (v: View) => void,
   activeAmbiences: string[],
+  setActiveAmbiences: React.Dispatch<React.SetStateAction<string[]>>,
   ambienceVolumes: Record<string, number>,
   setAmbienceVolumes: (v: Record<string, number>) => void,
   toggleAmbience: (id: string) => void,
   isPremium: boolean,
+  isGuest: boolean,
+  onGuestFeatureBlocked: () => void,
   showAmbienceToast: (msg: string) => void,
   t: any
 }) {
@@ -2596,6 +2697,10 @@ function FocusTab({
   };
 
   const handleStartSession = () => {
+    if (isGuest) {
+      onGuestFeatureBlocked();
+      return;
+    }
     clearIntervalSafe(); clearFadeSafe();
     isFadingRef.current = false;
     const secs = activeFocusMins * 60;
@@ -2641,7 +2746,7 @@ function FocusTab({
       title: t.ambient.nature,
       items: [
         {
-          id: 'windowRain',
+          id: 'window_rain',
           name: t.ambient.windowRain,
           icon: CloudRain,
           imageUrl: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=800&q=80',
@@ -2719,27 +2824,18 @@ function FocusTab({
   // Ambient audio engine is now in App (global) — no local engine needed.
 
   const focusPresets = [
-    { id: 'deep', name: 'Deep Work', icon: Brain, ambience: ['noise'], volume: 40 },
+    { id: 'deep', name: 'Deep Work', icon: Brain, ambience: ['white_noise'], volume: 40 },
     { id: 'read', name: 'Reading', icon: BookOpen, ambience: ['library'], volume: 30 },
-    { id: 'relax', name: 'Relaxation', icon: Coffee, ambience: ['window_rain', 'fire'], volume: 50 },
-    { id: 'nature', name: 'Nature Walk', icon: TreePine, ambience: ['nature', 'ocean'], volume: 45 },
+    { id: 'relax', name: 'Relaxation', icon: Coffee, ambience: ['window_rain', 'fireplace'], volume: 50 },
+    { id: 'nature', name: 'Nature Walk', icon: TreePine, ambience: ['forest', 'ocean'], volume: 45 },
   ];
 
   const applyPreset = (preset: typeof focusPresets[0]) => {
-    // For free users, only apply first ambience from preset
     const toApply = isPremium ? preset.ambience : preset.ambience.slice(0, 1);
-    // Pass through parent toggle (respects limits) — set directly for presets
     const newVols = { ...volumes };
     toApply.forEach(id => { newVols[id] = preset.volume; });
     setVolumes(newVols);
-    // Build activeAmbiences directly (preset override)
-    setAmbienceVolumes(newVols);
-    // We can't call setActiveAmbiences from here (it's in App now)
-    // Instead fire toggleAmbience sequence: clear then re-add
-    // Simplest: just directly pass an override — use a workaround by calling toggleAmbience
-    // Actually we need to expose setActiveAmbiences too OR handle presets in App
-    // For now, simulate by toggling off anything not in preset and toggling on preset items
-    toApply.forEach(id => { if (!activeAmbiences.includes(id)) toggleAmbience(id); });
+    setActiveAmbiences(toApply);
   };
 
   const ambientItems = ambienceGroups.flatMap(g => g.items);
@@ -3025,6 +3121,10 @@ function FocusTab({
 function SettingsTab({
   isPremium,
   setIsPremium,
+  isGuest,
+  accountTier,
+  showDevPreview,
+  setDevAccountTier,
   setActiveView,
   setShowSheetOptions,
   currentLang,
@@ -3032,195 +3132,293 @@ function SettingsTab({
 }: {
   isPremium: boolean,
   setIsPremium: (v: boolean) => void,
+  isGuest: boolean,
+  accountTier: 'guest' | 'basic' | 'premium',
+  showDevPreview: boolean,
+  setDevAccountTier: (v: 'guest' | 'basic' | 'premium' | null) => void,
   setActiveView: (v: View) => void,
   setShowSheetOptions: (v: boolean) => void,
   currentLang: string,
   t: any
 }) {
-  const cardClass = "glass-panel p-7 rounded-[32px] border-white/10 relative overflow-hidden flex flex-col gap-6 shadow-sm shadow-black/5";
-  const titleClass = "text-lg font-bold text-[var(--color-mist-text)] tracking-tight flex items-center gap-2.5";
-  const labelClass = "text-[10px] font-bold uppercase tracking-widest text-[var(--color-mist-text)]/30 mb-0.5";
-  const valueClass = "text-sm font-medium text-[var(--color-mist-text)]/80 tracking-tight transition-all group-hover:text-[var(--color-mist-text)]";
-  const badgeClass = `inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest whitespace-nowrap ${isPremium ? 'bg-amber-600/20 text-amber-700' : 'bg-[var(--color-mist-text)]/10 text-[var(--color-mist-text)]/40'}`;
+  const accountName = isGuest ? t.settings.guestTitle : 'AlexChenMusic';
+  const accountEmail = isGuest ? '' : 'alex.chen@example.com';
+  const planName = isPremium ? t.settings.premiumPlanName : t.settings.basicPlanName;
+  const links = [
+    { label: t.settings.youtube, icon: Youtube, url: 'https://www.youtube.com/@CIPMusic' },
+    { label: t.settings.bilibili, icon: Tv, url: 'https://space.bilibili.com/1467634/' },
+    { label: t.settings.wechat, icon: MessageCircle, qr: true },
+    { label: t.settings.sheetStore, icon: BookOpen, url: 'https://www.mymusic5.com/cipmusic' },
+    { label: t.settings.contact, icon: Mail, url: 'mailto:cipmusicstudios@gmail.com' }
+  ];
+  const tierOptions: { value: 'guest' | 'basic' | 'premium', label: string }[] = [
+    { value: 'guest', label: t.settings.guestMode },
+    { value: 'basic', label: t.settings.basicMode },
+    { value: 'premium', label: t.settings.premiumMode }
+  ];
+  const cardClass = 'glass-panel rounded-[32px] border border-white/18 bg-white/10 p-6 shadow-[0_18px_40px_rgba(72,54,37,0.12)] backdrop-blur-xl';
+  const subtleCardClass = 'rounded-[24px] border border-white/16 bg-white/12 shadow-[0_10px_24px_rgba(72,54,37,0.08)]';
+  const titleClass = 'text-[24px] font-semibold tracking-tight text-[var(--color-mist-text)]';
+  const bodyClass = 'text-sm leading-6 text-[var(--color-mist-text)]/72';
+  const infoLabelClass = 'text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-mist-text)]/38';
+  const infoValueClass = 'mt-2 text-[15px] font-medium text-[var(--color-mist-text)]/88';
+  const actionButtonClass = 'inline-flex h-11 items-center justify-center rounded-2xl px-4 text-sm font-semibold transition-colors';
+  const primaryButtonClass = `${actionButtonClass} bg-white/70 text-[var(--color-mist-text)] shadow-sm hover:bg-white/85`;
+  const secondaryButtonClass = `${actionButtonClass} border border-white/18 bg-white/14 text-[var(--color-mist-text)]/84 hover:bg-white/22`;
+  const tertiaryButtonClass = 'inline-flex h-10 items-center justify-center rounded-2xl px-3 text-sm font-medium text-[var(--color-mist-text)]/68 transition-colors hover:bg-white/12 hover:text-[var(--color-mist-text)]/84';
+  const badgeClass = `inline-flex h-7 items-center rounded-full px-3 text-[11px] font-semibold whitespace-nowrap ${isGuest ? 'bg-white/35 text-[var(--color-mist-text)]/78' : isPremium ? 'bg-amber-500/18 text-amber-800/80' : 'bg-white/35 text-[var(--color-mist-text)]/78'}`;
+  const iconWrapClass = 'flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/14 bg-white/16 text-[var(--color-mist-text)]/60';
+  const detailRowClass = 'flex items-start justify-between gap-4';
+  const benefitCards = t.premium.benefits.slice(0, 4);
+  const memberCenterTitle = currentLang === 'English' ? 'Membership' : t.settings.memberCenter;
+  const premiumFeatureLead = currentLang === 'English'
+    ? 'Available with Premium'
+    : currentLang === '繁體中文'
+      ? '升級後可解鎖'
+      : '升级后可解锁';
+  const premiumManageAction = () => {
+    window.open('mailto:cipmusicstudios@gmail.com?subject=Membership%20Support', '_blank');
+  };
+  const upgradeButtonClass = 'inline-flex h-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(182,132,84,0.95),rgba(213,168,120,0.92))] px-6 text-[15px] font-semibold text-white shadow-[0_14px_30px_rgba(156,109,63,0.24)] transition-transform hover:translate-y-[-1px] hover:shadow-[0_18px_34px_rgba(156,109,63,0.28)]';
+  const handleGuestPrimary = () => {
+    if (showDevPreview) setDevAccountTier('basic');
+  };
+  const handleGuestSecondary = () => {
+    if (showDevPreview) setDevAccountTier('basic');
+  };
+  const handleUpgrade = () => {
+    if (showDevPreview) setDevAccountTier('premium');
+    setIsPremium(true);
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto flex flex-col animate-in fade-in duration-700 gap-6 pb-20">
-      <div className="h-4"></div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_0.7fr] gap-8 items-start">
-
-        {/* LEFT COLUMN: MAIN CONTENT (2 Large Cards) */}
-        <div className="flex flex-col gap-8">
-
-          {/* 1. INTEGRATED ACCOUNT & MUSIC CARD */}
-          <div className={cardClass}>
-            <div className="flex justify-between items-center bg-white/5 -mx-7 -mt-7 px-7 py-4 border-b border-white/5">
-              <h2 className={titleClass}>
-                {t.settings.account}
-                <span className={badgeClass}>
-                  {isPremium ? t.settings.premiumMember : t.settings.freeMember}
-                </span>
-              </h2>
-              <div className="flex items-center gap-3">
-                <button className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 border border-white/10 transition-all active:scale-95">
-                  {t.settings.changePassword}
-                </button>
-                <button className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg bg-white/5 hover:bg-red-500/10 text-white/20 hover:text-red-400 border border-white/10 hover:border-red-500/20 flex items-center gap-2 transition-all active:scale-95">
-                  <LogOut className="w-3 h-3" />
-                  {t.settings.logout}
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-7 gap-x-12 pt-2">
-              <div className="flex flex-col group">
-                <span className={labelClass}>{t.settings.username}</span>
-                <div className="flex items-center gap-2">
-                  <span className={valueClass}>AlexChenMusic</span>
-                  <Edit2 className="w-3.5 h-3.5 text-white/10 group-hover:text-amber-500/50 cursor-pointer transition-colors" />
-                </div>
-              </div>
-              <div className="flex flex-col group">
-                <span className={labelClass}>{t.settings.email}</span>
-                <div className="flex items-center gap-2">
-                  <span className={valueClass}>alex.chen@example.com</span>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className={labelClass}>{t.settings.memberSince}</span>
-                <span className={valueClass}>2024.03.20</span>
-              </div>
-              <div className="flex flex-col">
-                <span className={labelClass}>{t.settings.loginMethod}</span>
-                <div className="flex items-center gap-2">
-                  <span className={valueClass}>{currentLang === 'English' ? 'Google' : (currentLang === 'Simplified Chinese' ? 'Google 登录' : 'Google 登錄')}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 shadow-[0_0_6px_rgba(16,185,129,0.3)]"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* My Music Section (Lightweight Integration) */}
-            <div className="mt-4 pt-8 border-t border-white/5 flex flex-col gap-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 ml-1">{t.settings.myMusic}</span>
-              <div className="grid grid-cols-2 gap-4">
-                <button className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
-                  <div className="w-9 h-9 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500/50 group-hover:text-pink-500 group-hover:scale-110 transition-all shadow-inner">
-                    <Heart className="w-4 h-4 fill-current" />
-                  </div>
-                  <span className="text-sm font-bold text-white/60 group-hover:text-white/90 transition-colors">{t.settings.myFavorites}</span>
-                </button>
-                <button className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400/50 group-hover:text-indigo-400 group-hover:scale-110 transition-all shadow-inner">
-                    <History className="w-4 h-4" />
-                  </div>
-                  <span className="text-sm font-bold text-white/60 group-hover:text-white/90 transition-colors">{t.settings.recentlyPlayed}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. ENHANCED MEMBERSHIP CARD (SUMMARY + VALUE) */}
-          <div className={`${cardClass} bg-gradient-to-br from-white/10 to-amber-500/5 border-amber-500/10 group min-h-[380px]`}>
-            <div className="absolute top-0 right-0 p-8 opacity-[0.03] -mr-6 -mt-6 transition-transform group-hover:scale-110 group-hover:rotate-6 duration-[1500ms] pointer-events-none">
-              <Sparkles className="w-64 h-64" />
-            </div>
-
-            <div className="flex flex-col gap-8 relative z-10 h-full">
-              <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-2xl font-bold text-[var(--color-mist-text)] tracking-tight">{t.settings.studioMembership}</h2>
-                  <p className="text-xs font-medium text-[var(--color-mist-text)]/40 leading-relaxed max-w-md">
-                    {isPremium ? t.settings.membershipDesc : (currentLang === 'Simplified Chinese' ? '升级后即可解锁完整练习模式、多轨环境音与全部专注场景。' : (currentLang === 'Traditional Chinese' ? '升級後即可解鎖完整練習模式、多軌環境音與全部專注場景。' : 'Unlock full practice mode, multitrack ambience and all focus scenes.'))}
-                  </p>
-                </div>
-                <div className="flex flex-col items-end gap-1.5">
-                  <span className={badgeClass}>
-                    {isPremium ? t.settings.premiumMember : t.settings.freeMember}
-                  </span>
-                  {isPremium && <span className="text-[10px] font-bold text-amber-600/40 opacity-50 uppercase tracking-tighter">Gold Subscription</span>}
-                </div>
-              </div>
-
-              {/* Value Proposition Grid (The Selling Points) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 py-4 border-y border-white/5">
-                {t.premium.benefits.map((benefit: any, i: number) => (
-                  <div key={i} className="flex items-center gap-3 text-white/50 group/item">
-                    <div className="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 group-hover/item:border-amber-500/30 group-hover/item:text-amber-500 transition-all">
-                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <span className="text-[13px] font-bold tracking-tight text-white/60 group-hover/item:text-white/90 transition-colors">{benefit.title}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-auto flex items-center justify-between gap-6 pt-2">
-                <div className="flex flex-col">
-                  <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.15em]">Subscription Plan</p>
-                  <p className="text-sm font-black text-amber-600/80 uppercase tracking-wide">{isPremium ? 'Lifetime Access' : 'Personal Basic'}</p>
-                </div>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 pb-20">
+      {showDevPreview && (
+        <div className="self-start rounded-full border border-white/18 bg-white/18 px-2 py-2 shadow-[0_12px_30px_rgba(72,54,37,0.08)] backdrop-blur-md">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-mist-text)]/56">
+              {t.settings.devPreview}
+            </span>
+            <div className="flex rounded-full bg-white/24 p-1">
+              {tierOptions.map(option => (
                 <button
-                  onClick={() => setIsPremium(!isPremium)}
-                  className="px-10 py-4 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold text-sm tracking-widest transition-all shadow-xl shadow-amber-900/20 active:scale-95 hover:-translate-y-1"
+                  key={option.value}
+                  onClick={() => setDevAccountTier(option.value)}
+                  className={`min-w-[88px] rounded-full px-4 py-2 text-xs font-semibold transition-colors ${accountTier === option.value ? 'bg-[var(--color-mist-text)] text-[#181411]' : 'text-[var(--color-mist-text)]/72 hover:bg-white/10'}`}
                 >
-                  {isPremium ? t.settings.manageMembership : t.settings.upgradeNow}
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* RIGHT COLUMN: SECONDARY CONTENT (Links Sidebar) */}
-        <div className="flex flex-col gap-6 lg:sticky lg:top-24">
-
-          <div className={`${cardClass} shadow-lg shadow-black/10 min-h-[580px]`}>
-            <h3 className={titleClass}>
-              <ExternalLink className="w-4 h-4 opacity-40" />
-              {t.settings.links}
-            </h3>
-
-            <div className="flex flex-col gap-3">
-              {[
-                { label: t.settings.youtube, icon: <Youtube className="w-4 h-4" />, url: 'https://www.youtube.com/@CIPMusic' },
-                { label: t.settings.bilibili, icon: <Tv className="w-4 h-4" />, url: 'https://space.bilibili.com/1467634/' },
-                { label: t.settings.wechat, icon: <MessageCircle className="w-4 h-4" />, qr: true },
-                { label: t.settings.sheetStore, icon: <BookOpen className="w-4 h-4" />, url: 'https://www.mymusic5.com/cipmusic' },
-                { label: t.settings.contact, icon: <Mail className="w-4 h-4" />, url: 'mailto:cipmusicstudios@gmail.com' }
-              ].map((link, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => link.qr ? setShowSheetOptions(true) : window.open(link.url!, '_blank')}
-                  className="w-full flex items-center justify-between p-4 rounded-[20px] bg-white/5 hover:bg-white/10 transition-all border border-white/5 hover:border-white/15 group h-14 shadow-sm active:scale-[0.98]"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-8 h-8 rounded-xl bg-[var(--color-mist-text)]/5 flex items-center justify-center text-[var(--color-mist-text)]/40 group-hover:bg-white/10 group-hover:text-[var(--color-mist-text)]/80 transition-all shadow-inner">
-                      {link.icon}
-                    </div>
-                    <span className="text-[11px] font-bold text-[var(--color-mist-text)]/50 tracking-widest group-hover:text-[var(--color-mist-text)]/80 transition-colors uppercase">{link.label}</span>
-                  </div>
-                  <ChevronRight className="w-3.5 h-3.5 opacity-20 group-hover:opacity-60 group-hover:translate-x-0.5 transition-all" />
+                  {option.label}
                 </button>
               ))}
             </div>
-
-            <div className="mt-auto pt-4 border-t border-white/5 flex flex-col gap-6 items-center">
-              <button
-                onClick={() => setActiveView('admin')}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-[9px] uppercase font-bold tracking-widest text-white/10 hover:text-white/40 border border-dashed border-white/10"
-              >
-                <Lock className="w-3 h-3" />
-                <span>{t.settings.metadataReview}</span>
-              </button>
-              <div className="flex flex-col items-center gap-1 opacity-10 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700 cursor-default mb-2">
-                <p className="text-[9px] font-black tracking-[0.3em] uppercase">AuraSounds</p>
-                <p className="text-[7px] font-bold tracking-[0.1em] uppercase opacity-50">v0.8.2 · Handcrafted by CIP</p>
-              </div>
-            </div>
           </div>
         </div>
+      )}
 
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.06fr_1.02fr_0.88fr]">
+        <section className={`${cardClass} flex min-h-[520px] flex-col`}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className={iconWrapClass}>
+                <User className="h-4.5 w-4.5" />
+              </div>
+              <h2 className={titleClass}>{isGuest ? t.settings.guestTitle : t.settings.account}</h2>
+            </div>
+            {!isGuest && (
+              <span className={badgeClass}>
+                {isPremium ? t.settings.premiumMember : t.settings.freeMember}
+              </span>
+            )}
+          </div>
+
+          {isGuest ? (
+            <div className="mt-6 flex flex-1 flex-col gap-6">
+              <div className={`${subtleCardClass} flex min-h-[210px] flex-col items-center justify-center gap-4 px-6 py-8 text-center`}>
+                <div className="flex h-16 w-16 items-center justify-center rounded-[24px] border border-white/36 bg-white/40 text-[var(--color-mist-text)]/76 shadow-sm">
+                  <Lock className="h-7 w-7" />
+                </div>
+                <p className={`${bodyClass} max-w-[24rem]`}>{t.settings.guestDesc}</p>
+              </div>
+              <div className="mt-auto grid gap-3 sm:grid-cols-2">
+                <button onClick={handleGuestPrimary} className={primaryButtonClass}>{t.common.signUp}</button>
+                <button onClick={handleGuestSecondary} className={secondaryButtonClass}>{t.common.logIn}</button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 flex flex-1 flex-col gap-4">
+              <div className={`${subtleCardClass} grid gap-4 px-4 py-4`}>
+                <div>
+                  <p className={infoLabelClass}>{t.settings.username}</p>
+                  <p className={infoValueClass}>{accountName}</p>
+                </div>
+                <div>
+                  <p className={infoLabelClass}>{t.settings.email}</p>
+                  <p className={infoValueClass}>{accountEmail}</p>
+                </div>
+                <div className="flex items-center justify-between gap-3 border-t border-white/14 pt-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">{t.settings.signInMethod}</span>
+                  <span className="text-sm font-medium text-[var(--color-mist-text)]/70">Google</span>
+                </div>
+              </div>
+
+              <div className={`${subtleCardClass} flex items-center justify-between gap-3 px-3 py-3`}>
+                <button className={secondaryButtonClass}>{t.settings.changePassword}</button>
+                <button className="inline-flex h-10 items-center justify-center rounded-2xl px-3 text-sm font-medium text-[var(--color-mist-text)]/54 transition-colors hover:bg-white/10 hover:text-[var(--color-mist-text)]/78">
+                  {t.settings.logout}
+                </button>
+              </div>
+
+              <div className="mt-auto grid gap-3 sm:grid-cols-2">
+                <button className={`${subtleCardClass} flex items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-white/18`}>
+                  <div className={iconWrapClass}>
+                    <Heart className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-semibold text-[var(--color-mist-text)]/86">{t.settings.myFavorites}</span>
+                </button>
+                <button className={`${subtleCardClass} flex items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-white/18`}>
+                  <div className={iconWrapClass}>
+                    <History className="h-4 w-4" />
+                  </div>
+                  <span className="text-sm font-semibold text-[var(--color-mist-text)]/86">{t.settings.recentlyPlayed}</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className={`${cardClass} flex min-h-[520px] flex-col`}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className={iconWrapClass}>
+                <Sparkles className="h-4.5 w-4.5" />
+              </div>
+              <h2 className={titleClass}>{memberCenterTitle}</h2>
+            </div>
+            {!isGuest && (
+              <span className={badgeClass}>
+                {isPremium ? t.settings.premiumMember : t.settings.freeMember}
+              </span>
+            )}
+          </div>
+
+          <div className="mt-6 flex flex-1 flex-col gap-5">
+            {isGuest ? (
+              <>
+                <div className={`${subtleCardClass} px-4 py-4`}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
+                    {t.settings.premiumFeatures}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-[var(--color-mist-text)]/72">
+                    {premiumFeatureLead}
+                  </p>
+                </div>
+                <div className="grid gap-3">
+                  {benefitCards.map((benefit: any) => (
+                    <div key={benefit.title} className={`${subtleCardClass} flex items-start gap-3 px-4 py-4`}>
+                      <div className={iconWrapClass}>
+                        <Sparkles className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[var(--color-mist-text)]/84">{benefit.title}</p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--color-mist-text)]/58">{benefit.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : isPremium ? (
+              <>
+                <p className={bodyClass}>{t.settings.premiumDescShort}</p>
+                <div className={`${subtleCardClass} grid gap-4 px-5 py-5`}>
+                  <div className={detailRowClass}>
+                    <span className="text-sm text-[var(--color-mist-text)]/64">{t.settings.currentPlan}</span>
+                    <span className="text-sm font-semibold text-[var(--color-mist-text)]/88">{planName}</span>
+                  </div>
+                  <div className={detailRowClass}>
+                    <span className="text-sm text-[var(--color-mist-text)]/64">{t.settings.autoRenew}</span>
+                    <span className="text-sm font-semibold text-[var(--color-mist-text)]/88">{t.common.enabled}</span>
+                  </div>
+                  <div className={detailRowClass}>
+                    <span className="text-sm text-[var(--color-mist-text)]/64">{t.settings.membershipEnds}</span>
+                    <span className="text-sm font-semibold text-[var(--color-mist-text)]/88">{t.common.longTerm}</span>
+                  </div>
+                  <div className={detailRowClass}>
+                    <span className="text-sm text-[var(--color-mist-text)]/64">{t.settings.membershipStatus}</span>
+                    <span className="text-sm font-semibold text-[var(--color-mist-text)]/88">{t.settings.membershipActive}</span>
+                  </div>
+                </div>
+                <div className={`${subtleCardClass} grid gap-4 px-4 py-4`}>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
+                    {t.settings.premiumBenefits}
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {benefitCards.map((benefit: any) => (
+                      <div key={benefit.title} className="rounded-2xl border border-white/14 bg-white/10 px-3 py-2.5 text-sm text-[var(--color-mist-text)]/72">
+                        {benefit.title}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-auto pt-1">
+                  <button onClick={premiumManageAction} className={secondaryButtonClass}>
+                    {t.settings.manageMembership}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-[var(--color-mist-text)]/60">
+                  {premiumFeatureLead}
+                </p>
+                <div className="grid gap-3">
+                  {benefitCards.map((benefit: any) => (
+                    <div key={benefit.title} className={`${subtleCardClass} flex items-start gap-3 px-4 py-4`}>
+                      <div className={iconWrapClass}>
+                        <Sparkles className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[var(--color-mist-text)]/84">{benefit.title}</p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--color-mist-text)]/58">{benefit.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-auto pt-1">
+                  <button onClick={handleUpgrade} className={upgradeButtonClass}>{t.settings.upgradeNow}</button>
+                </div>
+              </>
+            )}
+          </div>
+        </section>
+
+        <section className={`${cardClass} flex min-h-[520px] flex-col`}>
+          <div className="flex items-center gap-3">
+            <div className={iconWrapClass}>
+              <ExternalLink className="h-4.5 w-4.5" />
+            </div>
+            <h2 className={titleClass}>{t.settings.links}</h2>
+          </div>
+
+          <div className="mt-6 flex flex-1 flex-col gap-3">
+            {links.map(link => {
+              const Icon = link.icon;
+              return (
+                <button
+                  key={link.label}
+                  onClick={() => link.qr ? setShowSheetOptions(true) : window.open(link.url!, '_blank')}
+                  className={`${subtleCardClass} flex items-center justify-between gap-3 px-4 py-4 text-left transition-colors hover:bg-white/18`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={iconWrapClass}>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-medium text-[var(--color-mist-text)]/84">{link.label}</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-[var(--color-mist-text)]/42" />
+                </button>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </div>
   );
