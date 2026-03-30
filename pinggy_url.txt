@@ -1,0 +1,2 @@
+tcsetattr: Interrupted system call
+client_loop: send disconnect: Broken pipe
