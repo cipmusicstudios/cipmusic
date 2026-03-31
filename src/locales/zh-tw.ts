@@ -33,7 +33,7 @@ export const zhTW = {
   player: {
     video: '影片',
     sheet: '樂譜',
-    practice: '練習',
+    practice: '練習模式',
     speed: '倍速',
     playbackSpeed: '播放速度',
     shuffle: '隨機播放',

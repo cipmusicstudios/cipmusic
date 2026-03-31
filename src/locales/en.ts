@@ -33,7 +33,7 @@ export const en = {
   player: {
     video: 'Video',
     sheet: 'Sheet',
-    practice: 'Practice',
+    practice: 'Practice Mode',
     speed: 'Speed',
     playbackSpeed: 'Playback Speed',
     shuffle: 'Shuffle',

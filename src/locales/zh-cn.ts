@@ -33,7 +33,7 @@ export const zhCN = {
   player: {
     video: '视频',
     sheet: '乐谱',
-    practice: '练习',
+    practice: '练习模式',
     speed: '倍速',
     playbackSpeed: '播放速度',
     shuffle: '随机播放',

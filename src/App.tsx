@@ -68,6 +68,20 @@ export type Track = {
   metadataCandidates?: MetadataCandidate[];
 };
 
+type PracticeMidiHeaderLite = {
+  tempos: Array<{ time: number; ticks: number; bpm: number }>;
+  ppq: number;
+  timeSignatures?: Array<{ timeSignature?: number[] }>;
+};
+
+type PracticeSeekDebug = {
+  targetTime: number | null;
+  snappedTime: number | null;
+  actualTime: number | null;
+  targetDelta: number | null;
+  actualDelta: number | null;
+};
+
 const defaultTrack: Track = {
   id: 'golden_piano',
   title: 'Golden Piano',
@@ -100,6 +114,106 @@ export const SCENES: Scene[] = [
   { id: 'forestCafe', name: 'Forest Oasis', tag: 'forest', type: 'video', url: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/forest.mp4', thumbnail: 'https://i.imgur.com/GGg2cSI.jpeg', premiumOnly: true },
   { id: 'celestialDome', name: 'Celestial Oasis', tag: 'night', type: 'video', url: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/starry.mp4', thumbnail: 'https://i.imgur.com/E5TWs8E.jpeg', premiumOnly: true },
 ];
+
+function getTempoAtAudioTimeForHeader(header: PracticeMidiHeaderLite | null, timeSecs: number) {
+  if (!header?.tempos?.length) return null;
+  let activeTempo = header.tempos[0];
+  for (let i = header.tempos.length - 1; i >= 0; i--) {
+    if (timeSecs >= header.tempos[i].time) {
+      activeTempo = header.tempos[i];
+      break;
+    }
+  }
+  return activeTempo;
+}
+
+function getTempoAtTickForHeader(header: PracticeMidiHeaderLite | null, targetTick: number) {
+  if (!header?.tempos?.length) return null;
+  let activeTempo = header.tempos[0];
+  for (let i = header.tempos.length - 1; i >= 0; i--) {
+    if (targetTick >= header.tempos[i].ticks) {
+      activeTempo = header.tempos[i];
+      break;
+    }
+  }
+  return activeTempo;
+}
+
+function getAbsoluteTickAtAudioTimeForHeader(header: PracticeMidiHeaderLite | null, timeSecs: number) {
+  const activeTempo = getTempoAtAudioTimeForHeader(header, timeSecs);
+  if (!activeTempo || !header) return 0;
+  const secondsSinceTempoChange = Math.max(0, timeSecs - activeTempo.time);
+  const beatsElapsed = secondsSinceTempoChange * (activeTempo.bpm / 60);
+  return activeTempo.ticks + (beatsElapsed * header.ppq);
+}
+
+function getAudioTimeForAbsoluteTickForHeader(header: PracticeMidiHeaderLite | null, targetTick: number) {
+  const activeTempo = getTempoAtTickForHeader(header, targetTick);
+  if (!activeTempo || !header) return 0;
+  return activeTempo.time + (((targetTick - activeTempo.ticks) / header.ppq) / (activeTempo.bpm / 60));
+}
+
+function snapAudioTimeToNearestBeat(targetTime: number, header: PracticeMidiHeaderLite | null) {
+  if (!header?.tempos?.length || !header.ppq) {
+    return { targetTime, snappedTime: targetTime, snappedBeatNumber: null };
+  }
+  const absoluteTick = getAbsoluteTickAtAudioTimeForHeader(header, targetTime);
+  const snappedBeatNumber = Math.max(0, Math.round(absoluteTick / header.ppq));
+  const snappedTick = snappedBeatNumber * header.ppq;
+  const snappedTime = getAudioTimeForAbsoluteTickForHeader(header, snappedTick);
+  return { targetTime, snappedTime, snappedBeatNumber };
+}
+
+type AmbientKey =
+  | 'window_rain'
+  | 'thunderstorm'
+  | 'ocean'
+  | 'forest'
+  | 'white_noise'
+  | 'night_ambient'
+  | 'library'
+  | 'fireplace'
+  | 'cafe';
+
+const AMBIENCE_AUDIO_URLS: Record<AmbientKey, string> = {
+  window_rain: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/windowrain.mp3',
+  thunderstorm: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/thunderstorm.mp3',
+  ocean: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/ocean.mp3',
+  forest: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/forest.mp3',
+  white_noise: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/white%20noise.mp3',
+  night_ambient: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/night.mp3',
+  library: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/library.mp3',
+  fireplace: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/fireplace.mp3',
+  cafe: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/cafe.mp3',
+};
+
+const AMBIENCE_DEFAULT_VOLUMES: Record<AmbientKey, number> = {
+  window_rain: 55,
+  thunderstorm: 50,
+  ocean: 55,
+  forest: 65,
+  white_noise: 50,
+  night_ambient: 90,
+  library: 82,
+  fireplace: 88,
+  cafe: 78,
+};
+
+const AMBIENCE_GAIN_TRIMS: Record<AmbientKey, number> = {
+  window_rain: 1,
+  thunderstorm: 1,
+  ocean: 1,
+  forest: 1.2,
+  white_noise: 1,
+  night_ambient: 2.2,
+  library: 1.8,
+  fireplace: 1.9,
+  cafe: 1.6,
+};
+
+const AMBIENCE_KEYS = Object.keys(AMBIENCE_AUDIO_URLS) as AmbientKey[];
+const AMBIENCE_FADE_IN_MS = 180;
+const AMBIENCE_FADE_OUT_MS = 220;
 
 function BackgroundLayer({ scene }: { scene: Scene }) {
   const [videoError, setVideoError] = useState(false);
@@ -246,27 +360,14 @@ export default function App() {
   const hasPremiumAccess = accountTier === 'premium';
 
   // ── Global Ambient Engine (survives page navigation) ───────────────
-  const AMBIENT_AUDIO_URLS: Record<string, string> = {
-    window_rain: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/windowrain.mp3',
-    thunderstorm: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/thunderstorm.mp3',
-    ocean: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/ocean.mp3',
-    forest: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/forest.mp3',
-    white_noise: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/white%20noise.mp3',
-    night_ambient: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/night.mp3',
-    library: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/library.mp3',
-    fireplace: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/fireplace.mp3',
-    cafe: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/cafe.mp3',
-  };
   const AMBIENT_LIMIT_FREE = 1;
   const AMBIENT_LIMIT_PREMIUM = 3;
 
-  const [activeAmbiences, setActiveAmbiences] = useState<string[]>([]);
-  const [ambienceVolumes, setAmbienceVolumes] = useState<Record<string, number>>({
-    window_rain: 50, thunderstorm: 50, ocean: 50, forest: 50,
-    white_noise: 50, night_ambient: 50, library: 50, fireplace: 50, cafe: 50,
-  });
+  const [activeAmbiences, setActiveAmbiences] = useState<AmbientKey[]>([]);
+  const [ambienceVolumes, setAmbienceVolumes] = useState<Record<AmbientKey, number>>(AMBIENCE_DEFAULT_VOLUMES);
   const [ambienceToast, setAmbienceToast] = useState<string | null>(null);
-  const ambienceAudioRefs = React.useRef<Record<string, HTMLAudioElement>>({});
+  const ambienceAudioRefs = React.useRef<Record<AmbientKey, HTMLAudioElement>>({} as Record<AmbientKey, HTMLAudioElement>);
+  const ambienceFadeFrames = React.useRef<Partial<Record<AmbientKey, number>>>({});
   const toastTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showAmbienceToast = (msg: string) => {
@@ -275,43 +376,146 @@ export default function App() {
     toastTimerRef.current = setTimeout(() => setAmbienceToast(null), 3500);
   };
 
-  const toggleAmbience = (id: string) => {
+  const cancelAmbienceFade = (id: AmbientKey) => {
+    const frame = ambienceFadeFrames.current[id];
+    if (frame) {
+      cancelAnimationFrame(frame);
+      delete ambienceFadeFrames.current[id];
+    }
+  };
+
+  const ensureAmbientAudio = (id: AmbientKey) => {
+    if (!ambienceAudioRefs.current[id]) {
+      const audio = new Audio(AMBIENCE_AUDIO_URLS[id]);
+      audio.loop = true;
+      audio.preload = 'auto';
+      audio.crossOrigin = 'anonymous';
+      audio.load();
+      ambienceAudioRefs.current[id] = audio;
+    }
+    return ambienceAudioRefs.current[id];
+  };
+
+  const getAmbientTargetVolume = (id: AmbientKey, sliderValue = ambienceVolumes[id] ?? AMBIENCE_DEFAULT_VOLUMES[id]) => {
+    return Math.min(1, (sliderValue / 100) * AMBIENCE_GAIN_TRIMS[id]);
+  };
+
+  const rampAmbientVolume = (id: AmbientKey, to: number, durationMs: number, onDone?: () => void) => {
+    const audio = ensureAmbientAudio(id);
+    cancelAmbienceFade(id);
+    const from = audio.volume;
+    if (durationMs <= 0 || Math.abs(from - to) < 0.01) {
+      audio.volume = to;
+      onDone?.();
+      return;
+    }
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - start) / durationMs);
+      audio.volume = from + (to - from) * progress;
+      if (progress < 1) {
+        ambienceFadeFrames.current[id] = requestAnimationFrame(tick);
+      } else {
+        delete ambienceFadeFrames.current[id];
+        onDone?.();
+      }
+    };
+    ambienceFadeFrames.current[id] = requestAnimationFrame(tick);
+  };
+
+  const startAmbientPlayback = async (id: AmbientKey) => {
+    const audio = ensureAmbientAudio(id);
+    const targetVolume = getAmbientTargetVolume(id);
+    cancelAmbienceFade(id);
+    audio.loop = true;
+    if (audio.paused) {
+      audio.volume = 0.0001;
+      try {
+        await audio.play();
+      } catch (error) {
+        console.error(`Failed to play ambience ${id}`, error);
+        showAmbienceToast(currentLang === 'English' ? 'Ambient audio failed to start' : currentLang === '繁體中文' ? '環境音效播放失敗' : '环境音效播放失败');
+        setActiveAmbiences(prev => prev.filter(activeId => activeId !== id));
+        return;
+      }
+    }
+    rampAmbientVolume(id, targetVolume, AMBIENCE_FADE_IN_MS);
+  };
+
+  const stopAmbientPlayback = (id: AmbientKey, resetToStart = true) => {
+    const audio = ambienceAudioRefs.current[id];
+    if (!audio) return;
+    cancelAmbienceFade(id);
+    if (audio.paused) {
+      if (resetToStart) audio.currentTime = 0;
+      return;
+    }
+    rampAmbientVolume(id, 0, AMBIENCE_FADE_OUT_MS, () => {
+      audio.pause();
+      if (resetToStart) audio.currentTime = 0;
+      audio.volume = getAmbientTargetVolume(id);
+    });
+  };
+
+  const syncActiveAmbiences = (nextIds: AmbientKey[]) => {
+    const deduped = Array.from(new Set(nextIds));
+    AMBIENCE_KEYS.forEach(id => {
+      if (deduped.includes(id)) {
+        void startAmbientPlayback(id);
+      } else {
+        stopAmbientPlayback(id);
+      }
+    });
+    setActiveAmbiences(deduped);
+  };
+
+  const toggleAmbience = (id: AmbientKey) => {
     if (isGuest) {
       setShowGuestFeaturePrompt(true);
       return;
     }
-    const limit = hasPremiumAccess ? AMBIENT_LIMIT_PREMIUM : AMBIENT_LIMIT_FREE;
+
     if (activeAmbiences.includes(id)) {
+      stopAmbientPlayback(id);
       setActiveAmbiences(prev => prev.filter(a => a !== id));
-    } else {
-      if (activeAmbiences.length >= limit) {
-        if (hasPremiumAccess) {
-          showAmbienceToast(`Max ${AMBIENT_LIMIT_PREMIUM} ambiences reached for Premium members`);
-        } else {
-          showAmbienceToast(t.common.ambienceLimit);
-        }
-        return; // do NOT replace, just block + notify
-      }
-      setActiveAmbiences(prev => [...prev, id]);
+      return;
     }
+
+    if (!hasPremiumAccess) {
+      if (activeAmbiences.length >= AMBIENT_LIMIT_FREE) {
+        showAmbienceToast(t.common.ambienceLimit);
+      }
+      syncActiveAmbiences([id]);
+      return;
+    }
+
+    if (activeAmbiences.length >= AMBIENT_LIMIT_PREMIUM) {
+      showAmbienceToast(currentLang === 'English' ? `Premium supports up to ${AMBIENT_LIMIT_PREMIUM} ambience layers` : currentLang === '繁體中文' ? `高級會員最多可同時播放 ${AMBIENT_LIMIT_PREMIUM} 個環境音` : `高级会员最多可同时播放 ${AMBIENT_LIMIT_PREMIUM} 个环境音`);
+      return;
+    }
+
+    syncActiveAmbiences([...activeAmbiences, id]);
   };
 
-  // Sync all audio elements whenever active set or volumes change
   useEffect(() => {
-    Object.entries(AMBIENT_AUDIO_URLS).forEach(([id, url]) => {
-      const isActive = activeAmbiences.includes(id);
-      if (!ambienceAudioRefs.current[id]) {
-        const audio = new Audio(url);
-        audio.loop = true;
-        audio.preload = 'none';
-        ambienceAudioRefs.current[id] = audio;
-      }
+    AMBIENCE_KEYS.forEach(id => {
       const audio = ambienceAudioRefs.current[id];
-      audio.volume = (ambienceVolumes[id] ?? 50) / 100;
-      if (isActive) {
-        if (audio.paused) audio.play().catch(() => { });
-      } else {
-        if (!audio.paused) { audio.pause(); audio.currentTime = 0; }
+      const shouldBeActive = activeAmbiences.includes(id);
+      if (shouldBeActive) {
+        if (!audio || audio.paused) {
+          void startAmbientPlayback(id);
+        }
+      } else if (audio && !audio.paused) {
+        stopAmbientPlayback(id);
+      }
+    });
+  }, [activeAmbiences]);
+
+  useEffect(() => {
+    activeAmbiences.forEach(id => {
+      const audio = ambienceAudioRefs.current[id];
+      if (audio && !audio.paused) {
+        rampAmbientVolume(id, getAmbientTargetVolume(id), 120);
       }
     });
   }, [activeAmbiences, ambienceVolumes]);
@@ -319,7 +523,14 @@ export default function App() {
   // Cleanup on full app unmount only
   useEffect(() => {
     return () => {
-      (Object.values(ambienceAudioRefs.current) as HTMLAudioElement[]).forEach(a => { a.pause(); a.src = ''; });
+      AMBIENCE_KEYS.forEach(id => {
+        cancelAmbienceFade(id);
+        const audio = ambienceAudioRefs.current[id];
+        if (audio) {
+          audio.pause();
+          audio.src = '';
+        }
+      });
     };
   }, []);
   // ── End Ambient Engine ────────────────────────────────────────────
@@ -328,6 +539,13 @@ export default function App() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [practiceSeekDebug, setPracticeSeekDebug] = useState<PracticeSeekDebug>({
+    targetTime: null,
+    snappedTime: null,
+    actualTime: null,
+    targetDelta: null,
+    actualDelta: null,
+  });
 
   // Auto-close Practice Mode when navigating away
   useEffect(() => {
@@ -525,6 +743,7 @@ export default function App() {
           onClose={() => setShowPracticePanel(false)}
           isPremium={isPremium}
           setActiveView={setActiveView}
+          practiceSeekDebug={practiceSeekDebug}
           t={t}
         />
       )}
@@ -544,6 +763,7 @@ export default function App() {
         isPremium={isPremium}
         currentLang={currentLang}
         setShowSheetOptions={setShowSheetOptions}
+        setPracticeSeekDebug={setPracticeSeekDebug}
         t={t}
       />
       {ambienceToast && (
@@ -565,6 +785,7 @@ function PracticePanel({
   onClose,
   isPremium,
   setActiveView,
+  practiceSeekDebug,
   t
 }: {
   currentTrack: Track,
@@ -576,6 +797,7 @@ function PracticePanel({
   onClose: () => void,
   isPremium: boolean,
   setActiveView: (v: View) => void,
+  practiceSeekDebug: PracticeSeekDebug,
   t: any
 }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -612,14 +834,44 @@ function PracticePanel({
   const [noteNameMode, setNoteNameMode] = useState<'off' | 'letter' | 'number'>('letter');
   const [metronomeOn, setMetronomeOn] = useState(false);
   const [metronomeVol, setMetronomeVol] = useState(50);
+  const showPracticeDebug = import.meta.env.DEV || ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+  const [practiceDebug, setPracticeDebug] = useState<{
+    audioCurrentTime: number;
+    absoluteTick: number;
+    normalizedTick: number;
+    measure: number;
+    beatInMeasure: number;
+    beatOffset: number;
+    nextScheduledBeatNumber: number | null;
+    nextScheduledMeasure: number | null;
+    nextScheduledBeatInMeasure: number | null;
+    nextScheduledAccent: 'strong beat' | 'weak beat' | null;
+    beatOriginTick: number;
+    isSeeking: boolean;
+  }>({
+    audioCurrentTime: 0,
+    absoluteTick: 0,
+    normalizedTick: 0,
+    measure: 1,
+    beatInMeasure: 1,
+    beatOffset: 0,
+    nextScheduledBeatNumber: null,
+    nextScheduledMeasure: null,
+    nextScheduledBeatInMeasure: null,
+    nextScheduledAccent: null,
+    beatOriginTick: 0,
+    isSeeking: false,
+  });
 
   const stateRefs = React.useRef({ handFilter, noteNameMode, metronomeOn, metronomeVol, isPlaying });
   React.useEffect(() => {
     stateRefs.current = { handFilter, noteNameMode, metronomeOn, metronomeVol, isPlaying };
   }, [handFilter, noteNameMode, metronomeOn, metronomeVol, isPlaying]);
 
-  const lastMetronomeBeatRef = React.useRef(-1);
   const audioCtxRef = React.useRef<AudioContext | null>(null);
+  const metronomeTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+  const nextScheduledBeatRef = React.useRef<number | null>(null);
+  const scheduledMetronomeNodesRef = React.useRef<Array<{ osc: OscillatorNode, gain: GainNode, when: number }>>([]);
 
   // Handle A-B Looping State seamlessly across frames using strict Measure indexes
   const [loopM1, setLoopM1] = useState<number | null>(null);
@@ -628,9 +880,266 @@ function PracticePanel({
   const loopRef = React.useRef<{ M1: number | null, M2: number | null }>({ M1: null, M2: null });
   const currentMeasureIndexRef = React.useRef(0);
 
+  const getTempoAtAudioTime = (header: typeof midiHeader, timeSecs: number) => {
+    if (!header?.tempos?.length) return null;
+    let activeTempo = header.tempos[0];
+    for (let i = header.tempos.length - 1; i >= 0; i--) {
+      if (timeSecs >= header.tempos[i].time) {
+        activeTempo = header.tempos[i];
+        break;
+      }
+    }
+    return activeTempo;
+  };
+
+  const getTempoAtTick = (header: typeof midiHeader, targetTick: number) => {
+    if (!header?.tempos?.length) return null;
+    let activeTempo = header.tempos[0];
+    for (let i = header.tempos.length - 1; i >= 0; i--) {
+      if (targetTick >= header.tempos[i].ticks) {
+        activeTempo = header.tempos[i];
+        break;
+      }
+    }
+    return activeTempo;
+  };
+
+  const getAbsoluteTickAtAudioTime = (header: typeof midiHeader, timeSecs: number) => {
+    const activeTempo = getTempoAtAudioTime(header, timeSecs);
+    if (!activeTempo || !header) return 0;
+    const secondsSinceTempoChange = Math.max(0, timeSecs - activeTempo.time);
+    const beatsElapsed = secondsSinceTempoChange * (activeTempo.bpm / 60);
+    const ticksElapsed = beatsElapsed * header.ppq;
+    return activeTempo.ticks + ticksElapsed;
+  };
+
+  const getAudioTimeForAbsoluteTick = (header: typeof midiHeader, targetTick: number) => {
+    const activeTempo = getTempoAtTick(header, targetTick);
+    if (!activeTempo || !header) return 0;
+    const beatsFromTempoChange = (targetTick - activeTempo.ticks) / header.ppq;
+    return activeTempo.time + (beatsFromTempoChange / (activeTempo.bpm / 60));
+  };
+
+  const getPracticeBeatPositionAtAudioTime = (header: typeof midiHeader, timeSecs: number) => {
+    const absoluteTick = getAbsoluteTickAtAudioTime(header, timeSecs);
+    const normalizedTick = Math.max(0, absoluteTick);
+    const beatFloat = header ? normalizedTick / header.ppq : 0;
+    const beatsPerMeasure = header?.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+    const wholeBeats = Math.floor(beatFloat);
+    return {
+      absoluteTick,
+      normalizedTick,
+      beatFloat,
+      beatIndex: wholeBeats,
+      beatOffset: beatFloat - wholeBeats,
+      measureIndex: Math.floor(wholeBeats / beatsPerMeasure),
+      beatInMeasure: (wholeBeats % beatsPerMeasure) + 1,
+      beatsPerMeasure,
+    };
+  };
+
+  const getAudioTimeForPracticeBeat = (header: typeof midiHeader, beatNumber: number) => {
+    if (!header) return 0;
+    return getAudioTimeForAbsoluteTick(header, beatNumber * header.ppq);
+  };
+
+  const getNextMetronomeBoundaryAtAudioTime = (header: typeof midiHeader, timeSecs: number) => {
+    const beatPositionNow = getPracticeBeatPositionAtAudioTime(header, timeSecs);
+    const beatFloatNow = beatPositionNow.beatFloat;
+    const nearestBeatBoundary = Math.round(beatFloatNow);
+    const beatBoundaryTolerance = 0.02;
+    const beatNumber = Math.abs(beatFloatNow - nearestBeatBoundary) <= beatBoundaryTolerance
+      ? Math.max(0, nearestBeatBoundary)
+      : Math.max(0, Math.floor(beatFloatNow) + 1);
+    return {
+      beatNumber,
+      measureIndex: Math.floor(beatNumber / beatPositionNow.beatsPerMeasure),
+      beatInMeasure: (beatNumber % beatPositionNow.beatsPerMeasure) + 1,
+      isAccent: (beatNumber % beatPositionNow.beatsPerMeasure) === 0,
+    };
+  };
+
   React.useEffect(() => {
     loopRef.current = { M1: loopM1, M2: loopM2 };
   }, [loopM1, loopM2]);
+
+  React.useEffect(() => {
+    if (!showPracticeDebug || !midiHeader) return;
+    const syncDebugState = () => {
+      const audioElement = document.querySelector('audio') as HTMLAudioElement | null;
+      if (!audioElement) return;
+      const timeSecs = audioElement.currentTime;
+      const beatPosition = getPracticeBeatPositionAtAudioTime(midiHeader, timeSecs);
+      const nextBoundary = getNextMetronomeBoundaryAtAudioTime(midiHeader, timeSecs);
+      const scheduledBeat = nextScheduledBeatRef.current ?? nextBoundary.beatNumber;
+      const scheduledMeasure = scheduledBeat !== null ? Math.floor(scheduledBeat / beatPosition.beatsPerMeasure) + 1 : null;
+      const scheduledBeatInMeasure = scheduledBeat !== null ? (scheduledBeat % beatPosition.beatsPerMeasure) + 1 : null;
+      const scheduledAccent = scheduledBeat !== null
+        ? ((scheduledBeat % beatPosition.beatsPerMeasure) === 0 ? 'strong beat' : 'weak beat')
+        : null;
+      setPracticeDebug({
+        audioCurrentTime: timeSecs,
+        absoluteTick: beatPosition.absoluteTick,
+        normalizedTick: beatPosition.normalizedTick,
+        measure: beatPosition.measureIndex + 1,
+        beatInMeasure: beatPosition.beatInMeasure,
+        beatOffset: beatPosition.beatOffset,
+        nextScheduledBeatNumber: scheduledBeat,
+        nextScheduledMeasure: scheduledMeasure,
+        nextScheduledBeatInMeasure: scheduledBeatInMeasure,
+        nextScheduledAccent: scheduledAccent,
+        beatOriginTick: 0,
+        isSeeking: audioElement.seeking,
+      });
+    };
+
+    syncDebugState();
+    const intervalId = window.setInterval(syncDebugState, 80);
+    return () => window.clearInterval(intervalId);
+  }, [showPracticeDebug, midiHeader, currentTrack.id]);
+
+  React.useEffect(() => {
+    const clearMetronomeScheduler = () => {
+      if (metronomeTimerRef.current) {
+        clearInterval(metronomeTimerRef.current);
+        metronomeTimerRef.current = null;
+      }
+      nextScheduledBeatRef.current = null;
+    };
+
+    if (!midiHeader || !metronomeOn || !isPlaying) {
+      clearMetronomeScheduler();
+      return;
+    }
+
+    const audioElement = document.querySelector('audio') as HTMLAudioElement | null;
+    if (!audioElement) {
+      clearMetronomeScheduler();
+      return;
+    }
+
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+
+    const ctx = audioCtxRef.current;
+    const beatsPerMeasure = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+    const lookAheadSecs = 0.12;
+    const schedulerIntervalMs = 25;
+
+    const clearScheduledMetronomeNodes = () => {
+      const now = ctx.currentTime;
+      scheduledMetronomeNodesRef.current.forEach(({ osc, gain, when }) => {
+        try {
+          if (when >= now - 0.02) {
+            gain.gain.cancelScheduledValues(now);
+            gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.01);
+            osc.stop(now + 0.012);
+          }
+        } catch (_) { }
+        try { osc.disconnect(); } catch (_) { }
+        try { gain.disconnect(); } catch (_) { }
+      });
+      scheduledMetronomeNodesRef.current = [];
+    };
+
+    const scheduleClick = (beatNumber: number, when: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const isAccent = (beatNumber % beatsPerMeasure) === 0;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(isAccent ? 1000 : 680, when);
+      gain.gain.setValueAtTime(Math.max(0.0001, (metronomeVol / 100) * 0.38), when);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + 0.045);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      const scheduledNode = { osc, gain, when };
+      scheduledMetronomeNodesRef.current.push(scheduledNode);
+      osc.onended = () => {
+        scheduledMetronomeNodesRef.current = scheduledMetronomeNodesRef.current.filter(node => node !== scheduledNode);
+        try { osc.disconnect(); } catch (_) { }
+        try { gain.disconnect(); } catch (_) { }
+      };
+      osc.start(when);
+      osc.stop(when + 0.05);
+    };
+
+    const runScheduler = () => {
+      if (!metronomeOn || audioElement.paused) {
+        clearMetronomeScheduler();
+        clearScheduledMetronomeNodes();
+        return;
+      }
+
+      if (ctx.state === 'suspended') {
+        void ctx.resume();
+      }
+
+      if (audioElement.seeking) {
+        return;
+      }
+
+      const playbackRateSafe = Math.max(0.1, audioElement.playbackRate || playbackRate || 1);
+      const audioTimeNow = audioElement.currentTime;
+
+      if (nextScheduledBeatRef.current === null) {
+        nextScheduledBeatRef.current = getNextMetronomeBoundaryAtAudioTime(midiHeader, audioTimeNow).beatNumber;
+      }
+
+      const audioHorizon = audioTimeNow + lookAheadSecs * playbackRateSafe;
+      while (nextScheduledBeatRef.current !== null) {
+        const beatAudioTime = getAudioTimeForPracticeBeat(midiHeader, nextScheduledBeatRef.current);
+        if (!Number.isFinite(beatAudioTime) || beatAudioTime > audioHorizon) break;
+        const delaySecs = Math.max(0, (beatAudioTime - audioTimeNow) / playbackRateSafe);
+        scheduleClick(nextScheduledBeatRef.current, ctx.currentTime + delaySecs);
+        nextScheduledBeatRef.current += 1;
+      }
+    };
+
+    const seedSchedulerFromCurrentTime = () => {
+      if (audioElement.seeking) return;
+      nextScheduledBeatRef.current = getNextMetronomeBoundaryAtAudioTime(midiHeader, audioElement.currentTime).beatNumber;
+    };
+
+    const restartSchedulerFromCurrentTime = () => {
+      clearMetronomeScheduler();
+      clearScheduledMetronomeNodes();
+      if (!metronomeOn || audioElement.paused) return;
+      seedSchedulerFromCurrentTime();
+      runScheduler();
+      metronomeTimerRef.current = setInterval(runScheduler, schedulerIntervalMs);
+    };
+
+    const handleSeeking = () => {
+      clearMetronomeScheduler();
+      clearScheduledMetronomeNodes();
+    };
+
+    const handleSeeked = () => {
+      restartSchedulerFromCurrentTime();
+    };
+
+    const handlePlay = () => {
+      restartSchedulerFromCurrentTime();
+    };
+
+    audioElement.addEventListener('seeking', handleSeeking);
+    audioElement.addEventListener('seeked', handleSeeked);
+    audioElement.addEventListener('play', handlePlay);
+
+    seedSchedulerFromCurrentTime();
+    runScheduler();
+    metronomeTimerRef.current = setInterval(runScheduler, schedulerIntervalMs);
+
+    return () => {
+      audioElement.removeEventListener('seeking', handleSeeking);
+      audioElement.removeEventListener('seeked', handleSeeked);
+      audioElement.removeEventListener('play', handlePlay);
+      clearMetronomeScheduler();
+      clearScheduledMetronomeNodes();
+    };
+  }, [midiHeader, metronomeOn, metronomeVol, isPlaying, playbackRate, currentTrack.id, loopM1, loopM2]);
 
   // When loop is fully established, immediately seek audio to M1 and exit select mode
   React.useEffect(() => {
@@ -640,13 +1149,8 @@ function PracticePanel({
     const audio = document.querySelector('audio') as HTMLAudioElement | null;
     if (!audio || !midiHeader) return;
     const beatsPerM = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-    const safeFirst = (() => {
-      const vn = midiNotes.filter(n => typeof n.ticks === 'number');
-      const ft = vn.length > 0 ? vn.reduce((m, n) => Math.min(m, n.ticks), Infinity) : 0;
-      return Number.isFinite(ft) ? ft : 0;
-    })();
     const tickForMeasure = (idx: number) => {
-      const targetTick = (idx * beatsPerM * midiHeader.ppq) + safeFirst;
+      const targetTick = idx * beatsPerM * midiHeader.ppq;
       let act = midiHeader.tempos[0];
       for (let i = midiHeader.tempos.length - 1; i >= 0; i--) {
         if (targetTick >= midiHeader.tempos[i].ticks) { act = midiHeader.tempos[i]; break; }
@@ -654,7 +1158,7 @@ function PracticePanel({
       return act.time + ((targetTick - act.ticks) / midiHeader.ppq) / (act.bpm / 60);
     };
     // Always seek to loop start when loop is set
-    audio.currentTime = tickForMeasure(loopM1);
+    audio.currentTime = snapAudioTimeToNearestBeat(tickForMeasure(loopM1), midiHeader).snappedTime;
   }, [loopM1, loopM2]);
 
   // Clear loop when track changes
@@ -703,9 +1207,7 @@ function PracticePanel({
     } else {
       // Normal mode: click measure = seek audio to that measure and play
       const beatsPerM = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-      const validNotes = midiNotes.filter(n => typeof n.ticks === 'number');
-      const safeFirst = validNotes.length > 0 ? validNotes.reduce((m, n) => Math.min(m, n.ticks), Infinity) : 0;
-      const targetTick = (clickedMIdx * beatsPerM * midiHeader.ppq) + (Number.isFinite(safeFirst) ? safeFirst : 0);
+      const targetTick = clickedMIdx * beatsPerM * midiHeader.ppq;
       let act = midiHeader.tempos[0];
       for (let i = midiHeader.tempos.length - 1; i >= 0; i--) {
         if (targetTick >= midiHeader.tempos[i].ticks) { act = midiHeader.tempos[i]; break; }
@@ -713,7 +1215,7 @@ function PracticePanel({
       const seekSecs = act.time + ((targetTick - act.ticks) / midiHeader.ppq) / (act.bpm / 60);
       const audio = document.querySelector('audio') as HTMLAudioElement | null;
       if (audio) {
-        audio.currentTime = seekSecs;
+        audio.currentTime = snapAudioTimeToNearestBeat(seekSecs, midiHeader).snappedTime;
         if (audio.paused) audio.play().catch(() => { });
       }
     }
@@ -946,12 +1448,7 @@ function PracticePanel({
         // xFraction (via tick->measureBeat) maps to >= osmdMIdx.
         // Since we already have the PPQ-based measureIndex in tick(), derive beatsPerMeasure.
         const beatsPerMeasure = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-        const safeFirst = (() => {
-          const vn = midiNotes.filter(n => typeof n.ticks === 'number');
-          const ft = vn.length > 0 ? vn.reduce((m, n) => Math.min(m, n.ticks), Infinity) : 0;
-          return Number.isFinite(ft) ? ft : 0;
-        })();
-        const targetTick = (osmdMIdx * beatsPerMeasure * midiHeader.ppq) + safeFirst;
+        const targetTick = osmdMIdx * beatsPerMeasure * midiHeader.ppq;
 
         // Find active tempo at this tick
         let active = midiHeader.tempos[0];
@@ -969,8 +1466,9 @@ function PracticePanel({
         const mEndSecs = getSecsForMeasureOsmd(loopRef.current.M2 + 1);
         const mStartSecs = getSecsForMeasureOsmd(loopRef.current.M1);
         if (timeSecs >= mEndSecs || timeSecs < mStartSecs) {
-          audioElement.currentTime = mStartSecs;
-          lastTimeSecs = mStartSecs;
+          const snappedLoopStart = snapAudioTimeToNearestBeat(mStartSecs, midiHeader).snappedTime;
+          audioElement.currentTime = snappedLoopStart;
+          lastTimeSecs = snappedLoopStart;
           trackStartIndex = 0;
           animationId = requestAnimationFrame(tick);
           return;
@@ -998,7 +1496,7 @@ function PracticePanel({
         }
       }
 
-      const { handFilter, noteNameMode, metronomeOn, metronomeVol, isPlaying: currentIsPlaying } = stateRefs.current;
+      const { handFilter, noteNameMode } = stateRefs.current;
 
       const newRight = currentActive.filter(n => n.hand === 'right' && (handFilter === 'both' || handFilter === 'right')).map(n => n.name);
       const newLeft = currentActive.filter(n => n.hand === 'left' && (handFilter === 'both' || handFilter === 'left')).map(n => n.name);
@@ -1115,47 +1613,8 @@ function PracticePanel({
       const beatsElapsed = secondsSinceTempoChange * (activeTempo.bpm / 60);
       const ticksElapsed = beatsElapsed * midiHeader.ppq;
       const currentTickOrig = activeTempo.ticks + ticksElapsed;
-
-      // ORIGIN CALIBRATION: Subtract the pre-music DAW silence offset
-      // Prevent NaN cascades by skipping completely invalid ticks
-      const validNotes = midiNotes.filter(n => typeof n.ticks === 'number');
-      const firstMidiTick = validNotes.length > 0
-        ? validNotes.reduce((min, n) => Math.min(min, n.ticks), Infinity)
-        : 0;
-
-      // Extra safety check in case the origin math breaks
-      const safeFirstTick = Number.isFinite(firstMidiTick) ? firstMidiTick : 0;
-      const currentTick = Math.max(0, currentTickOrig - safeFirstTick);
-
-      const currentBeatGlobal = Math.floor(currentTickOrig / midiHeader.ppq);
+      const currentTick = Math.max(0, currentTickOrig);
       const beatsPerMeasure = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-
-      if (metronomeOn && currentIsPlaying && currentBeatGlobal >= 0) {
-        if (lastMetronomeBeatRef.current === -1) {
-          lastMetronomeBeatRef.current = currentBeatGlobal;
-        } else if (currentBeatGlobal > lastMetronomeBeatRef.current) {
-          lastMetronomeBeatRef.current = currentBeatGlobal;
-          if (!audioCtxRef.current) {
-            audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-          }
-          if (audioCtxRef.current.state === 'suspended') {
-            audioCtxRef.current.resume();
-          }
-          const ctx = audioCtxRef.current;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          const isAccent = (currentBeatGlobal % beatsPerMeasure) === 0;
-          osc.frequency.setValueAtTime(isAccent ? 880 : 600, ctx.currentTime);
-          gain.gain.setValueAtTime((metronomeVol / 100) * 0.5, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.05);
-        }
-      } else if (!currentIsPlaying || !metronomeOn) {
-        lastMetronomeBeatRef.current = currentBeatGlobal;
-      }
 
       // 3. OSMD MeasureList index — use beatsPerMeasure from MIDI time sig
       const targetFraction = currentTick / (midiHeader.ppq * beatsPerMeasure);
@@ -1379,10 +1838,31 @@ function PracticePanel({
           </div>
         )}
 
-        {/* 1) Staff Section (65% height to securely fit large Grand Staff layout without clipping) */}
-        <div className="h-[65%] relative flex flex-col justify-start overflow-hidden w-full bg-[#f8f6f0] shadow-inner">
-
-          <div className="absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-4">
+	        {/* 1) Staff Section (65% height to securely fit large Grand Staff layout without clipping) */}
+	        <div className="h-[65%] relative flex flex-col justify-start overflow-hidden w-full bg-[#f8f6f0] shadow-inner">
+	          {showPracticeDebug && (
+	            <div className="absolute top-4 right-4 z-[55] pointer-events-none rounded-2xl border border-black/10 bg-white/80 backdrop-blur-md shadow-lg px-4 py-3 min-w-[260px] text-[11px] leading-5 font-mono text-[#3f3428]">
+	              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7b6a58] mb-2">Practice Debug</div>
+	              <div>audio.currentTime: {practiceDebug.audioCurrentTime.toFixed(3)}</div>
+	              <div>absoluteTick: {practiceDebug.absoluteTick.toFixed(2)}</div>
+	              <div>normalizedTick: {practiceDebug.normalizedTick.toFixed(2)}</div>
+	              <div>measure: {practiceDebug.measure}</div>
+	              <div>beatInMeasure: {practiceDebug.beatInMeasure}</div>
+	              <div>beatOffset: {practiceDebug.beatOffset.toFixed(4)}</div>
+	              <div>next click beat#: {practiceDebug.nextScheduledBeatNumber ?? '-'}</div>
+	              <div>next click measure/beat: {practiceDebug.nextScheduledMeasure ?? '-'} / {practiceDebug.nextScheduledBeatInMeasure ?? '-'}</div>
+	              <div>next click accent: {practiceDebug.nextScheduledAccent ?? '-'}</div>
+	              <div>targetTime: {practiceSeekDebug.targetTime !== null ? practiceSeekDebug.targetTime.toFixed(3) : '-'}</div>
+	              <div>snappedTime: {practiceSeekDebug.snappedTime !== null ? practiceSeekDebug.snappedTime.toFixed(3) : '-'}</div>
+	              <div>actualSeekTime: {practiceSeekDebug.actualTime !== null ? practiceSeekDebug.actualTime.toFixed(3) : '-'}</div>
+	              <div>target-snap diff: {practiceSeekDebug.targetDelta !== null ? practiceSeekDebug.targetDelta.toFixed(3) : '-'}</div>
+	              <div>snap-actual diff: {practiceSeekDebug.actualDelta !== null ? practiceSeekDebug.actualDelta.toFixed(3) : '-'}</div>
+	              <div>beat origin tick: {practiceDebug.beatOriginTick}</div>
+	              <div>audio seeking: {practiceDebug.isSeeking ? 'true' : 'false'}</div>
+	            </div>
+	          )}
+	
+	          <div className="absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-4">
             <div ref={scrollContainerRef} className="relative w-full px-[5vw] transition-none origin-top">
               <div
                 ref={containerRef}
@@ -1760,6 +2240,7 @@ function BottomPlayer({
   isPremium,
   currentLang,
   setShowSheetOptions,
+  setPracticeSeekDebug,
   t
 }: {
   currentTrack: Track,
@@ -1776,6 +2257,7 @@ function BottomPlayer({
   isPremium: boolean,
   currentLang: string,
   setShowSheetOptions: (v: boolean) => void,
+  setPracticeSeekDebug: (v: PracticeSeekDebug) => void,
   t: any
 }) {
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
@@ -1786,7 +2268,14 @@ function BottomPlayer({
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
   const [lastVolume, setLastVolume] = useState(0.7);
+  const [practiceMidiHeader, setPracticeMidiHeader] = useState<{ tempos: any[], ppq: number, timeSignatures: any[] } | null>(null);
   const audioRef = React.useRef<HTMLAudioElement>(null);
+  const progressBarRef = React.useRef<HTMLDivElement>(null);
+  const isScrubbingRef = React.useRef(false);
+  const pendingSeekDebugRef = React.useRef<{ targetTime: number | null; snappedTime: number | null }>({
+    targetTime: null,
+    snappedTime: null,
+  });
 
   const speeds = [0.5, 0.75, 1, 1.25, 1.5];
 
@@ -1820,6 +2309,34 @@ function BottomPlayer({
     }
   }, [playbackRate]);
 
+  React.useEffect(() => {
+    let cancelled = false;
+
+    if (!showPracticePanel || !currentTrack.midiUrl) {
+      setPracticeMidiHeader(null);
+      return;
+    }
+
+    fetch(currentTrack.midiUrl)
+      .then(res => res.arrayBuffer())
+      .then(buf => {
+        if (cancelled) return;
+        const midi = new Midi(buf);
+        setPracticeMidiHeader({
+          tempos: midi.header.tempos,
+          ppq: midi.header.ppq,
+          timeSignatures: midi.header.timeSignatures,
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setPracticeMidiHeader(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showPracticePanel, currentTrack.id, currentTrack.midiUrl]);
+
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
@@ -1832,14 +2349,93 @@ function BottomPlayer({
     }
   };
 
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (audioRef.current) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const percentage = x / rect.width;
-      audioRef.current.currentTime = percentage * duration;
+  const applySeek = (targetTime: number) => {
+    if (!audioRef.current) return;
+    if (showPracticePanel) {
+      const { snappedTime } = snapAudioTimeToNearestBeat(targetTime, practiceMidiHeader);
+      pendingSeekDebugRef.current = { targetTime, snappedTime };
+      setPracticeSeekDebug({
+        targetTime,
+        snappedTime,
+        actualTime: snappedTime,
+        targetDelta: snappedTime - targetTime,
+        actualDelta: 0,
+      });
+      audioRef.current.currentTime = snappedTime;
+      setCurrentTime(snappedTime);
+      return;
     }
+
+    pendingSeekDebugRef.current = { targetTime, snappedTime: targetTime };
+    setPracticeSeekDebug({
+      targetTime,
+      snappedTime: targetTime,
+      actualTime: targetTime,
+      targetDelta: 0,
+      actualDelta: 0,
+    });
+    audioRef.current.currentTime = targetTime;
+    setCurrentTime(targetTime);
   };
+
+  const seekFromClientX = (clientX: number) => {
+    const bar = progressBarRef.current;
+    if (!bar || !audioRef.current) return;
+    const rect = bar.getBoundingClientRect();
+    const clampedX = Math.max(rect.left, Math.min(clientX, rect.right));
+    const percentage = rect.width > 0 ? (clampedX - rect.left) / rect.width : 0;
+    applySeek(percentage * duration);
+  };
+
+  const handleProgressPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!audioRef.current) return;
+    isScrubbingRef.current = true;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    seekFromClientX(e.clientX);
+  };
+
+  React.useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isScrubbingRef.current) return;
+      seekFromClientX(e.clientX);
+    };
+
+    const handlePointerUp = () => {
+      isScrubbingRef.current = false;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+  }, [duration, showPracticePanel, practiceMidiHeader]);
+
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleSeeked = () => {
+      const { targetTime, snappedTime } = pendingSeekDebugRef.current;
+      const actualTime = audio.currentTime;
+      setPracticeSeekDebug({
+        targetTime,
+        snappedTime,
+        actualTime,
+        targetDelta: targetTime !== null && snappedTime !== null ? snappedTime - targetTime : null,
+        actualDelta: snappedTime !== null ? actualTime - snappedTime : null,
+      });
+      setCurrentTime(actualTime);
+    };
+
+    audio.addEventListener('seeked', handleSeeked);
+    return () => {
+      audio.removeEventListener('seeked', handleSeeked);
+    };
+  }, [setCurrentTime, setPracticeSeekDebug]);
 
   const formatTime = (time: number) => {
     const mins = Math.floor(time / 60);
@@ -1967,12 +2563,13 @@ function BottomPlayer({
             </div>
           </div>
 
-          <div className="w-full max-w-2xl flex items-center gap-3 text-xs text-[var(--color-mist-text)]/50 font-mono">
-            <span>{formatTime(currentTime)}</span>
-            <div
-              className="flex-1 h-1 bg-white/15 rounded-full overflow-hidden cursor-pointer group"
-              onClick={handleProgressClick}
-            >
+	          <div className="w-full max-w-2xl flex items-center gap-3 text-xs text-[var(--color-mist-text)]/50 font-mono">
+	            <span>{formatTime(currentTime)}</span>
+	            <div
+	              ref={progressBarRef}
+	              className="flex-1 h-1 bg-white/15 rounded-full overflow-hidden cursor-pointer group"
+	              onPointerDown={handleProgressPointerDown}
+	            >
               <div
                 className="h-full bg-[var(--color-mist-text)]/40 group-hover:bg-[var(--color-mist-text)]/60 transition-colors relative"
                 style={{ width: `${(currentTime / duration) * 100}%` }}
@@ -2593,11 +3190,11 @@ function FocusTab({
   activeSceneId: string,
   setActiveSceneId: (id: string) => void,
   setActiveView: (v: View) => void,
-  activeAmbiences: string[],
-  setActiveAmbiences: React.Dispatch<React.SetStateAction<string[]>>,
-  ambienceVolumes: Record<string, number>,
-  setAmbienceVolumes: (v: Record<string, number>) => void,
-  toggleAmbience: (id: string) => void,
+  activeAmbiences: AmbientKey[],
+  setActiveAmbiences: React.Dispatch<React.SetStateAction<AmbientKey[]>>,
+  ambienceVolumes: Record<AmbientKey, number>,
+  setAmbienceVolumes: (v: Record<AmbientKey, number>) => void,
+  toggleAmbience: (id: AmbientKey) => void,
   isPremium: boolean,
   isGuest: boolean,
   onGuestFeatureBlocked: () => void,
@@ -2750,7 +3347,7 @@ function FocusTab({
           name: t.ambient.windowRain,
           icon: CloudRain,
           imageUrl: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/windowrain.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.window_rain,
           tag: 'nature',
         },
         {
@@ -2758,7 +3355,7 @@ function FocusTab({
           name: t.ambient.thunderstorm,
           icon: CloudLightning,
           imageUrl: 'https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/thunderstorm.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.thunderstorm,
           tag: 'nature',
         },
         {
@@ -2766,7 +3363,7 @@ function FocusTab({
           name: t.ambient.ocean,
           icon: Waves,
           imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/ocean.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.ocean,
           tag: 'nature',
         },
         {
@@ -2774,7 +3371,7 @@ function FocusTab({
           name: t.ambient.forest,
           icon: TreeDeciduous,
           imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/forest.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.forest,
           tag: 'nature',
         },
         {
@@ -2782,7 +3379,7 @@ function FocusTab({
           name: t.ambient.whiteNoise,
           icon: Wind,
           imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/whitenoise.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.white_noise,
           tag: 'white_noise',
         },
         {
@@ -2790,7 +3387,7 @@ function FocusTab({
           name: t.ambient.nightAmbient,
           icon: Moon,
           imageUrl: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/night.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.night_ambient,
           tag: 'nature',
         },
         {
@@ -2798,7 +3395,7 @@ function FocusTab({
           name: t.ambient.library,
           icon: Library,
           imageUrl: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/library.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.library,
           tag: 'indoor',
         },
         {
@@ -2806,7 +3403,7 @@ function FocusTab({
           name: t.ambient.fireplace,
           icon: Flame,
           imageUrl: 'https://images.unsplash.com/photo-1542181961-9590d0c79dab?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/fireplace.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.fireplace,
           tag: 'indoor',
         },
         {
@@ -2814,7 +3411,7 @@ function FocusTab({
           name: t.ambient.cafe,
           icon: Coffee,
           imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80',
-          audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/cafe.mp3',
+          audioUrl: AMBIENCE_AUDIO_URLS.cafe,
           tag: 'indoor',
         }
       ]
@@ -2831,7 +3428,11 @@ function FocusTab({
   ];
 
   const applyPreset = (preset: typeof focusPresets[0]) => {
-    const toApply = isPremium ? preset.ambience : preset.ambience.slice(0, 1);
+    if (isGuest) {
+      onGuestFeatureBlocked();
+      return;
+    }
+    const toApply = (isPremium ? preset.ambience : preset.ambience.slice(0, 1)) as AmbientKey[];
     const newVols = { ...volumes };
     toApply.forEach(id => { newVols[id] = preset.volume; });
     setVolumes(newVols);
@@ -2900,7 +3501,10 @@ function FocusTab({
 
         {/* 2) AMBIENT STRIP */}
         <div className="flex flex-col gap-4">
-          <h3 className="text-lg font-medium text-[var(--color-mist-text)] ml-1">{t.home.ambience}</h3>
+          <div className="ml-1 flex flex-col gap-1">
+            <h3 className="text-lg font-medium text-[var(--color-mist-text)]">{t.home.ambience}</h3>
+            <p className="text-xs text-[var(--color-mist-text)]/56">{t.common.ambienceLimit}</p>
+          </div>
           <HorizontalScroller showHint t={t}>
             {ambientItems.map(amb => {
               const Icon = amb.icon;
@@ -3170,16 +3774,65 @@ function SettingsTab({
   const iconWrapClass = 'flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/14 bg-white/16 text-[var(--color-mist-text)]/60';
   const detailRowClass = 'flex items-start justify-between gap-4';
   const benefitCards = t.premium.benefits.slice(0, 4);
-  const memberCenterTitle = currentLang === 'English' ? 'Membership' : t.settings.memberCenter;
+  const memberCenterTitle = isGuest
+    ? currentLang === 'English'
+      ? 'Premium Features'
+      : currentLang === '繁體中文'
+        ? '高級會員權益'
+        : '高级会员权益'
+    : currentLang === 'English'
+      ? 'Membership'
+      : t.settings.memberCenter;
   const premiumFeatureLead = currentLang === 'English'
-    ? 'Available with Premium'
+    ? 'Premium only'
     : currentLang === '繁體中文'
-      ? '升級後可解鎖'
-      : '升级后可解锁';
+      ? '升級解鎖'
+      : '升级解锁';
+  const guestFreeValue = currentLang === 'English'
+    ? 'Free signup includes favorites, recently played, ambience, and Pomodoro.'
+    : currentLang === '繁體中文'
+      ? '免費註冊即可使用收藏、最近播放、環境音效與番茄鐘。'
+      : '免费注册即可使用收藏、最近播放、环境音效与番茄钟。';
+  const guestPremiumValue = currentLang === 'English'
+    ? 'Premium adds these extra features'
+    : currentLang === '繁體中文'
+      ? '升級後再解鎖以下高級功能'
+      : '升级后再解锁以下高级功能';
+  const guestFreeList = currentLang === 'English'
+    ? [
+        { label: 'Favorites', icon: Heart },
+        { label: 'Recently Played', icon: History },
+        { label: 'Ambience', icon: AudioLines },
+        { label: 'Pomodoro', icon: Timer }
+      ]
+    : currentLang === '繁體中文'
+      ? [
+          { label: '收藏', icon: Heart },
+          { label: '最近播放', icon: History },
+          { label: '環境音效', icon: AudioLines },
+          { label: '番茄鐘', icon: Timer }
+        ]
+      : [
+          { label: '收藏', icon: Heart },
+          { label: '最近播放', icon: History },
+          { label: '环境音效', icon: AudioLines },
+          { label: '番茄钟', icon: Timer }
+        ];
+  const guestFreeLead = currentLang === 'English'
+    ? 'Free signup unlocks'
+    : currentLang === '繁體中文'
+      ? '免費註冊後可使用'
+      : '免费注册后可使用';
+  const guestPremiumSummary = currentLang === 'English'
+    ? 'Beyond free signup, Premium also unlocks'
+    : currentLang === '繁體中文'
+      ? '除免費註冊權益外，升級後還可解鎖'
+      : '除免费注册权益外，升级后还可解锁';
   const premiumManageAction = () => {
     window.open('mailto:cipmusicstudios@gmail.com?subject=Membership%20Support', '_blank');
   };
-  const upgradeButtonClass = 'inline-flex h-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(182,132,84,0.95),rgba(213,168,120,0.92))] px-6 text-[15px] font-semibold text-white shadow-[0_14px_30px_rgba(156,109,63,0.24)] transition-transform hover:translate-y-[-1px] hover:shadow-[0_18px_34px_rgba(156,109,63,0.28)]';
+  const upgradeButtonClass = 'inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(182,132,84,0.95),rgba(213,168,120,0.92))] px-6 text-[15px] font-semibold text-white shadow-[0_14px_30px_rgba(156,109,63,0.24)] transition-transform hover:translate-y-[-1px] hover:shadow-[0_18px_34px_rgba(156,109,63,0.28)]';
+  const manageButtonClass = 'inline-flex h-12 w-full items-center justify-center rounded-2xl bg-white/72 px-6 text-[15px] font-semibold text-[var(--color-mist-text)] shadow-[0_12px_28px_rgba(92,68,44,0.14)] transition-colors hover:bg-white/86';
   const handleGuestPrimary = () => {
     if (showDevPreview) setDevAccountTier('basic');
   };
@@ -3232,11 +3885,22 @@ function SettingsTab({
 
           {isGuest ? (
             <div className="mt-6 flex flex-1 flex-col gap-6">
-              <div className={`${subtleCardClass} flex min-h-[210px] flex-col items-center justify-center gap-4 px-6 py-8 text-center`}>
-                <div className="flex h-16 w-16 items-center justify-center rounded-[24px] border border-white/36 bg-white/40 text-[var(--color-mist-text)]/76 shadow-sm">
-                  <Lock className="h-7 w-7" />
+              <div className={`${subtleCardClass} px-4 py-4`}>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
+                  {guestFreeLead}
+                </p>
+                <div className="mt-3 grid gap-2">
+                  {guestFreeList.map(item => {
+                    const Icon = item.icon;
+                    return (
+                    <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-white/14 bg-white/10 px-3 py-3">
+                      <div className={iconWrapClass}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <span className="text-sm font-medium text-[var(--color-mist-text)]/82">{item.label}</span>
+                    </div>
+                  )})}
                 </div>
-                <p className={`${bodyClass} max-w-[24rem]`}>{t.settings.guestDesc}</p>
               </div>
               <div className="mt-auto grid gap-3 sm:grid-cols-2">
                 <button onClick={handleGuestPrimary} className={primaryButtonClass}>{t.common.signUp}</button>
@@ -3303,14 +3967,9 @@ function SettingsTab({
           <div className="mt-6 flex flex-1 flex-col gap-5">
             {isGuest ? (
               <>
-                <div className={`${subtleCardClass} px-4 py-4`}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
-                    {t.settings.premiumFeatures}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--color-mist-text)]/72">
-                    {premiumFeatureLead}
-                  </p>
-                </div>
+                <p className="text-sm leading-6 text-[var(--color-mist-text)]/68">
+                  {guestPremiumSummary}
+                </p>
                 <div className="grid gap-3">
                   {benefitCards.map((benefit: any) => (
                     <div key={benefit.title} className={`${subtleCardClass} flex items-start gap-3 px-4 py-4`}>
@@ -3346,27 +4005,15 @@ function SettingsTab({
                     <span className="text-sm font-semibold text-[var(--color-mist-text)]/88">{t.settings.membershipActive}</span>
                   </div>
                 </div>
-                <div className={`${subtleCardClass} grid gap-4 px-4 py-4`}>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
-                    {t.settings.premiumBenefits}
-                  </p>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {benefitCards.map((benefit: any) => (
-                      <div key={benefit.title} className="rounded-2xl border border-white/14 bg-white/10 px-3 py-2.5 text-sm text-[var(--color-mist-text)]/72">
-                        {benefit.title}
-                      </div>
-                    ))}
-                  </div>
-                </div>
                 <div className="mt-auto pt-1">
-                  <button onClick={premiumManageAction} className={secondaryButtonClass}>
+                  <button onClick={premiumManageAction} className={manageButtonClass}>
                     {t.settings.manageMembership}
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <p className="text-sm text-[var(--color-mist-text)]/60">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
                   {premiumFeatureLead}
                 </p>
                 <div className="grid gap-3">
