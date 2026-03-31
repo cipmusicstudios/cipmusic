@@ -21,6 +21,8 @@ export const en = {
     disabled: 'Disabled',
     longTerm: 'Long-term',
     ambienceLimit: 'Free plan: 1 ambience at a time — upgrade for up to 3 layers',
+    measureSnapped: 'Snapped to measure start',
+    practiceMeasureOnly: 'Practice Mode uses measure-based navigation',
   },
   nav: {
     home: 'Home',

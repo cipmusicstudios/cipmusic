@@ -77,9 +77,29 @@ type PracticeMidiHeaderLite = {
 type PracticeSeekDebug = {
   targetTime: number | null;
   snappedTime: number | null;
+  snappedMeasure: number | null;
+  snappedBeatNumber: number | null;
+  measureStartTime: number | null;
   actualTime: number | null;
   targetDelta: number | null;
   actualDelta: number | null;
+  seekedEventTime: number | null;
+  playCallTime: number | null;
+  playEventTime: number | null;
+  playingEventTime: number | null;
+};
+
+type MusicalPosition = {
+  absoluteTick: number;
+  ticksPerMeasure: number;
+  internalMeasureIndex: number;
+  internalMeasure: number;
+  displayMeasure: number;
+  beatInMeasure: number;
+  tickInMeasure: number;
+  beatFloat: number;
+  beatOffset: number;
+  beatsPerMeasure: number;
 };
 
 const defaultTrack: Track = {
@@ -153,6 +173,49 @@ function getAudioTimeForAbsoluteTickForHeader(header: PracticeMidiHeaderLite | n
   return activeTempo.time + (((targetTick - activeTempo.ticks) / header.ppq) / (activeTempo.bpm / 60));
 }
 
+function getLeadInMeasuresFromFirstNoteTick(firstNoteTick: number | null, header: PracticeMidiHeaderLite | null) {
+  if (firstNoteTick === null || !header?.ppq) return 0;
+  const beatsPerMeasure = header.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const ticksPerMeasure = beatsPerMeasure * header.ppq;
+  if (!Number.isFinite(ticksPerMeasure) || ticksPerMeasure <= 0) return 0;
+  const measureFloat = firstNoteTick / ticksPerMeasure;
+  const rounded = Math.round(measureFloat);
+  if (Math.abs(measureFloat - rounded) <= 0.05) {
+    return Math.max(0, rounded);
+  }
+  return Math.max(0, Math.floor(measureFloat));
+}
+
+function getMusicalPositionAtAudioTimeForHeader(
+  header: PracticeMidiHeaderLite | null,
+  timeSecs: number,
+  displayMeasureOffset = 0
+): MusicalPosition {
+  const absoluteTick = getAbsoluteTickAtAudioTimeForHeader(header, timeSecs);
+  const ppq = header?.ppq ?? 480;
+  const beatsPerMeasure = header?.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const ticksPerMeasure = ppq * beatsPerMeasure;
+  const safeTick = Math.max(0, absoluteTick);
+  const internalMeasureIndex = ticksPerMeasure > 0 ? Math.floor(safeTick / ticksPerMeasure) : 0;
+  const internalMeasure = internalMeasureIndex + 1;
+  const tickInMeasure = ticksPerMeasure > 0 ? safeTick - internalMeasureIndex * ticksPerMeasure : 0;
+  const beatFloat = ppq > 0 ? safeTick / ppq : 0;
+  const beatInMeasure = ppq > 0 ? Math.floor(tickInMeasure / ppq) + 1 : 1;
+  const beatOffset = ppq > 0 ? (tickInMeasure % ppq) / ppq : 0;
+  return {
+    absoluteTick: safeTick,
+    ticksPerMeasure,
+    internalMeasureIndex,
+    internalMeasure,
+    displayMeasure: Math.max(1, internalMeasure - displayMeasureOffset),
+    beatInMeasure,
+    tickInMeasure,
+    beatFloat,
+    beatOffset,
+    beatsPerMeasure,
+  };
+}
+
 function snapAudioTimeToNearestBeat(targetTime: number, header: PracticeMidiHeaderLite | null) {
   if (!header?.tempos?.length || !header.ppq) {
     return { targetTime, snappedTime: targetTime, snappedBeatNumber: null };
@@ -162,6 +225,100 @@ function snapAudioTimeToNearestBeat(targetTime: number, header: PracticeMidiHead
   const snappedTick = snappedBeatNumber * header.ppq;
   const snappedTime = getAudioTimeForAbsoluteTickForHeader(header, snappedTick);
   return { targetTime, snappedTime, snappedBeatNumber };
+}
+
+function snapAudioTimeToNearestMeasureStart(targetTime: number, header: PracticeMidiHeaderLite | null) {
+  if (!header?.tempos?.length || !header.ppq) {
+    return { targetTime, snappedTime: targetTime, snappedMeasureIndex: null, snappedBeatNumber: null };
+  }
+  const beatsPerMeasure = header.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const absoluteTick = getAbsoluteTickAtAudioTimeForHeader(header, targetTime);
+  const absoluteBeatFloat = absoluteTick / header.ppq;
+  const nearestMeasureIndex = Math.max(0, Math.round(absoluteBeatFloat / beatsPerMeasure));
+  const snappedBeatNumber = nearestMeasureIndex * beatsPerMeasure;
+  const snappedTick = snappedBeatNumber * header.ppq;
+  const snappedTime = getAudioTimeForAbsoluteTickForHeader(header, snappedTick);
+  return {
+    targetTime,
+    snappedTime,
+    snappedMeasureIndex: nearestMeasureIndex,
+    snappedBeatNumber,
+  };
+}
+
+function performPracticeMeasureSeek(args: {
+  audio: HTMLAudioElement;
+  targetTime: number;
+  header: PracticeMidiHeaderLite | null;
+  setPracticeSeekDebug: React.Dispatch<React.SetStateAction<PracticeSeekDebug>> | ((v: any) => void);
+  onPracticeSnap: (message: string) => void;
+  snapMessage: string;
+  setCurrentTime?: (v: number) => void;
+  alwaysResume?: boolean;
+}) {
+  const { audio, targetTime, header, setPracticeSeekDebug, onPracticeSnap, snapMessage, setCurrentTime, alwaysResume = true } = args;
+  const { snappedTime, snappedMeasureIndex, snappedBeatNumber } = snapAudioTimeToNearestMeasureStart(targetTime, header);
+  const snappedMeasure = snappedMeasureIndex !== null ? snappedMeasureIndex + 1 : null;
+  const baseDebug = {
+    targetTime,
+    snappedTime,
+    snappedMeasure,
+    snappedBeatNumber,
+    measureStartTime: snappedTime,
+    actualTime: snappedTime,
+    targetDelta: snappedTime - targetTime,
+    actualDelta: 0,
+  };
+
+  const finishSeek = () => {
+    const actualTime = audio.currentTime;
+    const seekedEventTime = performance.now();
+    setPracticeSeekDebug((prev: PracticeSeekDebug) => ({
+      ...prev,
+      ...baseDebug,
+      actualTime,
+      actualDelta: actualTime - snappedTime,
+      seekedEventTime,
+    }));
+    setCurrentTime?.(actualTime);
+
+    if (alwaysResume) {
+      const playCallTime = performance.now();
+      setPracticeSeekDebug((prev: PracticeSeekDebug) => ({
+        ...prev,
+        playCallTime,
+      }));
+      audio.play().catch(() => { });
+    }
+  };
+
+  audio.pause();
+  setPracticeSeekDebug((prev: PracticeSeekDebug) => ({
+    ...prev,
+    ...baseDebug,
+    seekedEventTime: null,
+    playCallTime: null,
+    playEventTime: null,
+    playingEventTime: null,
+  }));
+  setCurrentTime?.(snappedTime);
+
+  if (Math.abs(snappedTime - targetTime) > 0.001) {
+    onPracticeSnap(snapMessage);
+  }
+
+  if (Math.abs(audio.currentTime - snappedTime) <= 0.001) {
+    finishSeek();
+    return;
+  }
+
+  const handleSeeked = () => {
+    audio.removeEventListener('seeked', handleSeeked);
+    finishSeek();
+  };
+
+  audio.addEventListener('seeked', handleSeeked);
+  audio.currentTime = snappedTime;
 }
 
 type AmbientKey =
@@ -215,7 +372,7 @@ const AMBIENCE_KEYS = Object.keys(AMBIENCE_AUDIO_URLS) as AmbientKey[];
 const AMBIENCE_FADE_IN_MS = 180;
 const AMBIENCE_FADE_OUT_MS = 220;
 
-function BackgroundLayer({ scene }: { scene: Scene }) {
+function BackgroundLayer({ scene, lightweight = false }: { scene: Scene, lightweight?: boolean }) {
   const [videoError, setVideoError] = useState(false);
 
   React.useEffect(() => {
@@ -232,11 +389,11 @@ function BackgroundLayer({ scene }: { scene: Scene }) {
     pointerEvents: 'none'
   };
 
-  if (scene.type === 'image' || videoError) {
+  if (lightweight || scene.type === 'image' || videoError) {
     return (
       <img
         key={scene.url}
-        src={scene.url}
+        src={scene.thumbnail || scene.url}
         alt={scene.name}
         referrerPolicy="no-referrer"
         crossOrigin="anonymous"
@@ -260,6 +417,90 @@ function BackgroundLayer({ scene }: { scene: Scene }) {
     />
   );
 }
+
+function midiToFrequency(midi: number) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+const hammerNoiseBuffers = new WeakMap<AudioContext, AudioBuffer>();
+
+function getHammerNoiseBuffer(ctx: AudioContext) {
+  const cached = hammerNoiseBuffers.get(ctx);
+  if (cached) return cached;
+
+  const length = Math.floor(ctx.sampleRate * 0.03);
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const channel = buffer.getChannelData(0);
+  for (let i = 0; i < length; i++) {
+    const decay = 1 - i / length;
+    channel[i] = (Math.random() * 2 - 1) * decay * decay;
+  }
+  hammerNoiseBuffers.set(ctx, buffer);
+  return buffer;
+}
+
+function createPianoLikeVoice(
+  ctx: AudioContext,
+  frequency: number,
+  when: number,
+  durationSecs: number,
+  velocityScale = 0.18
+) {
+  const masterGain = ctx.createGain();
+  const highpass = ctx.createBiquadFilter();
+  const lowpass = ctx.createBiquadFilter();
+  highpass.type = 'highpass';
+  highpass.frequency.setValueAtTime(Math.max(28, frequency * 0.42), when);
+  lowpass.type = 'lowpass';
+  lowpass.Q.value = 1.05;
+  lowpass.frequency.setValueAtTime(Math.max(1400, frequency * 11), when);
+  lowpass.frequency.exponentialRampToValueAtTime(Math.max(520, frequency * 2.1), when + Math.min(0.32, durationSecs));
+
+  masterGain.gain.setValueAtTime(0.0001, when);
+  masterGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, velocityScale), when + 0.004);
+  masterGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, velocityScale * 0.62), when + 0.045);
+  masterGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, velocityScale * 0.22), when + Math.min(0.22, durationSecs * 0.55));
+  masterGain.gain.exponentialRampToValueAtTime(0.0001, when + Math.max(0.16, durationSecs + 0.05));
+
+  highpass.connect(lowpass);
+  lowpass.connect(masterGain);
+  masterGain.connect(ctx.destination);
+
+  const oscillators = [
+    { type: 'triangle' as OscillatorType, ratio: 1, gain: 0.62, detune: -2 },
+    { type: 'sine' as OscillatorType, ratio: 1.997, gain: 0.12, detune: 4 },
+    { type: 'sine' as OscillatorType, ratio: 2.99, gain: 0.055, detune: -1 },
+    { type: 'triangle' as OscillatorType, ratio: 0.5, gain: 0.045, detune: 0 },
+  ].map(partial => {
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = partial.type;
+    osc.frequency.setValueAtTime(frequency * partial.ratio, when);
+    osc.detune.setValueAtTime(partial.detune, when);
+    oscGain.gain.setValueAtTime(partial.gain, when);
+    oscGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, partial.gain * 0.72), when + 0.08);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, when + Math.max(0.14, durationSecs + 0.04));
+    osc.connect(oscGain);
+    oscGain.connect(highpass);
+    return { osc, gain: oscGain };
+  });
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = getHammerNoiseBuffer(ctx);
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.setValueAtTime(Math.max(1800, frequency * 5.5), when);
+  noiseFilter.Q.value = 0.8;
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(Math.max(0.0001, velocityScale * 0.42), when);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, when + 0.022);
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(highpass);
+
+  return { masterGain, highpass, lowpass, noise, noiseFilter, noiseGain, oscillators };
+}
+
 export default function App() {
   const [activeView, setActiveView] = useState<View>('home');
 
@@ -347,6 +588,7 @@ export default function App() {
   }, []);
   const [activeSceneId, setActiveSceneId] = useState<string>('tideHaven');
   const [showPracticePanel, setShowPracticePanel] = useState(false);
+  const [useMidiPracticeAudio, setUseMidiPracticeAudio] = useState(false);
   const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
   const showDevTierPreview = import.meta.env.DEV || isLocalPreview;
   // DEV: pass ?premium=1 in URL to test premium behaviour without a real auth system
@@ -542,10 +784,25 @@ export default function App() {
   const [practiceSeekDebug, setPracticeSeekDebug] = useState<PracticeSeekDebug>({
     targetTime: null,
     snappedTime: null,
+    snappedMeasure: null,
+    snappedBeatNumber: null,
+    measureStartTime: null,
     actualTime: null,
     targetDelta: null,
     actualDelta: null,
+    seekedEventTime: null,
+    playCallTime: null,
+    playEventTime: null,
+    playingEventTime: null,
   });
+  const [practiceSnapNotice, setPracticeSnapNotice] = useState<string | null>(null);
+  const practiceSnapNoticeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showPracticeSnapNotice = (message: string) => {
+    setPracticeSnapNotice(message);
+    if (practiceSnapNoticeTimerRef.current) clearTimeout(practiceSnapNoticeTimerRef.current);
+    practiceSnapNoticeTimerRef.current = setTimeout(() => setPracticeSnapNotice(null), 1800);
+  };
 
   // Auto-close Practice Mode when navigating away
   useEffect(() => {
@@ -553,6 +810,24 @@ export default function App() {
   }, [activeView]);
 
   const activeScene = SCENES.find(s => s.id === activeSceneId) || SCENES[0];
+  const lightweightPracticeMode = showPracticePanel;
+  const practiceIsolatedMode = showPracticePanel;
+
+  useEffect(() => {
+    if (!showPracticePanel) return;
+
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setAmbienceToast(null);
+    AMBIENCE_KEYS.forEach(id => {
+      cancelAmbienceFade(id);
+      const audio = ambienceAudioRefs.current[id];
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    });
+    setActiveAmbiences([]);
+  }, [showPracticePanel]);
 
   // Click-outside-main-panel → go Home
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -566,184 +841,194 @@ export default function App() {
       className="min-h-screen flex flex-col items-center relative text-[var(--color-mist-text)]"
       onClick={handleBackdropClick}
     >
-      <BackgroundLayer scene={activeScene} />
+      <BackgroundLayer scene={activeScene} lightweight={lightweightPracticeMode} />
 
-      <TopNav
-        activeView={activeView}
-        setActiveView={setActiveView}
-        tracks={tracks}
-        currentLang={currentLang}
-        setCurrentLang={setCurrentLang}
-        t={t}
-        onSelectTrack={(t) => {
-          setCurrentTrack(t);
-          setIsPlaying(true);
-          setActiveView('home');
-        }}
-      />
-
-      <main
-        className="flex-1 w-full max-w-6xl mx-auto px-6 pt-32 pb-32 z-10 relative"
-        onClick={e => e.stopPropagation()}
-      >
-        {activeView === 'home' && (
-          <HomeTab
-            t={t}
-          />
-        )}
-        {activeView === 'music' && (
-          <MusicTab
+      {!practiceIsolatedMode && (
+        <>
+          <TopNav
+            activeView={activeView}
+            setActiveView={setActiveView}
             tracks={tracks}
-            artistsData={artistsData}
-            currentTrack={currentTrack}
-            setCurrentTrack={setCurrentTrack}
-            isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
-            t={t}
             currentLang={currentLang}
-          />
-        )}
-        {activeView === 'focus' && (
-          <FocusTab
-            currentTrack={currentTrack}
-            isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
-            activeSceneId={activeSceneId}
-            setActiveSceneId={setActiveSceneId}
-            setActiveView={setActiveView}
-            activeAmbiences={activeAmbiences}
-            setActiveAmbiences={setActiveAmbiences}
-            ambienceVolumes={ambienceVolumes}
-            setAmbienceVolumes={setAmbienceVolumes}
-            toggleAmbience={toggleAmbience}
-            isPremium={hasPremiumAccess}
-            isGuest={isGuest}
-            onGuestFeatureBlocked={() => setShowGuestFeaturePrompt(true)}
-            showAmbienceToast={showAmbienceToast}
+            setCurrentLang={setCurrentLang}
             t={t}
+            onSelectTrack={(t) => {
+              setCurrentTrack(t);
+              setIsPlaying(true);
+              setActiveView('home');
+            }}
           />
-        )}
-        {activeView === 'settings' && (
-          <SettingsTab
-            isPremium={hasPremiumAccess}
-            setIsPremium={setIsPremium}
-            isGuest={isGuest}
-            accountTier={accountTier}
-            showDevPreview={showDevTierPreview}
-            setDevAccountTier={setDevAccountTier}
-            setActiveView={setActiveView}
-            setShowSheetOptions={setShowSheetOptions}
-            currentLang={currentLang}
-            t={t}
-          />
-        )}
-        {activeView === 'admin' && <AdminTab tracks={tracks} setTracks={setTracks} artistsData={artistsData} setArtistsData={setArtistsData} />}
-        {/* ── WeChat QR Modal (Pure Supplemental Entry) ── */}
-        <AnimatePresence>
-          {showSheetOptions && (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center p-6">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowSheetOptions(false)}
-                className="absolute inset-0 bg-black/40 backdrop-blur-md"
+
+          <main
+            className="flex-1 w-full max-w-6xl mx-auto px-6 pt-32 pb-32 z-10 relative"
+            onClick={e => e.stopPropagation()}
+          >
+            {activeView === 'home' && (
+              <HomeTab
+                t={t}
               />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="relative glass-panel p-10 max-w-sm w-full bg-white/10 border-white/20 shadow-2xl flex flex-col items-center gap-6"
-              >
-                <div className="flex flex-col items-center text-center gap-2">
-                  <h3 className="text-xl font-bold text-white tracking-tight">
-                    {t.settings.wechatQrTitle}
-                  </h3>
-                  <p className="text-xs text-white/50 leading-relaxed font-medium">
-                    {t.settings.wechatQrDesc}
-                  </p>
-                </div>
-
-                <div className="relative p-2 bg-white rounded-2xl shadow-xl transition-transform hover:scale-[1.02] duration-500 overflow-hidden">
-                  <img
-                    src="https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/pics/gzh.jpg"
-                    alt=""
-                    className="w-48 h-48 object-contain"
+            )}
+            {activeView === 'music' && (
+              <MusicTab
+                tracks={tracks}
+                artistsData={artistsData}
+                currentTrack={currentTrack}
+                setCurrentTrack={setCurrentTrack}
+                isPlaying={isPlaying}
+                setIsPlaying={setIsPlaying}
+                t={t}
+                currentLang={currentLang}
+              />
+            )}
+            {activeView === 'focus' && (
+              <FocusTab
+                currentTrack={currentTrack}
+                isPlaying={isPlaying}
+                setIsPlaying={setIsPlaying}
+                activeSceneId={activeSceneId}
+                setActiveSceneId={setActiveSceneId}
+                setActiveView={setActiveView}
+                activeAmbiences={activeAmbiences}
+                setActiveAmbiences={setActiveAmbiences}
+                ambienceVolumes={ambienceVolumes}
+                setAmbienceVolumes={setAmbienceVolumes}
+                toggleAmbience={toggleAmbience}
+                isPremium={hasPremiumAccess}
+                isGuest={isGuest}
+                onGuestFeatureBlocked={() => setShowGuestFeaturePrompt(true)}
+                showAmbienceToast={showAmbienceToast}
+                t={t}
+              />
+            )}
+            {activeView === 'settings' && (
+              <SettingsTab
+                isPremium={hasPremiumAccess}
+                setIsPremium={setIsPremium}
+                isGuest={isGuest}
+                accountTier={accountTier}
+                showDevPreview={showDevTierPreview}
+                setDevAccountTier={setDevAccountTier}
+                setActiveView={setActiveView}
+                setShowSheetOptions={setShowSheetOptions}
+                currentLang={currentLang}
+                t={t}
+              />
+            )}
+            {activeView === 'admin' && <AdminTab tracks={tracks} setTracks={setTracks} artistsData={artistsData} setArtistsData={setArtistsData} />}
+            <AnimatePresence>
+              {showSheetOptions && (
+                <div className="fixed inset-0 z-[300] flex items-center justify-center p-6">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowSheetOptions(false)}
+                    className="absolute inset-0 bg-black/40 backdrop-blur-md"
                   />
-                </div>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    className="relative glass-panel p-10 max-w-sm w-full bg-white/10 border-white/20 shadow-2xl flex flex-col items-center gap-6"
+                  >
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <h3 className="text-xl font-bold text-white tracking-tight">
+                        {t.settings.wechatQrTitle}
+                      </h3>
+                      <p className="text-xs text-white/50 leading-relaxed font-medium">
+                        {t.settings.wechatQrDesc}
+                      </p>
+                    </div>
 
-                <button
-                  onClick={() => setShowSheetOptions(false)}
-                  className="mt-2 py-2.5 px-8 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold uppercase tracking-widest text-white/80 transition-all border border-white/10"
+                    <div className="relative p-2 bg-white rounded-2xl shadow-xl transition-transform hover:scale-[1.02] duration-500 overflow-hidden">
+                      <img
+                        src="https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/pics/gzh.jpg"
+                        alt=""
+                        className="w-48 h-48 object-contain"
+                      />
+                    </div>
+
+                    <button
+                      onClick={() => setShowSheetOptions(false)}
+                      className="mt-2 py-2.5 px-8 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold uppercase tracking-widest text-white/80 transition-all border border-white/10"
+                    >
+                      {t.common.close}
+                    </button>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+          </main>
+
+          <AnimatePresence>
+            {showGuestFeaturePrompt && (
+              <div className="fixed inset-0 z-[320] flex items-center justify-center p-6">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowGuestFeaturePrompt(false)}
+                  className="absolute inset-0 bg-[rgba(245,236,226,0.38)] backdrop-blur-md"
+                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                  className="relative w-full max-w-md rounded-[32px] border border-white/40 bg-[rgba(255,250,245,0.72)] px-8 py-8 shadow-[0_24px_60px_rgba(92,68,44,0.18)] backdrop-blur-xl"
                 >
-                  {t.common.close}
-                </button>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-      </main>
-
-      <AnimatePresence>
-        {showGuestFeaturePrompt && (
-          <div className="fixed inset-0 z-[320] flex items-center justify-center p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowGuestFeaturePrompt(false)}
-              className="absolute inset-0 bg-[rgba(245,236,226,0.38)] backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 12 }}
-              className="relative w-full max-w-md rounded-[32px] border border-white/40 bg-[rgba(255,250,245,0.72)] px-8 py-8 shadow-[0_24px_60px_rgba(92,68,44,0.18)] backdrop-blur-xl"
-            >
-              <div className="flex flex-col gap-4 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/50 bg-white/55 text-[var(--color-mist-text)]/78">
-                  <User className="h-6 w-6" />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-2xl font-semibold tracking-tight text-[var(--color-mist-text)]">
-                    {t.settings.guestPromptTitle}
-                  </h3>
-                  <p className="text-sm leading-6 text-[var(--color-mist-text)]/72">
-                    {t.settings.guestPromptDesc}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-                  <button
-                    onClick={() => setShowGuestFeaturePrompt(false)}
-                    className="flex-1 rounded-2xl bg-white/82 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white"
-                  >
-                    {t.common.signUp}
-                  </button>
-                  <button
-                    onClick={() => setShowGuestFeaturePrompt(false)}
-                    className="flex-1 rounded-2xl border border-white/36 bg-white/34 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)]/86 transition-colors hover:bg-white/48"
-                  >
-                    {t.common.logIn}
-                  </button>
-                </div>
+                  <div className="flex flex-col gap-4 text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/50 bg-white/55 text-[var(--color-mist-text)]/78">
+                      <User className="h-6 w-6" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h3 className="text-2xl font-semibold tracking-tight text-[var(--color-mist-text)]">
+                        {t.settings.guestPromptTitle}
+                      </h3>
+                      <p className="text-sm leading-6 text-[var(--color-mist-text)]/72">
+                        {t.settings.guestPromptDesc}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+                      <button
+                        onClick={() => setShowGuestFeaturePrompt(false)}
+                        className="flex-1 rounded-2xl bg-white/82 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white"
+                      >
+                        {t.common.signUp}
+                      </button>
+                      <button
+                        onClick={() => setShowGuestFeaturePrompt(false)}
+                        className="flex-1 rounded-2xl border border-white/36 bg-white/34 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)]/86 transition-colors hover:bg-white/48"
+                      >
+                        {t.common.logIn}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            )}
+          </AnimatePresence>
+        </>
+      )}
 
       {showPracticePanel && (
         <PracticePanel
           currentTrack={currentTrack}
           isPlaying={isPlaying}
+          setIsPlaying={setIsPlaying}
           currentTime={currentTime}
+          setCurrentTime={setCurrentTime}
           duration={duration}
+          setDuration={setDuration}
           playbackRate={playbackRate}
           setPlaybackRate={setPlaybackRate}
           onClose={() => setShowPracticePanel(false)}
           isPremium={isPremium}
           setActiveView={setActiveView}
           practiceSeekDebug={practiceSeekDebug}
+          setPracticeSeekDebug={setPracticeSeekDebug}
+          onPracticeSnap={showPracticeSnapNotice}
+          useMidiPracticeAudio={useMidiPracticeAudio}
+          setUseMidiPracticeAudio={setUseMidiPracticeAudio}
           t={t}
         />
       )}
@@ -764,9 +1049,16 @@ export default function App() {
         currentLang={currentLang}
         setShowSheetOptions={setShowSheetOptions}
         setPracticeSeekDebug={setPracticeSeekDebug}
+        onPracticeSnap={showPracticeSnapNotice}
+        useMidiPracticeAudio={useMidiPracticeAudio}
         t={t}
       />
-      {ambienceToast && (
+      {showPracticePanel && practiceSnapNotice && (
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[210] rounded-full border border-white/20 bg-[rgba(255,249,242,0.94)] px-4 py-2 text-xs font-semibold text-[var(--color-mist-text)] shadow-sm">
+          {practiceSnapNotice}
+        </div>
+      )}
+      {!practiceIsolatedMode && ambienceToast && (
         <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[200] px-5 py-3 rounded-2xl bg-black/70 backdrop-blur-md border border-white/15 text-white text-sm font-medium shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-300 max-w-sm text-center">
           {ambienceToast}
         </div>
@@ -778,52 +1070,85 @@ export default function App() {
 function PracticePanel({
   currentTrack,
   isPlaying,
+  setIsPlaying,
   currentTime,
+  setCurrentTime,
   duration,
+  setDuration,
   playbackRate,
   setPlaybackRate,
   onClose,
   isPremium,
   setActiveView,
   practiceSeekDebug,
+  setPracticeSeekDebug,
+  onPracticeSnap,
+  useMidiPracticeAudio,
+  setUseMidiPracticeAudio,
   t
 }: {
   currentTrack: Track,
   isPlaying: boolean,
+  setIsPlaying: (v: boolean) => void,
   currentTime: number,
+  setCurrentTime: (v: number) => void,
   duration: number,
+  setDuration: (v: number) => void,
   playbackRate: number,
   setPlaybackRate: (v: number) => void,
   onClose: () => void,
   isPremium: boolean,
   setActiveView: (v: View) => void,
   practiceSeekDebug: PracticeSeekDebug,
+  setPracticeSeekDebug: React.Dispatch<React.SetStateAction<PracticeSeekDebug>>,
+  onPracticeSnap: (message: string) => void,
+  useMidiPracticeAudio: boolean,
+  setUseMidiPracticeAudio: React.Dispatch<React.SetStateAction<boolean>>,
   t: any
 }) {
+  const lightweightMode = true;
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [midiNotes, setMidiNotes] = useState<any[]>([]);
   const [midiHeader, setMidiHeader] = useState<any>(null);
+  const formatDisplayedMeasure = (measure: number | null | undefined) => {
+    if (measure === null || measure === undefined) return '-';
+    return String(Math.max(1, measure - leadInMeasures));
+  };
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const redLineRef = React.useRef<HTMLDivElement>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const staffViewportRef = React.useRef<HTMLDivElement>(null);
   const osmdRef = React.useRef<OpenSheetMusicDisplay | null>(null);
   const currentTimeRef = React.useRef(currentTime);
   const lastMonotonicTimeRef = React.useRef(currentTime);
   const renderedBlockRef = React.useRef(-1);
+  const lastAutoScrollMeasureRef = React.useRef<number | null>(null);
+  const practiceTransportFrameRef = React.useRef<number | null>(null);
+  const practiceTransportRef = React.useRef({
+    currentTime: 0,
+    startedAtTime: 0,
+    startedAtPerf: 0,
+    duration: 0,
+    isPlaying: false,
+    playbackRate: 1,
+  });
 
   const loopRangeRef = React.useRef<HTMLDivElement>(null);
   const loopStartBlockRef = React.useRef<HTMLDivElement>(null);
   const loopEndBlockRef = React.useRef<HTMLDivElement>(null);
 
   // Practice Mode Lite Core Features Enablement
+  const [showPracticeDebug, setShowPracticeDebug] = useState(false);
+  const [keyboardFxEnabled, setKeyboardFxEnabled] = useState(false);
+  const debugAvailable = import.meta.env.DEV || ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
   const diagMaster = true;
   const diagScore = true;
-  const diagKeyboard = true;
+  const diagKeyboard = keyboardFxEnabled;
   const diagMeasure = true;
-  const diagScroll = true;
-  const diagBgAnim = true;
+  const diagScroll = !lightweightMode;
+  const diagBgAnim = !lightweightMode;
 
   const diagRef = React.useRef({ diagMaster, diagScore, diagKeyboard, diagMeasure, diagScroll });
   React.useEffect(() => {
@@ -834,31 +1159,45 @@ function PracticePanel({
   const [noteNameMode, setNoteNameMode] = useState<'off' | 'letter' | 'number'>('letter');
   const [metronomeOn, setMetronomeOn] = useState(false);
   const [metronomeVol, setMetronomeVol] = useState(50);
-  const showPracticeDebug = import.meta.env.DEV || ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
+  const [measureJumpValue, setMeasureJumpValue] = useState('');
   const [practiceDebug, setPracticeDebug] = useState<{
     audioCurrentTime: number;
     absoluteTick: number;
     normalizedTick: number;
-    measure: number;
+    internalMeasure: number;
+    displayMeasure: number;
     beatInMeasure: number;
+    tickInMeasure: number;
     beatOffset: number;
     nextScheduledBeatNumber: number | null;
     nextScheduledMeasure: number | null;
     nextScheduledBeatInMeasure: number | null;
     nextScheduledAccent: 'strong beat' | 'weak beat' | null;
+    firstMetronomeClickTime: number | null;
+    firstMetronomeClickDeltaMs: number | null;
+    firstMetronomeClickPerfTime: number | null;
+    audioResumeTime: number | null;
+    audioMetronomeDiffMs: number | null;
     beatOriginTick: number;
     isSeeking: boolean;
   }>({
     audioCurrentTime: 0,
     absoluteTick: 0,
     normalizedTick: 0,
-    measure: 1,
+    internalMeasure: 1,
+    displayMeasure: 1,
     beatInMeasure: 1,
+    tickInMeasure: 0,
     beatOffset: 0,
     nextScheduledBeatNumber: null,
     nextScheduledMeasure: null,
     nextScheduledBeatInMeasure: null,
     nextScheduledAccent: null,
+    firstMetronomeClickTime: null,
+    firstMetronomeClickDeltaMs: null,
+    firstMetronomeClickPerfTime: null,
+    audioResumeTime: null,
+    audioMetronomeDiffMs: null,
     beatOriginTick: 0,
     isSeeking: false,
   });
@@ -872,6 +1211,16 @@ function PracticePanel({
   const metronomeTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
   const nextScheduledBeatRef = React.useRef<number | null>(null);
   const scheduledMetronomeNodesRef = React.useRef<Array<{ osc: OscillatorNode, gain: GainNode, when: number }>>([]);
+  const firstMetronomeClickTimeRef = React.useRef<number | null>(null);
+  const firstMetronomeClickPerfTimeRef = React.useRef<number | null>(null);
+  const midiPlaybackTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+  const nextMidiNoteIndexRef = React.useRef(0);
+  const scheduledMidiNodesRef = React.useRef<Array<{
+    when: number;
+    stopAt: number;
+    disconnect: () => void;
+    stop: (stopTime: number) => void;
+  }>>([]);
 
   // Handle A-B Looping State seamlessly across frames using strict Measure indexes
   const [loopM1, setLoopM1] = useState<number | null>(null);
@@ -879,6 +1228,93 @@ function PracticePanel({
   const [isLoopSelectMode, setIsLoopSelectMode] = useState(false);
   const loopRef = React.useRef<{ M1: number | null, M2: number | null }>({ M1: null, M2: null });
   const currentMeasureIndexRef = React.useRef(0);
+  const leadInMeasures = React.useMemo(() => {
+    if (!midiHeader?.ppq || !midiNotes.length) return 0;
+    const firstNoteTick = midiNotes.reduce((min, note) => Math.min(min, note.ticks ?? Infinity), Infinity);
+    return getLeadInMeasuresFromFirstNoteTick(Number.isFinite(firstNoteTick) ? firstNoteTick : null, midiHeader);
+  }, [midiHeader, midiNotes]);
+  const practiceTransportEnabled = useMidiPracticeAudio && !!midiHeader;
+  const practiceTrackDuration = React.useMemo(() => {
+    if (!midiNotes.length) return 0;
+    return midiNotes.reduce((max, note) => Math.max(max, (note.time ?? 0) + Math.max(0, note.duration ?? 0)), 0);
+  }, [midiNotes]);
+
+  const getPracticeTransportTime = React.useCallback(() => {
+    const transport = practiceTransportRef.current;
+    if (!practiceTransportEnabled) return currentTimeRef.current;
+    if (!transport.isPlaying) return transport.currentTime;
+    const elapsed = ((performance.now() - transport.startedAtPerf) / 1000) * transport.playbackRate;
+    return Math.max(0, Math.min(transport.duration, transport.startedAtTime + elapsed));
+  }, [practiceTransportEnabled]);
+
+  const stopPracticeTransportFrame = React.useCallback(() => {
+    if (practiceTransportFrameRef.current !== null) {
+      cancelAnimationFrame(practiceTransportFrameRef.current);
+      practiceTransportFrameRef.current = null;
+    }
+  }, []);
+
+  const syncPracticeTransportFrame = React.useCallback(() => {
+    if (!practiceTransportEnabled) return;
+    const tick = () => {
+      const nextTime = getPracticeTransportTime();
+      practiceTransportRef.current.currentTime = nextTime;
+      setCurrentTime(nextTime);
+      if (practiceTransportRef.current.isPlaying && nextTime < practiceTransportRef.current.duration) {
+        practiceTransportFrameRef.current = requestAnimationFrame(tick);
+      } else {
+        practiceTransportRef.current.isPlaying = false;
+        setIsPlaying(false);
+        practiceTransportFrameRef.current = null;
+      }
+    };
+    stopPracticeTransportFrame();
+    practiceTransportFrameRef.current = requestAnimationFrame(tick);
+  }, [getPracticeTransportTime, practiceTransportEnabled, setCurrentTime, setIsPlaying, stopPracticeTransportFrame]);
+
+  const jumpToDisplayMeasure = React.useCallback((displayMeasureNumber: number) => {
+    if (!midiHeader) return;
+    const totalMeasures = osmdRef.current?.GraphicSheet?.MeasureList?.length ?? 0;
+    const clampedDisplayMeasure = Math.max(1, totalMeasures > 0 ? Math.min(displayMeasureNumber, totalMeasures) : displayMeasureNumber);
+    const displayMeasureIndex = clampedDisplayMeasure - 1;
+    const beatsPerM = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+    const targetTick = (displayMeasureIndex + leadInMeasures) * beatsPerM * midiHeader.ppq;
+    let act = midiHeader.tempos[0];
+    for (let i = midiHeader.tempos.length - 1; i >= 0; i--) {
+      if (targetTick >= midiHeader.tempos[i].ticks) { act = midiHeader.tempos[i]; break; }
+    }
+    const seekSecs = act.time + ((targetTick - act.ticks) / midiHeader.ppq) / (act.bpm / 60);
+    setIsPlaying(false);
+    if (practiceTransportEnabled) {
+      practiceTransportRef.current.currentTime = seekSecs;
+      practiceTransportRef.current.startedAtTime = seekSecs;
+      practiceTransportRef.current.startedAtPerf = performance.now();
+      practiceTransportRef.current.isPlaying = false;
+      setCurrentTime(seekSecs);
+      setPracticeSeekDebug(prev => ({
+        ...prev,
+        targetTime: seekSecs,
+        snappedTime: seekSecs,
+        measureStartTime: seekSecs,
+        snappedMeasure: clampedDisplayMeasure,
+        actualTime: seekSecs,
+        targetDelta: 0,
+        actualDelta: 0,
+      }));
+      return;
+    }
+    const audio = document.querySelector('audio') as HTMLAudioElement | null;
+    if (!audio) return;
+    performPracticeMeasureSeek({
+      audio,
+      targetTime: seekSecs,
+      header: midiHeader,
+      setPracticeSeekDebug,
+      onPracticeSnap,
+      snapMessage: t.common.measureSnapped,
+      alwaysResume: false,
+    });
+  }, [leadInMeasures, midiHeader, onPracticeSnap, practiceTransportEnabled, setCurrentTime, setIsPlaying, setPracticeSeekDebug, t.common.measureSnapped]);
 
   const getTempoAtAudioTime = (header: typeof midiHeader, timeSecs: number) => {
     if (!header?.tempos?.length) return null;
@@ -921,20 +1357,21 @@ function PracticePanel({
   };
 
   const getPracticeBeatPositionAtAudioTime = (header: typeof midiHeader, timeSecs: number) => {
-    const absoluteTick = getAbsoluteTickAtAudioTime(header, timeSecs);
-    const normalizedTick = Math.max(0, absoluteTick);
-    const beatFloat = header ? normalizedTick / header.ppq : 0;
-    const beatsPerMeasure = header?.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-    const wholeBeats = Math.floor(beatFloat);
+    const musicalPosition = getMusicalPositionAtAudioTimeForHeader(header, timeSecs, leadInMeasures);
+    const wholeBeats = Math.floor(musicalPosition.beatFloat);
     return {
-      absoluteTick,
-      normalizedTick,
-      beatFloat,
+      absoluteTick: musicalPosition.absoluteTick,
+      normalizedTick: musicalPosition.absoluteTick,
+      beatFloat: musicalPosition.beatFloat,
       beatIndex: wholeBeats,
-      beatOffset: beatFloat - wholeBeats,
-      measureIndex: Math.floor(wholeBeats / beatsPerMeasure),
-      beatInMeasure: (wholeBeats % beatsPerMeasure) + 1,
-      beatsPerMeasure,
+      beatOffset: musicalPosition.beatOffset,
+      measureIndex: musicalPosition.internalMeasureIndex,
+      internalMeasure: musicalPosition.internalMeasure,
+      displayMeasure: musicalPosition.displayMeasure,
+      beatInMeasure: musicalPosition.beatInMeasure,
+      tickInMeasure: musicalPosition.tickInMeasure,
+      beatsPerMeasure: musicalPosition.beatsPerMeasure,
+      ticksPerMeasure: musicalPosition.ticksPerMeasure,
     };
   };
 
@@ -967,8 +1404,8 @@ function PracticePanel({
     if (!showPracticeDebug || !midiHeader) return;
     const syncDebugState = () => {
       const audioElement = document.querySelector('audio') as HTMLAudioElement | null;
-      if (!audioElement) return;
-      const timeSecs = audioElement.currentTime;
+      if (!audioElement && !practiceTransportEnabled) return;
+      const timeSecs = practiceTransportEnabled ? getPracticeTransportTime() : (audioElement?.currentTime ?? 0);
       const beatPosition = getPracticeBeatPositionAtAudioTime(midiHeader, timeSecs);
       const nextBoundary = getNextMetronomeBoundaryAtAudioTime(midiHeader, timeSecs);
       const scheduledBeat = nextScheduledBeatRef.current ?? nextBoundary.beatNumber;
@@ -977,26 +1414,44 @@ function PracticePanel({
       const scheduledAccent = scheduledBeat !== null
         ? ((scheduledBeat % beatPosition.beatsPerMeasure) === 0 ? 'strong beat' : 'weak beat')
         : null;
+      const firstMetronomeClickTime = firstMetronomeClickTimeRef.current;
+      const firstMetronomeClickPerfTime = firstMetronomeClickPerfTimeRef.current;
+      const audioResumeTime = practiceSeekDebug.playingEventTime;
+      const firstMetronomeClickDeltaMs =
+        firstMetronomeClickTime !== null && practiceSeekDebug.measureStartTime !== null
+          ? (firstMetronomeClickTime - practiceSeekDebug.measureStartTime) * 1000
+          : null;
+      const audioMetronomeDiffMs =
+        firstMetronomeClickPerfTime !== null && audioResumeTime !== null
+          ? firstMetronomeClickPerfTime - audioResumeTime
+          : null;
       setPracticeDebug({
         audioCurrentTime: timeSecs,
         absoluteTick: beatPosition.absoluteTick,
         normalizedTick: beatPosition.normalizedTick,
-        measure: beatPosition.measureIndex + 1,
+        internalMeasure: beatPosition.internalMeasure,
+        displayMeasure: beatPosition.displayMeasure,
         beatInMeasure: beatPosition.beatInMeasure,
+        tickInMeasure: beatPosition.tickInMeasure,
         beatOffset: beatPosition.beatOffset,
         nextScheduledBeatNumber: scheduledBeat,
         nextScheduledMeasure: scheduledMeasure,
         nextScheduledBeatInMeasure: scheduledBeatInMeasure,
         nextScheduledAccent: scheduledAccent,
+        firstMetronomeClickTime,
+        firstMetronomeClickDeltaMs,
+        firstMetronomeClickPerfTime,
+        audioResumeTime,
+        audioMetronomeDiffMs,
         beatOriginTick: 0,
-        isSeeking: audioElement.seeking,
+        isSeeking: practiceTransportEnabled ? false : !!audioElement?.seeking,
       });
     };
 
     syncDebugState();
-    const intervalId = window.setInterval(syncDebugState, 80);
+    const intervalId = window.setInterval(syncDebugState, 250);
     return () => window.clearInterval(intervalId);
-  }, [showPracticeDebug, midiHeader, currentTrack.id]);
+  }, [showPracticeDebug, midiHeader, currentTrack.id, practiceSeekDebug.measureStartTime, practiceSeekDebug.playingEventTime, practiceTransportEnabled, getPracticeTransportTime]);
 
   React.useEffect(() => {
     const clearMetronomeScheduler = () => {
@@ -1005,6 +1460,8 @@ function PracticePanel({
         metronomeTimerRef.current = null;
       }
       nextScheduledBeatRef.current = null;
+      firstMetronomeClickTimeRef.current = null;
+      firstMetronomeClickPerfTimeRef.current = null;
     };
 
     if (!midiHeader || !metronomeOn || !isPlaying) {
@@ -1013,7 +1470,7 @@ function PracticePanel({
     }
 
     const audioElement = document.querySelector('audio') as HTMLAudioElement | null;
-    if (!audioElement) {
+    if (!practiceTransportEnabled && !audioElement) {
       clearMetronomeScheduler();
       return;
     }
@@ -1048,6 +1505,12 @@ function PracticePanel({
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const isAccent = (beatNumber % beatsPerMeasure) === 0;
+      const delaySecsFromNow = Math.max(0, when - ctx.currentTime);
+      const wallClockPerfTime = performance.now() + delaySecsFromNow * 1000;
+      if (firstMetronomeClickTimeRef.current === null) {
+        firstMetronomeClickTimeRef.current = getAudioTimeForPracticeBeat(midiHeader, beatNumber);
+        firstMetronomeClickPerfTimeRef.current = wallClockPerfTime;
+      }
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(isAccent ? 1000 : 680, when);
       gain.gain.setValueAtTime(Math.max(0.0001, (metronomeVol / 100) * 0.38), when);
@@ -1066,7 +1529,10 @@ function PracticePanel({
     };
 
     const runScheduler = () => {
-      if (!metronomeOn || audioElement.paused) {
+      const transportPlaying = practiceTransportEnabled
+        ? practiceTransportRef.current.isPlaying
+        : !audioElement?.paused;
+      if (!metronomeOn || !transportPlaying) {
         clearMetronomeScheduler();
         clearScheduledMetronomeNodes();
         return;
@@ -1076,12 +1542,19 @@ function PracticePanel({
         void ctx.resume();
       }
 
-      if (audioElement.seeking) {
+      if (!practiceTransportEnabled && audioElement?.seeking) {
         return;
       }
 
-      const playbackRateSafe = Math.max(0.1, audioElement.playbackRate || playbackRate || 1);
-      const audioTimeNow = audioElement.currentTime;
+      const playbackRateSafe = Math.max(
+        0.1,
+        practiceTransportEnabled
+          ? (practiceTransportRef.current.playbackRate || playbackRate || 1)
+          : (audioElement?.playbackRate || playbackRate || 1)
+      );
+      const audioTimeNow = practiceTransportEnabled
+        ? getPracticeTransportTime()
+        : (audioElement?.currentTime ?? 0);
 
       if (nextScheduledBeatRef.current === null) {
         nextScheduledBeatRef.current = getNextMetronomeBoundaryAtAudioTime(midiHeader, audioTimeNow).beatNumber;
@@ -1098,14 +1571,35 @@ function PracticePanel({
     };
 
     const seedSchedulerFromCurrentTime = () => {
-      if (audioElement.seeking) return;
-      nextScheduledBeatRef.current = getNextMetronomeBoundaryAtAudioTime(midiHeader, audioElement.currentTime).beatNumber;
+      if (!practiceTransportEnabled && audioElement?.seeking) return;
+      const actualTime = practiceTransportEnabled
+        ? getPracticeTransportTime()
+        : (audioElement?.currentTime ?? 0);
+      const nearSnappedMeasureStart =
+        practiceSeekDebug.measureStartTime !== null &&
+        practiceSeekDebug.snappedBeatNumber !== null &&
+        Math.abs(actualTime - practiceSeekDebug.measureStartTime) <= 0.08;
+
+      if (nearSnappedMeasureStart) {
+        nextScheduledBeatRef.current = practiceSeekDebug.snappedBeatNumber;
+        firstMetronomeClickTimeRef.current = practiceSeekDebug.measureStartTime;
+        firstMetronomeClickPerfTimeRef.current = null;
+        return;
+      }
+
+      const nextBoundary = getNextMetronomeBoundaryAtAudioTime(midiHeader, actualTime);
+      nextScheduledBeatRef.current = nextBoundary.beatNumber;
+      firstMetronomeClickTimeRef.current = getAudioTimeForPracticeBeat(midiHeader, nextBoundary.beatNumber);
+      firstMetronomeClickPerfTimeRef.current = null;
     };
 
     const restartSchedulerFromCurrentTime = () => {
       clearMetronomeScheduler();
       clearScheduledMetronomeNodes();
-      if (!metronomeOn || audioElement.paused) return;
+      const transportPlaying = practiceTransportEnabled
+        ? practiceTransportRef.current.isPlaying
+        : !audioElement?.paused;
+      if (!metronomeOn || !transportPlaying) return;
       seedSchedulerFromCurrentTime();
       runScheduler();
       metronomeTimerRef.current = setInterval(runScheduler, schedulerIntervalMs);
@@ -1124,42 +1618,75 @@ function PracticePanel({
       restartSchedulerFromCurrentTime();
     };
 
-    audioElement.addEventListener('seeking', handleSeeking);
-    audioElement.addEventListener('seeked', handleSeeked);
-    audioElement.addEventListener('play', handlePlay);
+    if (!practiceTransportEnabled && audioElement) {
+      audioElement.addEventListener('seeking', handleSeeking);
+      audioElement.addEventListener('seeked', handleSeeked);
+      audioElement.addEventListener('play', handlePlay);
+    }
 
     seedSchedulerFromCurrentTime();
     runScheduler();
     metronomeTimerRef.current = setInterval(runScheduler, schedulerIntervalMs);
 
     return () => {
-      audioElement.removeEventListener('seeking', handleSeeking);
-      audioElement.removeEventListener('seeked', handleSeeked);
-      audioElement.removeEventListener('play', handlePlay);
+      if (!practiceTransportEnabled && audioElement) {
+        audioElement.removeEventListener('seeking', handleSeeking);
+        audioElement.removeEventListener('seeked', handleSeeked);
+        audioElement.removeEventListener('play', handlePlay);
+      }
       clearMetronomeScheduler();
       clearScheduledMetronomeNodes();
     };
-  }, [midiHeader, metronomeOn, metronomeVol, isPlaying, playbackRate, currentTrack.id, loopM1, loopM2]);
+  }, [getPracticeTransportTime, midiHeader, metronomeOn, metronomeVol, isPlaying, playbackRate, currentTrack.id, loopM1, loopM2, practiceSeekDebug.measureStartTime, practiceSeekDebug.snappedBeatNumber, practiceTransportEnabled]);
 
   // When loop is fully established, immediately seek audio to M1 and exit select mode
   React.useEffect(() => {
     if (loopM1 === null || loopM2 === null) return;
     // Auto-exit selection mode when loop is complete
     setIsLoopSelectMode(false);
-    const audio = document.querySelector('audio') as HTMLAudioElement | null;
-    if (!audio || !midiHeader) return;
+    if (!midiHeader) return;
     const beatsPerM = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
     const tickForMeasure = (idx: number) => {
-      const targetTick = idx * beatsPerM * midiHeader.ppq;
+      const targetTick = (idx + leadInMeasures) * beatsPerM * midiHeader.ppq;
       let act = midiHeader.tempos[0];
       for (let i = midiHeader.tempos.length - 1; i >= 0; i--) {
         if (targetTick >= midiHeader.tempos[i].ticks) { act = midiHeader.tempos[i]; break; }
       }
       return act.time + ((targetTick - act.ticks) / midiHeader.ppq) / (act.bpm / 60);
     };
-    // Always seek to loop start when loop is set
-    audio.currentTime = snapAudioTimeToNearestBeat(tickForMeasure(loopM1), midiHeader).snappedTime;
-  }, [loopM1, loopM2]);
+    // Always stop, align to measure start, then restart from loop start
+    setIsPlaying(false);
+    if (practiceTransportEnabled) {
+      const loopStartTime = tickForMeasure(loopM1);
+      practiceTransportRef.current.currentTime = loopStartTime;
+      practiceTransportRef.current.startedAtTime = loopStartTime;
+      practiceTransportRef.current.startedAtPerf = performance.now();
+      practiceTransportRef.current.isPlaying = false;
+      setCurrentTime(loopStartTime);
+      setPracticeSeekDebug(prev => ({
+        ...prev,
+        targetTime: loopStartTime,
+        snappedTime: loopStartTime,
+        measureStartTime: loopStartTime,
+        snappedMeasure: loopM1 + 1,
+        actualTime: loopStartTime,
+        targetDelta: 0,
+        actualDelta: 0,
+      }));
+      return;
+    }
+    const audio = document.querySelector('audio') as HTMLAudioElement | null;
+    if (!audio) return;
+    performPracticeMeasureSeek({
+      audio,
+      targetTime: tickForMeasure(loopM1),
+      header: midiHeader,
+      setPracticeSeekDebug,
+      onPracticeSnap,
+      snapMessage: t.common.measureSnapped,
+      alwaysResume: false,
+    });
+  }, [loopM1, loopM2, midiHeader, leadInMeasures, onPracticeSnap, practiceTransportEnabled, setCurrentTime, setIsPlaying, setPracticeSeekDebug, t.common.measureSnapped]);
 
   // Clear loop when track changes
   useEffect(() => {
@@ -1205,19 +1732,8 @@ function PracticePanel({
         setLoopM2(Math.max(loopM1, clickedMIdx));
       }
     } else {
-      // Normal mode: click measure = seek audio to that measure and play
-      const beatsPerM = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-      const targetTick = clickedMIdx * beatsPerM * midiHeader.ppq;
-      let act = midiHeader.tempos[0];
-      for (let i = midiHeader.tempos.length - 1; i >= 0; i--) {
-        if (targetTick >= midiHeader.tempos[i].ticks) { act = midiHeader.tempos[i]; break; }
-      }
-      const seekSecs = act.time + ((targetTick - act.ticks) / midiHeader.ppq) / (act.bpm / 60);
-      const audio = document.querySelector('audio') as HTMLAudioElement | null;
-      if (audio) {
-        audio.currentTime = snapAudioTimeToNearestBeat(seekSecs, midiHeader).snappedTime;
-        if (audio.paused) audio.play().catch(() => { });
-      }
+      // Practice mode: jump to measure, stop, wait for manual play
+      jumpToDisplayMeasure(clickedMIdx + 1);
     }
   };
 
@@ -1225,6 +1741,165 @@ function PracticePanel({
   React.useEffect(() => {
     currentTimeRef.current = currentTime;
   }, [currentTime]);
+
+  React.useEffect(() => {
+    practiceTransportRef.current.duration = practiceTrackDuration;
+    practiceTransportRef.current.playbackRate = playbackRate;
+    if (practiceTransportEnabled) {
+      setDuration(practiceTrackDuration);
+      setCurrentTime(practiceTransportRef.current.currentTime);
+    }
+  }, [practiceTrackDuration, playbackRate, practiceTransportEnabled, setCurrentTime, setDuration]);
+
+  React.useEffect(() => {
+    if (!practiceTransportEnabled) {
+      stopPracticeTransportFrame();
+      return;
+    }
+
+    if (isPlaying) {
+      practiceTransportRef.current.isPlaying = true;
+      practiceTransportRef.current.startedAtTime = practiceTransportRef.current.currentTime;
+      practiceTransportRef.current.startedAtPerf = performance.now();
+      practiceTransportRef.current.playbackRate = playbackRate;
+      syncPracticeTransportFrame();
+      return;
+    }
+
+    practiceTransportRef.current.currentTime = getPracticeTransportTime();
+    practiceTransportRef.current.isPlaying = false;
+    stopPracticeTransportFrame();
+    setCurrentTime(practiceTransportRef.current.currentTime);
+  }, [getPracticeTransportTime, isPlaying, playbackRate, practiceTransportEnabled, setCurrentTime, stopPracticeTransportFrame, syncPracticeTransportFrame]);
+
+  React.useEffect(() => {
+    practiceTransportRef.current.currentTime = 0;
+    practiceTransportRef.current.startedAtTime = 0;
+    practiceTransportRef.current.startedAtPerf = performance.now();
+    practiceTransportRef.current.isPlaying = false;
+    if (practiceTransportEnabled) {
+      setCurrentTime(0);
+      setDuration(practiceTrackDuration);
+    }
+  }, [currentTrack.id, practiceTrackDuration, practiceTransportEnabled, setCurrentTime, setDuration]);
+
+  React.useEffect(() => {
+    const clearMidiScheduler = () => {
+      if (midiPlaybackTimerRef.current) {
+        clearInterval(midiPlaybackTimerRef.current);
+        midiPlaybackTimerRef.current = null;
+      }
+      nextMidiNoteIndexRef.current = 0;
+      const ctx = audioCtxRef.current;
+      const now = ctx?.currentTime ?? 0;
+      scheduledMidiNodesRef.current.forEach(({ stop, disconnect, when }) => {
+        try {
+          if (!ctx || when >= now - 0.02) {
+            stop(now + 0.012);
+          }
+        } catch (_) { }
+        try { disconnect(); } catch (_) { }
+      });
+      scheduledMidiNodesRef.current = [];
+    };
+
+    if (!practiceTransportEnabled || !midiNotes.length || !isPlaying) {
+      clearMidiScheduler();
+      return;
+    }
+
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    const ctx = audioCtxRef.current;
+    if (ctx.state === 'suspended') {
+      void ctx.resume();
+    }
+
+    const lookAheadSecs = 0.12;
+    const schedulerIntervalMs = 25;
+
+    const scheduleMidiNote = (note: any, when: number, durationSecs: number) => {
+      const velocityGain = note.hand === 'left' ? 0.16 : 0.2;
+      const voice = createPianoLikeVoice(ctx, midiToFrequency(note.midi ?? 60), when, durationSecs, velocityGain);
+      const stopAt = when + Math.max(0.05, durationSecs + 0.03);
+      const scheduledNode = {
+        when,
+        stopAt,
+        stop: (stopTime: number) => {
+          voice.masterGain.gain.cancelScheduledValues(stopTime);
+          voice.masterGain.gain.setValueAtTime(Math.max(voice.masterGain.gain.value, 0.0001), stopTime);
+          voice.masterGain.gain.exponentialRampToValueAtTime(0.0001, stopTime + 0.01);
+          try {
+            voice.noise.stop(stopTime + 0.008);
+          } catch (_) { }
+          voice.oscillators.forEach(({ osc }) => {
+            try { osc.stop(stopTime + 0.012); } catch (_) { }
+          });
+        },
+        disconnect: () => {
+          try { voice.noise.disconnect(); } catch (_) { }
+          try { voice.noiseFilter.disconnect(); } catch (_) { }
+          try { voice.noiseGain.disconnect(); } catch (_) { }
+          voice.oscillators.forEach(({ osc, gain }) => {
+            try { osc.disconnect(); } catch (_) { }
+            try { gain.disconnect(); } catch (_) { }
+          });
+          try { voice.highpass.disconnect(); } catch (_) { }
+          try { voice.lowpass.disconnect(); } catch (_) { }
+          try { voice.masterGain.disconnect(); } catch (_) { }
+        }
+      };
+      scheduledMidiNodesRef.current.push(scheduledNode);
+      voice.oscillators[0].osc.onended = () => {
+        scheduledMidiNodesRef.current = scheduledMidiNodesRef.current.filter(node => node !== scheduledNode);
+        scheduledNode.disconnect();
+      };
+      voice.noise.start(when);
+      voice.noise.stop(when + 0.03);
+      voice.oscillators.forEach(({ osc }) => {
+        osc.start(when);
+        osc.stop(stopAt);
+      });
+    };
+
+    const seedNoteIndex = () => {
+      const timeNow = getPracticeTransportTime();
+      const idx = midiNotes.findIndex(note => (note.time + Math.max(0.05, note.duration)) >= timeNow);
+      nextMidiNoteIndexRef.current = idx === -1 ? midiNotes.length : idx;
+    };
+
+    const runScheduler = () => {
+      if (!practiceTransportRef.current.isPlaying) {
+        clearMidiScheduler();
+        return;
+      }
+
+      const transportTimeNow = getPracticeTransportTime();
+      const playbackRateSafe = Math.max(0.1, practiceTransportRef.current.playbackRate || playbackRate || 1);
+      const horizon = transportTimeNow + lookAheadSecs * playbackRateSafe;
+
+      while (nextMidiNoteIndexRef.current < midiNotes.length) {
+        const note = midiNotes[nextMidiNoteIndexRef.current];
+        const noteEnd = note.time + Math.max(0.05, note.duration);
+        if (note.time > horizon) break;
+
+        const hasStarted = note.time < transportTimeNow;
+        const remainingDuration = hasStarted ? Math.max(0.03, noteEnd - transportTimeNow) : Math.max(0.03, note.duration);
+        const delaySecs = hasStarted ? 0 : Math.max(0, (note.time - transportTimeNow) / playbackRateSafe);
+        scheduleMidiNote(note, ctx.currentTime + delaySecs, remainingDuration / playbackRateSafe);
+        nextMidiNoteIndexRef.current += 1;
+      }
+    };
+
+    seedNoteIndex();
+    runScheduler();
+    midiPlaybackTimerRef.current = setInterval(runScheduler, schedulerIntervalMs);
+
+    return () => {
+      clearMidiScheduler();
+    };
+  }, [getPracticeTransportTime, isPlaying, midiNotes, playbackRate, practiceTransportEnabled]);
 
   // Load MIDI Notes and Time Map
   React.useEffect(() => {
@@ -1261,6 +1936,7 @@ function PracticePanel({
           track.notes.forEach(note => {
             notes.push({
               name: note.name, // e.g., "C4", "F#4"
+              midi: note.midi,
               time: note.time,
               duration: note.duration,
               ticks: note.ticks,
@@ -1338,12 +2014,12 @@ function PracticePanel({
     if (isLoading || !osmdRef.current) return;
 
     // Performance Pass: Single query for isolated elements
-    const audioElement = document.querySelector('audio');
-    if (!audioElement) return;
+    const audioElement = document.querySelector('audio') as HTMLAudioElement | null;
+    if (!audioElement && !practiceTransportEnabled) return;
 
-    // Performance Pass: Precaching 88 keys to bypass querySelector in 60fps loop
     const keyNodes = new Map<string, { el: HTMLElement, span: HTMLElement | null }>();
-    whiteKeys.forEach(n => {
+    if (keyboardFxEnabled) {
+      whiteKeys.forEach(n => {
       const wKey = document.querySelector(`[data-note="${n}"]`) as HTMLElement;
       if (wKey) {
         keyNodes.set(n, { el: wKey, span: wKey.querySelector('span') as HTMLElement });
@@ -1361,7 +2037,8 @@ function PracticePanel({
       if (bKey2) {
         keyNodes.set(flat, { el: bKey2, span: bKey2.querySelector('span') as HTMLElement });
       }
-    });
+      });
+    }
 
     let animationId: number;
     let smoothedY = 0; // GPU lerp state for vertical scrolling
@@ -1418,7 +2095,7 @@ function PracticePanel({
       }
 
       // Bypass React's 4fps onTimeUpdate throttle for true 60fps audio sync precision
-      const timeSecs = audioElement.currentTime;
+      const timeSecs = practiceTransportEnabled ? getPracticeTransportTime() : (audioElement?.currentTime ?? 0);
 
       // Calculate delta to handle seeks cleanly
       if (Math.abs(timeSecs - lastTimeSecs) > 1.0) {
@@ -1433,7 +2110,7 @@ function PracticePanel({
         const osmd = osmdRef.current;
         if (!osmd?.GraphicSheet?.MeasureList) return 0;
         const list = osmd.GraphicSheet.MeasureList;
-        if (osmdMIdx >= list.length) return audioElement.duration || 9999;
+        if (osmdMIdx >= list.length) return (practiceTransportEnabled ? practiceTrackDuration : (audioElement?.duration || 9999));
         if (osmdMIdx < 0) return 0;
 
         // Try to find the first MIDI note that visually belongs at or after this measure's x position
@@ -1448,7 +2125,7 @@ function PracticePanel({
         // xFraction (via tick->measureBeat) maps to >= osmdMIdx.
         // Since we already have the PPQ-based measureIndex in tick(), derive beatsPerMeasure.
         const beatsPerMeasure = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-        const targetTick = osmdMIdx * beatsPerMeasure * midiHeader.ppq;
+        const targetTick = (osmdMIdx + leadInMeasures) * beatsPerMeasure * midiHeader.ppq;
 
         // Find active tempo at this tick
         let active = midiHeader.tempos[0];
@@ -1462,13 +2139,34 @@ function PracticePanel({
       };
 
       // Enforce loop boundary: if playing and current time is BEFORE loop start, seek to start
-      if (loopRef.current.M1 !== null && loopRef.current.M2 !== null && !audioElement.paused) {
+      const practicePlaying = practiceTransportEnabled ? practiceTransportRef.current.isPlaying : !audioElement?.paused;
+      if (loopRef.current.M1 !== null && loopRef.current.M2 !== null && practicePlaying) {
         const mEndSecs = getSecsForMeasureOsmd(loopRef.current.M2 + 1);
         const mStartSecs = getSecsForMeasureOsmd(loopRef.current.M1);
         if (timeSecs >= mEndSecs || timeSecs < mStartSecs) {
-          const snappedLoopStart = snapAudioTimeToNearestBeat(mStartSecs, midiHeader).snappedTime;
-          audioElement.currentTime = snappedLoopStart;
-          lastTimeSecs = snappedLoopStart;
+          setIsPlaying(false);
+          if (practiceTransportEnabled) {
+            const snappedLoopStart = snapAudioTimeToNearestMeasureStart(mStartSecs, midiHeader).snappedTime;
+            practiceTransportRef.current.currentTime = snappedLoopStart;
+            practiceTransportRef.current.startedAtTime = snappedLoopStart;
+            practiceTransportRef.current.startedAtPerf = performance.now();
+            practiceTransportRef.current.isPlaying = false;
+            setCurrentTime(snappedLoopStart);
+            lastTimeSecs = snappedLoopStart;
+            trackStartIndex = 0;
+            animationId = requestAnimationFrame(tick);
+            return;
+          }
+          performPracticeMeasureSeek({
+            audio: audioElement!,
+            targetTime: mStartSecs,
+            header: midiHeader,
+            setPracticeSeekDebug,
+            onPracticeSnap,
+            snapMessage: t.common.measureSnapped,
+            alwaysResume: false,
+          });
+          lastTimeSecs = snapAudioTimeToNearestMeasureStart(mStartSecs, midiHeader).snappedTime;
           trackStartIndex = 0;
           animationId = requestAnimationFrame(tick);
           return;
@@ -1483,16 +2181,18 @@ function PracticePanel({
       }
 
       const currentActive = [];
-      for (let i = trackStartIndex; i < midiNotes.length; i++) {
-        const n = midiNotes[i];
-        if (n.time > timeSecs + 0.5) break; // Prune future loop evaluation due to ascending sort
+      if (keyboardFxEnabled) {
+        for (let i = trackStartIndex; i < midiNotes.length; i++) {
+          const n = midiNotes[i];
+          if (n.time > timeSecs + 0.5) break; // Prune future loop evaluation due to ascending sort
 
-        const visualEnd = n.time + Math.max(0.1, n.duration);
-        const isCurrentlyActive = timeSecs >= n.time && timeSecs <= visualEnd;
-        const startedJustNow = n.time >= checkStart && n.time <= timeSecs;
+          const visualEnd = n.time + Math.max(0.1, n.duration);
+          const isCurrentlyActive = timeSecs >= n.time && timeSecs <= visualEnd;
+          const startedJustNow = n.time >= checkStart && n.time <= timeSecs;
 
-        if (isCurrentlyActive || startedJustNow) {
-          currentActive.push(n);
+          if (isCurrentlyActive || startedJustNow) {
+            currentActive.push(n);
+          }
         }
       }
 
@@ -1600,27 +2300,9 @@ function PracticePanel({
 
       lastTimeSecs = timeSecs;
 
-      // 2. Map physical seconds to abstract MIDI Ticks exactly via Tempo Curve
-      const tempos = midiHeader.tempos;
-      let activeTempo = tempos[0];
-      for (let i = tempos.length - 1; i >= 0; i--) {
-        if (timeSecs >= tempos[i].time) {
-          activeTempo = tempos[i];
-          break;
-        }
-      }
-      const secondsSinceTempoChange = Math.max(0, timeSecs - activeTempo.time);
-      const beatsElapsed = secondsSinceTempoChange * (activeTempo.bpm / 60);
-      const ticksElapsed = beatsElapsed * midiHeader.ppq;
-      const currentTickOrig = activeTempo.ticks + ticksElapsed;
-      const currentTick = Math.max(0, currentTickOrig);
-      const beatsPerMeasure = midiHeader.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
-
-      // 3. OSMD MeasureList index — use beatsPerMeasure from MIDI time sig
-      const targetFraction = currentTick / (midiHeader.ppq * beatsPerMeasure);
-      const measureIndex = Number.isFinite(targetFraction) ? Math.floor(targetFraction) : 0;
-      currentMeasureIndexRef.current = measureIndex;
-      const measureRatio = Number.isFinite(targetFraction) ? Math.max(0, Math.min(1, targetFraction - measureIndex)) : 0;
+      const musicalPosition = getMusicalPositionAtAudioTimeForHeader(midiHeader, timeSecs, leadInMeasures);
+      const displayedMeasureIndex = Math.max(0, musicalPosition.displayMeasure - 1);
+      currentMeasureIndexRef.current = displayedMeasureIndex;
 
       // 5. Calculate Local X and Y mapping (Lite 2.0: Measure-Level Only)
       let cursorX = 0;
@@ -1630,7 +2312,7 @@ function PracticePanel({
 
       if (osmd.GraphicSheet && osmd.GraphicSheet.MeasureList) {
         const measures = osmd.GraphicSheet.MeasureList;
-        const localIndex = Math.max(0, measureIndex);
+        const localIndex = displayedMeasureIndex;
 
         const safeIndex = Math.min(localIndex, Math.max(0, measures.length - 1));
         const currentMeasure = measures[safeIndex] ? measures[safeIndex][0] : null;
@@ -1666,7 +2348,7 @@ function PracticePanel({
           scrollContainerRef.current.style.opacity = '1';
 
           // Lite 2.0 Single Line Masking Logic
-          if (diagRef.current.diagMeasure && cursorHeight > 0) {
+          if (!lightweightMode && diagRef.current.diagMeasure && cursorHeight > 0) {
             // Generous margin for extreme high ledger lines and chords way above the staff
             const paddingTop = 75;
             // Buffer to not clip the bass line or pedaling
@@ -1701,10 +2383,24 @@ function PracticePanel({
         const maxScroll = 40;
 
         // Auto Follow Toggle
-        if (diagRef.current.diagMaster && diagRef.current.diagScroll) {
+        if (!lightweightMode && diagRef.current.diagMaster && diagRef.current.diagScroll) {
           scrollContainerRef.current.style.transform = `translateY(${Math.min(maxScroll, smoothedY)}px)`;
         } else {
           scrollContainerRef.current.style.transform = `translateY(0px)`;
+        }
+
+        if (lightweightMode && staffViewportRef.current && cursorHeight > 0) {
+          const shouldFollow =
+            lastAutoScrollMeasureRef.current === null ||
+            lastAutoScrollMeasureRef.current !== displayedMeasureIndex;
+
+          if (shouldFollow) {
+            lastAutoScrollMeasureRef.current = displayedMeasureIndex;
+            const viewport = staffViewportRef.current;
+            const topPadding = Math.max(24, viewport.clientHeight * 0.16);
+            const targetTop = Math.max(0, cursorY - topPadding);
+            viewport.scrollTo({ top: targetTop, behavior: 'auto' });
+          }
         }
 
         // Measure-based Loop Block Rendering (no vertical bars; only fill blocks)
@@ -1768,7 +2464,14 @@ function PracticePanel({
 
     tick();
     return () => cancelAnimationFrame(animationId);
-  }, [isLoading, midiNotes, midiHeader]);
+  }, [getPracticeTransportTime, isLoading, midiNotes, midiHeader, leadInMeasures, practiceTrackDuration, practiceTransportEnabled, setCurrentTime, setIsPlaying, setPracticeSeekDebug, onPracticeSnap, t.common.measureSnapped, lightweightMode]);
+
+  React.useEffect(() => {
+    lastAutoScrollMeasureRef.current = null;
+    if (lightweightMode && staffViewportRef.current) {
+      staffViewportRef.current.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  }, [currentTrack.id, lightweightMode]);
 
   // 88 keys: A0 to C8
   const whiteKeys = [
@@ -1789,8 +2492,8 @@ function PracticePanel({
   };
 
   return (
-    <div className="fixed bottom-24 left-0 right-0 h-[65vh] z-40 animate-in slide-in-from-bottom duration-500">
-      <div className="w-full h-full glass-effect border-t border-white/40 flex flex-col rounded-t-[40px] shadow-2xl overflow-hidden bg-[var(--color-mist-bg)] relative">
+    <div className={`fixed bottom-24 left-0 right-0 h-[65vh] z-40 ${lightweightMode ? '' : 'animate-in slide-in-from-bottom duration-500'}`}>
+      <div className={`${lightweightMode ? 'w-full h-full border-t border-white/20 flex flex-col rounded-t-[28px] overflow-hidden bg-[rgba(247,242,235,0.96)] relative' : 'w-full h-full glass-effect border-t border-white/40 flex flex-col rounded-t-[40px] shadow-2xl overflow-hidden bg-[var(--color-mist-bg)] relative'}`}>
 
         {/* PREMIUM STATIC OVERLAY */}
         {!isPremium && (
@@ -1798,11 +2501,11 @@ function PracticePanel({
             onClick={(e) => {
               if (e.target === e.currentTarget) onClose();
             }}
-            className="absolute inset-0 z-[60] bg-black/40 backdrop-blur-[6px] flex flex-col items-center justify-center pointer-events-auto cursor-pointer animate-in fade-in duration-500"
+            className={`absolute inset-0 z-[60] flex flex-col items-center justify-center pointer-events-auto cursor-pointer ${lightweightMode ? 'bg-black/55' : 'bg-black/40 backdrop-blur-[6px] animate-in fade-in duration-500'}`}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="glass-panel p-12 max-w-lg w-[90%] flex flex-col items-center text-center gap-8 border border-white/20 shadow-[0_32px_80px_rgba(0,0,0,0.6)] bg-white/10 cursor-default relative overflow-hidden group rounded-[48px]"
+              className={`${lightweightMode ? 'p-10 max-w-lg w-[90%] flex flex-col items-center text-center gap-8 border border-white/20 bg-[rgba(35,27,22,0.9)] cursor-default relative overflow-hidden rounded-[32px]' : 'glass-panel p-12 max-w-lg w-[90%] flex flex-col items-center text-center gap-8 border border-white/20 shadow-[0_32px_80px_rgba(0,0,0,0.6)] bg-white/10 cursor-default relative overflow-hidden group rounded-[48px]'}`}
             >
               <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
 
@@ -1839,31 +2542,46 @@ function PracticePanel({
         )}
 
 	        {/* 1) Staff Section (65% height to securely fit large Grand Staff layout without clipping) */}
-	        <div className="h-[65%] relative flex flex-col justify-start overflow-hidden w-full bg-[#f8f6f0] shadow-inner">
-	          {showPracticeDebug && (
+	        <div
+            ref={staffViewportRef}
+            className={`h-[65%] relative flex flex-col justify-start w-full bg-[#f8f6f0] shadow-inner ${lightweightMode ? 'overflow-y-auto overflow-x-hidden' : 'overflow-hidden'}`}
+          >
+	          {debugAvailable && showPracticeDebug && (
 	            <div className="absolute top-4 right-4 z-[55] pointer-events-none rounded-2xl border border-black/10 bg-white/80 backdrop-blur-md shadow-lg px-4 py-3 min-w-[260px] text-[11px] leading-5 font-mono text-[#3f3428]">
 	              <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7b6a58] mb-2">Practice Debug</div>
 	              <div>audio.currentTime: {practiceDebug.audioCurrentTime.toFixed(3)}</div>
 	              <div>absoluteTick: {practiceDebug.absoluteTick.toFixed(2)}</div>
 	              <div>normalizedTick: {practiceDebug.normalizedTick.toFixed(2)}</div>
-	              <div>measure: {practiceDebug.measure}</div>
+	              <div>internalMeasure: {practiceDebug.internalMeasure}</div>
+	              <div>displayMeasure: {practiceDebug.displayMeasure}</div>
 	              <div>beatInMeasure: {practiceDebug.beatInMeasure}</div>
+	              <div>tickInMeasure: {practiceDebug.tickInMeasure.toFixed(2)}</div>
 	              <div>beatOffset: {practiceDebug.beatOffset.toFixed(4)}</div>
 	              <div>next click beat#: {practiceDebug.nextScheduledBeatNumber ?? '-'}</div>
-	              <div>next click measure/beat: {practiceDebug.nextScheduledMeasure ?? '-'} / {practiceDebug.nextScheduledBeatInMeasure ?? '-'}</div>
+	              <div>next click measure/beat: {formatDisplayedMeasure(practiceDebug.nextScheduledMeasure)} / {practiceDebug.nextScheduledBeatInMeasure ?? '-'}</div>
 	              <div>next click accent: {practiceDebug.nextScheduledAccent ?? '-'}</div>
 	              <div>targetTime: {practiceSeekDebug.targetTime !== null ? practiceSeekDebug.targetTime.toFixed(3) : '-'}</div>
 	              <div>snappedTime: {practiceSeekDebug.snappedTime !== null ? practiceSeekDebug.snappedTime.toFixed(3) : '-'}</div>
+	              <div>snappedMeasure: {formatDisplayedMeasure(practiceSeekDebug.snappedMeasure)}</div>
+	              <div>measureStartTime: {practiceSeekDebug.measureStartTime !== null ? practiceSeekDebug.measureStartTime.toFixed(3) : '-'}</div>
 	              <div>actualSeekTime: {practiceSeekDebug.actualTime !== null ? practiceSeekDebug.actualTime.toFixed(3) : '-'}</div>
 	              <div>target-snap diff: {practiceSeekDebug.targetDelta !== null ? practiceSeekDebug.targetDelta.toFixed(3) : '-'}</div>
 	              <div>snap-actual diff: {practiceSeekDebug.actualDelta !== null ? practiceSeekDebug.actualDelta.toFixed(3) : '-'}</div>
+	              <div>seekedEventTime: {practiceSeekDebug.seekedEventTime !== null ? practiceSeekDebug.seekedEventTime.toFixed(1) : '-'}</div>
+	              <div>playCallTime: {practiceSeekDebug.playCallTime !== null ? practiceSeekDebug.playCallTime.toFixed(1) : '-'}</div>
+	              <div>playEventTime: {practiceSeekDebug.playEventTime !== null ? practiceSeekDebug.playEventTime.toFixed(1) : '-'}</div>
+	              <div>audioResumeTime: {practiceDebug.audioResumeTime !== null ? practiceDebug.audioResumeTime.toFixed(1) : '-'}</div>
+	              <div>firstMetronomeClickTime: {practiceDebug.firstMetronomeClickTime !== null ? practiceDebug.firstMetronomeClickTime.toFixed(3) : '-'}</div>
+	              <div>firstMetronomeClickPerf: {practiceDebug.firstMetronomeClickPerfTime !== null ? practiceDebug.firstMetronomeClickPerfTime.toFixed(1) : '-'}</div>
+	              <div>click-start diff ms: {practiceDebug.firstMetronomeClickDeltaMs !== null ? practiceDebug.firstMetronomeClickDeltaMs.toFixed(1) : '-'}</div>
+	              <div>audio-metronome diff ms: {practiceDebug.audioMetronomeDiffMs !== null ? practiceDebug.audioMetronomeDiffMs.toFixed(1) : '-'}</div>
 	              <div>beat origin tick: {practiceDebug.beatOriginTick}</div>
 	              <div>audio seeking: {practiceDebug.isSeeking ? 'true' : 'false'}</div>
 	            </div>
 	          )}
 	
-	          <div className="absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-4">
-            <div ref={scrollContainerRef} className="relative w-full px-[5vw] transition-none origin-top">
+	          <div className={`${lightweightMode ? 'relative w-full flex flex-col items-start pt-4 pb-10' : 'absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-4'}`}>
+            <div ref={scrollContainerRef} className={`relative w-full px-[5vw] transition-none origin-top ${lightweightMode ? 'min-h-max' : ''}`}>
               <div
                 ref={containerRef}
                 className={`w-full opacity-90 mix-blend-multiply cursor-pointer`}
@@ -1903,8 +2621,8 @@ function PracticePanel({
 
 
           {/* Top/bottom gradient overlays to make the paper roll look elegant */}
-          <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-black/20 to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/20 to-transparent z-10 pointer-events-none"></div>
+          {!lightweightMode && <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-black/20 to-transparent z-10 pointer-events-none"></div>}
+          {!lightweightMode && <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/20 to-transparent z-10 pointer-events-none"></div>}
         </div>
 
         {/* 2) 88-Key Piano Keyboard (25% height) */}
@@ -1949,6 +2667,63 @@ function PracticePanel({
               <Piano className="w-3.5 h-3.5 text-amber-500/80" />
               {t.player.practice}
             </span>
+
+            <div className="w-px h-6 bg-white/10 mx-1 hidden md:block"></div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {debugAvailable && (
+                <button
+                  onClick={() => setUseMidiPracticeAudio(v => !v)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${useMidiPracticeAudio ? 'bg-amber-500/20 text-amber-300' : 'text-white/45 hover:text-white/80'}`}
+                >
+                  MIDI Audio
+                </button>
+              )}
+              <button
+                onClick={() => setKeyboardFxEnabled(v => !v)}
+                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${keyboardFxEnabled ? 'bg-white/18 text-white' : 'text-white/45 hover:text-white/80'}`}
+              >
+                键盘高亮
+              </button>
+              {debugAvailable && (
+                <button
+                  onClick={() => setShowPracticeDebug(v => !v)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${showPracticeDebug ? 'bg-white/18 text-white' : 'text-white/45 hover:text-white/80'}`}
+                >
+                  Debug
+                </button>
+              )}
+            </div>
+
+            <div className="w-px h-6 bg-white/10 mx-1 hidden md:block"></div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const parsed = parseInt(measureJumpValue, 10);
+                if (!Number.isFinite(parsed) || parsed < 1) return;
+                jumpToDisplayMeasure(parsed);
+              }}
+              className="flex items-center gap-2 shrink-0"
+            >
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 hidden md:inline">
+                小节跳转
+              </span>
+              <input
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={measureJumpValue}
+                onChange={(e) => setMeasureJumpValue(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="20"
+                className="w-16 rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] font-semibold text-white outline-none placeholder:text-white/25"
+              />
+              <button
+                type="submit"
+                className="px-3 py-1 rounded-full text-[10px] font-bold transition-all bg-white/10 text-white/75 hover:bg-white/18"
+              >
+                跳转
+              </button>
+            </form>
 
             <div className="w-px h-6 bg-white/10 mx-1 hidden md:block"></div>
 
@@ -2241,6 +3016,8 @@ function BottomPlayer({
   currentLang,
   setShowSheetOptions,
   setPracticeSeekDebug,
+  onPracticeSnap,
+  useMidiPracticeAudio,
   t
 }: {
   currentTrack: Track,
@@ -2258,8 +3035,11 @@ function BottomPlayer({
   currentLang: string,
   setShowSheetOptions: (v: boolean) => void,
   setPracticeSeekDebug: (v: PracticeSeekDebug) => void,
+  onPracticeSnap: (message: string) => void,
+  useMidiPracticeAudio: boolean,
   t: any
 }) {
+  const compactPracticeMode = showPracticePanel;
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [playbackMode, setPlaybackMode] = useState<'repeat' | 'shuffle'>('repeat');
   const [smartRadioActive, setSmartRadioActive] = useState(false);
@@ -2272,9 +3052,30 @@ function BottomPlayer({
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const progressBarRef = React.useRef<HTMLDivElement>(null);
   const isScrubbingRef = React.useRef(false);
-  const pendingSeekDebugRef = React.useRef<{ targetTime: number | null; snappedTime: number | null }>({
+  const scrubClientXRef = React.useRef<number | null>(null);
+  const pendingSeekDebugRef = React.useRef<{
+    targetTime: number | null;
+    snappedTime: number | null;
+    snappedMeasure: number | null;
+    snappedBeatNumber: number | null;
+    measureStartTime: number | null;
+  }>({
     targetTime: null,
     snappedTime: null,
+    snappedMeasure: null,
+    snappedBeatNumber: null,
+    measureStartTime: null,
+  });
+  const practicePlaybackTimingRef = React.useRef<{
+    seekedEventTime: number | null;
+    playCallTime: number | null;
+    playEventTime: number | null;
+    playingEventTime: number | null;
+  }>({
+    seekedEventTime: null,
+    playCallTime: null,
+    playEventTime: null,
+    playingEventTime: null,
   });
 
   const speeds = [0.5, 0.75, 1, 1.25, 1.5];
@@ -2295,13 +3096,18 @@ function BottomPlayer({
 
   React.useEffect(() => {
     if (audioRef.current) {
+      if (showPracticePanel && useMidiPracticeAudio) {
+        audioRef.current.pause();
+        return;
+      }
       if (isPlaying) {
+        practicePlaybackTimingRef.current.playCallTime = performance.now();
         audioRef.current.play().catch(e => console.error("Playback failed", e));
       } else {
         audioRef.current.pause();
       }
     }
-  }, [isPlaying, currentTrack.audioUrl]);
+  }, [isPlaying, currentTrack.audioUrl, showPracticePanel, useMidiPracticeAudio]);
 
   React.useEffect(() => {
     if (audioRef.current) {
@@ -2352,27 +3158,30 @@ function BottomPlayer({
   const applySeek = (targetTime: number) => {
     if (!audioRef.current) return;
     if (showPracticePanel) {
-      const { snappedTime } = snapAudioTimeToNearestBeat(targetTime, practiceMidiHeader);
-      pendingSeekDebugRef.current = { targetTime, snappedTime };
-      setPracticeSeekDebug({
-        targetTime,
-        snappedTime,
-        actualTime: snappedTime,
-        targetDelta: snappedTime - targetTime,
-        actualDelta: 0,
-      });
-      audioRef.current.currentTime = snappedTime;
-      setCurrentTime(snappedTime);
+      onPracticeSnap(t.common.practiceMeasureOnly);
       return;
     }
 
-    pendingSeekDebugRef.current = { targetTime, snappedTime: targetTime };
+    pendingSeekDebugRef.current = {
+      targetTime,
+      snappedTime: targetTime,
+      snappedMeasure: null,
+      snappedBeatNumber: null,
+      measureStartTime: null,
+    };
     setPracticeSeekDebug({
       targetTime,
       snappedTime: targetTime,
+      snappedMeasure: null,
+      snappedBeatNumber: null,
+      measureStartTime: null,
       actualTime: targetTime,
       targetDelta: 0,
       actualDelta: 0,
+      seekedEventTime: practicePlaybackTimingRef.current.seekedEventTime,
+      playCallTime: practicePlaybackTimingRef.current.playCallTime,
+      playEventTime: practicePlaybackTimingRef.current.playEventTime,
+      playingEventTime: practicePlaybackTimingRef.current.playingEventTime,
     });
     audioRef.current.currentTime = targetTime;
     setCurrentTime(targetTime);
@@ -2389,7 +3198,12 @@ function BottomPlayer({
 
   const handleProgressPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!audioRef.current) return;
+    if (showPracticePanel) {
+      onPracticeSnap(t.common.practiceMeasureOnly);
+      return;
+    }
     isScrubbingRef.current = true;
+    scrubClientXRef.current = e.clientX;
     e.currentTarget.setPointerCapture?.(e.pointerId);
     seekFromClientX(e.clientX);
   };
@@ -2397,11 +3211,13 @@ function BottomPlayer({
   React.useEffect(() => {
     const handlePointerMove = (e: PointerEvent) => {
       if (!isScrubbingRef.current) return;
+      scrubClientXRef.current = e.clientX;
       seekFromClientX(e.clientX);
     };
 
     const handlePointerUp = () => {
       isScrubbingRef.current = false;
+      scrubClientXRef.current = null;
     };
 
     window.addEventListener('pointermove', handlePointerMove);
@@ -2419,21 +3235,57 @@ function BottomPlayer({
     if (!audio) return;
 
     const handleSeeked = () => {
-      const { targetTime, snappedTime } = pendingSeekDebugRef.current;
+      const { targetTime, snappedTime, snappedMeasure, snappedBeatNumber, measureStartTime } = pendingSeekDebugRef.current;
+      if (targetTime === null && snappedTime === null) return;
       const actualTime = audio.currentTime;
+      practicePlaybackTimingRef.current.seekedEventTime = performance.now();
       setPracticeSeekDebug({
         targetTime,
         snappedTime,
+        snappedMeasure,
+        snappedBeatNumber,
+        measureStartTime,
         actualTime,
         targetDelta: targetTime !== null && snappedTime !== null ? snappedTime - targetTime : null,
         actualDelta: snappedTime !== null ? actualTime - snappedTime : null,
+        seekedEventTime: practicePlaybackTimingRef.current.seekedEventTime,
+        playCallTime: practicePlaybackTimingRef.current.playCallTime,
+        playEventTime: practicePlaybackTimingRef.current.playEventTime,
+        playingEventTime: practicePlaybackTimingRef.current.playingEventTime,
       });
+      pendingSeekDebugRef.current = {
+        targetTime: null,
+        snappedTime: null,
+        snappedMeasure: null,
+        snappedBeatNumber: null,
+        measureStartTime: null,
+      };
       setCurrentTime(actualTime);
     };
 
+    const handlePlayEvent = () => {
+      practicePlaybackTimingRef.current.playEventTime = performance.now();
+      setPracticeSeekDebug(prev => ({
+        ...prev,
+        playEventTime: practicePlaybackTimingRef.current.playEventTime,
+      }));
+    };
+
+    const handlePlayingEvent = () => {
+      practicePlaybackTimingRef.current.playingEventTime = performance.now();
+      setPracticeSeekDebug(prev => ({
+        ...prev,
+        playingEventTime: practicePlaybackTimingRef.current.playingEventTime,
+      }));
+    };
+
     audio.addEventListener('seeked', handleSeeked);
+    audio.addEventListener('play', handlePlayEvent);
+    audio.addEventListener('playing', handlePlayingEvent);
     return () => {
       audio.removeEventListener('seeked', handleSeeked);
+      audio.removeEventListener('play', handlePlayEvent);
+      audio.removeEventListener('playing', handlePlayingEvent);
     };
   }, [setCurrentTime, setPracticeSeekDebug]);
 
@@ -2503,71 +3355,79 @@ function BottomPlayer({
         )}
       </AnimatePresence>
 
-      <div className="player-bar p-4 flex items-center gap-6 w-full px-6 md:px-12 h-24">
-        <div className="flex items-center gap-4 w-1/4 min-w-[200px]">
+      <div className={`player-bar ${compactPracticeMode ? 'px-4 md:px-6 h-20 gap-4' : 'p-4 px-6 md:px-12 h-24 gap-6'} flex items-center w-full`}>
+        <div className={`${compactPracticeMode ? 'flex items-center gap-3 w-auto min-w-0 max-w-[32%]' : 'flex items-center gap-4 w-1/4 min-w-[200px]'}`}>
           <img
             src={(currentTrack.metadataStatus === 'approved' && currentTrack.sourceCoverUrl) ? currentTrack.sourceCoverUrl : (currentTrack.coverUrl || 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=200&auto=format&fit=crop')}
             alt="Album Art"
-            className="w-14 h-14 rounded-lg object-cover shadow-md"
+            className={`${compactPracticeMode ? 'w-11 h-11 rounded-md object-cover' : 'w-14 h-14 rounded-lg object-cover shadow-md'}`}
             referrerPolicy="no-referrer"
           />
           <div className="flex flex-col overflow-hidden">
-            <span className="font-medium text-[var(--color-mist-text)] truncate">{(currentTrack.metadataStatus === 'approved' && currentTrack.sourceSongTitle) ? currentTrack.sourceSongTitle : currentTrack.title}</span>
-            <span className="text-sm text-[var(--color-mist-text)]/60 truncate">{(currentTrack.metadataStatus === 'approved' && currentTrack.sourceArtist) ? currentTrack.sourceArtist : currentTrack.artist}</span>
+            <span className={`font-medium text-[var(--color-mist-text)] truncate ${compactPracticeMode ? 'text-sm' : ''}`}>{(currentTrack.metadataStatus === 'approved' && currentTrack.sourceSongTitle) ? currentTrack.sourceSongTitle : currentTrack.title}</span>
+            <span className={`truncate text-[var(--color-mist-text)]/60 ${compactPracticeMode ? 'text-xs' : 'text-sm'}`}>{(currentTrack.metadataStatus === 'approved' && currentTrack.sourceArtist) ? currentTrack.sourceArtist : currentTrack.artist}</span>
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col items-center gap-2">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => setPlaybackMode(playbackMode === 'repeat' ? 'shuffle' : 'repeat')}
-              className={`transition-all duration-300 flex flex-col items-center gap-0.5 ${playbackMode === 'shuffle' ? 'text-amber-600' : 'text-[var(--color-mist-text)]/60 hover:text-[var(--color-mist-text)]'}`}
-              title={playbackMode === 'repeat' ? "Switch to Shuffle" : "Switch to Repeat"}
-            >
-              {playbackMode === 'repeat' ? <Repeat className="w-4 h-4" /> : <Shuffle className="w-4 h-4" />}
-              <div className={`w-1 h-1 rounded-full bg-current transition-opacity ${playbackMode === 'shuffle' ? 'opacity-100' : 'opacity-0'}`}></div>
-            </button>
+        <div className="flex-1 flex flex-col items-center gap-2 min-w-0">
+          <div className={`flex items-center ${compactPracticeMode ? 'gap-4' : 'gap-6'}`}>
+            {!compactPracticeMode && (
+              <button
+                onClick={() => setPlaybackMode(playbackMode === 'repeat' ? 'shuffle' : 'repeat')}
+                className={`transition-all duration-300 flex flex-col items-center gap-0.5 ${playbackMode === 'shuffle' ? 'text-amber-600' : 'text-[var(--color-mist-text)]/60 hover:text-[var(--color-mist-text)]'}`}
+                title={playbackMode === 'repeat' ? "Switch to Shuffle" : "Switch to Repeat"}
+              >
+                {playbackMode === 'repeat' ? <Repeat className="w-4 h-4" /> : <Shuffle className="w-4 h-4" />}
+                <div className={`w-1 h-1 rounded-full bg-current transition-opacity ${playbackMode === 'shuffle' ? 'opacity-100' : 'opacity-0'}`}></div>
+              </button>
+            )}
 
-            <button className="text-[var(--color-mist-text)]/80 hover:text-[var(--color-mist-text)] transition-colors">
-              <SkipBack className="w-5 h-5 fill-current" />
-            </button>
+            {!compactPracticeMode && (
+              <button className="text-[var(--color-mist-text)]/80 hover:text-[var(--color-mist-text)] transition-colors">
+                <SkipBack className="w-5 h-5 fill-current" />
+              </button>
+            )}
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors text-[var(--color-mist-text)] border border-white/30"
+              className={`${compactPracticeMode ? 'w-11 h-11' : 'w-12 h-12'} rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors text-[var(--color-mist-text)] border border-white/30`}
             >
               {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
             </button>
-            <button className="text-[var(--color-mist-text)]/80 hover:text-[var(--color-mist-text)] transition-colors">
-              <SkipForward className="w-5 h-5 fill-current" />
-            </button>
-
-            <div className="relative flex flex-col items-center">
-              <button
-                onClick={handleSmartRadioClick}
-                className={`transition-all duration-300 flex flex-col items-center gap-0.5 ${isPremium
-                  ? (smartRadioActive ? 'text-amber-600 scale-110' : 'text-[var(--color-mist-text)]/60 hover:text-[var(--color-mist-text)]')
-                  : 'text-[var(--color-mist-text)]/20 hover:text-[var(--color-mist-text)]/40'
-                  }`}
-                title="Smart Radio"
-              >
-                <Radio className="w-4 h-4" />
-                {isPremium && smartRadioActive && (
-                  <div className="w-1 h-1 rounded-full bg-amber-600 animate-pulse"></div>
-                )}
+            {!compactPracticeMode && (
+              <button className="text-[var(--color-mist-text)]/80 hover:text-[var(--color-mist-text)] transition-colors">
+                <SkipForward className="w-5 h-5 fill-current" />
               </button>
-              {isPremium && smartRadioActive && (
-                <span className="absolute -bottom-6 whitespace-nowrap text-[8px] font-bold uppercase tracking-widest text-amber-600/60 animate-in fade-in slide-in-from-top-1 duration-500">
-                  {t.premium.smartRadioTitle}
-                </span>
-              )}
-            </div>
+            )}
+
+            {!compactPracticeMode && (
+              <div className="relative flex flex-col items-center">
+                <button
+                  onClick={handleSmartRadioClick}
+                  className={`transition-all duration-300 flex flex-col items-center gap-0.5 ${isPremium
+                    ? (smartRadioActive ? 'text-amber-600 scale-110' : 'text-[var(--color-mist-text)]/60 hover:text-[var(--color-mist-text)]')
+                    : 'text-[var(--color-mist-text)]/20 hover:text-[var(--color-mist-text)]/40'
+                    }`}
+                  title="Smart Radio"
+                >
+                  <Radio className="w-4 h-4" />
+                  {isPremium && smartRadioActive && (
+                    <div className="w-1 h-1 rounded-full bg-amber-600 animate-pulse"></div>
+                  )}
+                </button>
+                {isPremium && smartRadioActive && (
+                  <span className="absolute -bottom-6 whitespace-nowrap text-[8px] font-bold uppercase tracking-widest text-amber-600/60 animate-in fade-in slide-in-from-top-1 duration-500">
+                    {t.premium.smartRadioTitle}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
-	          <div className="w-full max-w-2xl flex items-center gap-3 text-xs text-[var(--color-mist-text)]/50 font-mono">
+	          <div className={`w-full ${compactPracticeMode ? 'max-w-3xl' : 'max-w-2xl'} flex items-center gap-3 text-xs text-[var(--color-mist-text)]/50 font-mono`}>
 	            <span>{formatTime(currentTime)}</span>
 	            <div
 	              ref={progressBarRef}
-	              className="flex-1 h-1 bg-white/15 rounded-full overflow-hidden cursor-pointer group"
+	              className={`flex-1 h-1 bg-white/15 rounded-full overflow-hidden group ${compactPracticeMode ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
 	              onPointerDown={handleProgressPointerDown}
 	            >
               <div
@@ -2581,7 +3441,7 @@ function BottomPlayer({
           </div>
         </div>
 
-        <div className="w-1/4 min-w-[200px] flex items-center justify-end gap-5">
+        <div className={`${compactPracticeMode ? 'w-auto min-w-0 gap-3' : 'w-1/4 min-w-[200px] gap-5'} flex items-center justify-end`}>
           <button
             onClick={() => currentTrack.midiUrl && setShowPracticePanel(!showPracticePanel)}
             disabled={!currentTrack.midiUrl}
@@ -2597,7 +3457,7 @@ function BottomPlayer({
             <span className="text-[10px] uppercase tracking-tighter font-medium">{t.music.practice}</span>
           </button>
 
-          <button
+          {!compactPracticeMode && <button
             onClick={() => {
               if (currentTrack) {
                 // Logic: 只有 简体中文 跳 Bilibili，其他（EN, 繁體）跳 YouTube
@@ -2614,9 +3474,9 @@ function BottomPlayer({
           >
             <Youtube className="w-5 h-5" />
             <span className="text-[10px] uppercase tracking-tighter font-bold">{t.player.video}</span>
-          </button>
+          </button>}
 
-          <button
+          {!compactPracticeMode && <button
             onClick={() => currentTrack.sheetUrl && window.open(currentTrack.sheetUrl, '_blank')}
             disabled={!currentTrack.sheetUrl}
             className={`flex flex-col items-center gap-1 transition-colors ${currentTrack.sheetUrl ? 'text-[var(--color-mist-text)]/60 hover:text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/20 cursor-not-allowed'}`}
@@ -2624,9 +3484,9 @@ function BottomPlayer({
           >
             <BookOpen className="w-5 h-5" />
             <span className="text-[10px] uppercase tracking-tighter font-bold">{t.player.sheet}</span>
-          </button>
+          </button>}
 
-          <div className="relative">
+          {!compactPracticeMode && <div className="relative">
             <button
               onClick={() => setShowSpeedMenu(!showSpeedMenu)}
               className="text-[var(--color-mist-text)]/60 hover:text-[var(--color-mist-text)] transition-colors flex flex-col items-center gap-1 min-w-[40px]"
@@ -2652,9 +3512,9 @@ function BottomPlayer({
                 ))}
               </div>
             )}
-          </div>
+          </div>}
 
-          <div className="flex items-center gap-3">
+          {!compactPracticeMode && <div className="flex items-center gap-3">
             <button
               onClick={() => {
                 if (isMuted) {
@@ -2684,7 +3544,7 @@ function BottomPlayer({
                 style={{ width: `${isMuted ? 0 : volume * 100}%` }}
               ></div>
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     </footer>

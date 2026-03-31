@@ -21,6 +21,8 @@ export const zhCN = {
     disabled: '未开启',
     longTerm: '长期有效',
     ambienceLimit: '基础会员一次只能开启 1 个环境音，升级后最多可同时开启 3 个。',
+    measureSnapped: '已对齐到小节起点',
+    practiceMeasureOnly: '练习模式仅支持按小节定位',
   },
   nav: {
     home: '主页',

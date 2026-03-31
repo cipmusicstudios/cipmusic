@@ -21,6 +21,8 @@ export const zhTW = {
     disabled: '未開啟',
     longTerm: '長期有效',
     ambienceLimit: '基礎會員一次只能開啟 1 個環境音，升級後最多可同時開啟 3 個。',
+    measureSnapped: '已對齊到小節起點',
+    practiceMeasureOnly: '練習模式僅支援按小節定位',
   },
   nav: {
     home: '主頁',
