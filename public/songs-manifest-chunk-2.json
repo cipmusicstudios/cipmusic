@@ -1,0 +1,4534 @@
+{
+  "version": 5,
+  "kind": "chunk",
+  "chunkIndex": 2,
+  "tracks": [
+    {
+      "id": "local_新造的人",
+      "title": "新造的人",
+      "displayTitle": "新造的人",
+      "originalArtist": "鄭宜農",
+      "canonicalArtistId": "zheng-yi-nong",
+      "canonicalArtistDisplayName": "郑宜农",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M00000316KpR3HHYl5.jpg",
+      "mp3Url": "/local-imports/新造的人/新造的人 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/新造的人/performance.mid",
+      "musicXmlUrl": "/local-imports/新造的人/score.musicxml",
+      "duration": "03:06",
+      "durationSeconds": 186.46204081632652,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "新造的人",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=3mCJkQYJU_k",
+      "youtubeVideoTitle": "鄭宜農 （郑宜农）《新造的人》 - 電影《周處除三害》插曲 （The Pig, the Snake, and the Pigeon） Piano Cover | CIP Music",
+      "youtubeVideoId": "3mCJkQYJU_k",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/158680",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "新造的人",
+        "en": "Xin Zao De Ren"
+      },
+      "artists": {
+        "zhHans": "郑宜农",
+        "zhHant": "鄭宜農",
+        "en": "Zheng Yinong"
+      },
+      "youtubeSortIndex": 224,
+      "youtubePublishedAt": "2024-03-12T12:00:00.000Z",
+      "listSortPublishedAtMs": 1710244800000,
+      "listSortPublishedAt": "2024-03-12T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_AI",
+      "title": "AI",
+      "displayTitle": "AI",
+      "originalArtist": "薛之谦",
+      "canonicalArtistId": "joker-xue",
+      "canonicalArtistDisplayName": "薛之谦",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f6/a9/0d/f6a90ded-ee5b-94f3-1cba-376129a1668e/4894972505108.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/AI/AI 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/AI/performance.mid",
+      "musicXmlUrl": "/local-imports/AI/score.musicxml",
+      "duration": "04:46",
+      "durationSeconds": 285.72,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "AI",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=Neq5knokKSc",
+      "youtubeVideoTitle": "Joker Xue 薛之谦《AI》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "Neq5knokKSc",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/158001",
+      "linkStatus": "needsReview",
+      "titles": {
+        "en": "Ai"
+      },
+      "artists": {
+        "zhHans": "薛之谦",
+        "zhHant": "薛之謙",
+        "en": "Joker Xue"
+      },
+      "youtubeSortIndex": 225,
+      "youtubePublishedAt": "2024-03-08T12:00:00.000Z",
+      "listSortPublishedAtMs": 1709899200000,
+      "listSortPublishedAt": "2024-03-08T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_不如见一面",
+      "title": "不如见一面",
+      "displayTitle": "不如见一面",
+      "originalArtist": "海来阿木 2024央视春晚歌曲",
+      "canonicalArtistId": "hai-lai-a-mu",
+      "canonicalArtistDisplayName": "海来阿木",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001T89Fm4gNcuu.jpg",
+      "mp3Url": "/local-imports/不如见一面/不如见一面 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/不如见一面/performance.mid",
+      "musicXmlUrl": "/local-imports/不如见一面/score.musicxml",
+      "duration": "04:09",
+      "durationSeconds": 249.2604081632653,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "不如见一面",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=qPANxcxgJrk",
+      "youtubeVideoTitle": "海来阿木 - 2024央视春晚歌曲《不如见一面 》独唱版（CCTV Spring Festival Gala） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "qPANxcxgJrk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/157359",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "不如见一面",
+        "en": "Bu Ru Jian Yi Mian"
+      },
+      "artists": {
+        "zhHans": "海来阿木",
+        "zhHant": "海来阿木",
+        "en": "Hai Lai A Mu"
+      },
+      "youtubeSortIndex": 226,
+      "youtubePublishedAt": "2024-03-05T12:00:00.000Z",
+      "listSortPublishedAtMs": 1709640000000,
+      "listSortPublishedAt": "2024-03-05T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_swan_song",
+      "title": "Swan song",
+      "displayTitle": "Swan song",
+      "originalArtist": "LE SSERAFIM",
+      "canonicalArtistId": "le-sserafim",
+      "canonicalArtistDisplayName": "LE SSERAFIM",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/22/0f/fd/220ffdbf-152c-5b65-d5af-01256c1328c2/196922796531_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/swan song/Swan Song钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/swan song/performance.mid",
+      "musicXmlUrl": "/local-imports/swan song/score.musicxml",
+      "duration": "02:33",
+      "durationSeconds": 153.49551020408163,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "swan song",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fXnSNy0SThY",
+      "youtubeVideoTitle": "LE SSERAFIM (르세라핌) 《Swan Song》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "fXnSNy0SThY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/156489",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Swan Song"
+      },
+      "artists": {
+        "zhHans": "LE SSERAFIM",
+        "zhHant": "LE SSERAFIM",
+        "en": "LE SSERAFIM"
+      },
+      "youtubeSortIndex": 227,
+      "youtubePublishedAt": "2024-03-01T12:00:00.000Z",
+      "listSortPublishedAtMs": 1709294400000,
+      "listSortPublishedAt": "2024-03-01T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_时空引力",
+      "title": "时空引力",
+      "displayTitle": "时空引力",
+      "originalArtist": "《恋与深空》",
+      "canonicalArtistId": "love-and-deepspace",
+      "canonicalArtistDisplayName": "恋与深空",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_lds_same_ip_as_theme"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/32/e8/cf/32e8cfc1-f3ed-1d7a-38db-c13e6a20a671/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/时空引力/时空引力 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/时空引力/performance.mid",
+      "musicXmlUrl": "/local-imports/时空引力/score.musicxml",
+      "duration": "03:35",
+      "durationSeconds": 215.32734693877552,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "时空引力",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=wKoxdA188kE",
+      "youtubeVideoTitle": "时空引力 Gravity of Spacetime - Love and Deepspace《恋与深空》（戀與深空）抽卡BGM Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "wKoxdA188kE",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/155956",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "时空引力",
+        "en": "时空引力"
+      },
+      "artists": {
+        "zhHans": "恋与深空",
+        "zhHant": "戀與深空",
+        "en": "Love and Deepspace"
+      },
+      "youtubeSortIndex": 228,
+      "youtubePublishedAt": "2024-02-27T12:00:00.000Z",
+      "listSortPublishedAtMs": 1709035200000,
+      "listSortPublishedAt": "2024-02-27T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_非我不可",
+      "title": "非我不可",
+      "displayTitle": "非我不可",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/fc/a5/49/fca54987-9802-462b-5eff-f1a5ab750361/4894972126587.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/非我不可/audio.mp3",
+      "midiUrl": "/local-imports/非我不可/performance.mid",
+      "musicXmlUrl": "/local-imports/非我不可/score.musicxml",
+      "duration": "03:45",
+      "durationSeconds": 225.41061224489795,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "非我不可",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=ZK0hjdzctN8",
+      "youtubeVideoTitle": "TNT时代少年团 《非我不可》钢琴版 Teens In Times Wiggle Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "ZK0hjdzctN8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/154970",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "非我不可",
+        "en": "Fei Wo Bu Ke"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 229,
+      "youtubePublishedAt": "2024-02-23T12:00:00.000Z",
+      "listSortPublishedAtMs": 1708689600000,
+      "listSortPublishedAt": "2024-02-23T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_上春山",
+      "title": "上春山",
+      "displayTitle": "上春山",
+      "originalArtist": "魏晨、魏大勋、白敬亭",
+      "canonicalArtistId": "shang-chun-shan-trio",
+      "canonicalArtistDisplayName": "魏晨、魏大勋、白敬亭",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_cctv_trio_single_bucket"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001HpD8H3wlGsF.jpg",
+      "mp3Url": "/local-imports/上春山/上春山 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/上春山/performance.mid",
+      "musicXmlUrl": "/local-imports/上春山/score.musicxml",
+      "duration": "02:31",
+      "durationSeconds": 150.93551020408162,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "上春山",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=EyGrSfSIOgo",
+      "youtubeVideoTitle": "魏晨、魏大勋、白敬亭 - 2024央视春晚歌曲《上春山 》（CCTV Spring Festival Gala） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "EyGrSfSIOgo",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/154299",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "上春山",
+        "en": "Shang Chun Shan"
+      },
+      "artists": {
+        "zhHans": "魏晨、魏大勋、白敬亭",
+        "zhHant": "魏晨、魏大勋、白敬亭",
+        "en": "Wei Chen, Wei Daxun, Bai Jingting"
+      },
+      "youtubeSortIndex": 230,
+      "youtubePublishedAt": "2024-02-20T12:00:00.000Z",
+      "listSortPublishedAtMs": 1708430400000,
+      "listSortPublishedAt": "2024-02-20T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_Love_wins_all",
+      "title": "Love wins all",
+      "displayTitle": "Love wins all",
+      "originalArtist": "IU",
+      "canonicalArtistId": "iu",
+      "canonicalArtistDisplayName": "IU",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e3/56/1e/e3561eb5-de12-790d-569b-53fa22e6b491/cover_KM0019422_1.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/Love wins all/Love Wins All 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/Love wins all/performance.mid",
+      "musicXmlUrl": "/local-imports/Love wins all/score.musicxml",
+      "duration": "04:30",
+      "durationSeconds": 269.8448979591837,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "Love wins all",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=O3KzF7CnP04",
+      "youtubeVideoTitle": "아이유 (IU) - 《Love wins all》 Piano Cover | CIP Music",
+      "youtubeVideoId": "O3KzF7CnP04",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/153558",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Love Wins All"
+      },
+      "artists": {
+        "zhHans": "IU",
+        "zhHant": "IU",
+        "en": "IU"
+      },
+      "youtubeSortIndex": 231,
+      "youtubePublishedAt": "2024-02-16T12:00:00.000Z",
+      "listSortPublishedAtMs": 1708084800000,
+      "listSortPublishedAt": "2024-02-16T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_小美满",
+      "title": "小美满",
+      "displayTitle": "小美满",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/91cd30d453bac61e64ee89cfc1f1a962/1000x1000-000000-80-0-0.jpg",
+      "mp3Url": "/local-imports/小美满/小美满 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/小美满/performance.mid",
+      "musicXmlUrl": "/local-imports/小美满/score.musicxml",
+      "duration": "03:37",
+      "durationSeconds": 216.86857142857144,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "小美满",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=9Ckq287laUk",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen《小美满》 - 电影《热辣滚烫》（YOLO）热辣陪伴曲 Piano Cover | CIP Music",
+      "youtubeVideoId": "9Ckq287laUk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/152679",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "小美满",
+        "en": "Xiao Mei Man"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 232,
+      "youtubePublishedAt": "2024-02-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1707825600000,
+      "listSortPublishedAt": "2024-02-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_离别开出花",
+      "title": "离别开出花",
+      "displayTitle": "离别开出花",
+      "originalArtist": "就是南方凯",
+      "canonicalArtistId": "from-youtube/就是南方凯",
+      "canonicalArtistDisplayName": "就是南方凯",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "youtube_title_freeform"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/0e/ec/09/0eec098c-1375-7c9d-5d3c-d86fcc5d4cf4/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/离别开出花/离别开出花 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/离别开出花/performance.mid",
+      "musicXmlUrl": "/local-imports/离别开出花/score.musicxml",
+      "duration": "03:53",
+      "durationSeconds": 232.88163265306122,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "离别开出花",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=pxg6veVxwKc",
+      "youtubeVideoTitle": "就是南方凯《离别开出花 》（離別開出花） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "pxg6veVxwKc",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/151613",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "离别开出花",
+        "en": "Chi Bie Kai Chu Hua"
+      },
+      "artists": {
+        "zhHans": "就是南方凯",
+        "zhHant": "就是南方凯"
+      },
+      "youtubeSortIndex": 234,
+      "youtubePublishedAt": "2024-02-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1707220800000,
+      "listSortPublishedAt": "2024-02-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_你离开的村落",
+      "title": "你离开的村落",
+      "displayTitle": "你离开的村落",
+      "originalArtist": "纸嫁衣",
+      "canonicalArtistId": "paper-bride",
+      "canonicalArtistDisplayName": "纸嫁衣",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "source_attribution_paper_bride"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/ad/1a/ed/ad1aed2f-652a-628a-21d0-fe930eeb449a/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/你离开的村落/audio.mp3",
+      "midiUrl": "/local-imports/你离开的村落/performance.mid",
+      "musicXmlUrl": "/local-imports/你离开的村落/score.musicxml",
+      "duration": "03:13",
+      "durationSeconds": 192.54857142857142,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "你离开的村落",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=j1e15jXFV8Q",
+      "youtubeVideoTitle": "纸嫁衣6《无间梦境：千秋魇》主题曲《你离开的村落》Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "j1e15jXFV8Q",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/150926",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "你离开的村落",
+        "en": "Ni Chi Kai De Cun Luo"
+      },
+      "artists": {
+        "zhHans": "纸嫁衣",
+        "zhHant": "纸嫁衣",
+        "en": "Paper Bride"
+      },
+      "youtubeSortIndex": 235,
+      "youtubePublishedAt": "2024-02-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1706875200000,
+      "listSortPublishedAt": "2024-02-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_super_lady",
+      "title": "Super lady",
+      "displayTitle": "Super lady",
+      "originalArtist": "I-DLE",
+      "canonicalArtistId": "i-dle",
+      "canonicalArtistDisplayName": "I-DLE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/52/34/27/5234273c-5585-261b-4fc5-b10cfd9bbd71/8804775368240.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/super lady/Super Lady 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/super lady/performance.mid",
+      "musicXmlUrl": "/local-imports/super lady/score.musicxml",
+      "duration": "02:33",
+      "durationSeconds": 153.46938775510205,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "super lady",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=eFnssn_EsRY",
+      "youtubeVideoTitle": "(여자)아이들 (G)I-DLE 《Super Lady 》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "eFnssn_EsRY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/150314",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Super Lady"
+      },
+      "artists": {
+        "zhHans": "I-DLE",
+        "zhHant": "I-DLE",
+        "en": "I-DLE"
+      },
+      "youtubeSortIndex": 236,
+      "youtubePublishedAt": "2024-01-30T12:00:00.000Z",
+      "listSortPublishedAtMs": 1706616000000,
+      "listSortPublishedAt": "2024-01-30T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_相遇的意义",
+      "title": "相遇的意义",
+      "displayTitle": "相遇的意义",
+      "originalArtist": "SEVENTEEN",
+      "canonicalArtistId": "seventeen",
+      "canonicalArtistDisplayName": "SEVENTEEN",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/3e/46/d4/3e46d46a-1d5b-d16c-47b9-6a0d8b76a5ba/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/相遇的意义/相遇的意义 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/相遇的意义/performance.mid",
+      "musicXmlUrl": "/local-imports/相遇的意义/score.musicxml",
+      "duration": "03:58",
+      "durationSeconds": 237.7665306122449,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "相遇的意义",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=_S6-U1V5uE0",
+      "youtubeVideoTitle": "SEVENTEEN 세븐틴《相遇的意义》 (The meaning of meeting / 만남의 의미)  Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "_S6-U1V5uE0",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/149693",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "相遇的意义",
+        "en": "Xiang Yu De Yi Yi"
+      },
+      "artists": {
+        "zhHans": "SEVENTEEN",
+        "zhHant": "SEVENTEEN",
+        "en": "SEVENTEEN"
+      },
+      "youtubeSortIndex": 237,
+      "youtubePublishedAt": "2024-01-27T12:00:00.000Z",
+      "listSortPublishedAtMs": 1706356800000,
+      "listSortPublishedAt": "2024-01-27T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_恋与深空主题曲",
+      "title": "恋与深空主题曲",
+      "displayTitle": "恋与深空主题曲",
+      "originalArtist": "莎拉·布莱曼",
+      "canonicalArtistId": "love-and-deepspace",
+      "canonicalArtistDisplayName": "恋与深空",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_lds_theme_unified_project"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/32/e8/cf/32e8cfc1-f3ed-1d7a-38db-c13e6a20a671/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/恋与深空主题曲/audio.mp3",
+      "midiUrl": "/local-imports/恋与深空主题曲/performance.mid",
+      "musicXmlUrl": "/local-imports/恋与深空主题曲/score.musicxml",
+      "duration": "03:30",
+      "durationSeconds": 210.456,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "恋与深空主题曲",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=a4QyrJfM6Tg",
+      "youtubeVideoTitle": "Sarah Brightman（莎拉·布莱曼） - Love and Deepspace《恋与深空》（戀與深空） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "a4QyrJfM6Tg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/155956",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "恋与深空主题曲",
+        "en": "Lian Yu Shen Kong Zhu Ti Qu"
+      },
+      "artists": {
+        "zhHans": "恋与深空",
+        "zhHant": "戀與深空",
+        "en": "Love and Deepspace"
+      },
+      "youtubeSortIndex": 238,
+      "youtubePublishedAt": "2024-01-24T12:00:00.000Z",
+      "listSortPublishedAtMs": 1706097600000,
+      "listSortPublishedAt": "2024-01-24T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_好想爱这个世界啊",
+      "title": "好想爱这个世界啊",
+      "displayTitle": "好想爱这个世界啊",
+      "originalArtist": "华晨宇",
+      "canonicalArtistId": "hua-chen-yu",
+      "canonicalArtistDisplayName": "华晨宇",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/39/4b/eb/394bebcb-213f-6e65-5b63-0ca074f06bea/artwork.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/好想爱这个世界啊/好想爱这个世界啊 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/好想爱这个世界啊/performance.mid",
+      "musicXmlUrl": "/local-imports/好想爱这个世界啊/score.musicxml",
+      "duration": "04:27",
+      "durationSeconds": 266.5273469387755,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "好想爱这个世界啊",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=iPdb9A-LM0M",
+      "youtubeVideoTitle": "华晨宇 Hua Chenyu《好想爱这个世界啊》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "iPdb9A-LM0M",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/144826",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "好想爱这个世界啊",
+        "en": "Hao Xiang Ai Zhe Ge Shi Jie A"
+      },
+      "artists": {
+        "zhHans": "华晨宇",
+        "zhHant": "華晨宇",
+        "en": "Hua Chenyu"
+      },
+      "youtubeSortIndex": 239,
+      "youtubePublishedAt": "2024-01-20T12:00:00.000Z",
+      "listSortPublishedAtMs": 1705752000000,
+      "listSortPublishedAt": "2024-01-20T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_繁花片头曲",
+      "title": "繁花片头曲",
+      "displayTitle": "繁花片头曲",
+      "originalArtist": "Blossoms Shanghai",
+      "canonicalArtistId": "from-youtube/blossoms-shanghai",
+      "canonicalArtistDisplayName": "Blossoms Shanghai",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "youtube_title_freeform"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/6b/54/b4/6b54b48b-bdb6-1f0a-8925-9be9069d3083/24UMGIM54725.rgb.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/繁花片头曲/audio.mp3",
+      "midiUrl": "/local-imports/繁花片头曲/performance.mid",
+      "musicXmlUrl": "/local-imports/繁花片头曲/score.musicxml",
+      "duration": "01:25",
+      "durationSeconds": 84.89795918367346,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "繁花片头曲",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=_16oE_dZoys",
+      "youtubeVideoTitle": "Blossoms Shanghai《繁花》 OP（电视剧《繁花》片头曲） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "_16oE_dZoys",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/144351",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "繁花片头曲",
+        "en": "Fan Hua Pian Tou Qu"
+      },
+      "artists": {
+        "en": "Blossoms Shanghai"
+      },
+      "youtubeSortIndex": 240,
+      "youtubePublishedAt": "2024-01-17T12:00:00.000Z",
+      "listSortPublishedAtMs": 1705492800000,
+      "listSortPublishedAt": "2024-01-17T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_无尽的冒险",
+      "title": "无尽的冒险",
+      "displayTitle": "无尽的冒险",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000io1950KoJSv.jpg",
+      "mp3Url": "/local-imports/无尽的冒险/无尽的冒险钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/无尽的冒险/performance.mid",
+      "musicXmlUrl": "/local-imports/无尽的冒险/score.musicxml",
+      "duration": "04:14",
+      "durationSeconds": 253.5183673469388,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "无尽的冒险",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=heXF2XuVWvQ",
+      "youtubeVideoTitle": "TNT时代少年团《无尽的冒险(With Us)》 Teens In Times Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "heXF2XuVWvQ",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/143686",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "无尽的冒险",
+        "en": "Wu Jin De Mou Xian"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 241,
+      "youtubePublishedAt": "2024-01-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1705147200000,
+      "listSortPublishedAt": "2024-01-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_fallin_flower",
+      "title": "Fallin flower",
+      "displayTitle": "Fallin flower",
+      "originalArtist": "SEVENTEEN",
+      "canonicalArtistId": "seventeen",
+      "canonicalArtistDisplayName": "SEVENTEEN",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/69/81/dc/6981dcfb-7a02-7dbf-4564-e48f32e9dcb9/192641872518_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/fallin flower/fallin flower 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/fallin flower/performance.mid",
+      "musicXmlUrl": "/local-imports/fallin flower/score.musicxml",
+      "duration": "03:31",
+      "durationSeconds": 210.65142857142857,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "fallin flower",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=wiQAnD67C7Y",
+      "youtubeVideoTitle": "SEVENTEEN 세븐틴《舞い落ちる花びら（Fallin' Flower）》（落花） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "wiQAnD67C7Y",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/143119",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Fallin Flower"
+      },
+      "artists": {
+        "zhHans": "SEVENTEEN",
+        "zhHant": "SEVENTEEN",
+        "en": "SEVENTEEN"
+      },
+      "youtubeSortIndex": 242,
+      "youtubePublishedAt": "2024-01-10T12:00:00.000Z",
+      "listSortPublishedAtMs": 1704888000000,
+      "listSortPublishedAt": "2024-01-10T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_1_1",
+      "title": "1.1",
+      "displayTitle": "1.1",
+      "originalArtist": "鹿晗",
+      "canonicalArtistId": "lu-han",
+      "canonicalArtistDisplayName": "鹿晗",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/8e/c4/d8/8ec4d89e-18ef-04b2-7901-3c028a5350c1/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/1.1/audio.mp3",
+      "midiUrl": "/local-imports/1.1/performance.mid",
+      "musicXmlUrl": "/local-imports/1.1/score.musicxml",
+      "duration": "03:30",
+      "durationSeconds": 209.50204081632654,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "1.1",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=KuoDz01Vf8E",
+      "youtubeVideoTitle": "鹿晗 Lu Han《1.1》 Piano Cover | CIP Music",
+      "youtubeVideoId": "KuoDz01Vf8E",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/142401",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "1 1"
+      },
+      "artists": {
+        "zhHans": "鹿晗",
+        "zhHant": "鹿晗",
+        "en": "Lu Han"
+      },
+      "youtubeSortIndex": 243,
+      "youtubePublishedAt": "2024-01-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1704542400000,
+      "listSortPublishedAt": "2024-01-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_浮光",
+      "title": "浮光",
+      "displayTitle": "浮光",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/5a/b2/5a/5ab25a5c-0fe7-e721-c102-9c85432933aa/a1704413540482.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/浮光/浮光 钢琴示例 -  CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/浮光/performance.mid",
+      "musicXmlUrl": "/local-imports/浮光/score.musicxml",
+      "duration": "04:33",
+      "durationSeconds": 272.79673469387757,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "浮光",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=0GWqDKNjo0E",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen《浮光》（The History） ｜2023最美的夜跨年晚会 - 浮光 Piano Cover | CIP Music",
+      "youtubeVideoId": "0GWqDKNjo0E",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/141964",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "浮光",
+        "en": "Fu Guang"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 244,
+      "youtubePublishedAt": "2024-01-03T12:00:00.000Z",
+      "listSortPublishedAtMs": 1704283200000,
+      "listSortPublishedAt": "2024-01-03T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_我期待的不是雪",
+      "title": "我期待的不是雪",
+      "displayTitle": "我期待的不是雪",
+      "originalArtist": "张妙格",
+      "canonicalArtistId": "zhang-miao-ge",
+      "canonicalArtistDisplayName": "张妙格",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/96/76/8f/96768fb4-e01d-3c47-8b3b-8597d3d5c38b/4894944735090.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/我期待的不是雪/我期待的不是雪 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/我期待的不是雪/performance.mid",
+      "musicXmlUrl": "/local-imports/我期待的不是雪/score.musicxml",
+      "duration": "02:46",
+      "durationSeconds": 165.95591836734692,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "我期待的不是雪",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=OT4jNS5dNmo",
+      "youtubeVideoTitle": "张妙格（張妙格）《我期待的不是雪 》（而是有你的冬天） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "OT4jNS5dNmo",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/140810",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "我期待的不是雪",
+        "en": "Wo Qi Dai De Bu Shi Xue"
+      },
+      "artists": {
+        "zhHans": "张妙格",
+        "zhHant": "張妙格",
+        "en": "Zhang Miaoge"
+      },
+      "youtubeSortIndex": 247,
+      "youtubePublishedAt": "2023-12-27T12:00:00.000Z",
+      "listSortPublishedAtMs": 1703678400000,
+      "listSortPublishedAt": "2023-12-27T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_圣诞星",
+      "title": "圣诞星",
+      "displayTitle": "圣诞星",
+      "originalArtist": "周杰伦",
+      "canonicalArtistId": "jay-chou",
+      "canonicalArtistDisplayName": "周杰伦",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/28/e0/91/28e0918c-2cac-6023-20de-b03d3b3b09f5/23UM1IM67525.rgb.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/圣诞星/圣诞星 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/圣诞星/performance.mid",
+      "musicXmlUrl": "/local-imports/圣诞星/score.musicxml",
+      "duration": "03:02",
+      "durationSeconds": 181.7338775510204,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "圣诞星",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=TOdPhqrCW-8",
+      "youtubeVideoTitle": "周杰伦（周杰倫）Jay Chou《圣诞星》 “聖誕星  Christmas Star” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "TOdPhqrCW-8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/140220",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "圣诞星",
+        "en": "Sheng Dan Xing"
+      },
+      "artists": {
+        "zhHans": "周杰伦",
+        "zhHant": "周杰倫",
+        "en": "Jay Chou"
+      },
+      "youtubeSortIndex": 248,
+      "youtubePublishedAt": "2023-12-23T12:00:00.000Z",
+      "listSortPublishedAtMs": 1703332800000,
+      "listSortPublishedAt": "2023-12-23T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_桃花诺",
+      "title": "桃花诺",
+      "displayTitle": "桃花诺",
+      "originalArtist": "周深 \\宋亚轩",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002mEwhr29dJWO.jpg",
+      "mp3Url": "/local-imports/桃花诺/桃花诺 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/桃花诺/performance.mid",
+      "musicXmlUrl": "/local-imports/桃花诺/score.musicxml",
+      "duration": "04:23",
+      "durationSeconds": 262.6351020408163,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "桃花诺",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=AKT2jHoiVXU",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen\\宋亚轩Song Yaxuan《桃花诺》 ｜声生不息·家年华 Infinity And Beyond Piano Cover | CIP Music",
+      "youtubeVideoId": "AKT2jHoiVXU",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/139823",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "桃花诺",
+        "en": "Tao Hua Nuo"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 249,
+      "youtubePublishedAt": "2023-12-20T12:00:00.000Z",
+      "listSortPublishedAtMs": 1703073600000,
+      "listSortPublishedAt": "2023-12-20T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_heaven",
+      "title": "Heaven",
+      "displayTitle": "Heaven",
+      "originalArtist": "Ailee",
+      "canonicalArtistId": "ailee",
+      "canonicalArtistDisplayName": "Ailee",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/b1/35/8c/b1358cbe-2a07-3602-70ac-0e973b695786/cover_KM0001402_1.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/heaven/Heaven 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/heaven/performance.mid",
+      "musicXmlUrl": "/local-imports/heaven/score.musicxml",
+      "duration": "03:44",
+      "durationSeconds": 224.02612244897958,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "heaven",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=Uqp1oi1oJN4",
+      "youtubeVideoTitle": "Ailee 에일리《Heaven》(헤븐)  Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "Uqp1oi1oJN4",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/139262",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Heaven"
+      },
+      "artists": {
+        "zhHans": "Ailee",
+        "zhHant": "Ailee",
+        "en": "Ailee"
+      },
+      "youtubeSortIndex": 250,
+      "youtubePublishedAt": "2023-12-16T12:00:00.000Z",
+      "listSortPublishedAtMs": 1702728000000,
+      "listSortPublishedAt": "2023-12-16T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_认输",
+      "title": "认输",
+      "displayTitle": "认输",
+      "originalArtist": "时代少年团 张真源&严浩翔 合作曲",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/b1/8e/0e/b18e0ecc-07d7-dcbf-0947-d0c22df40bc9/24UMGIM48695.rgb.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/认输/认输 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/认输/performance.mid",
+      "musicXmlUrl": "/local-imports/认输/score.musicxml",
+      "duration": "03:58",
+      "durationSeconds": 238.1061224489796,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "认输",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=5Fey6YkkKJ4",
+      "youtubeVideoTitle": "TNT时代少年团 张真源&严浩翔 合作曲《认输》（Loser） Teens In Times Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "5Fey6YkkKJ4",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/138815",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "认输",
+        "en": "Ren Shu"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 251,
+      "youtubePublishedAt": "2023-12-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1702468800000,
+      "listSortPublishedAt": "2023-12-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_科目三",
+      "title": "科目三",
+      "displayTitle": "科目三",
+      "originalArtist": "一笑江湖",
+      "canonicalArtistId": "yixiao-jianghu",
+      "canonicalArtistDisplayName": "一笑江湖",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_kemu_yixiao_jianghu_project"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/8c/82/98/8c82984e-b8c0-cff4-810f-ce7413f4efb2/6923672285688.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/科目三/audio.mp3",
+      "midiUrl": "/local-imports/科目三/performance.mid",
+      "musicXmlUrl": "/local-imports/科目三/score.musicxml",
+      "duration": "02:06",
+      "durationSeconds": 125.62285714285714,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "科目三",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=juGvNkVrR1c",
+      "youtubeVideoTitle": "【治愈系】科目三抒情古风钢琴版 - Tik Tok hit song《一笑江湖（Yi Xiao Jiang Hu）》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "juGvNkVrR1c",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/138242",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "科目三",
+        "en": "Ke Mu San"
+      },
+      "artists": {
+        "zhHans": "一笑江湖",
+        "zhHant": "一笑江湖",
+        "en": "Yi Xiao Jiang Hu"
+      },
+      "youtubeSortIndex": 252,
+      "youtubePublishedAt": "2023-12-10T12:00:00.000Z",
+      "listSortPublishedAtMs": 1702209600000,
+      "listSortPublishedAt": "2023-12-10T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_普通到不普通的人生",
+      "title": "普通到不普通的人生",
+      "displayTitle": "普通到不普通的人生",
+      "originalArtist": "华晨宇",
+      "canonicalArtistId": "hua-chen-yu",
+      "canonicalArtistDisplayName": "华晨宇",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000PRaS63UHBHw.jpg",
+      "mp3Url": "/local-imports/普通到不普通的人生/普通到不普通的人生 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/普通到不普通的人生/performance.mid",
+      "musicXmlUrl": "/local-imports/普通到不普通的人生/score.musicxml",
+      "duration": "04:25",
+      "durationSeconds": 264.8816326530612,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "普通到不普通的人生",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=prVgxkVkKLk",
+      "youtubeVideoTitle": "华晨宇 Hua Chenyu《普通到不普通的人生》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "prVgxkVkKLk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/137520",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "普通到不普通的人生",
+        "en": "Pu Tong Dao Bu Pu Tong De Ren Sheng"
+      },
+      "artists": {
+        "zhHans": "华晨宇",
+        "zhHant": "華晨宇",
+        "en": "Hua Chenyu"
+      },
+      "youtubeSortIndex": 254,
+      "youtubePublishedAt": "2023-12-05T12:00:00.000Z",
+      "listSortPublishedAtMs": 1701777600000,
+      "listSortPublishedAt": "2023-12-05T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_SPOT",
+      "title": "SPOT!",
+      "displayTitle": "SPOT!",
+      "originalArtist": "ZICO",
+      "canonicalArtistId": "zico",
+      "coCanonicalArtistIds": [
+        "jennie"
+      ],
+      "canonicalArtistDisplayName": "ZICO",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_zico_spot_feat_jennie_dual_bucket"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/2e/2c/9c/2e2c9cb1-7352-867a-013c-9c885a9f7f4e/196922944741_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/SPOT/audio.mp3",
+      "midiUrl": "/local-imports/SPOT/performance.mid",
+      "musicXmlUrl": "/local-imports/SPOT/score.musicxml",
+      "duration": "00:39",
+      "durationSeconds": 38.846599,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "SPOT",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=xfqBQ2XhBCg",
+      "youtubeVideoTitle": "ZICO (지코) 'SPOT! (feat. JENNIE)' Official MV",
+      "youtubeVideoId": "xfqBQ2XhBCg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": null,
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "SPOT!",
+        "zhHant": "SPOT!",
+        "en": "SPOT!"
+      },
+      "artists": {
+        "zhHans": "ZICO",
+        "zhHant": "ZICO",
+        "en": "ZICO"
+      },
+      "youtubeSortIndex": 255,
+      "youtubePublishedAt": "2023-12-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1701518400000,
+      "listSortPublishedAt": "2023-12-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_spotlight",
+      "title": "Spotlight",
+      "displayTitle": "Spotlight",
+      "originalArtist": "蔡徐坤",
+      "canonicalArtistId": "kun",
+      "canonicalArtistDisplayName": "蔡徐坤",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/cd/cd/9f/cdcd9fef-06f0-a32e-300f-589071be39fe/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/spotlight/Spotlight钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/spotlight/performance.mid",
+      "musicXmlUrl": "/local-imports/spotlight/score.musicxml",
+      "duration": "03:29",
+      "durationSeconds": 209.11020408163265,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "spotlight",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=riehkskS9ng",
+      "youtubeVideoTitle": "蔡徐坤KUN 《Spotlight》（聚光灯） 钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "riehkskS9ng",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/137033",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Spotlight"
+      },
+      "artists": {
+        "zhHans": "蔡徐坤",
+        "zhHant": "蔡徐坤",
+        "en": "KUN"
+      },
+      "youtubeSortIndex": 255,
+      "youtubePublishedAt": "2023-12-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1701518400000,
+      "listSortPublishedAt": "2023-12-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_chill_kill",
+      "title": "Chill kill",
+      "displayTitle": "Chill kill",
+      "originalArtist": "Red Velvet",
+      "canonicalArtistId": "red-velvet",
+      "canonicalArtistDisplayName": "Red Velvet",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/52/a6/db/52a6dbad-8427-9b5c-e90f-34974cc5e3d0/00888735945847_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/chill kill/Chill Kill钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/chill kill/performance.mid",
+      "musicXmlUrl": "/local-imports/chill kill/score.musicxml",
+      "duration": "03:45",
+      "durationSeconds": 224.6008163265306,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "chill kill",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=johsTm--sLA",
+      "youtubeVideoTitle": "Red Velvet 레드벨벳《Chill Kill》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "johsTm--sLA",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/136562",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Chill Kill"
+      },
+      "artists": {
+        "zhHans": "Red Velvet",
+        "zhHant": "Red Velvet",
+        "en": "Red Velvet"
+      },
+      "youtubeSortIndex": 256,
+      "youtubePublishedAt": "2023-11-29T12:00:00.000Z",
+      "listSortPublishedAtMs": 1701259200000,
+      "listSortPublishedAt": "2023-11-29T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_drama",
+      "title": "Drama",
+      "displayTitle": "Drama",
+      "originalArtist": "aespa",
+      "canonicalArtistId": "aespa",
+      "canonicalArtistDisplayName": "aespa",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/f7/f0/5c/f7f05ce4-e5a4-900d-e087-1dd9668b2b34/888735945939.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/drama/Drama钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/drama/performance.mid",
+      "musicXmlUrl": "/local-imports/drama/score.musicxml",
+      "duration": "03:38",
+      "durationSeconds": 218.48816326530613,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "drama",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=M52g_uJ90MA",
+      "youtubeVideoTitle": "aespa 에스파《Drama》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "M52g_uJ90MA",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/136037",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Drama"
+      },
+      "artists": {
+        "zhHans": "aespa",
+        "zhHant": "aespa",
+        "en": "aespa"
+      },
+      "youtubeSortIndex": 257,
+      "youtubePublishedAt": "2023-11-25T12:00:00.000Z",
+      "listSortPublishedAtMs": 1700913600000,
+      "listSortPublishedAt": "2023-11-25T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_轻涟",
+      "title": "轻涟",
+      "displayTitle": "轻涟",
+      "originalArtist": "原神",
+      "canonicalArtistId": "genshin-impact",
+      "canonicalArtistDisplayName": "原神",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "source_attribution_genshin_impact"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/9563dcf503319f091cd110a26e10042c/1000x1000-000000-80-0-0.jpg",
+      "mp3Url": "/local-imports/轻涟/audio.mp3",
+      "midiUrl": "/local-imports/轻涟/performance.mid",
+      "musicXmlUrl": "/local-imports/轻涟/score.musicxml",
+      "duration": "02:26",
+      "durationSeconds": 146.376,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "轻涟",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=1Dk2T-AmWUs",
+      "youtubeVideoTitle": "原神 Genshin Impact《轻涟》 “La vaguelette ” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "1Dk2T-AmWUs",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/135067",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "轻涟",
+        "en": "Qing Lian"
+      },
+      "artists": {
+        "zhHans": "原神",
+        "zhHant": "原神",
+        "en": "Genshin Impact"
+      },
+      "youtubeSortIndex": 259,
+      "youtubePublishedAt": "2023-11-18T12:00:00.000Z",
+      "listSortPublishedAtMs": 1700308800000,
+      "listSortPublishedAt": "2023-11-18T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_爱到1440",
+      "title": "爱到1440",
+      "displayTitle": "爱到1440",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e6/22/8d/e6228d40-e622-a4ce-928d-008b0691e530/6923356187284.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/爱到1440/爱到1440 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/爱到1440/performance.mid",
+      "musicXmlUrl": "/local-imports/爱到1440/score.musicxml",
+      "duration": "03:17",
+      "durationSeconds": 197.1722448979592,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "爱到1440",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=RRTdr0Cfdes",
+      "youtubeVideoTitle": "TNT时代少年团《爱到1440》 Teens In Times Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "RRTdr0Cfdes",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/134583",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "爱到1440",
+        "en": "Ai Dao 1440"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 260,
+      "youtubePublishedAt": "2023-11-15T12:00:00.000Z",
+      "listSortPublishedAtMs": 1700049600000,
+      "listSortPublishedAt": "2023-11-15T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_多云转晴又转阴",
+      "title": "多云转晴又转阴",
+      "displayTitle": "多云转晴又转阴",
+      "originalArtist": "王源",
+      "canonicalArtistId": "wang-yuan",
+      "canonicalArtistDisplayName": "王源",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d4/15/e5/d415e57a-4fd9-33d9-7698-e7a9818b2365/4894972916409.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/多云转晴又转阴/多云转晴又转阴 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/多云转晴又转阴/performance.mid",
+      "musicXmlUrl": "/local-imports/多云转晴又转阴/score.musicxml",
+      "duration": "03:49",
+      "durationSeconds": 228.7804081632653,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "多云转晴又转阴",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=3Qr2Z2ceH40",
+      "youtubeVideoTitle": "王源 Roy Wang 《多云转晴又转阴》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "3Qr2Z2ceH40",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/134105",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "多云转晴又转阴",
+        "en": "Duo Yun Zhuan Qing You Zhuan Yin"
+      },
+      "artists": {
+        "zhHans": "王源",
+        "zhHant": "王源",
+        "en": "Roy Wang"
+      },
+      "youtubeSortIndex": 261,
+      "youtubePublishedAt": "2023-11-12T12:00:00.000Z",
+      "listSortPublishedAtMs": 1699790400000,
+      "listSortPublishedAt": "2023-11-12T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_call_of_silence",
+      "title": "Call of silence",
+      "displayTitle": "Call of silence",
+      "originalArtist": "「進撃の巨人」",
+      "canonicalArtistId": "hiroyuki-sawano",
+      "canonicalArtistDisplayName": "泽野弘之",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_call_of_silence_sawano"
+      ],
+      "tags": [
+        "日系流行",
+        "动漫"
+      ],
+      "categoryKeys": [
+        "jpop",
+        "anime"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music19/v4/d7/97/08/d797084f-05bf-197c-0aee-56480ee60380/PCCG_01615.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/call of silence/Call of Silence钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/call of silence/performance.mid",
+      "musicXmlUrl": "/local-imports/call of silence/score.musicxml",
+      "duration": "02:49",
+      "durationSeconds": 169.40408163265306,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "call of silence",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=Dq_Nfj1ynts",
+      "youtubeVideoTitle": "「進撃の巨人」（Attack On Titan）Season 2  Hiroyuki Sawano-《Call of Silence》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "Dq_Nfj1ynts",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/133894",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Call Of Silence"
+      },
+      "artists": {
+        "zhHans": "泽野弘之",
+        "zhHant": "澤野弘之",
+        "en": "Hiroyuki Sawano"
+      },
+      "youtubeSortIndex": 262,
+      "youtubePublishedAt": "2023-11-10T12:00:00.000Z",
+      "listSortPublishedAtMs": 1699617600000,
+      "listSortPublishedAt": "2023-11-10T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_crush",
+      "title": "Crush",
+      "displayTitle": "Crush",
+      "originalArtist": "ZEROBASEONE",
+      "canonicalArtistId": "zerobaseone",
+      "canonicalArtistDisplayName": "ZEROBASEONE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/e8/44/33/e84433e6-b791-2506-e4d0-d5baab5e71e9/196922693038_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/crush/CRUSH钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/crush/performance.mid",
+      "musicXmlUrl": "/local-imports/crush/score.musicxml",
+      "duration": "02:48",
+      "durationSeconds": 168.35918367346937,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "crush",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=q1UvItjxyt4",
+      "youtubeVideoTitle": "ZEROBASEONE 제로베이스원 《CRUSH (가시)》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "q1UvItjxyt4",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/133366",
+      "linkStatus": "needsReview",
+      "titles": {
+        "en": "Crush"
+      },
+      "artists": {
+        "zhHans": "ZEROBASEONE",
+        "zhHant": "ZEROBASEONE",
+        "en": "ZEROBASEONE"
+      },
+      "youtubeSortIndex": 263,
+      "youtubePublishedAt": "2023-11-07T12:00:00.000Z",
+      "listSortPublishedAtMs": 1699358400000,
+      "listSortPublishedAt": "2023-11-07T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_其实都没有",
+      "title": "其实都没有",
+      "displayTitle": "其实都没有",
+      "originalArtist": "于冬然",
+      "canonicalArtistId": "from-youtube/于冬然",
+      "canonicalArtistDisplayName": "于冬然",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "youtube_title_freeform"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000OVNEL3VrAT0.jpg",
+      "mp3Url": "/local-imports/其实都没有/audio.mp3",
+      "midiUrl": "/local-imports/其实都没有/performance.mid",
+      "musicXmlUrl": "/local-imports/其实都没有/score.musicxml",
+      "duration": "04:50",
+      "durationSeconds": 289.9591836734694,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "其实都没有",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=QrZbWSsrNg8",
+      "youtubeVideoTitle": "于冬然《其实都没有 》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "QrZbWSsrNg8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/133014",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "其实都没有",
+        "en": "Qi Shi Du Mei You"
+      },
+      "artists": {
+        "zhHans": "于冬然",
+        "zhHant": "于冬然"
+      },
+      "youtubeSortIndex": 264,
+      "youtubePublishedAt": "2023-11-04T12:00:00.000Z",
+      "listSortPublishedAtMs": 1699099200000,
+      "listSortPublishedAt": "2023-11-04T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_蝴蝶",
+      "title": "蝴蝶",
+      "displayTitle": "蝴蝶",
+      "originalArtist": "时代少年团 张真源",
+      "canonicalArtistId": "zhang-zhen-yuan",
+      "canonicalArtistDisplayName": "张真源",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273a5bf69a343c21daa96164631",
+      "mp3Url": "/local-imports/蝴蝶/蝴蝶 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/蝴蝶/performance.mid",
+      "musicXmlUrl": "/local-imports/蝴蝶/score.musicxml",
+      "duration": "04:50",
+      "durationSeconds": 289.9591836734694,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "蝴蝶",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=C3ZbXkn4_dk",
+      "youtubeVideoTitle": "TNT时代少年团  张真源《蝴蝶》钢琴版 Teens In Times Zhang Zhenyuan Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "C3ZbXkn4_dk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/132699",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "蝴蝶",
+        "en": "Hu Die"
+      },
+      "artists": {
+        "zhHans": "张真源",
+        "zhHant": "張真源",
+        "en": "Zhang Zhenyuan"
+      },
+      "youtubeSortIndex": 265,
+      "youtubePublishedAt": "2023-11-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1698926400000,
+      "listSortPublishedAt": "2023-11-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_perfect_night",
+      "title": "Perfect night",
+      "displayTitle": "Perfect night",
+      "originalArtist": "LE SSERAFIM OVERWATCH2",
+      "canonicalArtistId": "le-sserafim",
+      "canonicalArtistDisplayName": "LE SSERAFIM",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/a0/cd/40/a0cd4013-89cf-0554-0aa5-1ac5a0bb3db1/196922680779_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/perfect night/Perfect Night钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/perfect night/performance.mid",
+      "musicXmlUrl": "/local-imports/perfect night/score.musicxml",
+      "duration": "02:39",
+      "durationSeconds": 158.85061224489795,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "perfect night",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=WllBFnOP3z8",
+      "youtubeVideoTitle": "LE SSERAFIM (르세라핌)  × OVERWATCH2《Perfect Night 》  Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "WllBFnOP3z8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/132305",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Perfect Night"
+      },
+      "artists": {
+        "zhHans": "LE SSERAFIM",
+        "zhHant": "LE SSERAFIM",
+        "en": "LE SSERAFIM"
+      },
+      "youtubeSortIndex": 266,
+      "youtubePublishedAt": "2023-10-30T12:00:00.000Z",
+      "listSortPublishedAtMs": 1698667200000,
+      "listSortPublishedAt": "2023-10-30T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_baddie",
+      "title": "Baddie",
+      "displayTitle": "Baddie",
+      "originalArtist": "IVE",
+      "canonicalArtistId": "ive",
+      "canonicalArtistDisplayName": "IVE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/2e/a2/87/2ea2870f-9700-bb4e-df68-abd2acfb5fb9/197189809583.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/baddie/Baddie钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/baddie/performance.mid",
+      "musicXmlUrl": "/local-imports/baddie/score.musicxml",
+      "duration": "02:36",
+      "durationSeconds": 156.02938775510205,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "baddie",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=eLBQ62LmwuU",
+      "youtubeVideoTitle": "IVE 아이브《Baddie》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "eLBQ62LmwuU",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/132102",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Baddie"
+      },
+      "artists": {
+        "zhHans": "IVE",
+        "zhHant": "IVE",
+        "en": "IVE"
+      },
+      "youtubeSortIndex": 267,
+      "youtubePublishedAt": "2023-10-28T12:00:00.000Z",
+      "listSortPublishedAtMs": 1698494400000,
+      "listSortPublishedAt": "2023-10-28T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_god_of_music",
+      "title": "God of music",
+      "displayTitle": "God of music",
+      "originalArtist": "SEVENTEEN",
+      "canonicalArtistId": "seventeen",
+      "canonicalArtistDisplayName": "SEVENTEEN",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e3/76/df/e376df28-c05b-00fd-72de-9d42377a306b/196922628580_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/god of music/God of Music钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/god of music/performance.mid",
+      "musicXmlUrl": "/local-imports/god of music/score.musicxml",
+      "duration": "03:24",
+      "durationSeconds": 204.04244897959182,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "god of music",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=jcdJHhN5K5g",
+      "youtubeVideoTitle": "SEVENTEEN 세븐틴《음악의 신》（God of Music） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "jcdJHhN5K5g",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/131724",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "God of Music"
+      },
+      "artists": {
+        "zhHans": "SEVENTEEN",
+        "zhHant": "SEVENTEEN",
+        "en": "SEVENTEEN"
+      },
+      "youtubeSortIndex": 268,
+      "youtubePublishedAt": "2023-10-25T12:00:00.000Z",
+      "listSortPublishedAtMs": 1698235200000,
+      "listSortPublishedAt": "2023-10-25T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_撒野",
+      "title": "撒野",
+      "displayTitle": "撒野",
+      "originalArtist": "凯瑟喵",
+      "canonicalArtistId": "kai-se-miao",
+      "canonicalArtistDisplayName": "凯瑟喵",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_saye_vocalist_凯瑟喵"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/87/aa/e0/87aae041-2c01-e428-ae1f-23981363b480/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/撒野/撒野 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/撒野/performance.mid",
+      "musicXmlUrl": "/local-imports/撒野/score.musicxml",
+      "duration": "04:13",
+      "durationSeconds": 252.91755102040815,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "撒野",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=johfYPntWCA",
+      "youtubeVideoTitle": "巫哲小说《撒野》官方同名主题曲《撒野》（SAYE） 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "johfYPntWCA",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/130846",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "撒野",
+        "en": "Sa Ye"
+      },
+      "artists": {
+        "zhHans": "凯瑟喵",
+        "zhHant": "凯瑟喵",
+        "en": "Kaiser"
+      },
+      "youtubeSortIndex": 269,
+      "youtubePublishedAt": "2023-10-21T12:00:00.000Z",
+      "listSortPublishedAtMs": 1697889600000,
+      "listSortPublishedAt": "2023-10-21T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_若梦",
+      "title": "若梦",
+      "displayTitle": "若梦",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/7c/db/c4/7cdbc482-182d-e5d0-9b84-f8b85fdc529c/4894944789727.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/若梦/若梦 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/若梦/performance.mid",
+      "musicXmlUrl": "/local-imports/若梦/score.musicxml",
+      "duration": "04:07",
+      "durationSeconds": 246.88326530612244,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "若梦",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=eD6MqDXOch0",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen 《若梦》 - 《与君歌》 “Stand By Me”  主题曲 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "eD6MqDXOch0",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/130380",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "若梦",
+        "en": "Ruo Meng"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 270,
+      "youtubePublishedAt": "2023-10-18T12:00:00.000Z",
+      "listSortPublishedAtMs": 1697630400000,
+      "listSortPublishedAt": "2023-10-18T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_奢香夫人",
+      "title": "奢香夫人",
+      "displayTitle": "奢香夫人",
+      "originalArtist": "凤凰传奇",
+      "canonicalArtistId": "feng-huang-chuan-qi",
+      "canonicalArtistDisplayName": "凤凰传奇",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/11b172447e8ace623490d4288ef95f4b/1000x1000-000000-80-0-0.jpg",
+      "mp3Url": "/local-imports/奢香夫人/奢香夫人 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/奢香夫人/performance.mid",
+      "musicXmlUrl": "/local-imports/奢香夫人/score.musicxml",
+      "duration": "04:20",
+      "durationSeconds": 260.28408163265306,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "奢香夫人",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=UQ_1DGAlB7s",
+      "youtubeVideoTitle": "凤凰传奇（鳳凰傳奇）《奢香夫人 》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "UQ_1DGAlB7s",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/129937",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "奢香夫人",
+        "en": "She Xiang Fu Ren"
+      },
+      "artists": {
+        "zhHans": "凤凰传奇",
+        "zhHant": "鳳凰傳奇",
+        "en": "Phoenix Legend"
+      },
+      "youtubeSortIndex": 271,
+      "youtubePublishedAt": "2023-10-14T12:00:00.000Z",
+      "listSortPublishedAtMs": 1697284800000,
+      "listSortPublishedAt": "2023-10-14T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_off_the_record",
+      "title": "Off the record",
+      "displayTitle": "Off the record",
+      "originalArtist": "IVE",
+      "canonicalArtistId": "ive",
+      "canonicalArtistDisplayName": "IVE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/6c/2e/be/6c2ebe9c-5107-e055-9e93-05a45d0a703b/197189827297.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/off the record/Off The Record钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/off the record/performance.mid",
+      "musicXmlUrl": "/local-imports/off the record/score.musicxml",
+      "duration": "03:11",
+      "durationSeconds": 191.13795918367347,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "off the record",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=X48E2Ey99tA",
+      "youtubeVideoTitle": "IVE 아이브《Off The Record》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "X48E2Ey99tA",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/129379",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Off The Record"
+      },
+      "artists": {
+        "zhHans": "IVE",
+        "zhHant": "IVE",
+        "en": "IVE"
+      },
+      "youtubeSortIndex": 272,
+      "youtubePublishedAt": "2023-10-11T12:00:00.000Z",
+      "listSortPublishedAtMs": 1697025600000,
+      "listSortPublishedAt": "2023-10-11T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_Either_way",
+      "title": "Either way",
+      "displayTitle": "Either way",
+      "originalArtist": "IVE",
+      "canonicalArtistId": "ive",
+      "canonicalArtistDisplayName": "IVE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/62/a7/18/62a71807-d62d-9924-42d4-fe64ba8b1dca/197189802164.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/Either way/audio.mp3",
+      "midiUrl": "/local-imports/Either way/performance.mid",
+      "musicXmlUrl": "/local-imports/Either way/score.musicxml",
+      "duration": "04:13",
+      "durationSeconds": 252.91755102040815,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "Either way",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=sadpVQoPoHk",
+      "youtubeVideoTitle": "IVE 아이브《Either Way》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "sadpVQoPoHk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/128862",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Either Way"
+      },
+      "artists": {
+        "zhHans": "IVE",
+        "zhHant": "IVE",
+        "en": "IVE"
+      },
+      "youtubeSortIndex": 273,
+      "youtubePublishedAt": "2023-10-08T12:00:00.000Z",
+      "listSortPublishedAtMs": 1696766400000,
+      "listSortPublishedAt": "2023-10-08T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_GODS",
+      "title": "GODS",
+      "displayTitle": "GODS",
+      "originalArtist": "NewJeans Worlds 2023 Anthem - League of Legends",
+      "canonicalArtistId": "newjeans",
+      "canonicalArtistDisplayName": "NewJeans",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/59/e0/3059e000-eb6f-6c08-4387-c1ee9d38d962/00198704670657_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/GODS/GODS钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/GODS/performance.mid",
+      "musicXmlUrl": "/local-imports/GODS/score.musicxml",
+      "duration": "03:41",
+      "durationSeconds": 220.55183673469386,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "GODS",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=7jFXqZ-gE6E",
+      "youtubeVideoTitle": "NewJeans (뉴진스) Worlds 2023 Anthem - League of Legends 《GODS 》 “登神”  Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "7jFXqZ-gE6E",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/127803",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Gods"
+      },
+      "artists": {
+        "zhHans": "NewJeans",
+        "zhHant": "NewJeans",
+        "en": "NewJeans"
+      },
+      "youtubeSortIndex": 274,
+      "youtubePublishedAt": "2023-10-05T12:00:00.000Z",
+      "listSortPublishedAtMs": 1696507200000,
+      "listSortPublishedAt": "2023-10-05T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_风之海",
+      "title": "风之海",
+      "displayTitle": "风之海",
+      "originalArtist": "华晨宇",
+      "canonicalArtistId": "hua-chen-yu",
+      "canonicalArtistDisplayName": "华晨宇",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/c3e1a6b20c09aa945dfe4c541254e306/1000x1000-000000-80-0-0.jpg",
+      "mp3Url": "/local-imports/风之海/风之海 钢琴示例 - CIP Music编配演奏.mp3",
+      "midiUrl": "/local-imports/风之海/performance.mid",
+      "musicXmlUrl": "/local-imports/风之海/score.musicxml",
+      "duration": "04:34",
+      "durationSeconds": 273.78938775510204,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "风之海",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=-SD_jc-HyZw",
+      "youtubeVideoTitle": "华晨宇 Hua Chenyu《风之海 》 “Sea of Wind” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "-SD_jc-HyZw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/127803",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "风之海",
+        "en": "Feng Zhi Hai"
+      },
+      "artists": {
+        "zhHans": "华晨宇",
+        "zhHant": "華晨宇",
+        "en": "Hua Chenyu"
+      },
+      "youtubeSortIndex": 275,
+      "youtubePublishedAt": "2023-10-01T12:00:00.000Z",
+      "listSortPublishedAtMs": 1696161600000,
+      "listSortPublishedAt": "2023-10-01T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_blue_刘耀文",
+      "title": "Blue",
+      "displayTitle": "Blue",
+      "originalArtist": "刘耀文",
+      "canonicalArtistId": "liu-yao-wen",
+      "canonicalArtistDisplayName": "刘耀文",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/11/84/57/11845784-ec66-5be1-b99c-58b9fac9579e/24UMGIM47882.rgb.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/blue（刘耀文）/audio.mp3",
+      "midiUrl": "/local-imports/blue（刘耀文）/performance.mid",
+      "musicXmlUrl": "/local-imports/blue（刘耀文）/score.musicxml",
+      "duration": "02:48",
+      "durationSeconds": 168.0457142857143,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "blue（刘耀文）",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=zJzJG4djvOk",
+      "youtubeVideoTitle": "TNT时代少年团  刘耀文《Blue》钢琴版 Teens In Times Liu Yao Wen Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "zJzJG4djvOk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/127491",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "Blue",
+        "zhHant": "Blue",
+        "en": "Blue"
+      },
+      "artists": {
+        "zhHans": "刘耀文",
+        "zhHant": "劉耀文",
+        "en": "Liu Yaowen"
+      },
+      "youtubeSortIndex": 276,
+      "youtubePublishedAt": "2023-09-28T12:00:00.000Z",
+      "listSortPublishedAtMs": 1695902400000,
+      "listSortPublishedAt": "2023-09-28T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_凄美地",
+      "title": "凄美地",
+      "displayTitle": "凄美地",
+      "originalArtist": "郭顶",
+      "canonicalArtistId": "guo-ding",
+      "canonicalArtistDisplayName": "郭顶",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273a0afd108c5474ad64f23faae",
+      "mp3Url": "/local-imports/凄美地/audio.mp3",
+      "midiUrl": "/local-imports/凄美地/performance.mid",
+      "musicXmlUrl": "/local-imports/凄美地/score.musicxml",
+      "duration": "04:06",
+      "durationSeconds": 245.7861224489796,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "凄美地",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=OcRFq1gmBRw",
+      "youtubeVideoTitle": "郭顶（郭頂）Guo Ding《凄美地》 “The Fog Space” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "OcRFq1gmBRw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/126834",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "凄美地",
+        "en": "Qi Mei Di"
+      },
+      "artists": {
+        "zhHans": "郭顶",
+        "zhHant": "郭頂",
+        "en": "Guo Ding"
+      },
+      "youtubeSortIndex": 277,
+      "youtubePublishedAt": "2023-09-24T12:00:00.000Z",
+      "listSortPublishedAtMs": 1695556800000,
+      "listSortPublishedAt": "2023-09-24T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_玫瑰少年",
+      "title": "玫瑰少年",
+      "displayTitle": "玫瑰少年",
+      "originalArtist": "五月天",
+      "canonicalArtistId": "mayday",
+      "canonicalArtistDisplayName": "五月天",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001YhoWf2XcCS7.jpg",
+      "mp3Url": "/local-imports/玫瑰少年/audio.mp3",
+      "midiUrl": "/local-imports/玫瑰少年/performance.mid",
+      "musicXmlUrl": "/local-imports/玫瑰少年/score.musicxml",
+      "duration": "03:58",
+      "durationSeconds": 237.53142857142856,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "玫瑰少年",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=xdEWmcwRanY",
+      "youtubeVideoTitle": "五月天 MAYDAY《玫瑰少年》 “Womxnly” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "xdEWmcwRanY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/126633",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "玫瑰少年",
+        "en": "Mei Gui Shao Nian"
+      },
+      "artists": {
+        "zhHans": "五月天",
+        "zhHant": "五月天",
+        "en": "Mayday"
+      },
+      "youtubeSortIndex": 278,
+      "youtubePublishedAt": "2023-09-22T12:00:00.000Z",
+      "listSortPublishedAtMs": 1695384000000,
+      "listSortPublishedAt": "2023-09-22T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_时间之海",
+      "title": "时间之海",
+      "displayTitle": "时间之海",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001HwPxm0Mw7Ej.jpg",
+      "mp3Url": "/local-imports/时间之海/audio.mp3",
+      "midiUrl": "/local-imports/时间之海/performance.mid",
+      "musicXmlUrl": "/local-imports/时间之海/score.musicxml",
+      "duration": "03:34",
+      "durationSeconds": 213.55102040816325,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "时间之海",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=CiGjP6ne708",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen 《时间之海》Sea of Time - “ I Am Nobody”   《异人之下》主题曲 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "CiGjP6ne708",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/126262",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "时间之海",
+        "en": "Shi Jian Zhi Hai"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 279,
+      "youtubePublishedAt": "2023-09-19T12:00:00.000Z",
+      "listSortPublishedAtMs": 1695124800000,
+      "listSortPublishedAt": "2023-09-19T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_上海一九四三",
+      "title": "上海一九四三",
+      "displayTitle": "上海一九四三",
+      "originalArtist": "周杰伦",
+      "canonicalArtistId": "jay-chou",
+      "canonicalArtistDisplayName": "周杰伦",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000I5jJB3blWeN.jpg",
+      "mp3Url": "/local-imports/上海一九四三/audio.mp3",
+      "midiUrl": "/local-imports/上海一九四三/performance.mid",
+      "musicXmlUrl": "/local-imports/上海一九四三/score.musicxml",
+      "duration": "03:11",
+      "durationSeconds": 191.42530612244897,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "上海一九四三",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=gILTH_vniyI",
+      "youtubeVideoTitle": "周杰伦（周杰倫）Jay Chou《上海 一九四三 》 “Shanghai 1943” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "gILTH_vniyI",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/126008",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "上海一九四三",
+        "en": "Shang Hai Yi Jiu Si San"
+      },
+      "artists": {
+        "zhHans": "周杰伦",
+        "zhHant": "周杰倫",
+        "en": "Jay Chou"
+      },
+      "youtubeSortIndex": 280,
+      "youtubePublishedAt": "2023-09-17T12:00:00.000Z",
+      "listSortPublishedAtMs": 1694952000000,
+      "listSortPublishedAt": "2023-09-17T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_Fade",
+      "title": "Fade",
+      "displayTitle": "Fade",
+      "originalArtist": "Alan Walker",
+      "canonicalArtistId": "alan-walker",
+      "canonicalArtistDisplayName": "Alan Walker",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/1f/48/c0/1f48c0ab-7710-1724-e737-b2f6e106a747/7333236909117.png/600x600bb.jpg",
+      "mp3Url": "/local-imports/Fade/audio.mp3",
+      "midiUrl": "/local-imports/Fade/performance.mid",
+      "musicXmlUrl": "/local-imports/Fade/score.musicxml",
+      "duration": "03:31",
+      "durationSeconds": 210.70367346938775,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "Fade",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=D8byw3Cm0do",
+      "youtubeVideoTitle": "Alan Walker 《Faded》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "D8byw3Cm0do",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/125661",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Fade"
+      },
+      "artists": {
+        "zhHans": "Alan Walker",
+        "zhHant": "Alan Walker",
+        "en": "Alan Walker"
+      },
+      "youtubeSortIndex": 281,
+      "youtubePublishedAt": "2023-09-14T12:00:00.000Z",
+      "listSortPublishedAtMs": 1694692800000,
+      "listSortPublishedAt": "2023-09-14T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_坏女孩",
+      "title": "坏女孩",
+      "displayTitle": "坏女孩",
+      "originalArtist": "徐良",
+      "canonicalArtistId": "xu-liang",
+      "canonicalArtistDisplayName": "徐良",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_huainvhai_xu_liang_no_xiaoling_bucket"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/74/57/f4/7457f454-c091-7bc5-0fa5-e430d43001cc/8433391720066.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/坏女孩/audio.mp3",
+      "midiUrl": "/local-imports/坏女孩/performance.mid",
+      "musicXmlUrl": "/local-imports/坏女孩/score.musicxml",
+      "duration": "04:05",
+      "durationSeconds": 244.8195918367347,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "坏女孩",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=muUKj6PA7PA",
+      "youtubeVideoTitle": "徐良、小凌 -《坏女孩》 “披荆斩棘3” Call Me By Fire S3 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "muUKj6PA7PA",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/125252",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "坏女孩",
+        "en": "Pi Nu Hai"
+      },
+      "artists": {
+        "zhHans": "徐良",
+        "zhHant": "徐良",
+        "en": "Xu Liang"
+      },
+      "youtubeSortIndex": 282,
+      "youtubePublishedAt": "2023-09-10T12:00:00.000Z",
+      "listSortPublishedAtMs": 1694347200000,
+      "listSortPublishedAt": "2023-09-10T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_云之羽",
+      "title": "云之羽",
+      "displayTitle": "云之羽",
+      "originalArtist": "张杰",
+      "canonicalArtistId": "zhang-jie",
+      "canonicalArtistDisplayName": "张杰",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/f6/88/f2/f688f286-1181-7f82-ed03-5a4d333e0318/4894944281757.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/云之羽/audio.mp3",
+      "midiUrl": "/local-imports/云之羽/performance.mid",
+      "musicXmlUrl": "/local-imports/云之羽/score.musicxml",
+      "duration": "04:19",
+      "durationSeconds": 258.76897959183674,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "云之羽",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=OiZ4Vxw7OjU",
+      "youtubeVideoTitle": "张杰 Jason Zhang《云之羽》 -  电视剧《云之羽》\" My Journey To You \"主题曲 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "OiZ4Vxw7OjU",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/124981",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "云之羽",
+        "en": "Yun Zhi Yu"
+      },
+      "artists": {
+        "zhHans": "张杰",
+        "zhHant": "张杰",
+        "en": "Jason Zhang"
+      },
+      "youtubeSortIndex": 283,
+      "youtubePublishedAt": "2023-09-08T12:00:00.000Z",
+      "listSortPublishedAtMs": 1694174400000,
+      "listSortPublishedAt": "2023-09-08T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_唯爱",
+      "title": "唯爱",
+      "displayTitle": "唯爱",
+      "originalArtist": "詹雯婷",
+      "canonicalArtistId": "faye-zhan",
+      "canonicalArtistDisplayName": "詹雯婷",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/6e9924f121c4be9d174b3ea715b367d9/1000x1000-000000-80-0-0.jpg",
+      "mp3Url": "/local-imports/唯爱/audio.mp3",
+      "midiUrl": "/local-imports/唯爱/performance.mid",
+      "musicXmlUrl": "/local-imports/唯爱/score.musicxml",
+      "duration": "03:18",
+      "durationSeconds": 198.3738775510204,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "唯爱",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=-piHFLq2Y7Y",
+      "youtubeVideoTitle": "Faye詹雯婷 《唯爱》Only Love - 《七时吉祥》“Love You Seven Times” 主题曲  钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "-piHFLq2Y7Y",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/124448",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "唯爱",
+        "en": "Wei Ai"
+      },
+      "artists": {
+        "zhHans": "詹雯婷",
+        "zhHant": "詹雯婷",
+        "en": "Faye"
+      },
+      "youtubeSortIndex": 285,
+      "youtubePublishedAt": "2023-09-03T12:00:00.000Z",
+      "listSortPublishedAtMs": 1693742400000,
+      "listSortPublishedAt": "2023-09-03T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_悬溺",
+      "title": "悬溺",
+      "displayTitle": "悬溺",
+      "originalArtist": "葛东琪",
+      "canonicalArtistId": "ge-dong-qi",
+      "canonicalArtistDisplayName": "葛东琪",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3e/5b/ab/3e5bab9d-5a03-8de2-d4b3-483793d605ea/25UM1IM16949.rgb.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/悬溺/audio.mp3",
+      "midiUrl": "/local-imports/悬溺/performance.mid",
+      "musicXmlUrl": "/local-imports/悬溺/score.musicxml",
+      "duration": "03:13",
+      "durationSeconds": 193.38448979591837,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "悬溺",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=8DWs2DjH-s4",
+      "youtubeVideoTitle": "葛东琪（葛東琪）《悬溺》（懸溺） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "8DWs2DjH-s4",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/123670",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "悬溺",
+        "en": "Xuan Ni"
+      },
+      "artists": {
+        "zhHans": "葛东琪",
+        "zhHant": "葛東琪",
+        "en": "Ge Dongqi"
+      },
+      "youtubeSortIndex": 287,
+      "youtubePublishedAt": "2023-08-29T12:00:00.000Z",
+      "listSortPublishedAtMs": 1693310400000,
+      "listSortPublishedAt": "2023-08-29T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_no_complaints",
+      "title": "No complaints",
+      "displayTitle": "No complaints",
+      "originalArtist": "时代少年团 严浩翔",
+      "canonicalArtistId": "yan-hao-xiang",
+      "canonicalArtistDisplayName": "严浩翔",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/32/0d/a9/320da956-18aa-40c8-c50a-4d7fca7a705c/199999058885.png/600x600bb.jpg",
+      "mp3Url": "/local-imports/no complaints/audio.mp3",
+      "midiUrl": "/local-imports/no complaints/performance.mid",
+      "musicXmlUrl": "/local-imports/no complaints/score.musicxml",
+      "duration": "03:42",
+      "durationSeconds": 222.4326530612245,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "no complaints",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=_trEdrLG0Ls",
+      "youtubeVideoTitle": "TNT时代少年团  严浩翔《No Complaints》钢琴版 Teens In Times Yan Haoxiang ‘No Complaints' Piano Cover",
+      "youtubeVideoId": "_trEdrLG0Ls",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/123058",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "No Complaints"
+      },
+      "artists": {
+        "zhHans": "严浩翔",
+        "zhHant": "嚴浩翔",
+        "en": "Yan Haoxiang"
+      },
+      "youtubeSortIndex": 288,
+      "youtubePublishedAt": "2023-08-26T12:00:00.000Z",
+      "listSortPublishedAtMs": 1693051200000,
+      "listSortPublishedAt": "2023-08-26T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_明明",
+      "title": "明明",
+      "displayTitle": "明明",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001Fq3nv04WMKD.jpg",
+      "mp3Url": "/local-imports/明明/audio.mp3",
+      "midiUrl": "/local-imports/明明/performance.mid",
+      "musicXmlUrl": "/local-imports/明明/score.musicxml",
+      "duration": "03:44",
+      "durationSeconds": 224.13061224489795,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "明明",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=H_d--KrjUv8",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen 《明明》 - “The Legend of Zhuohua”  《灼灼风流》主题曲 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "H_d--KrjUv8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/122728",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "明明",
+        "en": "Ming Ming"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 289,
+      "youtubePublishedAt": "2023-08-24T12:00:00.000Z",
+      "listSortPublishedAtMs": 1692878400000,
+      "listSortPublishedAt": "2023-08-24T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_就在江湖之上",
+      "title": "就在江湖之上",
+      "displayTitle": "就在江湖之上",
+      "originalArtist": "刘宇宁",
+      "canonicalArtistId": "liu-yu-ning",
+      "canonicalArtistDisplayName": "刘宇宁",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002CIQEt41OeLt.jpg",
+      "mp3Url": "/local-imports/就在江湖之上/audio.mp3",
+      "midiUrl": "/local-imports/就在江湖之上/performance.mid",
+      "musicXmlUrl": "/local-imports/就在江湖之上/score.musicxml",
+      "duration": "03:03",
+      "durationSeconds": 183.19673469387754,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "就在江湖之上",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=4QxODdVyqZw",
+      "youtubeVideoTitle": "摩登兄弟刘宇宁（摩登兄弟劉宇寧）《就在江湖之上》- 《莲花楼》\" Mysterious Lotus Casebook \"主题曲 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "4QxODdVyqZw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/122252",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "就在江湖之上",
+        "en": "Jiu Zai Jiang Hu Zhi Shang"
+      },
+      "artists": {
+        "zhHans": "刘宇宁",
+        "zhHant": "劉宇寧",
+        "en": "Liu Yuning"
+      },
+      "youtubeSortIndex": 290,
+      "youtubePublishedAt": "2023-08-20T12:00:00.000Z",
+      "listSortPublishedAtMs": 1692532800000,
+      "listSortPublishedAt": "2023-08-20T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_komorebi",
+      "title": "Komorebi",
+      "displayTitle": "Komorebi",
+      "originalArtist": "m-taku",
+      "canonicalArtistId": "m-taku",
+      "canonicalArtistDisplayName": "m-taku",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "日系流行",
+        "纯音乐"
+      ],
+      "categoryKeys": [
+        "jpop",
+        "instrumental"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/bc/66/5d/bc665dda-8631-4a28-1b62-10b9bb4645c6/artwork.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/komorebi/audio.mp3",
+      "midiUrl": "/local-imports/komorebi/performance.mid",
+      "musicXmlUrl": "/local-imports/komorebi/score.musicxml",
+      "duration": "03:32",
+      "durationSeconds": 211.848,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "komorebi",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=IpXoozpm_eg",
+      "youtubeVideoTitle": "m-taku 《Komorebi》(警笛版）“叶隙间洒落的阳光” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "IpXoozpm_eg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/121517",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Komorebi"
+      },
+      "artists": {
+        "zhHans": "m-taku",
+        "zhHant": "m-taku",
+        "en": "m-taku"
+      },
+      "youtubeSortIndex": 292,
+      "youtubePublishedAt": "2023-08-15T12:00:00.000Z",
+      "listSortPublishedAtMs": 1692100800000,
+      "listSortPublishedAt": "2023-08-15T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_这么可爱真是抱歉",
+      "title": "这么可爱真是抱歉",
+      "displayTitle": "这么可爱真是抱歉",
+      "originalArtist": "HoneyWorks / CV：早見沙織",
+      "canonicalArtistId": "honeyworks",
+      "canonicalArtistDisplayName": "HoneyWorks",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "日系流行"
+      ],
+      "categoryKeys": [
+        "jpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/4b/60/9e/4b609e0c-8410-0282-1783-d1856ec9210b/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/这么可爱真是抱歉/audio.mp3",
+      "midiUrl": "/local-imports/这么可爱真是抱歉/performance.mid",
+      "musicXmlUrl": "/local-imports/这么可爱真是抱歉/score.musicxml",
+      "duration": "03:37",
+      "durationSeconds": 217.008,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "这么可爱真是抱歉",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=xAOin7atTRE",
+      "youtubeVideoTitle": "HoneyWorks /（CV：早見沙織）\"可愛くてごめん\"《这么可爱真是抱歉》Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "xAOin7atTRE",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/121021",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "这么可爱真是抱歉",
+        "en": "Zhe Me Ke Ai Zhen Shi Bao Qian"
+      },
+      "artists": {
+        "zhHans": "HoneyWorks",
+        "zhHant": "HoneyWorks",
+        "en": "HoneyWorks"
+      },
+      "youtubeSortIndex": 293,
+      "youtubePublishedAt": "2023-08-11T12:00:00.000Z",
+      "listSortPublishedAtMs": 1691755200000,
+      "listSortPublishedAt": "2023-08-11T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_万物不如你",
+      "title": "万物不如你",
+      "displayTitle": "万物不如你",
+      "originalArtist": "张杰",
+      "canonicalArtistId": "zhang-jie",
+      "canonicalArtistDisplayName": "张杰",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002Pw7Di3NGWlY.jpg",
+      "mp3Url": "/local-imports/万物不如你/audio.mp3",
+      "midiUrl": "/local-imports/万物不如你/performance.mid",
+      "musicXmlUrl": "/local-imports/万物不如你/score.musicxml",
+      "duration": "04:03",
+      "durationSeconds": 243.04326530612244,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "万物不如你",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=FTq3jsdxgCo",
+      "youtubeVideoTitle": "张杰《万物不如你》“Nothing It Better Than You” - 《长相思》\" Lost You Forever \"主题曲 钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "FTq3jsdxgCo",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/120745",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "万物不如你",
+        "en": "Wan Wu Bu Ru Ni"
+      },
+      "artists": {
+        "zhHans": "张杰",
+        "zhHant": "张杰",
+        "en": "Jason Zhang"
+      },
+      "youtubeSortIndex": 294,
+      "youtubePublishedAt": "2023-08-09T12:00:00.000Z",
+      "listSortPublishedAtMs": 1691582400000,
+      "listSortPublishedAt": "2023-08-09T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_罗刹海市",
+      "title": "罗刹海市",
+      "displayTitle": "罗刹海市",
+      "originalArtist": "刀郎",
+      "canonicalArtistId": "dao-lang",
+      "canonicalArtistDisplayName": "刀郎",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001yI1NU2Mq3lz.jpg",
+      "mp3Url": "/local-imports/罗刹海市/audio.mp3",
+      "midiUrl": "/local-imports/罗刹海市/performance.mid",
+      "musicXmlUrl": "/local-imports/罗刹海市/score.musicxml",
+      "duration": "05:28",
+      "durationSeconds": 327.6277551020408,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "罗刹海市",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=RDsglyhhrac",
+      "youtubeVideoTitle": "刀郎《罗刹海市》Daolang “Raksha Haishi” Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "RDsglyhhrac",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/120228",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "罗刹海市",
+        "en": "Luo Cha Hai Shi"
+      },
+      "artists": {
+        "zhHans": "刀郎",
+        "zhHant": "刀郎",
+        "en": "Dao Lang"
+      },
+      "youtubeSortIndex": 295,
+      "youtubePublishedAt": "2023-08-04T12:00:00.000Z",
+      "listSortPublishedAtMs": 1691150400000,
+      "listSortPublishedAt": "2023-08-04T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_来生戏",
+      "title": "来生戏",
+      "displayTitle": "来生戏",
+      "originalArtist": "纸嫁衣",
+      "canonicalArtistId": "paper-bride",
+      "canonicalArtistDisplayName": "纸嫁衣",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_laishengxi_paper_bride_series"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000003uss0Q2oaCZ1.jpg",
+      "mp3Url": "/local-imports/来生戏/audio.mp3",
+      "midiUrl": "/local-imports/来生戏/performance.mid",
+      "musicXmlUrl": "/local-imports/来生戏/score.musicxml",
+      "duration": "03:25",
+      "durationSeconds": 204.64326530612246,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "来生戏",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=tqsB5cQ1FuQ",
+      "youtubeVideoTitle": "纸嫁衣5《无间梦境》主题曲 《来生戏》Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "tqsB5cQ1FuQ",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/119766",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "来生戏",
+        "en": "Lai Sheng Xi"
+      },
+      "artists": {
+        "zhHans": "纸嫁衣",
+        "zhHant": "纸嫁衣",
+        "en": "Paper Bride"
+      },
+      "youtubeSortIndex": 296,
+      "youtubePublishedAt": "2023-08-01T12:00:00.000Z",
+      "listSortPublishedAtMs": 1690891200000,
+      "listSortPublishedAt": "2023-08-01T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_水龙吟",
+      "title": "水龙吟",
+      "displayTitle": "水龙吟",
+      "originalArtist": "HOYO-MiX",
+      "canonicalArtistId": "honkai-star-rail",
+      "canonicalArtistDisplayName": "崩坏：星穹铁道",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "source_attribution_honkai_star_rail"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://img.youtube.com/vi/pHgEU0pvsyg/hqdefault.jpg",
+      "mp3Url": "/local-imports/水龙吟/audio.mp3",
+      "midiUrl": "/local-imports/水龙吟/performance.mid",
+      "musicXmlUrl": "/local-imports/水龙吟/score.musicxml",
+      "duration": "02:52",
+      "durationSeconds": 171.83346938775512,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "水龙吟",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=pHgEU0pvsyg",
+      "youtubeVideoTitle": "Honkai: Star Rail EP:\"Samudrartha\"《崩坏：星穹铁道》EP 《水龙吟》Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "pHgEU0pvsyg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/119426",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "水龙吟",
+        "zhHant": "水龍吟",
+        "en": "Samudrartha (Shuilongyin)"
+      },
+      "artists": {
+        "zhHans": "崩坏：星穹铁道",
+        "zhHant": "崩坏：星穹铁道",
+        "en": "Honkai: Star Rail"
+      },
+      "youtubeSortIndex": 297,
+      "youtubePublishedAt": "2023-07-29T12:00:00.000Z",
+      "listSortPublishedAtMs": 1690632000000,
+      "listSortPublishedAt": "2023-07-29T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_躺着真舒服",
+      "title": "躺着真舒服",
+      "displayTitle": "躺着真舒服",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000baZsq3XftLq.jpg",
+      "mp3Url": "/local-imports/躺着真舒服/audio.mp3",
+      "midiUrl": "/local-imports/躺着真舒服/performance.mid",
+      "musicXmlUrl": "/local-imports/躺着真舒服/score.musicxml",
+      "duration": "03:54",
+      "durationSeconds": 234.03102040816327,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "躺着真舒服",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=hlOBxA9aW9s",
+      "youtubeVideoTitle": "TNT时代少年团《躺着真舒服》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "hlOBxA9aW9s",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/119186",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "躺着真舒服",
+        "en": "Tang Zhao Zhen Shu Fu"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 298,
+      "youtubePublishedAt": "2023-07-27T12:00:00.000Z",
+      "listSortPublishedAtMs": 1690459200000,
+      "listSortPublishedAt": "2023-07-27T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_灯火万家",
+      "title": "灯火万家",
+      "displayTitle": "灯火万家",
+      "originalArtist": "王赫野",
+      "canonicalArtistId": "wang-he-ye",
+      "canonicalArtistDisplayName": "王赫野",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://i.ytimg.com/vi/lM6n8YPsXSI/hqdefault.jpg",
+      "mp3Url": "/local-imports/灯火万家/audio.mp3",
+      "midiUrl": "/local-imports/灯火万家/performance.mid",
+      "musicXmlUrl": "/local-imports/灯火万家/score.musicxml",
+      "duration": "03:37",
+      "durationSeconds": 216.816,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "灯火万家",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=lM6n8YPsXSI",
+      "youtubeVideoTitle": "《我的人间烟火》OST《灯火万家》王赫野 钢琴版 | Piano Cover by CIP Music",
+      "youtubeVideoId": "lM6n8YPsXSI",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/117610",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "灯火万家",
+        "en": "灯火万家"
+      },
+      "artists": {
+        "zhHans": "王赫野",
+        "zhHant": "王赫野",
+        "en": "Wang Heye"
+      },
+      "youtubeSortIndex": 300,
+      "youtubePublishedAt": "2023-07-22T12:00:00.000Z",
+      "listSortPublishedAtMs": 1690027200000,
+      "listSortPublishedAt": "2023-07-22T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_楼外楼",
+      "title": "楼外楼",
+      "displayTitle": "楼外楼",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000baZsq3XftLq.jpg",
+      "mp3Url": "/local-imports/楼外楼/audio.mp3",
+      "midiUrl": "/local-imports/楼外楼/performance.mid",
+      "musicXmlUrl": "/local-imports/楼外楼/score.musicxml",
+      "duration": "03:27",
+      "durationSeconds": 207.347687,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "楼外楼",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=_hiUpXazs7E",
+      "youtubeVideoTitle": "TNT时代少年团《楼外楼》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "_hiUpXazs7E",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/118115",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "楼外楼",
+        "en": "Lou Wai Lou"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 301,
+      "youtubePublishedAt": "2023-07-18T12:00:00.000Z",
+      "listSortPublishedAtMs": 1689681600000,
+      "listSortPublishedAt": "2023-07-18T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_当我奔向你",
+      "title": "当我奔向你",
+      "displayTitle": "当我奔向你",
+      "originalArtist": "林晨阳",
+      "canonicalArtistId": "from-youtube/林晨阳",
+      "canonicalArtistDisplayName": "林晨阳",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "youtube_title_freeform"
+      ],
+      "tags": [
+        "影视"
+      ],
+      "categoryKeys": [
+        "film"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273623351a17ae7fad161155772",
+      "mp3Url": "/local-imports/当我奔向你/audio.mp3",
+      "midiUrl": "/local-imports/当我奔向你/performance.mid",
+      "musicXmlUrl": "/local-imports/当我奔向你/score.musicxml",
+      "duration": "03:22",
+      "durationSeconds": 201.8481632653061,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "当我奔向你",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=zvESg9Or6FM",
+      "youtubeVideoTitle": "林晨阳《当我飞奔向你》\"When I Fly Towards You\" 主题曲《当我奔向你》钢琴版  Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "zvESg9Or6FM",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/113349",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "当我奔向你",
+        "en": "Dang Wo Ben Xiang Ni"
+      },
+      "artists": {
+        "zhHans": "林晨阳",
+        "zhHant": "林晨陽",
+        "en": "Lin Chenyang"
+      },
+      "youtubeSortIndex": 302,
+      "youtubePublishedAt": "2023-07-16T12:00:00.000Z",
+      "listSortPublishedAtMs": 1689508800000,
+      "listSortPublishedAt": "2023-07-16T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_in_bloom",
+      "title": "In bloom",
+      "displayTitle": "In bloom",
+      "originalArtist": "ZEROBASEONE",
+      "canonicalArtistId": "zerobaseone",
+      "canonicalArtistDisplayName": "ZEROBASEONE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/88/54/86/88548618-63ed-4bf1-65dd-51fb0d4f2d57/888272119350_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/in bloom/audio.mp3",
+      "midiUrl": "/local-imports/in bloom/performance.mid",
+      "musicXmlUrl": "/local-imports/in bloom/score.musicxml",
+      "duration": "02:59",
+      "durationSeconds": 178.9387755102041,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "in bloom",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=9oml0DbhSxg",
+      "youtubeVideoTitle": "ZEROBASEONE 제로베이스원 《In Bloom》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "9oml0DbhSxg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/117610",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "In Bloom"
+      },
+      "artists": {
+        "zhHans": "ZEROBASEONE",
+        "zhHant": "ZEROBASEONE",
+        "en": "ZEROBASEONE"
+      },
+      "youtubeSortIndex": 303,
+      "youtubePublishedAt": "2023-07-14T12:00:00.000Z",
+      "listSortPublishedAtMs": 1689336000000,
+      "listSortPublishedAt": "2023-07-14T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_butterfly_effect",
+      "title": "Butterfly effect",
+      "displayTitle": "Butterfly effect",
+      "originalArtist": "EXO",
+      "canonicalArtistId": "exo",
+      "canonicalArtistDisplayName": "EXO",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/28/59/de/2859de3b-c003-816e-4f28-71d40b04697d/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/butterfly effect/audio.mp3",
+      "midiUrl": "/local-imports/butterfly effect/performance.mid",
+      "musicXmlUrl": "/local-imports/butterfly effect/score.musicxml",
+      "duration": "03:11",
+      "durationSeconds": 191.448,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "butterfly effect",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=oxr23QTDSdo",
+      "youtubeVideoTitle": "EXO 엑소 '나비효과'《Butterfly Effect》(蝴蝶效应） Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "oxr23QTDSdo",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/116302",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Butterfly Effect"
+      },
+      "artists": {
+        "zhHans": "EXO",
+        "zhHant": "EXO",
+        "en": "EXO"
+      },
+      "youtubeSortIndex": 304,
+      "youtubePublishedAt": "2023-07-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1689249600000,
+      "listSortPublishedAt": "2023-07-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_super_shy",
+      "title": "Super shy",
+      "displayTitle": "Super shy",
+      "originalArtist": "NewJeans",
+      "canonicalArtistId": "newjeans",
+      "canonicalArtistDisplayName": "NewJeans",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/63/e5/e2/63e5e2e4-829b-924d-a1dc-8058a1d69bd4/196922462702_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/super shy/audio.mp3",
+      "midiUrl": "/local-imports/super shy/performance.mid",
+      "musicXmlUrl": "/local-imports/super shy/score.musicxml",
+      "duration": "02:36",
+      "durationSeconds": 156.2383673469388,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "super shy",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=YBskJoHUViQ",
+      "youtubeVideoTitle": "NewJeans  뉴진스 《Super Shy》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "YBskJoHUViQ",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/117244",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Super Shy"
+      },
+      "artists": {
+        "zhHans": "NewJeans",
+        "zhHant": "NewJeans",
+        "en": "NewJeans"
+      },
+      "youtubeSortIndex": 305,
+      "youtubePublishedAt": "2023-07-12T12:00:00.000Z",
+      "listSortPublishedAtMs": 1689163200000,
+      "listSortPublishedAt": "2023-07-12T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_我想我会",
+      "title": "我想我会",
+      "displayTitle": "我想我会",
+      "originalArtist": "尹露浠",
+      "canonicalArtistId": "from-youtube/尹露浠",
+      "canonicalArtistDisplayName": "尹露浠",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "youtube_title_freeform"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273623351a17ae7fad161155772",
+      "mp3Url": "/local-imports/我想我会/audio.mp3",
+      "midiUrl": "/local-imports/我想我会/performance.mid",
+      "musicXmlUrl": "/local-imports/我想我会/score.musicxml",
+      "duration": "03:55",
+      "durationSeconds": 234.50122448979593,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "我想我会",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=SyBImedt-Nw",
+      "youtubeVideoTitle": "尹露浠《当我飞奔向你》 片尾曲《我想我会》钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "SyBImedt-Nw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/116897",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "我想我会",
+        "en": "Wo Xiang Wo Hui"
+      },
+      "artists": {
+        "zhHans": "尹露浠",
+        "zhHant": "尹露浠"
+      },
+      "youtubeSortIndex": 306,
+      "youtubePublishedAt": "2023-07-10T12:00:00.000Z",
+      "listSortPublishedAtMs": 1688990400000,
+      "listSortPublishedAt": "2023-07-10T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_想你的365天",
+      "title": "想你的365天",
+      "displayTitle": "想你的365天",
+      "originalArtist": "李玟 主题曲",
+      "canonicalArtistId": "li-wen-coco",
+      "canonicalArtistDisplayName": "李玟",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000003fHjgK3Ts4J4.jpg",
+      "mp3Url": "/local-imports/想你的365天/audio.mp3",
+      "midiUrl": "/local-imports/想你的365天/performance.mid",
+      "musicXmlUrl": "/local-imports/想你的365天/score.musicxml",
+      "duration": "01:27",
+      "durationSeconds": 86.857166,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "想你的365天",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=XLykRHSl5EY",
+      "youtubeVideoTitle": "李玟 CoCo Lee “宝莲灯”主题曲《想你的365天》 - Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "XLykRHSl5EY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": null,
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "想你的365天",
+        "en": "Xiang Ni De 365tian"
+      },
+      "artists": {
+        "zhHans": "李玟",
+        "zhHant": "李玟",
+        "en": "CoCo Lee"
+      },
+      "youtubeSortIndex": 308,
+      "youtubePublishedAt": "2023-07-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1688644800000,
+      "listSortPublishedAt": "2023-07-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_i_hate_goodbye",
+      "title": "I hate goodbye",
+      "displayTitle": "I hate goodbye",
+      "originalArtist": "INTO1",
+      "canonicalArtistId": "into1",
+      "canonicalArtistDisplayName": "INTO1",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/e3/e0/e1/e3e0e19d-3f6b-97f2-ceaa-fbc36244f708/artwork.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/i hate goodbye/audio.mp3",
+      "midiUrl": "/local-imports/i hate goodbye/performance.mid",
+      "musicXmlUrl": "/local-imports/i hate goodbye/score.musicxml",
+      "duration": "03:51",
+      "durationSeconds": 230.53061224489795,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "i hate goodbye",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=OJIx6Ql3fwc",
+      "youtubeVideoTitle": "INTO1 -《I Hate Goodbyes》(不说再见）钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "OJIx6Ql3fwc",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/115940",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "I Hate Goodbye"
+      },
+      "artists": {
+        "zhHans": "INTO1",
+        "zhHant": "INTO1",
+        "en": "INTO1"
+      },
+      "youtubeSortIndex": 309,
+      "youtubePublishedAt": "2023-07-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1688299200000,
+      "listSortPublishedAt": "2023-07-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_笼",
+      "title": "笼",
+      "displayTitle": "笼",
+      "originalArtist": "张碧晨",
+      "canonicalArtistId": "zhang-bi-chen",
+      "canonicalArtistDisplayName": "张碧晨",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_long_zhang_bichen_film"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002XBCf92YhyqT.jpg",
+      "mp3Url": "/local-imports/笼/audio.mp3",
+      "midiUrl": "/local-imports/笼/performance.mid",
+      "musicXmlUrl": "/local-imports/笼/score.musicxml",
+      "duration": "04:40",
+      "durationSeconds": 280.2938775510204,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "笼",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=5xoRAzJx9YQ",
+      "youtubeVideoTitle": "张碧晨 Bi Chen Zhang 电影 《消失的她》 主题曲《笼》钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "5xoRAzJx9YQ",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/115126",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "笼",
+        "en": "Long"
+      },
+      "artists": {
+        "zhHans": "张碧晨",
+        "zhHant": "張碧晨",
+        "en": "Zhang Bichen"
+      },
+      "youtubeSortIndex": 310,
+      "youtubePublishedAt": "2023-06-27T12:00:00.000Z",
+      "listSortPublishedAtMs": 1687867200000,
+      "listSortPublishedAt": "2023-06-27T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_璀璨冒险人",
+      "title": "璀璨冒险人",
+      "displayTitle": "璀璨冒险人",
+      "originalArtist": "周深 动漫",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/d7/ff/b1/d7ffb1f9-fb8c-3b17-7e0a-17529e15aa96/6942248300013.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/璀璨冒险人/audio.mp3",
+      "midiUrl": "/local-imports/璀璨冒险人/performance.mid",
+      "musicXmlUrl": "/local-imports/璀璨冒险人/score.musicxml",
+      "duration": "04:28",
+      "durationSeconds": 268.416,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "璀璨冒险人",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=WWYz1r4k0mw",
+      "youtubeVideoTitle": "周深 Charlie Zhou Shen 动漫 《斗罗大陆ll绝世唐门》 主题曲《璀璨冒险人》钢琴版  Piano Cover | CIP Music",
+      "youtubeVideoId": "WWYz1r4k0mw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/114763",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "璀璨冒险人",
+        "en": "Cui Can Mou Xian Ren"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "youtubeSortIndex": 311,
+      "youtubePublishedAt": "2023-06-24T12:00:00.000Z",
+      "listSortPublishedAtMs": 1687608000000,
+      "listSortPublishedAt": "2023-06-24T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_eyes_for_you",
+      "title": "Eyes for you",
+      "displayTitle": "Eyes for you",
+      "originalArtist": "时代少年团 贺峻霖",
+      "canonicalArtistId": "he-jun-lin",
+      "canonicalArtistDisplayName": "贺峻霖",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/60/98/74/60987488-7376-2d8d-b356-23ae97fb9a27/43396645240.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/eyes for you/audio.mp3",
+      "midiUrl": "/local-imports/eyes for you/performance.mid",
+      "musicXmlUrl": "/local-imports/eyes for you/score.musicxml",
+      "duration": "03:44",
+      "durationSeconds": 223.56,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "eyes for you",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=hLtkmTV5t8c",
+      "youtubeVideoTitle": "TNT时代少年团  贺峻霖《Eyes For You》钢琴版 Teens In Times He Jun Lin ‘Eyes For You' Piano Cover",
+      "youtubeVideoId": "hLtkmTV5t8c",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/114578",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Eyes For You"
+      },
+      "artists": {
+        "zhHans": "贺峻霖",
+        "zhHant": "賀峻霖",
+        "en": "He Junlin"
+      },
+      "youtubeSortIndex": 312,
+      "youtubePublishedAt": "2023-06-22T12:00:00.000Z",
+      "listSortPublishedAtMs": 1687435200000,
+      "listSortPublishedAt": "2023-06-22T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_崇拜",
+      "title": "崇拜",
+      "displayTitle": "崇拜",
+      "originalArtist": "薛之谦",
+      "canonicalArtistId": "joker-xue",
+      "canonicalArtistDisplayName": "薛之谦",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273e29b1aac27a53927da783a52",
+      "mp3Url": "/local-imports/崇拜/audio.mp3",
+      "midiUrl": "/local-imports/崇拜/performance.mid",
+      "musicXmlUrl": "/local-imports/崇拜/score.musicxml",
+      "duration": "04:57",
+      "durationSeconds": 296.683605,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "崇拜",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=zLzlPWGtL5c",
+      "youtubeVideoTitle": "JORKER XUE 薛之谦《崇拜》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "zLzlPWGtL5c",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/113882",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "崇拜",
+        "en": "Chong Bai"
+      },
+      "artists": {
+        "zhHans": "薛之谦",
+        "zhHant": "薛之謙",
+        "en": "Joker Xue"
+      },
+      "youtubeSortIndex": 314,
+      "youtubePublishedAt": "2023-06-18T12:00:00.000Z",
+      "listSortPublishedAtMs": 1687089600000,
+      "listSortPublishedAt": "2023-06-18T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_let_me_in",
+      "title": "Let me in",
+      "displayTitle": "Let me in",
+      "originalArtist": "EXO",
+      "canonicalArtistId": "exo",
+      "canonicalArtistDisplayName": "EXO",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/27/40/34/274034b3-42d9-ba59-b22c-dc4f57672ee0/886446799513.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/let me in/audio.mp3",
+      "midiUrl": "/local-imports/let me in/performance.mid",
+      "musicXmlUrl": "/local-imports/let me in/score.musicxml",
+      "duration": "03:24",
+      "durationSeconds": 203.808,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "let me in",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=AnrqB6q4HNk",
+      "youtubeVideoTitle": "EXO 엑소 《Let Me In》 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "AnrqB6q4HNk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/113591",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Let Me In"
+      },
+      "artists": {
+        "zhHans": "EXO",
+        "zhHant": "EXO",
+        "en": "EXO"
+      },
+      "youtubeSortIndex": 315,
+      "youtubePublishedAt": "2023-06-15T12:00:00.000Z",
+      "listSortPublishedAtMs": 1686830400000,
+      "listSortPublishedAt": "2023-06-15T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_我会等",
+      "title": "我会等",
+      "displayTitle": "我会等",
+      "originalArtist": "承桓",
+      "canonicalArtistId": "cheng-huan",
+      "canonicalArtistDisplayName": "承桓",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/5c/33/cd/5c33cded-2fd8-f83c-e959-bb1e0ed89783/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/我会等/audio.mp3",
+      "midiUrl": "/local-imports/我会等/performance.mid",
+      "musicXmlUrl": "/local-imports/我会等/score.musicxml",
+      "duration": "03:17",
+      "durationSeconds": 197.472,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "我会等",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=cPn2K0mgmJ0",
+      "youtubeVideoTitle": "承桓 《我会等》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "cPn2K0mgmJ0",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/113349",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "我会等",
+        "en": "Wo Hui Deng"
+      },
+      "artists": {
+        "zhHans": "承桓",
+        "zhHant": "承桓",
+        "en": "Cheng Huan"
+      },
+      "youtubeSortIndex": 316,
+      "youtubePublishedAt": "2023-06-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1686657600000,
+      "listSortPublishedAt": "2023-06-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_听悲伤的情歌",
+      "title": "听悲伤的情歌",
+      "displayTitle": "听悲伤的情歌",
+      "originalArtist": "苏星婕",
+      "canonicalArtistId": "su-xing-jie",
+      "canonicalArtistDisplayName": "苏星婕",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/2e/e8/46/2ee846a8-2d86-2355-0892-8b373469014d/cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/听悲伤的情歌/audio.mp3",
+      "midiUrl": "/local-imports/听悲伤的情歌/performance.mid",
+      "musicXmlUrl": "/local-imports/听悲伤的情歌/score.musicxml",
+      "duration": "03:20",
+      "durationSeconds": 199.56,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "听悲伤的情歌",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=sHIwRpKPRFI",
+      "youtubeVideoTitle": "苏星婕 Su Xingjie 《听悲伤的情歌》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "sHIwRpKPRFI",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/113115",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "听悲伤的情歌",
+        "en": "Ting Bei Shang De Qing Ge"
+      },
+      "artists": {
+        "zhHans": "苏星婕",
+        "zhHant": "蘇星婕",
+        "en": "Su Xingjie"
+      },
+      "youtubeSortIndex": 317,
+      "youtubePublishedAt": "2023-06-11T12:00:00.000Z",
+      "listSortPublishedAtMs": 1686484800000,
+      "listSortPublishedAt": "2023-06-11T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_calling",
+      "title": "Calling",
+      "displayTitle": "Calling",
+      "originalArtist": "SPIDER-MAN ACROSS THE SPIDER-VERSE",
+      "canonicalArtistId": "metro-boomin",
+      "canonicalArtistDisplayName": "Metro Boomin",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_spiderverse_calling_ost"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2736ed9aef791159496b286179f",
+      "mp3Url": "/local-imports/calling/audio.mp3",
+      "midiUrl": "/local-imports/calling/performance.mid",
+      "musicXmlUrl": "/local-imports/calling/score.musicxml",
+      "duration": "02:07",
+      "durationSeconds": 126.912,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "calling",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=4JEl8MA5T7E",
+      "youtubeVideoTitle": "SPIDER-MAN: ACROSS THE SPIDER-VERSE – \"Calling\"  Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "4JEl8MA5T7E",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/112976",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Calling"
+      },
+      "artists": {
+        "zhHans": "Metro Boomin",
+        "zhHant": "Metro Boomin",
+        "en": "Metro Boomin"
+      },
+      "youtubeSortIndex": 318,
+      "youtubePublishedAt": "2023-06-09T12:00:00.000Z",
+      "listSortPublishedAtMs": 1686312000000,
+      "listSortPublishedAt": "2023-06-09T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_jump_to_the_breeze",
+      "title": "Jump to the breeze",
+      "displayTitle": "Jump to the breeze",
+      "originalArtist": "碧蓝航线六周年主题曲 倖田來未 小室哲哉",
+      "canonicalArtistId": "koda-kumi",
+      "canonicalArtistDisplayName": "倖田來未",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "日系流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "jpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/43/64/75/4364750f-8090-3e45-1c32-5ec497fed8ff/ANTCD-A0000014314.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/jump to the breeze/audio.mp3",
+      "midiUrl": "/local-imports/jump to the breeze/performance.mid",
+      "musicXmlUrl": "/local-imports/jump to the breeze/score.musicxml",
+      "duration": "04:24",
+      "durationSeconds": 264.072,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "jump to the breeze",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=82juTvowA5Q",
+      "youtubeVideoTitle": "碧蓝航线六周年主题曲 倖田來未KODAKUMI 小室哲哉Tetsuya Komuro《Jump to the Breeze》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "82juTvowA5Q",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/112527",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Jump To The Breeze"
+      },
+      "artists": {
+        "zhHans": "倖田來未",
+        "zhHant": "倖田來未",
+        "en": "Koda Kumi"
+      },
+      "youtubeSortIndex": 319,
+      "youtubePublishedAt": "2023-06-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1686052800000,
+      "listSortPublishedAt": "2023-06-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_耀眼的你",
+      "title": "耀眼的你",
+      "displayTitle": "耀眼的你",
+      "originalArtist": "时代少年团 刘耀文",
+      "canonicalArtistId": "liu-yao-wen",
+      "canonicalArtistDisplayName": "刘耀文",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/32/0d/a9/320da956-18aa-40c8-c50a-4d7fca7a705c/199999058885.png/600x600bb.jpg",
+      "mp3Url": "/local-imports/耀眼的你/audio.mp3",
+      "midiUrl": "/local-imports/耀眼的你/performance.mid",
+      "musicXmlUrl": "/local-imports/耀眼的你/score.musicxml",
+      "duration": "03:08",
+      "durationSeconds": 187.992,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "耀眼的你",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=wgQYYIHq9sQ",
+      "youtubeVideoTitle": "TNT时代少年团  刘耀文《耀眼的你》钢琴版 Teens In Times Liu Yao Wen ‘You Deserve to Shine' Piano Cover",
+      "youtubeVideoId": "wgQYYIHq9sQ",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/112219",
+      "linkStatus": "needsReview",
+      "titles": {
+        "zhHans": "耀眼的你",
+        "en": "Yao Yan De Ni"
+      },
+      "artists": {
+        "zhHans": "刘耀文",
+        "zhHant": "劉耀文",
+        "en": "Liu Yaowen"
+      },
+      "youtubeSortIndex": 320,
+      "youtubePublishedAt": "2023-06-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1685707200000,
+      "listSortPublishedAt": "2023-06-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_letting_go",
+      "title": "Letting go",
+      "displayTitle": "Letting go",
+      "originalArtist": "蔡健雅",
+      "canonicalArtistId": "cai-jian-ya",
+      "canonicalArtistDisplayName": "蔡健雅",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/5d/6d/51/5d6d5168-5b14-da04-d7d4-4ce6e34ac177/4000x4000.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/letting go/audio.mp3",
+      "midiUrl": "/local-imports/letting go/performance.mid",
+      "musicXmlUrl": "/local-imports/letting go/score.musicxml",
+      "duration": "04:20",
+      "durationSeconds": 259.608,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "letting go",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=irpjDoaUxgQ",
+      "youtubeVideoTitle": "蔡健雅 Tanya Chua 《Letting go》钢琴版 Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "irpjDoaUxgQ",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/111674",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Letting Go"
+      },
+      "artists": {
+        "zhHans": "蔡健雅",
+        "zhHant": "蔡健雅",
+        "en": "Tanya Chua"
+      },
+      "youtubeSortIndex": 321,
+      "youtubePublishedAt": "2023-05-30T12:00:00.000Z",
+      "listSortPublishedAtMs": 1685448000000,
+      "listSortPublishedAt": "2023-05-30T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_就这样长大",
+      "title": "就这样长大",
+      "displayTitle": "就这样长大",
+      "originalArtist": "INTO1",
+      "canonicalArtistId": "into1",
+      "canonicalArtistDisplayName": "INTO1",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000subKZ0ZLglo.jpg",
+      "mp3Url": "/local-imports/就这样长大/audio.mp3",
+      "midiUrl": "/local-imports/就这样长大/performance.mid",
+      "musicXmlUrl": "/local-imports/就这样长大/score.musicxml",
+      "duration": "04:35",
+      "durationSeconds": 274.656,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "就这样长大",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=ips0s2vGGNs",
+      "youtubeVideoTitle": "INTO1《就这样长大》钢琴版 INTO1 ‘GROWN UP’ Piano Cover",
+      "youtubeVideoId": "ips0s2vGGNs",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/111106",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "就这样长大",
+        "en": "Jiu Zhe Yang Chang Da"
+      },
+      "artists": {
+        "zhHans": "INTO1",
+        "zhHant": "INTO1",
+        "en": "INTO1"
+      },
+      "youtubeSortIndex": 322,
+      "youtubePublishedAt": "2023-05-25T12:00:00.000Z",
+      "listSortPublishedAtMs": 1685016000000,
+      "listSortPublishedAt": "2023-05-25T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_背对地球奔跑",
+      "title": "背对地球奔跑",
+      "displayTitle": "背对地球奔跑",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/db/b1/60/dbb160d9-8afa-71c4-a83d-e018c3ba778f/6942360843719.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/背对地球奔跑/audio.mp3",
+      "midiUrl": "/local-imports/背对地球奔跑/performance.mid",
+      "musicXmlUrl": "/local-imports/背对地球奔跑/score.musicxml",
+      "duration": "02:55",
+      "durationSeconds": 175.056,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "背对地球奔跑",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=ZVb52VySvB8",
+      "youtubeVideoTitle": "TNT时代少年团 《背对地球奔跑》钢琴版 Teens In Times ‘Sunset Ocean' Piano Cover",
+      "youtubeVideoId": "ZVb52VySvB8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/110589",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "背对地球奔跑",
+        "en": "Bei Dui Di Qiu Ben Pao"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "youtubeSortIndex": 323,
+      "youtubePublishedAt": "2023-05-22T12:00:00.000Z",
+      "listSortPublishedAtMs": 1684756800000,
+      "listSortPublishedAt": "2023-05-22T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_queen_card",
+      "title": "Queen card",
+      "displayTitle": "Queen card",
+      "originalArtist": "I-DLE",
+      "canonicalArtistId": "i-dle",
+      "canonicalArtistDisplayName": "I-DLE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/7b/59/56/7b59565a-c6bd-a615-9cc2-955cb8481dfb/8804775254703.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/queen card/audio.mp3",
+      "midiUrl": "/local-imports/queen card/performance.mid",
+      "musicXmlUrl": "/local-imports/queen card/score.musicxml",
+      "duration": "02:44",
+      "durationSeconds": 164.376,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "queen card",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=GH0eT_NAKxE",
+      "youtubeVideoTitle": "(G)I-DLE ‘Queencard’  Piano Cover | CIP Music",
+      "youtubeVideoId": "GH0eT_NAKxE",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/110077",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Queen Card"
+      },
+      "artists": {
+        "zhHans": "I-DLE",
+        "zhHant": "I-DLE",
+        "en": "I-DLE"
+      },
+      "youtubeSortIndex": 324,
+      "youtubePublishedAt": "2023-05-17T12:00:00.000Z",
+      "listSortPublishedAtMs": 1684324800000,
+      "listSortPublishedAt": "2023-05-17T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_Allergy",
+      "title": "Allergy",
+      "displayTitle": "Allergy",
+      "originalArtist": "I-DLE",
+      "canonicalArtistId": "i-dle",
+      "canonicalArtistDisplayName": "I-DLE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/7b/59/56/7b59565a-c6bd-a615-9cc2-955cb8481dfb/8804775254703.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/Allergy/audio.mp3",
+      "midiUrl": "/local-imports/Allergy/performance.mid",
+      "musicXmlUrl": "/local-imports/Allergy/score.musicxml",
+      "duration": "02:41",
+      "durationSeconds": 161.48897959183674,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "Allergy",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=N7yPwlhsO9U",
+      "youtubeVideoTitle": "(G)I-DLE ‘Allergy’  Piano Cover | CIP Music",
+      "youtubeVideoId": "N7yPwlhsO9U",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/109380",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Allergy"
+      },
+      "artists": {
+        "zhHans": "I-DLE",
+        "zhHant": "I-DLE",
+        "en": "I-DLE"
+      },
+      "youtubeSortIndex": 325,
+      "youtubePublishedAt": "2023-05-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1683979200000,
+      "listSortPublishedAt": "2023-05-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_FML",
+      "title": "FML",
+      "displayTitle": "FML",
+      "originalArtist": "SEVENTEEN",
+      "canonicalArtistId": "seventeen",
+      "canonicalArtistDisplayName": "SEVENTEEN",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/d1/66/eb/d166eb7e-7210-b3ff-be39-638cd37bfc89/196922401282_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/FML/audio.mp3",
+      "midiUrl": "/local-imports/FML/performance.mid",
+      "musicXmlUrl": "/local-imports/FML/score.musicxml",
+      "duration": "03:20",
+      "durationSeconds": 200.112,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "FML",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=i_hN0LeRtRw",
+      "youtubeVideoTitle": "SEVENTEEN (세븐틴) 'F*ck My Life' Piano Cover | CIP Music",
+      "youtubeVideoId": "i_hN0LeRtRw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/108279",
+      "linkStatus": "needsReview",
+      "titles": {
+        "en": "Fml"
+      },
+      "artists": {
+        "zhHans": "SEVENTEEN",
+        "zhHant": "SEVENTEEN",
+        "en": "SEVENTEEN"
+      },
+      "youtubeSortIndex": 326,
+      "youtubePublishedAt": "2023-05-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1683374400000,
+      "listSortPublishedAt": "2023-05-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_super",
+      "title": "Super",
+      "displayTitle": "Super",
+      "originalArtist": "SEVENTEEN",
+      "canonicalArtistId": "seventeen",
+      "canonicalArtistDisplayName": "SEVENTEEN",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/63/e5/e2/63e5e2e4-829b-924d-a1dc-8058a1d69bd4/196922462702_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/super/audio.mp3",
+      "midiUrl": "/local-imports/super/performance.mid",
+      "musicXmlUrl": "/local-imports/super/score.musicxml",
+      "duration": "03:19",
+      "durationSeconds": 199.44,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "super",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=VS0i_Bkol_I",
+      "youtubeVideoTitle": "SEVENTEEN (세븐틴) '손오공' (Super) Piano Cover | CIP Music",
+      "youtubeVideoId": "VS0i_Bkol_I",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/117244",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Super"
+      },
+      "artists": {
+        "zhHans": "SEVENTEEN",
+        "zhHant": "SEVENTEEN",
+        "en": "SEVENTEEN"
+      },
+      "youtubeSortIndex": 328,
+      "youtubePublishedAt": "2023-04-29T12:00:00.000Z",
+      "listSortPublishedAtMs": 1682769600000,
+      "listSortPublishedAt": "2023-04-29T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_say_my_name",
+      "title": "Say my name",
+      "displayTitle": "Say my name",
+      "originalArtist": "BOYS PLANET",
+      "canonicalArtistId": "zerobaseone",
+      "canonicalArtistDisplayName": "ZEROBASEONE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "survival_show_boys_planet_zb1"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/37/96/3e/37963e0b-244c-a4a8-ad46-89214c5caf72/888272115208_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/say my name/audio.mp3",
+      "midiUrl": "/local-imports/say my name/performance.mid",
+      "musicXmlUrl": "/local-imports/say my name/score.musicxml",
+      "duration": "03:18",
+      "durationSeconds": 198.096,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "say my name",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=tj3XhSc0o_0",
+      "youtubeVideoTitle": "[BOYS PLANET] 'Say My Name' Piano Cover | CIP Music",
+      "youtubeVideoId": "tj3XhSc0o_0",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/106832",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Say My Name"
+      },
+      "artists": {
+        "zhHans": "ZEROBASEONE",
+        "zhHant": "ZEROBASEONE",
+        "en": "ZEROBASEONE"
+      },
+      "youtubeSortIndex": 329,
+      "youtubePublishedAt": "2023-04-23T12:00:00.000Z",
+      "listSortPublishedAtMs": 1682251200000,
+      "listSortPublishedAt": "2023-04-23T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "local_over_me",
+      "title": "Over me",
+      "displayTitle": "Over me",
+      "originalArtist": "BOYS PLANET",
+      "canonicalArtistId": "zerobaseone",
+      "canonicalArtistDisplayName": "ZEROBASEONE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "survival_show_boys_planet_zb1"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/37/96/3e/37963e0b-244c-a4a8-ad46-89214c5caf72/888272115208_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "/local-imports/over me/audio.mp3",
+      "midiUrl": "/local-imports/over me/performance.mid",
+      "musicXmlUrl": "/local-imports/over me/score.musicxml",
+      "duration": "03:16",
+      "durationSeconds": 196.08,
+      "hasPracticeMode": true,
+      "importSource": "local",
+      "slug": "over me",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=6n1u1SvEilY",
+      "youtubeVideoTitle": "[BOYS PLANET] 'Over Me' Piano Cover | CIP Music",
+      "youtubeVideoId": "6n1u1SvEilY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/104945",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Over Me"
+      },
+      "artists": {
+        "zhHans": "ZEROBASEONE",
+        "zhHant": "ZEROBASEONE",
+        "en": "ZEROBASEONE"
+      },
+      "youtubeSortIndex": 330,
+      "youtubePublishedAt": "2023-04-09T12:00:00.000Z",
+      "listSortPublishedAtMs": 1681041600000,
+      "listSortPublishedAt": "2023-04-09T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    }
+  ]
+}

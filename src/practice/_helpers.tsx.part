@@ -1,0 +1,608 @@
+function getTempoAtAudioTimeForHeader(header: PracticeMidiHeaderLite | null, timeSecs: number) {
+  if (!header?.tempos?.length) return null;
+  let activeTempo = header.tempos[0];
+  for (let i = header.tempos.length - 1; i >= 0; i--) {
+    if (timeSecs >= header.tempos[i].time) {
+      activeTempo = header.tempos[i];
+      break;
+    }
+  }
+  return activeTempo;
+}
+
+function getTempoAtTickForHeader(header: PracticeMidiHeaderLite | null, targetTick: number) {
+  if (!header?.tempos?.length) return null;
+  let activeTempo = header.tempos[0];
+  for (let i = header.tempos.length - 1; i >= 0; i--) {
+    if (targetTick >= header.tempos[i].ticks) {
+      activeTempo = header.tempos[i];
+      break;
+    }
+  }
+  return activeTempo;
+}
+
+function getAbsoluteTickAtAudioTimeForHeader(header: PracticeMidiHeaderLite | null, timeSecs: number) {
+  const activeTempo = getTempoAtAudioTimeForHeader(header, timeSecs);
+  if (!activeTempo || !header) return 0;
+  const secondsSinceTempoChange = Math.max(0, timeSecs - activeTempo.time);
+  const beatsElapsed = secondsSinceTempoChange * (activeTempo.bpm / 60);
+  return activeTempo.ticks + (beatsElapsed * header.ppq);
+}
+
+function getAudioTimeForAbsoluteTickForHeader(header: PracticeMidiHeaderLite | null, targetTick: number) {
+  const activeTempo = getTempoAtTickForHeader(header, targetTick);
+  if (!activeTempo || !header) return 0;
+  return activeTempo.time + (((targetTick - activeTempo.ticks) / header.ppq) / (activeTempo.bpm / 60));
+}
+
+function getLeadInMeasuresFromFirstNoteTick(firstNoteTick: number | null, header: PracticeMidiHeaderLite | null) {
+  if (firstNoteTick === null || !header?.ppq) return 0;
+  const beatsPerMeasure = header.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const ticksPerMeasure = beatsPerMeasure * header.ppq;
+  if (!Number.isFinite(ticksPerMeasure) || ticksPerMeasure <= 0) return 0;
+  const measureFloat = firstNoteTick / ticksPerMeasure;
+  const rounded = Math.round(measureFloat);
+  if (Math.abs(measureFloat - rounded) <= 0.05) {
+    return Math.max(0, rounded);
+  }
+  return Math.max(0, Math.floor(measureFloat));
+}
+
+function getMusicalPositionAtAudioTimeForHeader(
+  header: PracticeMidiHeaderLite | null,
+  timeSecs: number,
+  displayMeasureOffset = 0
+): MusicalPosition {
+  const absoluteTick = getAbsoluteTickAtAudioTimeForHeader(header, timeSecs);
+  const ppq = header?.ppq ?? 480;
+  const beatsPerMeasure = header?.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const ticksPerMeasure = ppq * beatsPerMeasure;
+  const safeTick = Math.max(0, absoluteTick);
+  const internalMeasureIndex = ticksPerMeasure > 0 ? Math.floor(safeTick / ticksPerMeasure) : 0;
+  const internalMeasure = internalMeasureIndex + 1;
+  const tickInMeasure = ticksPerMeasure > 0 ? safeTick - internalMeasureIndex * ticksPerMeasure : 0;
+  const beatFloat = ppq > 0 ? safeTick / ppq : 0;
+  const beatInMeasure = ppq > 0 ? Math.floor(tickInMeasure / ppq) + 1 : 1;
+  const beatOffset = ppq > 0 ? (tickInMeasure % ppq) / ppq : 0;
+  return {
+    absoluteTick: safeTick,
+    ticksPerMeasure,
+    internalMeasureIndex,
+    internalMeasure,
+    displayMeasure: Math.max(1, internalMeasure - displayMeasureOffset),
+    beatInMeasure,
+    tickInMeasure,
+    beatFloat,
+    beatOffset,
+    beatsPerMeasure,
+  };
+}
+
+function getFractionRealValue(fraction: any): number {
+  if (!fraction) return 0;
+  if (typeof fraction.RealValue === 'number' && Number.isFinite(fraction.RealValue)) {
+    return fraction.RealValue;
+  }
+  return 0;
+}
+
+function getFractionNumerator(fraction: any): number | null {
+  if (!fraction) return null;
+  const numerator = fraction.Numerator;
+  return typeof numerator === 'number' && Number.isFinite(numerator) ? numerator : null;
+}
+
+function getFractionDenominator(fraction: any): number | null {
+  if (!fraction) return null;
+  const denominator = fraction.Denominator;
+  return typeof denominator === 'number' && Number.isFinite(denominator) && denominator > 0 ? denominator : null;
+}
+
+function getTicksFromWholeNoteFraction(fraction: any, ppq: number) {
+  return Math.max(0, getFractionRealValue(fraction) * ppq * 4);
+}
+
+function buildPracticeMeasureTimeline(
+  osmd: any,
+  header: PracticeMidiHeaderLite | null,
+  midiNotes: Array<{ ticks?: number | null }> = []
+): PracticeMeasureTimelineEntry[] {
+  const sourceMeasures = osmd?.Sheet?.SourceMeasures;
+  if (!header?.ppq || !Array.isArray(sourceMeasures) || sourceMeasures.length === 0) return [];
+
+  let firstXmlSoundingTick: number | null = null;
+  for (const measure of sourceMeasures) {
+    const containers = Array.isArray(measure?.VerticalSourceStaffEntryContainers)
+      ? measure.VerticalSourceStaffEntryContainers
+      : [];
+    for (const container of containers) {
+      const staffEntries = Array.isArray(container?.StaffEntries) ? container.StaffEntries : [];
+      for (const staffEntry of staffEntries) {
+        const voiceEntries = Array.isArray(staffEntry?.VoiceEntries) ? staffEntry.VoiceEntries : [];
+        for (const voiceEntry of voiceEntries) {
+          const notes = Array.isArray(voiceEntry?.Notes) ? voiceEntry.Notes : [];
+          const hasSoundingNote = notes.some((note: any) => typeof note?.isRest === 'function' ? !note.isRest() : true);
+          if (!hasSoundingNote) continue;
+          const absoluteTimestamp = typeof staffEntry?.AbsoluteTimestamp !== 'undefined'
+            ? staffEntry.AbsoluteTimestamp
+            : (typeof container?.getAbsoluteTimestamp === 'function' ? container.getAbsoluteTimestamp() : null);
+          firstXmlSoundingTick = getTicksFromWholeNoteFraction(absoluteTimestamp, header.ppq);
+          break;
+        }
+        if (firstXmlSoundingTick !== null) break;
+      }
+      if (firstXmlSoundingTick !== null) break;
+    }
+    if (firstXmlSoundingTick !== null) break;
+  }
+
+  const firstMidiNoteTick = midiNotes.reduce((min, note) => {
+    const tick = Number(note?.ticks);
+    return Number.isFinite(tick) ? Math.min(min, tick) : min;
+  }, Infinity);
+  const alignmentTickOffset = firstXmlSoundingTick !== null && Number.isFinite(firstMidiNoteTick)
+    ? Math.max(0, firstMidiNoteTick - firstXmlSoundingTick)
+    : 0;
+
+  return sourceMeasures.map((measure: any, index: number) => {
+    const startTick = getTicksFromWholeNoteFraction(measure?.AbsoluteTimestamp, header.ppq) + alignmentTickOffset;
+    const durationTicks = Math.max(
+      1,
+      getTicksFromWholeNoteFraction(measure?.Duration, header.ppq)
+    );
+    const endTick = startTick + durationTicks;
+    const timeSig = measure?.ActiveTimeSignature;
+    const numerator = getFractionNumerator(timeSig);
+    const denominator = getFractionDenominator(timeSig);
+    const inferredBeatsPerMeasure = denominator
+      ? Math.max(1, Math.round((getFractionRealValue(timeSig) * denominator) || 0))
+      : Math.max(1, Math.round(getFractionRealValue(timeSig) * 4) || 4);
+    const beatsPerMeasure = numerator ?? inferredBeatsPerMeasure;
+    const beatUnit = denominator ?? 4;
+
+    return {
+      measureIndex: index,
+      displayMeasure: index + 1,
+      startTick,
+      endTick,
+      startTime: getAudioTimeForAbsoluteTickForHeader(header, startTick),
+      endTime: getAudioTimeForAbsoluteTickForHeader(header, endTick),
+      ticksPerMeasure: durationTicks,
+      beatsPerMeasure,
+      beatUnit,
+      implicit: Boolean(measure?.ImplicitMeasure),
+    };
+  });
+}
+
+function getMusicalPositionAtAudioTimeForMeasureTimeline(
+  header: PracticeMidiHeaderLite | null,
+  timeline: PracticeMeasureTimelineEntry[] | null,
+  timeSecs: number,
+  displayMeasureOffset = 0
+): MusicalPosition {
+  if (!header?.ppq || !timeline?.length) {
+    return getMusicalPositionAtAudioTimeForHeader(header, timeSecs, displayMeasureOffset);
+  }
+
+  const absoluteTick = Math.max(0, getAbsoluteTickAtAudioTimeForHeader(header, timeSecs));
+  let activeMeasure = timeline[0];
+  for (let i = timeline.length - 1; i >= 0; i--) {
+    if (absoluteTick >= timeline[i].startTick) {
+      activeMeasure = timeline[i];
+      break;
+    }
+  }
+
+  const tickInMeasure = Math.max(0, absoluteTick - activeMeasure.startTick);
+  const ticksPerBeat = header.ppq * (4 / Math.max(1, activeMeasure.beatUnit));
+  const beatInMeasure = Math.max(1, Math.min(
+    activeMeasure.beatsPerMeasure,
+    Math.floor(tickInMeasure / Math.max(1, ticksPerBeat)) + 1
+  ));
+  const beatOffset = ticksPerBeat > 0 ? (tickInMeasure % ticksPerBeat) / ticksPerBeat : 0;
+
+  return {
+    absoluteTick,
+    ticksPerMeasure: activeMeasure.ticksPerMeasure,
+    internalMeasureIndex: activeMeasure.measureIndex,
+    internalMeasure: activeMeasure.measureIndex + 1,
+    displayMeasure: Math.max(1, activeMeasure.displayMeasure - displayMeasureOffset),
+    beatInMeasure,
+    tickInMeasure,
+    beatFloat: ticksPerBeat > 0 ? (activeMeasure.startTick / ticksPerBeat) + (tickInMeasure / ticksPerBeat) : 0,
+    beatOffset,
+    beatsPerMeasure: activeMeasure.beatsPerMeasure,
+  };
+}
+
+function snapAudioTimeToNearestBeat(targetTime: number, header: PracticeMidiHeaderLite | null) {
+  if (!header?.tempos?.length || !header.ppq) {
+    return { targetTime, snappedTime: targetTime, snappedBeatNumber: null };
+  }
+  const absoluteTick = getAbsoluteTickAtAudioTimeForHeader(header, targetTime);
+  const snappedBeatNumber = Math.max(0, Math.round(absoluteTick / header.ppq));
+  const snappedTick = snappedBeatNumber * header.ppq;
+  const snappedTime = getAudioTimeForAbsoluteTickForHeader(header, snappedTick);
+  return { targetTime, snappedTime, snappedBeatNumber };
+}
+
+function snapAudioTimeToNearestMeasureStart(targetTime: number, header: PracticeMidiHeaderLite | null) {
+  if (!header?.tempos?.length || !header.ppq) {
+    return { targetTime, snappedTime: targetTime, snappedMeasureIndex: null, snappedBeatNumber: null };
+  }
+  const beatsPerMeasure = header.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const absoluteTick = getAbsoluteTickAtAudioTimeForHeader(header, targetTime);
+  const absoluteBeatFloat = absoluteTick / header.ppq;
+  const nearestMeasureIndex = Math.max(0, Math.round(absoluteBeatFloat / beatsPerMeasure));
+  const snappedBeatNumber = nearestMeasureIndex * beatsPerMeasure;
+  const snappedTick = snappedBeatNumber * header.ppq;
+  const snappedTime = getAudioTimeForAbsoluteTickForHeader(header, snappedTick);
+  return {
+    targetTime,
+    snappedTime,
+    snappedMeasureIndex: nearestMeasureIndex,
+    snappedBeatNumber,
+  };
+}
+
+function getMainPlayerAudioElement() {
+  return document.querySelector('audio[data-role="main-player"]') as HTMLAudioElement | null;
+}
+
+function pausePracticeAudioPair() {
+  const mainAudio = getMainPlayerAudioElement();
+  mainAudio?.pause();
+}
+
+function syncPracticeAudioPairToTime(timeSecs: number) {
+  const mainAudio = getMainPlayerAudioElement();
+  if (mainAudio) {
+    mainAudio.currentTime = timeSecs;
+  }
+}
+
+function floatTo16BitPCM(output: DataView, offset: number, input: Float32Array) {
+  for (let i = 0; i < input.length; i++, offset += 2) {
+    const sample = Math.max(-1, Math.min(1, input[i] ?? 0));
+    output.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+  }
+}
+
+function writeWavBlobFromMonoSamples(samples: Float32Array, sampleRate: number) {
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+  const writeString = (offset: number, value: string) => {
+    for (let i = 0; i < value.length; i++) {
+      view.setUint8(offset + i, value.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + samples.length * 2, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeString(36, 'data');
+  view.setUint32(40, samples.length * 2, true);
+  floatTo16BitPCM(view, 44, samples);
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
+function generateClickTrackWavBlob(
+  header: PracticeMidiHeaderLite | null,
+  durationSecs: number
+) {
+  const sampleRate = 44100;
+  const totalSamples = Math.max(1, Math.ceil(durationSecs * sampleRate));
+  const samples = new Float32Array(totalSamples);
+  if (!header?.tempos?.length || !header.ppq || durationSecs <= 0) {
+    return writeWavBlobFromMonoSamples(samples, sampleRate);
+  }
+
+  const beatsPerMeasure = header.timeSignatures?.[0]?.timeSignature?.[0] ?? 4;
+  const totalBeats = Math.ceil((getAbsoluteTickAtAudioTimeForHeader(header, durationSecs) / header.ppq)) + beatsPerMeasure + 1;
+  const clickLengthSecs = 0.07;
+  const clickLengthSamples = Math.floor(sampleRate * clickLengthSecs);
+
+  for (let beatNumber = 0; beatNumber <= totalBeats; beatNumber++) {
+    const when = getAudioTimeForAbsoluteTickForHeader(header, beatNumber * header.ppq);
+    if (when > durationSecs + 0.1) break;
+    const startSample = Math.round(when * sampleRate);
+    const isStrong = (beatNumber % beatsPerMeasure) === 0;
+    const baseFreq = isStrong ? 1700 : 1150;
+    const overtoneFreq = isStrong ? 2550 : 1725;
+
+    for (let i = 0; i < clickLengthSamples; i++) {
+      const sampleIndex = startSample + i;
+      if (sampleIndex < 0 || sampleIndex >= samples.length) break;
+      const t = i / sampleRate;
+      const decay = Math.exp(-t * (isStrong ? 36 : 42));
+      const body = Math.sin(2 * Math.PI * baseFreq * t) * 0.52;
+      const overtone = Math.sin(2 * Math.PI * overtoneFreq * t) * 0.18;
+      const transient = (Math.random() * 2 - 1) * Math.exp(-t * 130) * (isStrong ? 0.11 : 0.07);
+      samples[sampleIndex] += (body + overtone + transient) * decay;
+    }
+  }
+
+  return writeWavBlobFromMonoSamples(samples, sampleRate);
+}
+
+function performPracticeMeasureSeek(args: {
+  audio: HTMLAudioElement;
+  targetTime: number;
+  header: PracticeMidiHeaderLite | null;
+  setPracticeSeekDebug: React.Dispatch<React.SetStateAction<PracticeSeekDebug>> | ((v: any) => void);
+  onPracticeSnap: (message: string) => void;
+  snapMessage: string;
+  setCurrentTime?: (v: number) => void;
+  alwaysResume?: boolean;
+}) {
+  const { audio, targetTime, header, setPracticeSeekDebug, onPracticeSnap, snapMessage, setCurrentTime, alwaysResume = true } = args;
+  const { snappedTime, snappedMeasureIndex, snappedBeatNumber } = snapAudioTimeToNearestMeasureStart(targetTime, header);
+  const snappedMeasure = snappedMeasureIndex !== null ? snappedMeasureIndex + 1 : null;
+  const baseDebug = {
+    targetTime,
+    snappedTime,
+    snappedMeasure,
+    snappedBeatNumber,
+    measureStartTime: snappedTime,
+    actualTime: snappedTime,
+    targetDelta: snappedTime - targetTime,
+    actualDelta: 0,
+  };
+
+  const finishSeek = () => {
+    const actualTime = audio.currentTime;
+    const seekedEventTime = performance.now();
+    setPracticeSeekDebug((prev: PracticeSeekDebug) => ({
+      ...prev,
+      ...baseDebug,
+      actualTime,
+      actualDelta: actualTime - snappedTime,
+      seekedEventTime,
+    }));
+    setCurrentTime?.(actualTime);
+
+    if (alwaysResume) {
+      const playCallTime = performance.now();
+      setPracticeSeekDebug((prev: PracticeSeekDebug) => ({
+        ...prev,
+        playCallTime,
+      }));
+      audio.play().catch(() => { });
+    }
+  };
+
+  pausePracticeAudioPair();
+  setPracticeSeekDebug((prev: PracticeSeekDebug) => ({
+    ...prev,
+    ...baseDebug,
+    seekedEventTime: null,
+    playCallTime: null,
+    playEventTime: null,
+    playingEventTime: null,
+  }));
+  setCurrentTime?.(snappedTime);
+
+  if (Math.abs(snappedTime - targetTime) > 0.001) {
+    onPracticeSnap(snapMessage);
+  }
+
+  if (Math.abs(audio.currentTime - snappedTime) <= 0.001) {
+    syncPracticeAudioPairToTime(snappedTime);
+    finishSeek();
+    return;
+  }
+
+  const handleSeeked = () => {
+    audio.removeEventListener('seeked', handleSeeked);
+    syncPracticeAudioPairToTime(snappedTime);
+    finishSeek();
+  };
+
+  audio.addEventListener('seeked', handleSeeked);
+  audio.currentTime = snappedTime;
+}
+
+type AmbientKey =
+  | 'window_rain'
+  | 'thunderstorm'
+  | 'ocean'
+  | 'forest'
+  | 'white_noise'
+  | 'night_ambient'
+  | 'library'
+  | 'fireplace'
+  | 'cafe';
+
+const AMBIENCE_AUDIO_URLS: Record<AmbientKey, string> = {
+  window_rain: '/ambience/windowrain.mp3',
+  thunderstorm: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/thunderstorm.mp3',
+  ocean: '/ambience/ocean.mp3',
+  forest: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/forest.mp3',
+  white_noise: '/ambience/white-noise.mp3',
+  night_ambient: '/ambience/night.mp3',
+  library: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/sfx/library.mp3',
+  fireplace: '/ambience/fireplace.mp3',
+  cafe: '/ambience/cafe.mp3',
+};
+
+const AMBIENCE_DEFAULT_VOLUMES: Record<AmbientKey, number> = {
+  window_rain: 55,
+  thunderstorm: 50,
+  ocean: 55,
+  forest: 65,
+  white_noise: 50,
+  night_ambient: 90,
+  library: 82,
+  fireplace: 88,
+  cafe: 78,
+};
+
+const AMBIENCE_GAIN_TRIMS: Record<AmbientKey, number> = {
+  window_rain: 1,
+  thunderstorm: 1,
+  ocean: 1,
+  forest: 1.2,
+  white_noise: 1,
+  night_ambient: 2.2,
+  library: 1.8,
+  fireplace: 1.9,
+  cafe: 1.6,
+};
+
+const AMBIENCE_KEYS = Object.keys(AMBIENCE_AUDIO_URLS) as AmbientKey[];
+const AMBIENCE_FADE_IN_MS = 180;
+const AMBIENCE_FADE_OUT_MS = 220;
+
+function BackgroundLayer({ scene, lightweight = false }: { scene: Scene, lightweight?: boolean }) {
+  const [videoError, setVideoError] = useState(false);
+
+  React.useEffect(() => {
+    setVideoError(false);
+  }, [scene.url]);
+
+  const style: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    width: '100vw',
+    height: '100vh',
+    objectFit: 'cover',
+    zIndex: -1,
+    pointerEvents: 'none'
+  };
+
+  if (lightweight || scene.type === 'image' || videoError) {
+    return (
+      <img
+        key={scene.url}
+        src={scene.thumbnail || scene.url}
+        alt={scene.name}
+        referrerPolicy="no-referrer"
+        crossOrigin="anonymous"
+        style={style}
+      />
+    );
+  }
+
+  return (
+    <video
+      key={scene.url}
+      src={scene.url}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      poster={scene.thumbnail}
+      onError={() => setVideoError(true)}
+      style={style}
+    />
+  );
+}
+
+function midiToFrequency(midi: number) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+const hammerNoiseBuffers = new WeakMap<AudioContext, AudioBuffer>();
+
+function getHammerNoiseBuffer(ctx: AudioContext) {
+  const cached = hammerNoiseBuffers.get(ctx);
+  if (cached) return cached;
+
+  const length = Math.floor(ctx.sampleRate * 0.03);
+  const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+  const channel = buffer.getChannelData(0);
+  for (let i = 0; i < length; i++) {
+    const decay = 1 - i / length;
+    channel[i] = (Math.random() * 2 - 1) * decay * decay;
+  }
+  hammerNoiseBuffers.set(ctx, buffer);
+  return buffer;
+}
+
+function createPianoLikeVoice(
+  ctx: AudioContext,
+  frequency: number,
+  when: number,
+  durationSecs: number,
+  velocityScale = 0.18
+) {
+  const masterGain = ctx.createGain();
+  const highpass = ctx.createBiquadFilter();
+  const lowpass = ctx.createBiquadFilter();
+  highpass.type = 'highpass';
+  highpass.frequency.setValueAtTime(Math.max(28, frequency * 0.42), when);
+  lowpass.type = 'lowpass';
+  lowpass.Q.value = 1.05;
+  lowpass.frequency.setValueAtTime(Math.max(1400, frequency * 11), when);
+  lowpass.frequency.exponentialRampToValueAtTime(Math.max(520, frequency * 2.1), when + Math.min(0.32, durationSecs));
+
+  masterGain.gain.setValueAtTime(0.0001, when);
+  masterGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, velocityScale), when + 0.004);
+  masterGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, velocityScale * 0.62), when + 0.045);
+  masterGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, velocityScale * 0.22), when + Math.min(0.22, durationSecs * 0.55));
+  masterGain.gain.exponentialRampToValueAtTime(0.0001, when + Math.max(0.16, durationSecs + 0.05));
+
+  highpass.connect(lowpass);
+  lowpass.connect(masterGain);
+  masterGain.connect(ctx.destination);
+
+  const oscillators = [
+    { type: 'triangle' as OscillatorType, ratio: 1, gain: 0.62, detune: -2 },
+    { type: 'sine' as OscillatorType, ratio: 1.997, gain: 0.12, detune: 4 },
+    { type: 'sine' as OscillatorType, ratio: 2.99, gain: 0.055, detune: -1 },
+    { type: 'triangle' as OscillatorType, ratio: 0.5, gain: 0.045, detune: 0 },
+  ].map(partial => {
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = partial.type;
+    osc.frequency.setValueAtTime(frequency * partial.ratio, when);
+    osc.detune.setValueAtTime(partial.detune, when);
+    oscGain.gain.setValueAtTime(partial.gain, when);
+    oscGain.gain.exponentialRampToValueAtTime(Math.max(0.0001, partial.gain * 0.72), when + 0.08);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, when + Math.max(0.14, durationSecs + 0.04));
+    osc.connect(oscGain);
+    oscGain.connect(highpass);
+    return { osc, gain: oscGain };
+  });
+
+  const noise = ctx.createBufferSource();
+  noise.buffer = getHammerNoiseBuffer(ctx);
+  const noiseFilter = ctx.createBiquadFilter();
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.setValueAtTime(Math.max(1800, frequency * 5.5), when);
+  noiseFilter.Q.value = 0.8;
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(Math.max(0.0001, velocityScale * 0.42), when);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, when + 0.022);
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(highpass);
+
+  return { masterGain, highpass, lowpass, noise, noiseFilter, noiseGain, oscillators };
+}
+
+function stopPianoLikeVoice(ctx: AudioContext, voice: ReturnType<typeof createPianoLikeVoice>, when = ctx.currentTime) {
+  try {
+    voice.masterGain.gain.cancelScheduledValues(when);
+    voice.masterGain.gain.setValueAtTime(Math.max(voice.masterGain.gain.value, 0.0001), when);
+    voice.masterGain.gain.exponentialRampToValueAtTime(0.0001, when + 0.04);
+  } catch { }
+
+  try { voice.noise.stop(when + 0.05); } catch { }
+  voice.oscillators.forEach(({ osc }) => {
+    try { osc.stop(when + 0.05); } catch { }
+  });
+}
+

@@ -1,0 +1,4 @@
+{
+  "_readme": "Superseded by artist-canonical.ts + local-import-artist-normalization (2026-04). Old from-youtube/* buckets are merged via LEGACY_CANONICAL_ID_REDIRECTS; do not use this file for maintenance. Run npm run build:manifest after rule changes.",
+  "deprecated": true
+}

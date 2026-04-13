@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "batchLabel": "Cover pilot batch 2",
+  "description": "12 首：占位补图为主 + OST/项目 + 个别视频缩略图顶图。不跑 generate:official-metadata。",
+  "entries": [
+    {
+      "slug": "masayume chasing",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/29/c0/2b/29c02b24-7de3-c908-d0bb-fd551d9a7740/ANTCD-12163.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": true,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes 美区 BoA《Masayume chasing》（《妖精的尾巴》片头相关发行）。FUNKIST 版若后续有明确单曲可再替换，故标 uncertain。"
+    },
+    {
+      "slug": "shut down",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/52/8e/5a/528e5a30-52b0-b68c-f184-635fcf15e6d7/22UM1IM01017.rgb.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes BLACKPINK《Shut Down》单曲封面。"
+    },
+    {
+      "slug": "strawberry moon",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/61/ac/6c/61ac6cf8-f016-5fbb-79b0-8cfa51da855b/cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes IU《strawberry moon》单曲封面。"
+    },
+    {
+      "slug": "see the light",
+      "pilotCategory": "wrong_cover",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/9f/7e/c7/9f7ec774-536a-5bd8-9a01-acbb61ea7694/888272144574_Cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原条目无封面且元数据艺人曾偏邓紫棋；override 指向韩剧《现在拨打的电话》OST。改用 iTunes 上该剧 OST 曲目《See The Light》（LIM HYUNSIK）封面，与视频主题一致。"
+    },
+    {
+      "slug": "soda-pop",
+      "pilotCategory": "ost_project",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e1/15/42/e1154273-8ecd-5702-e6e6-597f28001681/25UMGIM82363.rgb.jpg/600x600bb.jpg",
+      "coverSource": "project_art",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "project_art",
+      "officialStatus": "confirmed",
+      "reason": "《KPOP Demon Hunters》原声带主视觉（与 batch1 golden / Soda Pop 单曲一致）。"
+    },
+    {
+      "slug": "Sacrifice",
+      "pilotCategory": "ost_project",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/bb/2e/4f/bb2e4f2e-4d10-7124-3b6b-a10896734683/198704737534_Cover.jpg/600x600bb.jpg",
+      "coverSource": "project_art",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "project_art",
+      "officialStatus": "confirmed",
+      "reason": "英雄联盟 × G.E.M. 合作单曲《Sacrifice》官方封面（iTunes）。"
+    },
+    {
+      "slug": "remedy",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/13/2a/76/132a76c1-1f64-5bea-3d88-e15331f7f72c/cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes KUN《Remedy》单曲封面。"
+    },
+    {
+      "slug": "spr",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/86/c6/8c/86c68c81-74bd-a044-c32d-7c4ae071ddfe/25UMGIM39897.rgb.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes 宋亚轩《spr.》单曲封面。"
+    },
+    {
+      "slug": "say my name",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/37/96/3e/37963e0b-244c-a4a8-ad46-89214c5caf72/888272115208_Cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": true,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes 上《Say My Name》对应 BOYS PLANET 音源合集封面（艺人字段在商店中显示为 Say Yes! 等，与节目音源一致；故标 uncertain）。"
+    },
+    {
+      "slug": "snake",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/b0/11/22/b01122e3-2969-73f2-c4f5-863f52611e77/888272087529_Cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": true,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes 中 BOYS PLANET 相关《Snake》（Medusa 组）音源封面。"
+    },
+    {
+      "slug": "moonlight dance",
+      "pilotCategory": "temp_video",
+      "cover": "https://i.ytimg.com/vi/CxnNceKfNwg/hqdefault.jpg",
+      "coverSource": "video_thumbnail",
+      "coverLocked": false,
+      "coverUncertain": true,
+      "officialSource": "video_thumbnail",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；未在 iTunes 找到《白色橄榄树》该剧稳定单曲图，暂用官方 YouTube 稿件缩略图（hqdefault）；后续可换正式 OST 专辑图。"
+    },
+    {
+      "slug": "spotlight",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/cd/cd/9f/cdcd9fef-06f0-a32e-300f-589071be39fe/cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；iTunes 中国区蔡徐坤《Spotlight》单曲封面。"
+    }
+  ]
+}

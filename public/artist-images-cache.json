@@ -1,0 +1,1019 @@
+{
+  "zhou-shen": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/cc20d446054c86d3d156a942713170c9/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:22.826Z",
+    "matchedName": "Zhou Shen",
+    "searchQuery": "Zhou Shen",
+    "imageKind": "artist_photo"
+  },
+  "hua-chen-yu": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/96a2c39a651963f9c7dbbbd08d9cb695/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:24.154Z",
+    "matchedName": "华晨宇",
+    "searchQuery": "Hua Chenyu",
+    "imageKind": "artist_photo"
+  },
+  "into1": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/77051020ad6d1cb9ac358c8d872de84f/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:24.719Z",
+    "matchedName": "INTO1",
+    "searchQuery": "INTO1",
+    "imageKind": "group_photo"
+  },
+  "ive": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/6b485876ae2f3513f77eee2ebd8d4994/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:25.201Z",
+    "matchedName": "IVE",
+    "searchQuery": "IVE",
+    "imageKind": "group_photo"
+  },
+  "seventeen": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f24702900c1454ea23c573a3eed5b149/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:25.720Z",
+    "matchedName": "SEVENTEEN",
+    "searchQuery": "SEVENTEEN",
+    "imageKind": "group_photo"
+  },
+  "jay-chou": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4b60277efe2dff28823aac761d390406/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:26.958Z",
+    "matchedName": "Jay Chou",
+    "searchQuery": "Jay Chou",
+    "imageKind": "artist_photo"
+  },
+  "kun": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/776b9838ca4bf50ee8f0b0c28a6cfd67/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:28.019Z",
+    "matchedName": "Kun",
+    "searchQuery": "KUN",
+    "imageKind": "artist_photo"
+  },
+  "zerobaseone": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/90c4e4db0b9551c31b06d73e3d189f23/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:28.595Z",
+    "matchedName": "ZEROBASEONE",
+    "searchQuery": "ZEROBASEONE",
+    "imageKind": "group_photo"
+  },
+  "wang-yuan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f49bd63f1c32e6d154a50181a663ae78/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:29.612Z",
+    "matchedName": "Roy Wang",
+    "searchQuery": "Roy Wang",
+    "imageKind": "artist_photo"
+  },
+  "newjeans": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/0866c2c1d7d00879f5db46ddc1250db8/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:30.147Z",
+    "matchedName": "NewJeans",
+    "searchQuery": "NewJeans",
+    "imageKind": "group_photo"
+  },
+  "liu-yao-wen": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/69a7677659bf40e2e7f190567803c57e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:31.380Z",
+    "matchedName": "劉耀文",
+    "searchQuery": "Liu Yaowen",
+    "imageKind": "artist_photo"
+  },
+  "aespa": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e16c3049f89ed842cabd0662012c2d33/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:31.898Z",
+    "matchedName": "aespa",
+    "searchQuery": "aespa",
+    "imageKind": "group_photo"
+  },
+  "blackpink": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/89675729453893a91be35bde691050ff/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:32.385Z",
+    "matchedName": "BLACKPINK",
+    "searchQuery": "BLACKPINK",
+    "imageKind": "group_photo"
+  },
+  "zhang-bi-chen": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/c9575c37b81612c9403a72af711328fc/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:33.595Z",
+    "matchedName": "Zhang Bichen",
+    "searchQuery": "Zhang Bichen",
+    "imageKind": "artist_photo"
+  },
+  "song-ya-xuan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4cef1787336d10b0c1e31c2c04301bf4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:34.836Z",
+    "matchedName": "Yaxuan Song",
+    "searchQuery": "Song Yaxuan",
+    "imageKind": "artist_photo"
+  },
+  "black-myth-wukong": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4eb33e21ee7bc50439584c1973ab1ece/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:35.730Z",
+    "matchedName": "Black Myth Wukong",
+    "searchQuery": "Black Myth: Wukong",
+    "imageKind": "project_logo"
+  },
+  "boys-planet": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/09a8f9837619ada5f675c3e319721636/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:36.221Z",
+    "matchedName": "BOYS PLANET",
+    "searchQuery": "BOYS PLANET",
+    "imageKind": "project_logo"
+  },
+  "illit": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/fc9af226576dd0244593dff0c10bebf0/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:36.765Z",
+    "matchedName": "ILLIT ",
+    "searchQuery": "ILLIT",
+    "imageKind": "group_photo"
+  },
+  "lay-zhang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/482ccbb24488449375178fa2a88431cc/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:38.186Z",
+    "matchedName": "張藝興",
+    "searchQuery": "张艺兴",
+    "imageKind": "artist_photo"
+  },
+  "i-dle": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/0b381aacaf9b4c4c1b60664431c815bf/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:38.835Z",
+    "matchedName": "i-dle",
+    "searchQuery": "I-DLE",
+    "imageKind": "group_photo"
+  },
+  "snh48": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d6a21a3e15605ac3f7e67972c0f9419e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:39.362Z",
+    "matchedName": "SNH48",
+    "searchQuery": "SNH48",
+    "imageKind": "group_photo"
+  },
+  "red-velvet": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/0ce3988847484f293a81a0597e775f11/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:40.109Z",
+    "matchedName": "Red Velvet",
+    "searchQuery": "Red Velvet",
+    "imageKind": "group_photo"
+  },
+  "exo": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f2fa89ff99805404c7443bed2bcc3c71/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:40.627Z",
+    "matchedName": "EXO",
+    "searchQuery": "EXO",
+    "imageKind": "group_photo"
+  },
+  "bts": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/b5c64fa8216ca158e52b4d88bd9388ff/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:41.824Z",
+    "matchedName": "BTS",
+    "searchQuery": "BTS",
+    "imageKind": "group_photo"
+  },
+  "yan-hao-xiang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ac6c68e837b5f36486d1042c700061ec/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:43.114Z",
+    "matchedName": "嚴浩翔",
+    "searchQuery": "Yan Haoxiang",
+    "imageKind": "artist_photo"
+  },
+  "liu-yu-xin": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/97abdbc7f961379d1402a06924a7d8ca/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:44.076Z",
+    "matchedName": "刘雨昕",
+    "searchQuery": "Liu Yuxin",
+    "imageKind": "artist_photo"
+  },
+  "gem": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/b6038845b5c257e42225c38b760b9869/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:45.340Z",
+    "matchedName": "G.E.M.",
+    "searchQuery": "G.E.M.",
+    "imageKind": "artist_photo"
+  },
+  "jj-lin": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2a6aaac31e0410bee58b17346b7fa02e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:46.742Z",
+    "matchedName": "JJ Lin",
+    "searchQuery": "JJ Lin",
+    "imageKind": "artist_photo"
+  },
+  "he-jun-lin": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/68266305d80b202feb5d401d5b093736/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:48.065Z",
+    "matchedName": "賀峻霖",
+    "searchQuery": "贺峻霖",
+    "imageKind": "artist_photo"
+  },
+  "babymonster": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e0a69367d0596486fc31bfbdefc09fa5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:48.587Z",
+    "matchedName": "BABYMONSTER",
+    "searchQuery": "BABYMONSTER",
+    "imageKind": "group_photo"
+  },
+  "shakira": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/69c569506a8ff6ab0edfecbd1adf94b0/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:49.105Z",
+    "matchedName": "Shakira",
+    "searchQuery": "Shakira",
+    "imageKind": "artist_photo"
+  },
+  "zhang-jie": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4593b721a00a814018484842470bcc09/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:50.165Z",
+    "matchedName": "Jason Zhang",
+    "searchQuery": "Jason Zhang",
+    "imageKind": "artist_photo"
+  },
+  "faye-wong": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ac410f624102d4df46715368e2373fa4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:51.087Z",
+    "matchedName": "Faye Wong",
+    "searchQuery": "Faye Wong",
+    "imageKind": "artist_photo"
+  },
+  "mayday": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ed383ae86173a998b5ccefd4f3646323/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:52.301Z",
+    "matchedName": "Mayday",
+    "searchQuery": "Mayday",
+    "imageKind": "group_photo"
+  },
+  "wang-xin-ling": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4ea66db9d3dd99989f92f041195c4889/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:53.243Z",
+    "matchedName": "Cyndi Wang",
+    "searchQuery": "Cyndi Wang",
+    "imageKind": "artist_photo"
+  },
+  "ma-jia-qi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/54d744f584cd4e2867f69722021f9dfa/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:54.655Z",
+    "matchedName": "马嘉祺",
+    "searchQuery": "马嘉祺",
+    "imageKind": "artist_photo"
+  },
+  "zhang-zhen-yuan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2ecf9ad02b2b0410d148832a19538108/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:55.859Z",
+    "matchedName": "張真源",
+    "searchQuery": "Zhang Zhenyuan",
+    "imageKind": "artist_photo"
+  },
+  "lu-han": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/10d69c05f5d3263c0a0dad43351b6f50/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:56.879Z",
+    "matchedName": "Lu Han",
+    "searchQuery": "Lu Han",
+    "imageKind": "artist_photo"
+  },
+  "twice": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1f4acadade675899b7f775ae4ac67faa/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:57.387Z",
+    "matchedName": "TWICE",
+    "searchQuery": "TWICE",
+    "imageKind": "group_photo"
+  },
+  "zhang-hao": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/26777e82e1f969582fb4bf5495fb0b3a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:58.305Z",
+    "matchedName": "ZHANG HAO",
+    "searchQuery": "Zhang Hao",
+    "imageKind": "artist_photo"
+  },
+  "triples": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/510f00eea0eb838d04dd4d1c458bd460/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:58.884Z",
+    "matchedName": "tripleS",
+    "searchQuery": "tripleS",
+    "imageKind": "group_photo"
+  },
+  "le-sserafim": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e789ab2d16cad9a738cd83722940512b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:59.368Z",
+    "matchedName": "LE SSERAFIM",
+    "searchQuery": "LE SSERAFIM",
+    "imageKind": "group_photo"
+  },
+  "taylor-swift": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e528e270424103b527f8a27ac625563b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:12:59.878Z",
+    "matchedName": "Taylor Swift",
+    "searchQuery": "Taylor Swift",
+    "imageKind": "artist_photo"
+  },
+  "iu": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/c619e4cef93d6fa98a38018d92106bb6/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:00.361Z",
+    "matchedName": "IU",
+    "searchQuery": "IU",
+    "imageKind": "artist_photo"
+  },
+  "chen-xue-ran": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/bc5346d215c190fdf1b111d173aaf115/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:01.709Z",
+    "matchedName": "Xueran Chen",
+    "searchQuery": "Xueran Chen",
+    "imageKind": "artist_photo"
+  },
+  "ding-yu-xi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a5a8147ce12a93b4eaa3a7629f7df690/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:02.640Z",
+    "matchedName": "丁禹兮",
+    "searchQuery": "Ding Yuxi",
+    "imageKind": "artist_photo"
+  },
+  "silence-wang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f9a0be192389643999b832d22a473aca/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:03.888Z",
+    "matchedName": "Silence Wang",
+    "searchQuery": "Silence Wang",
+    "imageKind": "artist_photo"
+  },
+  "su-xing-jie": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1dd802eff7dfb7775d75ecdda1784f62/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:05.097Z",
+    "matchedName": "Su Xingjie",
+    "searchQuery": "Su Xingjie",
+    "imageKind": "artist_photo"
+  },
+  "liu-yu-ning": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/afdba88db1ffd82cacc6db9661ffca4a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:06.401Z",
+    "matchedName": "LIUYUNING",
+    "searchQuery": "Liu Yuning",
+    "imageKind": "artist_photo"
+  },
+  "wang-yi-bo": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/630aa60ed5baa7f6ca7a6b08a0e99d4b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:07.250Z",
+    "matchedName": "Wang Yibo",
+    "searchQuery": "Wang Yibo",
+    "imageKind": "artist_photo"
+  },
+  "cheng-huan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/b92f10dae15e71605b614fcb15a1d2f3/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:08.193Z",
+    "matchedName": "承桓",
+    "searchQuery": "Cheng Huan",
+    "imageKind": "artist_photo"
+  },
+  "wu-bai": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1d0f7b6491d04173f69642b0ddf19aa4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:09.121Z",
+    "matchedName": "Wu Bai",
+    "searchQuery": "Wu Bai",
+    "imageKind": "artist_photo"
+  },
+  "christina-perri": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a60e05940ca719353ff1781ce6adcb79/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:09.651Z",
+    "matchedName": "Christina Perri",
+    "searchQuery": "Christina Perri",
+    "imageKind": "artist_photo"
+  },
+  "billie-eilish": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/8eab1a9a644889aabaca1e193e05f984/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:10.124Z",
+    "matchedName": "Billie Eilish",
+    "searchQuery": "Billie Eilish",
+    "imageKind": "artist_photo"
+  },
+  "zhao-lu-si": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/9cfa4e913e25ee61f7f0908f905035c9/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:11.435Z",
+    "matchedName": "Zhao Lu-Si",
+    "searchQuery": "Zhao Lusi",
+    "imageKind": "artist_photo"
+  },
+  "jackson-wang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/6ed4af7b82864105a7d633259082459d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:12.387Z",
+    "matchedName": "Jackson Wang",
+    "searchQuery": "Jackson Wang",
+    "imageKind": "artist_photo"
+  },
+  "super-junior": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/505c7afb4f26e395223ea5e7aaee49de/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:12.929Z",
+    "matchedName": "SUPER JUNIOR",
+    "searchQuery": "Super Junior",
+    "imageKind": "group_photo"
+  },
+  "adele": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e5fc443d2abc03b487234ba4de65a001/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:13.432Z",
+    "matchedName": "Adele",
+    "searchQuery": "Adele",
+    "imageKind": "artist_photo"
+  },
+  "alan-walker": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/79d384488d390e65a6c27a95c431627e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:13.979Z",
+    "matchedName": "Alan Walker",
+    "searchQuery": "Alan Walker",
+    "imageKind": "artist_photo"
+  },
+  "g-dragon": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7ac3313d36221d7450cb16e171d557b6/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:15.221Z",
+    "matchedName": "G-DRAGON",
+    "searchQuery": "G-DRAGON",
+    "imageKind": "artist_photo"
+  },
+  "itzy": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/38460f309900778cc9972a997b8c4b00/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:15.813Z",
+    "matchedName": "ITZY",
+    "searchQuery": "ITZY",
+    "imageKind": "group_photo"
+  },
+  "kenshi-yonezu": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/19fd734bf143bb9ba0846109fe950b69/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:17.100Z",
+    "matchedName": "Kenshi Yonezu",
+    "searchQuery": "Kenshi Yonezu",
+    "imageKind": "artist_photo"
+  },
+  "cai-jian-ya": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e51cbe89385c096e30d03d9bbd82bd71/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:17.943Z",
+    "matchedName": "Tanya Chua",
+    "searchQuery": "Tanya Chua",
+    "imageKind": "artist_photo"
+  },
+  "jennie": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/56c65ac9ea451119ddc8c0b02915d103/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:18.456Z",
+    "matchedName": "JENNIE",
+    "searchQuery": "JENNIE",
+    "imageKind": "artist_photo"
+  },
+  "ryuichi-sakamoto": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/45b3c12f959f5e8e991066967de39fd5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:19.304Z",
+    "matchedName": "Ryuichi Sakamoto",
+    "searchQuery": "Ryuichi Sakamoto",
+    "imageKind": "artist_photo"
+  },
+  "radwimps": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7b40c8324e43c9b0c33e272ef6135125/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:19.790Z",
+    "matchedName": "RADWIMPS",
+    "searchQuery": "RADWIMPS",
+    "imageKind": "group_photo"
+  },
+  "tws": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f015a73eed97607bee3b516a63b1f742/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:20.365Z",
+    "matchedName": "TWS",
+    "searchQuery": "TWS",
+    "imageKind": "group_photo"
+  },
+  "the9": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/240f02644a1d044036dead7419823f31/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:21.098Z",
+    "matchedName": "The9",
+    "searchQuery": "THE9",
+    "imageKind": "group_photo"
+  },
+  "mai-kuraki": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/86bf2334ae3796dfc4eebb020d0d5878/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.9,
+    "attemptedAt": "2026-04-07T07:13:21.929Z",
+    "matchedName": "Mai Kuraki and Michael Africk",
+    "searchQuery": "Mai Kuraki",
+    "imageKind": "artist_photo"
+  },
+  "sunmi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e90b7799fd000d441c190ab1479cfa2a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:22.413Z",
+    "matchedName": "SUNMI",
+    "searchQuery": "Sunmi",
+    "imageKind": "artist_photo"
+  },
+  "zhang-liang-ying": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d54e1bc231243eedd095b7510b061a21/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:24.544Z",
+    "matchedName": "Jane Zhang",
+    "searchQuery": "Jane Zhang",
+    "imageKind": "artist_photo"
+  },
+  "li-rong-hao": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ba5b2a429adae83c4aac2747f7c9ef36/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:25.730Z",
+    "matchedName": "Ronghao Li",
+    "searchQuery": "Li Ronghao",
+    "imageKind": "artist_photo"
+  },
+  "yi-zhi-liu-lian": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/54d7c0954be8a8aed666900679ce5c7b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:26.611Z",
+    "matchedName": "一支榴莲",
+    "searchQuery": "一支榴莲",
+    "imageKind": "artist_photo"
+  },
+  "li-jian": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/b66d4a2a9135a19c6f4c44a8477e6ca9/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:27.587Z",
+    "matchedName": "Li Jian",
+    "searchQuery": "Li Jian",
+    "imageKind": "artist_photo"
+  },
+  "zheng-zhi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f091eb2fc44240d2b6a4e6b0ee9ce2e7/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:28.834Z",
+    "matchedName": "Zenghi",
+    "searchQuery": "Zheng Zhi",
+    "imageKind": "artist_photo"
+  },
+  "zhang-yuan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d49268a866c72341f07d4881a9d29db0/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:30.117Z",
+    "matchedName": "张远",
+    "searchQuery": "Zhang Yuan",
+    "imageKind": "artist_photo"
+  },
+  "guo-ding": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/c30b7ab344c24ed2143d058710c13f57/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:31.645Z",
+    "matchedName": "Guo Ding",
+    "searchQuery": "Guo Ding",
+    "imageKind": "artist_photo"
+  },
+  "tfboys": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e6e1662739ae90ff1afb4e95b0287f3b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:32.179Z",
+    "matchedName": "TFBOYS",
+    "searchQuery": "TFBOYS",
+    "imageKind": "group_photo"
+  },
+  "faye-zhan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1284b67b22762617603f798814f2ff3e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:33.072Z",
+    "matchedName": "FAYE",
+    "searchQuery": "Faye",
+    "imageKind": "artist_photo"
+  },
+  "cheng-xiang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/98b3f318d9dae692759244e47254917e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:34.406Z",
+    "matchedName": "程响",
+    "searchQuery": "Cheng Xiang",
+    "imageKind": "artist_photo"
+  },
+  "xu-liang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/926a62d6bafdfa94ecbe041d68441b96/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:35.299Z",
+    "matchedName": "徐良",
+    "searchQuery": "徐良",
+    "imageKind": "artist_photo"
+  },
+  "feng-huang-chuan-qi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1bb2fa6544f64951eccf21c5da9bd71e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:36.502Z",
+    "matchedName": "凤凰传奇",
+    "searchQuery": "凤凰传奇",
+    "imageKind": "group_photo"
+  },
+  "chen-li": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e74a3748c30f531bd1d1d792eb2cf6b5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:37.770Z",
+    "matchedName": "陈粒",
+    "searchQuery": "Chen Li",
+    "imageKind": "artist_photo"
+  },
+  "sean-tang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/3eb6ce1d6c0965b32b4f9961d6559fde/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:38.698Z",
+    "matchedName": "Sean Tang",
+    "searchQuery": "Sean Tang",
+    "imageKind": "artist_photo"
+  },
+  "karen-mok": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/bf33cd64edae5df3a62ef97a71f55ad2/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:39.660Z",
+    "matchedName": "Karen Mok",
+    "searchQuery": "Karen Mok",
+    "imageKind": "artist_photo"
+  },
+  "ge-dong-qi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7da79a2c2e8bbf53cee8e48acf33706f/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:45.799Z",
+    "matchedName": "葛东琪",
+    "searchQuery": "Ge Dongqi",
+    "imageKind": "artist_photo"
+  },
+  "li-wen-coco": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/69d1da97bafad2ace1d9591a92214337/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:46.647Z",
+    "matchedName": "Coco Lee",
+    "searchQuery": "CoCo Lee",
+    "imageKind": "artist_photo"
+  },
+  "zhang-miao-ge": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/526650631754c8b18d8afb3205fe546a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:47.932Z",
+    "matchedName": "张妙格",
+    "searchQuery": "Zhang Miaoge",
+    "imageKind": "artist_photo"
+  },
+  "khalil-fong": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a6642d657a48c625d2fd78a7a0a3ce71/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:48.878Z",
+    "matchedName": "Khalil Fong",
+    "searchQuery": "Khalil Fong",
+    "imageKind": "artist_photo"
+  },
+  "penny-tai": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/23dab3385a78e08e0e80e2c844ca946c/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:49.985Z",
+    "matchedName": "Penny Tai",
+    "searchQuery": "Penny Tai",
+    "imageKind": "artist_photo"
+  },
+  "zheng-yi-nong": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/22d35aeabde9142dfbf8815540c71b0e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:51.210Z",
+    "matchedName": "鄭宜農",
+    "searchQuery": "郑宜农",
+    "imageKind": "artist_photo"
+  },
+  "mika-nakashima": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/5c08501da05f565958ccbade51f6b6ab/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:52.461Z",
+    "matchedName": "Mika Nakashima",
+    "searchQuery": "Mika Nakashima",
+    "imageKind": "artist_photo"
+  },
+  "xue-kai-qi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/bde731e4dbdb9a44cea5f8230510966e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:53.515Z",
+    "matchedName": "Fiona Sit",
+    "searchQuery": "Fiona Sit",
+    "imageKind": "artist_photo"
+  },
+  "liu-shuang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/28b69247f0b4ca5c1d53de5b886c4a35/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:54.386Z",
+    "matchedName": "Liu Shuang",
+    "searchQuery": "Liu Shuang",
+    "imageKind": "artist_photo"
+  },
+  "a-si": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4701d4f7094707e17e23cf3d61e8290d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:55.396Z",
+    "matchedName": "ASI",
+    "searchQuery": "A Si",
+    "imageKind": "artist_photo"
+  },
+  "wang-lee-hom": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7032f75e116f6c6221d0a4c7017c23e6/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:56.228Z",
+    "matchedName": "Leehom Wang",
+    "searchQuery": "Leehom Wang",
+    "imageKind": "artist_photo"
+  },
+  "joey-yung": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/706b237f65b9fefa860328c3b4429b05/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:57.476Z",
+    "matchedName": "Joey Yung",
+    "searchQuery": "Joey Yung",
+    "imageKind": "artist_photo"
+  },
+  "wang-yan-wei": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/3663c6e1b8ed5bc8ffe29938e573cf50/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:13:58.729Z",
+    "matchedName": "王艷薇",
+    "searchQuery": "王艳薇",
+    "imageKind": "artist_photo"
+  },
+  "fairy-town": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/5bd56bd90123a49a0ec3eb3bfdee2c2b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.75,
+    "attemptedAt": "2026-04-07T07:13:59.623Z",
+    "matchedName": "Fire Town",
+    "searchQuery": "Fairy Town",
+    "imageKind": "project_logo"
+  },
+  "feifei-princess": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/3dce5e9388ae4f93b51ef4790abe27e5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:00.495Z",
+    "matchedName": "菲菲公主",
+    "searchQuery": "菲菲公主",
+    "imageKind": "artist_photo"
+  },
+  "shan-yi-chun": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d9f2e292c59ca00b9c8993c0d0050afb/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:01.689Z",
+    "matchedName": "Shan Yi Chun",
+    "searchQuery": "Shan Yichun",
+    "imageKind": "artist_photo"
+  },
+  "dao-lang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d7bde1b7dc8421c925aea5e139079d8e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:02.717Z",
+    "matchedName": "刀郎",
+    "searchQuery": "Dao Lang",
+    "imageKind": "artist_photo"
+  },
+  "zi-yu": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/08d8985e5718e8c6fd0fb1c27802fce1/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:03.667Z",
+    "matchedName": "梓渝",
+    "searchQuery": "Zi Yu",
+    "imageKind": "artist_photo"
+  },
+  "qiao-jun-cheng": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a7537c62c5071ab7093837c109264056/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:04.498Z",
+    "matchedName": "乔浚丞",
+    "searchQuery": "Qiao Juncheng",
+    "imageKind": "artist_photo"
+  },
+  "ju-jing-yi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4765b4ff5296e4096eabaa7ce0e7d57c/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:05.378Z",
+    "matchedName": "鞠婧祎",
+    "searchQuery": "Ju Jingyi",
+    "imageKind": "artist_photo"
+  },
+  "tai-yi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/912dfd4b22b94268395deb17562e2093/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:06.385Z",
+    "matchedName": "太一",
+    "searchQuery": "太一",
+    "imageKind": "artist_photo"
+  },
+  "deng-jun-jun": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d3c60f74d47fabf3986b1215ca1a6678/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:07.245Z",
+    "matchedName": "等什么君",
+    "searchQuery": "等什么君",
+    "imageKind": "artist_photo"
+  },
+  "stefanie-sun": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/bf7e19df3799b8848647b40d94222e4a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:08.527Z",
+    "matchedName": "Stefanie Sun",
+    "searchQuery": "Stefanie Sun",
+    "imageKind": "artist_photo"
+  },
+  "dizzy-dizzo": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/94f7036173b6c60cbc795f441967a486/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:09.534Z",
+    "matchedName": "Dizzy Dizzo",
+    "searchQuery": "Dizzy Dizzo",
+    "imageKind": "artist_photo"
+  },
+  "yi-yang-qian-xi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f8e658548a90d768c4ee2f341ff730a8/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:10.463Z",
+    "matchedName": "Jackson Yee",
+    "searchQuery": "Jackson Yee",
+    "imageKind": "artist_photo"
+  },
+  "chen-xuan-xiao": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/42d3c70abfa481f6930562d72a05d583/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:14:11.328Z",
+    "matchedName": "大泫",
+    "searchQuery": "大泫",
+    "imageKind": "artist_photo"
+  },
+  "lu-yuan-yi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1a327420b3b417485d017dc94ac0f152/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-04-07T07:26:24.458Z",
+    "matchedName": "盧苑儀",
+    "searchQuery": "盧苑儀",
+    "imageKind": "artist_photo"
+  },
+  "fumiya-sashida": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4543d292addaa9cd43dc8b933fe87fb4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "attemptedAt": "2026-04-07T07:27:10.987Z",
+    "matchedName": "指田郁也",
+    "searchQuery": "Fumiya Sashida",
+    "imageKind": "artist_photo"
+  }
+}

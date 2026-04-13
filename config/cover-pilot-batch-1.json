@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "description": "Pilot batch 1: 12 tracks — wrong cover / no cover / OST·项目图。仅合并 cover + coverSource + coverLocked + coverUncertain + officialStatus/officialSource 兼容位。",
+  "entries": [
+    {
+      "slug": "normal no more",
+      "pilotCategory": "wrong_cover",
+      "reportPreviousCover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/be/81/de/be81deb3-7c91-bdcc-1092-61bf7a56fe0a/25UM1IM51403.rgb.jpg/600x600bb.jpg",
+      "reportPreviousOfficialSource": "appleMusic",
+      "cover": "https://i2.hdslb.com/bfs/archive/8670366d9d2af24a1637f0265bb577326fc105e9.jpg",
+      "coverSource": "video_thumbnail",
+      "coverLocked": false,
+      "coverUncertain": true,
+      "officialSource": "video_thumbnail",
+      "officialStatus": "confirmed",
+      "reason": "原 Apple 命中为 Shakira《Zoo》，与当前 B 站钢琴改编视频不符；改用该曲关联 B 站稿件官方封面图作临时顶图（待后续换正式单曲图）。"
+    },
+    {
+      "slug": "Magnetic",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3e/49/1e/3e491e43-4961-21ab-2abe-37fb1c0feb40/196922879227_Cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes 美区 ILLIT《Magnetic》单曲封面（600×600）。"
+    },
+    {
+      "slug": "sheesh",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fb/68/85/fb68856f-4965-5d30-78ea-fe6bb261f4ff/3000px.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes BABYMONSTER《SHEESH》单曲封面。（注：`Mantra` slug 已在 overrides 锚定 Apple 曲目 ID，按硬约束未自动覆盖，故换为 `sheesh`。）"
+    },
+    {
+      "slug": "Lucid Dream",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/51/f7/85/51f7852b-7602-136b-ac15-8b3878260c64/4000aespa_M01_Savage_DC.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes aespa《Lucid Dream》所在专辑《Savage》封面。"
+    },
+    {
+      "slug": "yet to come",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/f7/68/9c/f7689ce3-6d41-60cd-62d2-57a91ddf5b9d/196922067341_Cover.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes BTS《Yet To Come》单曲封面。"
+    },
+    {
+      "slug": "mitsuha-theme",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music123/v4/fa/dc/81/fadc81d8-c4d4-0631-c52c-c9e7e7a74d1f/16UMGIM58500.rgb.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": true,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；用《君の名は。》相关 RADWIMPS「スパークル (movie ver.)」专辑图作代表视觉（与「三叶主题」同属该作 OST，非唯一标答）。"
+    },
+    {
+      "slug": "Mono",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/19/30/7d/19307d4e-ba27-3457-06dc-03993bf95bc8/8804775402272.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes i-dle《Mono (feat. skaiwater)》单曲封面。"
+    },
+    {
+      "slug": "Psychic",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/0f/a5/20/0fa520b7-6e71-3827-594d-575e97526e4c/5021732282415.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes 中国区张艺兴《Psychic》单曲封面。"
+    },
+    {
+      "slug": "REBEL HEART",
+      "pilotCategory": "placeholder",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/26/c5/38/26c5381f-2dcb-cc8f-c161-60009a3c4d97/199066086087.jpg/600x600bb.jpg",
+      "coverSource": "apple",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "appleMusic",
+      "officialStatus": "confirmed",
+      "reason": "原无封面；使用 iTunes IVE《REBEL HEART》单曲封面。"
+    },
+    {
+      "slug": "golden",
+      "pilotCategory": "ost_project",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/e1/15/42/e1154273-8ecd-5702-e6e6-597f28001681/25UMGIM82363.rgb.jpg/600x600bb.jpg",
+      "coverSource": "project_art",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "project_art",
+      "officialStatus": "confirmed",
+      "reason": "《KPOP Demon Hunters》电影原声侧更统一的官方专辑主视觉（iTunes 美区《Golden》原声带条目），替换此前偏随机的搜索命中图。"
+    },
+    {
+      "slug": "GODS",
+      "pilotCategory": "ost_project",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/59/e0/3059e000-eb6f-6c08-4387-c1ee9d38d962/00198704670657_Cover.jpg/600x600bb.jpg",
+      "coverSource": "project_art",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "project_art",
+      "officialStatus": "confirmed",
+      "reason": "英雄联盟 Worlds 2023 主题曲视觉；沿用当前已与 NewJeans 单曲一致的官方封面，仅补充 coverSource=project_art 以便与流媒「单曲误配」区分。"
+    },
+    {
+      "slug": "call of silence",
+      "pilotCategory": "ost_project",
+      "cover": "https://is1-ssl.mzstatic.com/image/thumb/Music19/v4/d7/97/08/d797084f-05bf-197c-0aee-56480ee60380/PCCG_01615.jpg/600x600bb.jpg",
+      "coverSource": "project_art",
+      "coverLocked": false,
+      "coverUncertain": false,
+      "officialSource": "project_art",
+      "officialStatus": "confirmed",
+      "reason": "《进击的巨人》相关原声封面；URL 不变，标注为 project_art（动画官方发行侧）以符合 OST 策略。"
+    }
+  ]
+}

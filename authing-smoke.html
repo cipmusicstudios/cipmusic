@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authing Guard smoke（最小路径）</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        padding: 16px;
+        max-width: 960px;
+        line-height: 1.45;
+      }
+      pre {
+        background: #111;
+        color: #e8e8e8;
+        padding: 12px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 12px;
+      }
+      button {
+        padding: 10px 16px;
+        font-size: 16px;
+        margin: 0 8px 12px 0;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Authing Guard 最小路径</h1>
+    <p>
+      不加载主应用、不经过 <code>authing-provider</code> 单例。点击按钮时在<strong>本次点击回调内</strong>完成
+      <code>import('@authing/guard')</code>与 <code>new Guard(opts)</code>。请同时打开 DevTools Console。
+    </p>
+    <p>环境与主站相同：项目根目录 <code>.env</code> 中的 <code>VITE_AUTHING_*</code>。</p>
+    <p>
+      本地地址：<code>http://localhost:3001/authing-smoke.html</code>（与 <code>npm run dev</code> 端口一致）。
+    </p>
+    <button type="button" id="btn-redirect">现场 new Guard → 尝试 startWithRedirect</button>
+    <button type="button" id="btn-embed">现场 new Guard → 尝试 start(容器)</button>
+    <pre id="out"></pre>
+    <script type="module" src="/src/authing-guard-smoke.ts"></script>
+  </body>
+</html>

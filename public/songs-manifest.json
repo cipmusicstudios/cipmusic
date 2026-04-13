@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "kind": "catalog",
+  "generatedAt": "2026-04-11T21:47:25.468Z",
+  "assetBaseUrl": "",
+  "trackTotal": 544,
+  "chunks": [
+    {
+      "path": "songs-manifest-chunk-0.json",
+      "count": 96
+    },
+    {
+      "path": "songs-manifest-chunk-1.json",
+      "count": 96
+    },
+    {
+      "path": "songs-manifest-chunk-2.json",
+      "count": 96
+    },
+    {
+      "path": "songs-manifest-chunk-3.json",
+      "count": 96
+    },
+    {
+      "path": "songs-manifest-chunk-4.json",
+      "count": 96
+    },
+    {
+      "path": "songs-manifest-chunk-5.json",
+      "count": 64
+    }
+  ]
+}

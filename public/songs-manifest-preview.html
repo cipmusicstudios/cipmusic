@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>曲库 manifest 预览（当前构建）</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      margin: 0;
+      padding: 20px 24px 48px;
+      background: #121218;
+      color: #e8e8ed;
+    }
+    h1 { font-size: 1.2rem; font-weight: 600; margin: 0 0 6px; }
+    .hint {
+      font-size: 0.85rem;
+      color: #9a9aac;
+      max-width: 56rem;
+      line-height: 1.55;
+      margin: 0 0 16px;
+    }
+    .hint code { background: #2a2a34; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; }
+    .warn {
+      font-size: 0.82rem;
+      color: #c9b87a;
+      background: #2a2618;
+      border: 1px solid #4a4428;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      max-width: 56rem;
+    }
+    .bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    input[type="search"] {
+      flex: 1;
+      min-width: 200px;
+      max-width: 420px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #3a3a48;
+      background: #1e1e28;
+      color: #eee;
+      font-size: 0.95rem;
+    }
+    button {
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid #4a4a5c;
+      background: #2a2a36;
+      color: #e0e0f0;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    button:hover { background: #34344a; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .meta { font-size: 0.8rem; color: #8888a0; margin-bottom: 12px; }
+    .pager {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0 16px;
+      font-size: 0.85rem;
+      color: #a0a0b8;
+    }
+    .pager label { display: flex; align-items: center; gap: 6px; }
+    .pager select {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #3a3a48;
+      background: #1e1e28;
+      color: #eee;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #2a2a34;
+      vertical-align: middle;
+    }
+    /** 屏外行跳过布局，减轻长表卡顿（Chrome / Edge / Safari 15+） */
+    tbody tr {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 56px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #16161c;
+      z-index: 1;
+      font-weight: 600;
+      color: #b8b8cc;
+    }
+    tr:hover td { background: #1a1a22; }
+    .cov {
+      width: 52px;
+      height: 52px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #222;
+      display: block;
+    }
+    .slug { font-family: ui-monospace, monospace; font-size: 0.78rem; color: #7a9cc6; }
+    .err { color: #f5a8a8; padding: 20px; }
+  </style>
+</head>
+<body>
+  <h1>曲库 manifest 预览</h1>
+  <p class="hint">
+    本页在浏览器中<strong>实时请求</strong>当前站点下的 <code>songs-manifest.json</code>，与最近一次 <code>npm run build:manifest</code> 产物一致。<br />
+    本地请先在项目根目录执行 <code>npm run dev</code>，再打开：<br />
+    <code style="user-select: all;">http://localhost:3001/songs-manifest-preview.html</code>
+  </p>
+  <div class="warn">
+    <strong>为何会卡？</strong> 若一次性渲染全库（约 500+ 行 + 数百张外站封面图），浏览器要做大量 DOM 布局与图片解码，在外部浏览器或低配机上会明显卡顿。<strong>本页默认「仅近期手工项」</strong>，并支持<strong>分页</strong>；看全库时请用分页逐页浏览，勿一次塞进整表。
+  </div>
+  <div class="bar">
+    <input type="search" id="q" placeholder="按标题、slug、艺人、时长筛选…" autocomplete="off" />
+    <button type="button" id="btnRecent">仅看近期手工项（推荐）</button>
+    <button type="button" id="btnAll">从全库第 1 页浏览</button>
+  </div>
+  <div class="pager" id="pager" hidden>
+    <span id="pageInfo"></span>
+    <button type="button" id="btnPrev">上一页</button>
+    <button type="button" id="btnNext">下一页</button>
+    <label>
+      每页
+      <select id="pageSize">
+        <option value="40">40</option>
+        <option value="60" selected>60</option>
+        <option value="100">100</option>
+      </select>
+      条
+    </label>
+  </div>
+  <div class="meta" id="meta"></div>
+  <div id="out"></div>
+
+  <script>
+    const RECENT_SLUGS = new Set([
+      "希望有羽毛和翅膀",
+      "白话文",
+      "乘风",
+      "who am i",
+      "dreams come true",
+      "小镇里的花",
+      "APT",
+    ]);
+
+    const $ = (id) => document.getElementById(id);
+
+    function esc(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    let allEntries = [];
+    /** 当前筛选结果（不分页） */
+    let filtered = [];
+    let page = 0;
+    let pageSize = 60;
+    /** true = 不分页（条目少时） */
+    let noPager = false;
+    let filterTimer = 0;
+    let generatedAt = "";
+
+    function rowHtml(e) {
+      const title = e.displayTitle || e.title || "";
+      const art =
+        e.canonicalArtistDisplayName ||
+        e.originalArtist ||
+        (e.artists && (e.artists.zhHans || e.artists.en)) ||
+        "";
+      const dur = e.duration || "—";
+      const slug = e.slug || "";
+      const cover = e.coverUrl || "";
+      return (
+        "<tr>" +
+        '<td><img class="cov" loading="lazy" decoding="async" alt="" src="' +
+        esc(cover) +
+        '" referrerpolicy="no-referrer" /></td>' +
+        "<td>" +
+        esc(title) +
+        '<div class="slug">' +
+        esc(slug) +
+        "</div></td>" +
+        "<td>" +
+        esc(art) +
+        "</td>" +
+        "<td>" +
+        esc(dur) +
+        "</td>" +
+        "</tr>"
+      );
+    }
+
+    function slicePage() {
+      if (noPager) return filtered;
+      const start = page * pageSize;
+      return filtered.slice(start, start + pageSize);
+    }
+
+    function updatePagerUi() {
+      const el = $("pager");
+      if (noPager || filtered.length <= pageSize) {
+        el.hidden = true;
+        return;
+      }
+      el.hidden = false;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      page = Math.min(page, totalPages - 1);
+      $("pageInfo").textContent =
+        "第 " + (page + 1) + " / " + totalPages + " 页（本页 " + slicePage().length + " 条，筛选共 " + filtered.length + " 条）";
+      $("btnPrev").disabled = page <= 0;
+      $("btnNext").disabled = page >= totalPages - 1;
+    }
+
+    function render() {
+      const slice = slicePage();
+      $("meta").textContent =
+        (generatedAt ? "manifest.generatedAt: " + generatedAt + " · " : "") +
+        "全库 " +
+        allEntries.length +
+        " 条";
+      if (!filtered.length) {
+        $("out").innerHTML = "<p class=\"err\">无匹配条目。</p>";
+        $("pager").hidden = true;
+        return;
+      }
+      $("out").innerHTML =
+        "<table><thead><tr>" +
+        "<th></th><th>标题 / slug</th><th>艺人</th><th>时长</th>" +
+        "</tr></thead><tbody>" +
+        slice.map(rowHtml).join("") +
+        "</tbody></table>";
+      updatePagerUi();
+    }
+
+    function setFiltered(list, opts) {
+      opts = opts || {};
+      filtered = list;
+      page = 0;
+      noPager = Boolean(opts.noPager);
+      pageSize = Number($("pageSize").value) || 60;
+      render();
+    }
+
+    function runFilterFromInput() {
+      const q = $("q").value.trim().toLowerCase();
+      if (!q) {
+        setFiltered(allEntries, { noPager: false });
+        return;
+      }
+      const list = allEntries.filter((e) => {
+        const blob = [
+          e.displayTitle,
+          e.title,
+          e.slug,
+          e.originalArtist,
+          e.canonicalArtistDisplayName,
+          e.duration,
+          e.artists && e.artists.zhHans,
+          e.artists && e.artists.en,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return blob.includes(q);
+      });
+      setFiltered(list, { noPager: list.length <= 80 });
+    }
+
+    $("q").addEventListener("input", () => {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(runFilterFromInput, 200);
+    });
+
+    $("btnAll").addEventListener("click", () => {
+      $("q").value = "";
+      setFiltered(allEntries, { noPager: false });
+    });
+
+    $("btnRecent").addEventListener("click", () => {
+      $("q").value = "";
+      const list = allEntries.filter((e) => RECENT_SLUGS.has(e.slug));
+      setFiltered(list.length ? list : allEntries, { noPager: true });
+    });
+
+    $("btnPrev").addEventListener("click", () => {
+      if (page > 0) {
+        page--;
+        render();
+      }
+    });
+    $("btnNext").addEventListener("click", () => {
+      const totalPages = Math.ceil(filtered.length / pageSize);
+      if (page < totalPages - 1) {
+        page++;
+        render();
+      }
+    });
+    $("pageSize").addEventListener("change", () => {
+      pageSize = Number($("pageSize").value) || 60;
+      page = 0;
+      render();
+    });
+
+    fetch("songs-manifest.json", { cache: "no-store" })
+      .then((r) => {
+        if (!r.ok) throw new Error(r.status + " " + r.statusText);
+        return r.json();
+      })
+      .then((manifest) => {
+        allEntries = manifest.tracks || [];
+        generatedAt = manifest.generatedAt || "";
+        const recent = allEntries.filter((e) => RECENT_SLUGS.has(e.slug));
+        if (recent.length) setFiltered(recent, { noPager: true });
+        else setFiltered(allEntries, { noPager: false });
+      })
+      .catch((e) => {
+        $("out").innerHTML =
+          '<p class="err">无法加载 songs-manifest.json：' +
+          esc(e.message) +
+          "</p>" +
+          '<p class="hint">请确认已运行 <code>npm run dev</code>，且已执行 <code>npm run build:manifest</code>。</p>';
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+public/local-imports/
+tmp/
+public/smplr-probes/
+public/smplr-engine-probes/
+public/smplr-wav-samples/
+public/click-track-golden-piano.wav
+public/click-track-golden-piano.mp3
+.DS_Store

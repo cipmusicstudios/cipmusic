@@ -1,0 +1,1 @@
+import pkg from '@tonejs/midi'; const { Midi } = pkg; async function run() { const res = await fetch('https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi'); const buf = await res.arrayBuffer(); const midi = new Midi(buf); console.log('ticksPerBeat:', midi.header.ticksPerBeat); console.log('ppq:', midi.header.ppq); } run();

@@ -1,0 +1,962 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-mist-base: rgba(205, 198, 189, 0.93);
+  --color-mist-active: rgba(205, 198, 189, 0.98);
+  --color-mist-border: rgba(255, 255, 255, 0.35);
+  --color-mist-text: #1a1816;
+}
+
+html {
+  background-color: #c5beb5; /* Deeper greige fallback */
+  overflow-y: scroll;
+  --player-bar-h: 5.25rem;
+  /* 底栏悬浮卡片 + 下边距，供练习面板等 fixed 层对齐 */
+  --player-bar-stack-h: calc(var(--player-bar-h) + 0.95rem);
+  /* 练习面板与悬浮播放器之间的呼吸缝，避免底栏与控制条视觉争抢 */
+  --practice-above-player-gap: 1.125rem;
+}
+
+/* Practice Mode 顶栏：整行同一字号/字重（覆盖 button 默认） */
+.practice-controls {
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 500;
+  line-height: 1.25;
+}
+.practice-controls :where(button, span) {
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE LANDSCAPE — height-based overrides
+   Triggered on touch devices with short viewport (phones/tablets landscape).
+   We cannot use Tailwind md: breakpoints here because phone landscape
+   width (e.g. 932px for iPhone 15 Pro Max) exceeds the 768px md threshold,
+   which incorrectly activates desktop-size styles.
+   ═══════════════════════════════════════════════════════ */
+@media (pointer: coarse) and (max-height: 500px) and (orientation: landscape) {
+  html {
+    --player-bar-h: 3rem;
+    --player-bar-stack-h: calc(var(--player-bar-h) + 0.65rem);
+  }
+
+  /* ── Bottom Player Bar ── */
+  .player-bar {
+    padding: 0.25rem 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+  .player-info {
+    gap: 0.5rem !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 25% !important; /* Slightly more conservative */
+  }
+  .player-cover {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 0.375rem !important;
+  }
+  .player-title {
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+  }
+  .player-artist {
+    font-size: 0.55rem !important;
+    line-height: 1.1 !important;
+  }
+  .player-center {
+    gap: 0.25rem !important;
+    max-width: 45% !important;
+  }
+  .player-center > div:first-child {
+    gap: 0.875rem !important;
+    margin-bottom: 0.125rem !important;
+  }
+  .player-play-btn {
+    width: 2.125rem !important;
+    height: 2.125rem !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+  .player-play-btn svg {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+  }
+  /* Time markers polish */
+  .player-center span {
+    font-size: 0.5rem !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+  }
+  .player-right-col {
+    gap: 0.4rem !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 30% !important;
+  }
+  .player-right-col button {
+    gap: 0.125rem !important;
+  }
+  .player-right-col svg {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+  .player-right-col span {
+    font-size: 7px !important;
+  }
+
+  /* ── Practice Container ── */
+  .practice-container {
+    border-radius: 0 !important;
+  }
+  .practice-container > div {
+    border-radius: 0 !important;
+  }
+
+  /* ── Practice Staff ── flex-1 + 限高，可滚动保留谱面 */
+  .practice-staff {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: min(45vh, 21rem) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  /* ── Practice Keyboard ── 适度叠入谱面 */
+  .practice-keyboard {
+    flex: 0 0 auto !important;
+    margin-top: -3rem !important;
+    z-index: 20 !important;
+    height: 13rem !important;
+    min-height: 13rem !important;
+    max-height: 13rem !important;
+  }
+
+  /* ── Practice Control Strip ── */
+  .practice-controls {
+    min-height: 28px !important;
+    max-height: 36px !important;
+    padding-left: 0.375rem !important;
+    padding-right: 0.375rem !important;
+    gap: 0.25rem !important;
+  }
+  .practice-controls button,
+  .practice-controls span {
+    font-size: 11px !important;
+    padding-top: 0.125rem !important;
+    padding-bottom: 0.125rem !important;
+  }
+  .practice-controls .w-px {
+    height: 1rem !important;
+    margin-left: 0.125rem !important;
+    margin-right: 0.125rem !important;
+  }
+  .practice-close-btn {
+    padding: 0.25rem 0.5rem !important;
+    margin-left: 0.25rem !important;
+  }
+  .practice-close-btn span {
+    display: none !important;
+  }
+
+  /* ── Practice Premium Overlay (paywall) ── */
+  .practice-premium-card {
+    padding: 1rem 1.25rem !important;
+    gap: 0.5rem !important;
+    border-radius: 1rem !important;
+    margin: 0.25rem auto !important;
+    max-width: 28rem !important;
+    width: 85% !important;
+  }
+  .practice-premium-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    margin-bottom: 0 !important;
+  }
+  .practice-premium-icon svg {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+  }
+  .practice-premium-title {
+    font-size: 1.1rem !important;
+  }
+  .practice-premium-desc {
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+    padding: 0 0.5rem !important;
+  }
+  .practice-premium-cta {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 0.75rem !important;
+  }
+  .practice-premium-dismiss {
+    font-size: 0.75rem !important;
+    padding: 0 !important;
+  }
+  .practice-premium-card > div:has(.practice-premium-cta) {
+    gap: 0.25rem !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* ── TopNav Bar ── */
+  .topnav-header {
+    top: 0.375rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  .topnav-bar {
+    padding: 0.25rem 0.625rem !important;
+    gap: 0.25rem !important;
+    border-radius: 9999px !important;
+  }
+  .topnav-tabs {
+    gap: 0.25rem !important;
+  }
+  .topnav-tab {
+    padding: 0.25rem 0.625rem !important;
+    font-size: 0.6875rem !important;
+    gap: 0.25rem !important;
+  }
+  .topnav-tab svg {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+  .topnav-right {
+    gap: 0.375rem !important;
+  }
+  .topnav-lang-btn {
+    padding: 0.2rem 0.5rem !important;
+    gap: 0.25rem !important;
+  }
+  .topnav-lang-btn svg {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+  .topnav-lang-btn span {
+    font-size: 0.6rem !important;
+  }
+
+  /* ── Main content area ── push up to match compact nav */
+  main {
+    padding-top: 3rem !important;
+    padding-bottom: 3.5rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  /* ══════════════════════════════════
+     SETTINGS PAGE — Desktop-Style 3x Vertical Cards
+     ══════════════════════════════════ */
+  .settings-page {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    padding: 0.75rem !important;
+    padding-bottom: 4rem !important;
+    max-width: 100% !important;
+  }
+  .settings-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important; /* 3 vertical pillars side-by-side */
+    gap: 0.75rem !important;
+    width: 100% !important;
+    align-items: start !important;
+  }
+  .settings-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.44) 100%) !important;
+    backdrop-filter: blur(30px) saturate(135%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(135%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    box-shadow: 0 12px 40px rgba(72, 54, 37, 0.11), inset 0 1px 0 0 rgba(255, 255, 255, 0.48) !important;
+    padding: 0.5rem !important; /* Global condensed start */
+    border-radius: 1rem !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.375rem !important;
+  }
+  .settings-card h2 {
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    color: rgba(92, 68, 44, 0.85) !important;
+    margin-bottom: 0.125rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+  }
+  /* Card 2 Membership: collapse ONLY the mt-6 wrapper + gap between <p> and .grid */
+  .settings-grid .settings-card:nth-child(2) > div.mt-6 {
+    margin-top: 0.25rem !important; /* was mt-6 = 1.5rem, now 0.25rem */
+    gap: 0.25rem !important;        /* was gap-5 = 1.25rem — tighten p-to-grid */
+  }
+  .settings-grid .settings-card:nth-child(2) > div.mt-6 > p {
+    margin-bottom: 0 !important;    /* strip any extra margin from the PREMIUM ONLY text */
+    font-size: 0.55rem !important;
+  }
+  .settings-card:last-child {
+    grid-column: span 1 !important;
+  }
+
+  /* Specific Density: Card 1 & 2 (Tighten Up) */
+  .settings-grid .settings-card:nth-child(1),
+  .settings-grid .settings-card:nth-child(2) {
+    gap: 0.25rem !important;
+    padding: 0.45rem !important;
+  }
+
+  /* List Row Styling - System Look */
+  .settings-info-group, .settings-membership-details, .settings-links-group {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 0.625rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+  }
+  .settings-info-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    padding: 0.25rem 0.5rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: transparent !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+  .settings-info-item:last-child {
+    border-bottom: none !important;
+  }
+  .settings-info-item .label, .settings-info-item .method-label, .settings-info-item p:first-child {
+    font-size: 0.625rem !important; /* ReadableLabel */
+    color: rgba(92, 68, 44, 0.5) !important;
+    margin: 0 !important;
+  }
+  .settings-info-item .value, .settings-info-item .method-value, .settings-info-item p:last-child {
+    font-size: 0.725rem !important; /* ReadableValue */
+    color: rgba(92, 68, 44, 0.9) !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    word-break: break-all !important;
+  }
+
+  .settings-auth-actions, .settings-fav-rec-group, .settings-actions-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.375rem !important;
+    margin-top: 0 !important;
+    width: 100% !important;
+  }
+  /* Membership card: keep benefit blocks comfortably spaced */
+  .settings-grid .settings-card:nth-child(2) .grid {
+    gap: 0.375rem !important; /* Comfortable gap between benefit cards */
+    margin-top: 0 !important;
+  }
+  .settings-card button {
+    height: 1.5rem !important;
+    font-size: 0.625rem !important;
+    border-radius: 0.5rem !important;
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    color: rgba(92, 68, 44, 0.8) !important;
+    font-weight: 600 !important; /* Harmonized weight */
+  }
+  .settings-card .logout-btn {
+    background: rgba(255, 69, 58, 0.12) !important;
+    color: #ff453a !important;
+    opacity: 1 !important;
+  }
+
+  /* Specific Density: Card 3 (More Links - Loosen Up) */
+  .settings-grid .settings-card:nth-child(3) {
+    gap: 0.625rem !important;
+    padding: 0.625rem !important;
+  }
+  .settings-page section:last-child {
+    grid-column: span 1 !important;
+    margin-top: 0 !important;
+  }
+  .settings-page section:last-child .flex-col {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.375rem !important; /* Relaxed but not excessive */
+    background: transparent !important;
+  }
+  .settings-page section:last-child button {
+    height: 2.375rem !important; /* Taller box for better ratio */
+    padding: 0.375rem 0.875rem !important; /* Vertical + horizontal padding */
+    background: rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 0.75rem !important;
+    font-size: 0.575rem !important; /* Smaller font for ratio harmony */
+    font-weight: 600 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    color: rgba(92, 68, 44, 0.75) !important; /* Slightly lighter to match label tone */
+    letter-spacing: 0.01em !important;
+  }
+  .settings-page section:last-child .icon-wrap {
+    margin-right: 0.875rem !important;
+    opacity: 0.8 !important;
+    color: rgba(92, 68, 44, 0.7) !important;
+  }
+  .settings-page section:last-child svg[class*="ChevronRight"] {
+    opacity: 0.4 !important;
+    color: rgba(92, 68, 44, 0.5) !important;
+  }
+  .settings-page section:last-child .icon-wrap {
+    margin-right: 0.875rem !important;
+    opacity: 0.8 !important;
+    color: rgba(92, 68, 44, 0.7) !important;
+  }
+  .settings-page section:last-child svg[class*="ChevronRight"] {
+    opacity: 0.4 !important;
+    color: rgba(92, 68, 44, 0.5) !important;
+  }
+
+  /* ══════════════════════════════════
+     ARTISTS GRID — High-Breathability Grid
+     ══════════════════════════════════ */
+  .artists-grid {
+    display: grid !important;
+    /* High-breathability: min 140px per artist */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 1.25rem !important;
+    padding: 0.75rem !important;
+  }
+  .artist-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.625rem !important;
+    padding: 0.75rem 0.5rem !important;
+    background: transparent !important;
+    border: none !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    aspect-ratio: auto !important;
+  }
+  .artist-avatar {
+    width: 4rem !important; /* Premium 64px avatars */
+    height: 4rem !important;
+    border-radius: 50% !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important;
+  }
+  .artist-card span[class*="text-lg"] {
+    font-size: 0.75rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+  .artist-card span[class*="text-sm"] {
+    display: none !important; 
+  }
+
+  /* ══════════════════════════════════
+     MUSIC PAGE (Songs)
+     ══════════════════════════════════ */
+  .music-page {
+    gap: 0.5rem !important;
+  }
+  /* Songs/Artists tab switcher */
+  .music-page > div:first-child {
+    margin-bottom: 0.25rem !important;
+  }
+  .music-page button[class*="px-6 py-2 rounded-full"] {
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.7rem !important;
+  }
+  /* Header bar (search + filters) */
+  .music-header {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 1rem !important;
+    gap: 0.375rem !important;
+    margin-bottom: 0.375rem !important;
+  }
+  .music-header h2 {
+    font-size: 1rem !important;
+  }
+  .music-header input {
+    padding: 0.25rem 0.5rem 0.25rem 2rem !important;
+    font-size: 0.7rem !important;
+    width: 8rem !important;
+  }
+  .music-header select {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.7rem !important;
+  }
+  .music-header button[class*="rounded-full"] {
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.65rem !important;
+  }
+  .music-header svg {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+  }
+  /* Song list */
+  .music-list {
+    border-radius: 1rem !important;
+  }
+  .music-list-header {
+    padding: 0.25rem 0.5rem !important;
+    gap: 0.25rem !important;
+    font-size: 0.55rem !important;
+  }
+  .music-list-row {
+    padding: 0.25rem 0.5rem !important;
+    gap: 0.25rem !important;
+    font-size: 0.7rem !important;
+  }
+  .music-list-row img {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    border-radius: 0.25rem !important;
+  }
+  .music-list-row span[class*="font-medium"] {
+    font-size: 0.7rem !important;
+  }
+  .music-list-row span[class*="text-xs"] {
+    font-size: 0.6rem !important;
+  }
+  .music-list-row span[class*="rounded-full"] {
+    font-size: 0.55rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+  .music-list-row div[class*="font-mono"] {
+    font-size: 0.6rem !important;
+  }
+
+  /* ══════════════════════════════════
+     FOCUS PAGE
+     ══════════════════════════════════ */
+  .focus-page {
+    padding-bottom: 4rem !important;
+  }
+  .focus-panel {
+    padding: 0.75rem !important;
+    border-radius: 1rem !important;
+    gap: 0.75rem !important;
+  }
+  .focus-panel h3 {
+    font-size: 0.85rem !important;
+    margin-left: 0.25rem !important;
+  }
+  .focus-panel p {
+    font-size: 0.65rem !important;
+  }
+  /* Theme & ambience scroll cards */
+  .focus-panel div[class*="w-56 h-32"] {
+    width: 7rem !important;
+    height: 4.5rem !important;
+    border-radius: 0.75rem !important;
+  }
+  .focus-panel div[class*="w-56 h-32"] span[class*="text-sm"] {
+    font-size: 0.55rem !important;
+  }
+  .focus-panel div[class*="w-56 h-32"] span[class*="text-\\[10px\\]"] {
+    font-size: 7px !important;
+    padding: 0.0625rem 0.25rem !important;
+  }
+  /* Pomodoro panel */
+  .focus-panel .glass-panel {
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+  .focus-panel .glass-panel button {
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 0.5rem !important;
+    font-size: 0.65rem !important;
+  }
+  .focus-panel .glass-panel span[class*="text-2xl"] {
+    font-size: 1.25rem !important;
+  }
+  .focus-panel .glass-panel span[class*="text-lg"] {
+    font-size: 0.9rem !important;
+  }
+  .focus-panel .glass-panel input[type="number"] {
+    width: 2.5rem !important;
+    font-size: 0.85rem !important;
+    padding: 0.125rem !important;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  color: var(--color-mist-text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/*
+ * 轻磨砂玻璃：主容器 ~30px blur + 高不透明度，密集文字更易读；仍避免 80px 级重模糊。
+ * .glass-tile / .glass-utility 无 blur，靠更高实色底降噪。
+ */
+.glass-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.66) 0%,
+    rgba(252, 250, 247, 0.5) 52%,
+    rgba(247, 244, 239, 0.42) 100%
+  );
+  backdrop-filter: blur(30px) saturate(135%);
+  -webkit-backdrop-filter: blur(30px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  border-radius: 30px;
+  box-shadow:
+    0 14px 44px rgba(72, 54, 37, 0.12),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.52);
+}
+
+.glass-panel-active {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 253, 250, 0.62) 48%,
+    rgba(252, 248, 243, 0.52) 100%
+  );
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 30px;
+  box-shadow:
+    0 16px 48px rgba(72, 54, 37, 0.14),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.58);
+}
+
+/* ── 整站统一：主导航、曲目/歌手 segmented、分类筛选 共用 pill 语言（与 .glass-panel-active 同系） ── */
+.glass-pill-rail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.1875rem;
+  border-radius: 9999px;
+  background: rgba(26, 24, 22, 0.035);
+  border: 1px solid rgba(26, 24, 22, 0.055);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.glass-pill-tab {
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  padding: 0.5rem 1.125rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  color: rgba(26, 24, 22, 0.55);
+  background: transparent;
+}
+
+.glass-pill-tab:hover:not(.glass-pill-tab--active) {
+  color: var(--color-mist-text);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.glass-pill-tab--active {
+  color: var(--color-mist-text);
+  font-weight: 600;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 253, 250, 0.62) 48%,
+    rgba(252, 248, 243, 0.52) 100%
+  );
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  box-shadow:
+    0 10px 28px rgba(72, 54, 37, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+/* 音乐页 Songs/Artists：略大于全局 pill 默认，不与主导航混用 */
+.music-subnav-pills .glass-pill-tab {
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+@media (min-width: 640px) {
+  .music-subnav-pills .glass-pill-tab {
+    font-size: 0.9375rem;
+  }
+}
+
+/* 主导航：覆盖 .glass-pill-tab 默认 12px，不与音乐库子 Tab 共用同一规则 */
+.topnav-tab.glass-pill-tab {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+@media (min-width: 768px) {
+  .topnav-tab.glass-pill-tab {
+    font-size: 1rem;
+  }
+}
+
+/* 音乐页分类筛选（仅 MusicTab 使用）：与次导航可读性同级 */
+.glass-filter-chip {
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  padding: 0.4375rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.glass-filter-chip--idle {
+  color: rgba(26, 24, 22, 0.52);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid transparent;
+}
+
+.glass-filter-chip--idle:hover {
+  color: rgba(26, 24, 22, 0.84);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.glass-filter-chip--active {
+  color: var(--color-mist-text);
+  font-weight: 600;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 253, 250, 0.62) 48%,
+    rgba(252, 248, 243, 0.52) 100%
+  );
+  backdrop-filter: blur(30px) saturate(140%);
+  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  box-shadow:
+    0 8px 22px rgba(72, 54, 37, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+/* Premium / Practice 付费提示：仅用于 modal卡体，比全站 glass-panel 更厚、更实 */
+.glass-modal-heavy {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.93) 0%,
+    rgba(252, 248, 242, 0.9) 42%,
+    rgba(245, 238, 230, 0.86) 100%
+  );
+  backdrop-filter: blur(46px) saturate(155%);
+  -webkit-backdrop-filter: blur(46px) saturate(155%);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 28px;
+  box-shadow:
+    0 28px 70px rgba(72, 54, 37, 0.2),
+    0 12px 32px rgba(44, 32, 22, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+}
+
+/* 底栏：悬浮磨砂卡片（非通栏实色），与顶栏 max-w-5xl 对齐由 App 外层控制 */
+.player-bar {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 252, 248, 0.56) 45%,
+    rgba(245, 241, 235, 0.5) 100%
+  );
+  backdrop-filter: blur(32px) saturate(135%);
+  -webkit-backdrop-filter: blur(32px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  box-shadow:
+    0 18px 52px rgba(72, 54, 37, 0.14),
+    0 6px 20px rgba(72, 54, 37, 0.08),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.55);
+  min-height: var(--player-bar-h);
+  height: auto;
+}
+
+.glass-effect {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.58) 0%, rgba(252, 249, 245, 0.4) 100%);
+  backdrop-filter: blur(30px) saturate(130%);
+  -webkit-backdrop-filter: blur(30px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 14px 44px rgba(72, 54, 37, 0.11);
+}
+
+/* 网格内单卡：默认轻实色；歌手卡见 .artist-card.glass-tile 磨砂覆盖 */
+.glass-tile {
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  box-shadow: 0 10px 28px rgba(72, 54, 37, 0.08);
+}
+
+/* 歌手页卡片：与 glass-panel 同系的磨砂雾化 + 模糊 + 内高光 */
+.artist-card.glass-tile {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.64) 0%,
+    rgba(252, 250, 247, 0.5) 52%,
+    rgba(247, 244, 239, 0.42) 100%
+  );
+  backdrop-filter: blur(28px) saturate(135%);
+  -webkit-backdrop-filter: blur(28px) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow:
+    0 14px 40px rgba(72, 54, 37, 0.12),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.glass-utility {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.glass-popover {
+  background: rgba(255, 252, 248, 0.99);
+  backdrop-filter: blur(22px) saturate(130%);
+  -webkit-backdrop-filter: blur(22px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow: 0 14px 36px rgba(72, 54, 37, 0.13);
+}
+
+/* 
+  SAFELIST for production purge prevention:
+  backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl
+  bg-white/5 bg-white/10 bg-white/12 bg-white/15 bg-white/18 bg-white/20 bg-white/25 bg-white/30
+*/
+
+.matte-button {
+  background: linear-gradient(145deg, #d6d0c8, #c5beb5);
+  color: #2c2824;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.matte-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes scrollLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+
+.animate-scroll-left {
+  animation: scrollLeft 10s linear infinite;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-cloud-drift {
+    animation: cloudDrift 150s ease-in-out infinite alternate;
+  }
+  .animate-ocean-shimmer {
+    animation: oceanShimmer 24s linear infinite;
+  }
+  .animate-curtain-sway-left {
+    animation: curtainSwayLeft 12s ease-in-out infinite alternate;
+    transform-origin: top center;
+  }
+  .animate-curtain-sway-right {
+    animation: curtainSwayRight 14s ease-in-out infinite alternate;
+    transform-origin: top center;
+  }
+  .animate-flicker {
+    animation: lightFlicker var(--flicker-dur, 4s) ease-in-out infinite alternate;
+  }
+  .animate-fire-flicker {
+    animation: fireFlicker 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes cloudDrift {
+  0% { transform: translate(0%, 0%); }
+  100% { transform: translate(10%, 2%); }
+}
+
+@keyframes oceanShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes curtainSwayLeft {
+  0% { transform: rotateZ(0deg) translateX(0px); }
+  100% { transform: rotateZ(0.6deg) translateX(6px); }
+}
+
+@keyframes curtainSwayRight {
+  0% { transform: rotateZ(0deg) translateX(0px); }
+  100% { transform: rotateZ(-0.6deg) translateX(-6px); }
+}
+
+@keyframes lightFlicker {
+  0% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.08); }
+  100% { opacity: 0.45; transform: scale(1.02); }
+}
+
+@keyframes fireFlicker {
+  0% { opacity: 0.2; transform: scale(1); }
+  25% { opacity: 0.35; transform: scale(1.02); }
+  50% { opacity: 0.25; transform: scale(0.98); }
+  75% { opacity: 0.3; transform: scale(1.04); }
+  100% { opacity: 0.2; transform: scale(1); }
+}
+

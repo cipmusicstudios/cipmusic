@@ -1,0 +1,839 @@
+{
+  "_comment": "Manual artist images (canonicalArtistId). Applied on top of artist-images-cache.json in build-songs-manifest. locked=true skips automatic Deezer fetch for that id. Prefer official/Wikipedia logos for game/IP buckets when no reliable portrait exists.",
+  "genshin-impact": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Genshin_Impact_logo.svg/500px-Genshin_Impact_logo.svg.png",
+    "source": "wikipedia_en_pageimage",
+    "confidence": 1,
+    "locked": true,
+    "kind": "project_logo"
+  },
+  "honor-of-kings": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7d/Honor_of_Kings_logo.png/500px-Honor_of_Kings_logo.png",
+    "source": "wikipedia_en_pageimage",
+    "confidence": 1,
+    "locked": true,
+    "kind": "project_logo"
+  },
+  "joker-xue": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a2d6f0b0c7459292917e0f6c9a5d5da5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true
+  },
+  "paper-bride": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/3fcd7d361cf301fb574458d8cd2b5573/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true,
+    "kind": "project_ost"
+  },
+  "du-zhi-wen": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/970243a04e36a3a44f4bedb136ff33ba/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true
+  },
+  "nicky-lee": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/5ebda5d87dae625c5817d0313988542f/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true
+  },
+  "koda-kumi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/28833271bb4e0214b87f3d71b278ac41/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true
+  },
+  "ne-yo": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/cc3aabafca2130a5415489d85bb0e26d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "yang-zi": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Yang_Zi_at_Ryo_band_promotion%2C_Wuhan_of_China%2C_12_April_2019.jpg/330px-Yang_Zi_at_Ryo_band_promotion%2C_Wuhan_of_China%2C_12_April_2019.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "xiao-zhan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d70ffbf946e5722d45307d70e6b2f695/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/ne-yo": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/cc3aabafca2130a5415489d85bb0e26d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/lulleaux-kid-princess": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2742f405853e48d18f26e69b6424aca8/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_collab_primary",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "hai-lai-a-mu": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/bf174295492a6dd8fc8caf227d4b970a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "hu-yan-bin": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/51381030489c50545f989541afb66ec7/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search_tiger_hu",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "kai-se-miao": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/5d24c63a75c8470b179cdf89507c3b4d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "jing-long-jing-dier": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f3a8f29584119bb8aa7339ace2c93c7a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "from-youtube/井胧-井迪儿-drama-love-between-fairy-and-devil": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f3a8f29584119bb8aa7339ace2c93c7a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/镌刻-钢琴版-张碧晨zhang-bichen-电视剧": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ca466baefe6a9c870229aa502e5ae406/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "bonbon-girls-303": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/87828594b7364eb86325309f27a05996/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "tnt": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f8d3ad9ceacd7b7e4626476d32d087eb/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_zh_name",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "allday-project": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/3005e64c845caea06203d4a38c3a249a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "fumiya-sashida": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4543d292addaa9cd43dc8b933fe87fb4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "hiroyuki-sawano": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e00822bee264f4888fb7e069eaa45967/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/进撃の巨人-season-2-hiroyuki-sawano": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e00822bee264f4888fb7e069eaa45967/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "xiao-ye-lai-le": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e4523c912fa377d514615dff25703f0a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/fairy-town-小野来了": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e4523c912fa377d514615dff25703f0a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "pvris": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1c90e135a4c10be64e1b41b4838d7ee1/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/ft.-pvris-worlds-2021-league-of-legends": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1c90e135a4c10be64e1b41b4838d7ee1/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "love-and-deepspace": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/1ac580dbf8f36e832f6edea07c58f53b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_game_official",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "bigbang": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/BIGBANG_2011_%28current_members_since_2023%29.jpg/500px-BIGBANG_2011_%28current_members_since_2023%29.jpg",
+    "source": "wikipedia_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "0713-nan-tuan": {
+    "url": "https://upload.wikimedia.org/wikipedia/zh/5/58/Go_for_Happiness_002.jpg",
+    "source": "wikipedia_zh_tv_promo",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "feng-ren-ji": {
+    "url": "https://upload.wikimedia.org/wikipedia/zh/8/85/City_of_Rock.jpg",
+    "source": "wikipedia_zh_film",
+    "confidence": 0.85,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "alpha-drive-one": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/5bc4f9ffa42a39569e73968536e7e72b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "a-soul": {
+    "url": "/artist-images/a-soul.webp",
+    "source": "bundled_fandom_mirror",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "kep1er": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Kep1er_Nov%2724_%28cropped%29.png/330px-Kep1er_Nov%2724_%28cropped%29.png",
+    "source": "wikipedia_en_commons_group_photo",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "huntr-x": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/131e4e97636af9fb65728f8d367cd2b2/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search_huntr_x",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "honkai-star-rail": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7f/Honkai_Star_Rail_%28logo%29.png/330px-Honkai_Star_Rail_%28logo%29.png",
+    "source": "wikipedia_en_logo",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "project_logo"
+  },
+  "from-youtube/kiiikiii": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/KiiiKiii_251025.jpg/330px-KiiiKiii_251025.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "saja-boys": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4dc183a4b179d1ec6d65a561d27901a4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search_saja_boys",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "by2": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/2012SRFTP_BY2.jpg/330px-2012SRFTP_BY2.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "angela-szu-han-chang": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/AngelaChang.jpg/330px-AngelaChang.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "eason-chan": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/%E4%B8%8A%E6%B5%B7_%E5%92%AA%E5%92%95%E9%A2%81%E5%A5%96%E7%A4%BC%E7%BA%A2%E6%AF%AF_%281%29.jpg/330px-%E4%B8%8A%E6%B5%B7_%E5%92%AA%E5%92%95%E9%A2%81%E5%A5%96%E7%A4%BC%E7%BA%A2%E6%AF%AF_%281%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "bruno-mars": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/BrunoMars24KMagicWorldTourLive_%28cropped%29.jpg/330px-BrunoMars24KMagicWorldTourLive_%28cropped%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "simon-garfunkel": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/SimonandGarfunkel.jpg/330px-SimonandGarfunkel.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "nsync": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/NSYNC.jpg/330px-NSYNC.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "metro-boomin": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Metro_Boomin_November_2025.jpg/330px-Metro_Boomin_November_2025.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "orange-caramel": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/150331_%EC%98%A4%EB%A0%8C%EC%A7%80%EC%BA%AC%EB%9D%BC%EB%A9%9C_%EA%B3%A0%EB%A0%A4%EB%8C%80_%EB%AF%BC%EC%A3%BC%EA%B4%91%EC%9E%A5_%EA%B0%84%EC%8B%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8.jpg/330px-150331_%EC%98%A4%EB%A0%8C%EC%A7%80%EC%BA%AC%EB%9D%BC%EB%A9%9C_%EA%B3%A0%EB%A0%A4%EB%8C%80_%EB%AF%BC%EC%A3%BC%EA%B4%91%EC%9E%A5_%EA%B0%84%EC%8B%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "from-youtube/black-myth": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/a/a6/Black_Myth_Wukong_cover_art.jpg",
+    "source": "wikipedia_en_game_cover",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "aurora": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/AURORA%2C_Ravnedalen_Live_festival%2C_Kristiansand%2C_Norway_%2853867200364%29_%28cropped%29.jpg/330px-AURORA%2C_Ravnedalen_Live_festival%2C_Kristiansand%2C_Norway_%2853867200364%29_%28cropped%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/pick-me-偶像练习生主题曲钢琴版-idol-producer": {
+    "url": "https://upload.wikimedia.org/wikipedia/zh/thumb/f/fa/Poster_of_Idol_Producer.jpg/330px-Poster_of_Idol_Producer.jpg",
+    "source": "wikipedia_zh_show_poster",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "girls-generation": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/220728_GG_poleposition_266_%2853595169645%29.jpg/330px-220728_GG_poleposition_266_%2853595169645%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "from-youtube/cortis": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/CORTIS_Dior_PhotoCall_1.jpg/330px-CORTIS_Dior_PhotoCall_1.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "ailee": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Ailee_in_January_2026.png/330px-Ailee_in_January_2026.png",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "linkin-park": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Linkin_Park_-_From_Zero_Lead_Press_Photo_-_James_Minchin_III.jpg/330px-Linkin_Park_-_From_Zero_Lead_Press_Photo_-_James_Minchin_III.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "from-youtube/fairy-tail-op-妖精的尾巴-フェアリーテイル-boa-보아": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/180417_%EB%B3%B4%EC%95%84_03_%28cropped%29_02.png/330px-180417_%EB%B3%B4%EC%95%84_03_%28cropped%29_02.png",
+    "source": "wikipedia_en_commons_bo_a",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "rose": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Blackpink_Ros%C3%A9_Rimowa_1.jpg/330px-Blackpink_Ros%C3%A9_Rimowa_1.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "henry-lau": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/%ED%97%A8%EB%A6%AC%28Henry%29%2CAmerican_Eagale_FanSign_%28cropped%29.jpg/330px-%ED%97%A8%EB%A6%AC%28Henry%29%2CAmerican_Eagale_FanSign_%28cropped%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "ayunga": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Ayanga_Tiffany_20230413.jpg/330px-Ayanga_Tiffany_20230413.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/lil-nas-x": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Lil_Nas_X_Talks_About_Gaining_His_Father%27s_Acceptance%2C_Growing_Up_in_Atlanta%2C_%26_FINDING_HIMSELF_7-32_screenshot_%28headshot%29.jpg/330px-Lil_Nas_X_Talks_About_Gaining_His_Father%27s_Acceptance%2C_Growing_Up_in_Atlanta%2C_%26_FINDING_HIMSELF_7-32_screenshot_%28headshot%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "punch-kr": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Punchjeju-2018.png/330px-Punchjeju-2018.png",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/hearts2hearts": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/H2H_HMA26.jpg/330px-H2H_HMA26.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "luo-tianyi": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/e/ec/Luotianyivocaloid.jpg",
+    "source": "wikipedia_en_vocaloid_art",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "f4": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/5/5c/Meteor_Garden_DVD_cover.jpg",
+    "source": "wikipedia_en_meteor_garden_dvd_cover_ip",
+    "confidence": 0.85,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "jeon-somi": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/20240911_Jeon_Somi_%EC%A0%84%EC%86%8C%EB%AF%B8_02.jpg/330px-20240911_Jeon_Somi_%EC%A0%84%EC%86%8C%EB%AF%B8_02.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "ren-jialun": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/%E4%BB%BB%E5%98%89%E5%80%AB_%E6%94%9D%E6%96%BC210711_%E6%AD%90%E7%B1%B3%E8%8C%84%E6%B4%BB%E5%8B%95_in_Nanjing.jpg/330px-%E4%BB%BB%E5%98%89%E5%80%AB_%E6%94%9D%E6%96%BC210711_%E6%AD%90%E7%B1%B3%E8%8C%84%E6%B4%BB%E5%8B%95_in_Nanjing.jpg",
+    "source": "wikipedia_commons",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "wang-jun-kai": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/%E3%80%90%E6%91%84%E4%BA%8E2017.12.19%E3%80%8A%E8%A7%A3%E5%BF%A7%E6%9D%82%E8%B4%A7%E5%BA%97%E3%80%8B%E5%B9%BF%E5%B7%9E%E8%B7%AF%E6%BC%94%E3%80%91_%E7%8E%8B%E4%BF%8A%E5%87%AF_%283%29.jpg/330px-%E3%80%90%E6%91%84%E4%BA%8E2017.12.19%E3%80%8A%E8%A7%A3%E5%BF%A7%E6%9D%82%E8%B4%A7%E5%BA%97%E3%80%8B%E5%B9%BF%E5%B7%9E%E8%B7%AF%E6%BC%94%E3%80%91_%E7%8E%8B%E4%BF%8A%E5%87%AF_%283%29.jpg",
+    "source": "wikipedia_commons",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "bella-yao": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Img_yaobella.jpg/330px-Img_yaobella.jpg",
+    "source": "wikipedia_commons",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "na-yina": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Na_Yina.jpeg/330px-Na_Yina.jpeg",
+    "source": "wikipedia_commons",
+    "confidence": 0.85,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/你是我的荣耀-you-are-my-glory": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/b/b7/You_Are_My_Glory.jpg",
+    "source": "wikipedia_en_series_poster",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "from-youtube/blossoms-shanghai": {
+    "url": "https://upload.wikimedia.org/wikipedia/zh/7/71/Blossoms_Shanghai.jpeg",
+    "source": "wikipedia_zh_tv_poster",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "from-youtube/陈情令-the-untamed": {
+    "url": "https://upload.wikimedia.org/wikipedia/zh/6/62/The_Untamed_tv_poster.jpg",
+    "source": "wikipedia_zh_tv_poster",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "from-youtube/the-wind-rises-ヤキモチピアノ高桥优": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/a/a3/Kaze_Tachinu_poster.jpg",
+    "source": "wikipedia_en_film_poster",
+    "confidence": 0.85,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "tf-family-3rd": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/732c6f7b99e67cd1fc7e26a92c6f4afc/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "from-youtube/刀酱": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/643ad130ddc66cd580dce05b51b11568/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "m-taku": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e56eaecf493c77c2736a86e4d733c8db/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "curley-gao": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/dc8a28983028e7596bda1db5f9676c72/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search_curley_gao",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "mao-buyi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/adaee900f29748757b4c6cb5f9d41998/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/尹露浠": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ca96c0af0cb360fd27e11b92243c6f1e/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "cmj": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2abb35f2939b873b1df9f677c6f1a1f2/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/郑业成": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/17ecec04b46b4aab7ab06e707cff868a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_yecheng_zheng",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/tf家族-苏新皓-左航": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7ccf022dc896fa1afb474d49d64af983/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_zuohang_tf_family",
+    "confidence": 0.88,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/asmrz": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/b07a93deb5ecd88ac92a42063b05430b/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/吉星出租": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/eae1ddd3d12cde3c7b146f1b29f82269/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "wang-he-ye": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/587b67601f7bbbfb4728cbe4fdb570aa/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/就是南方凯": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7bb3c5570eac5e83c4dc686f5e0e51ce/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "wen-ren-ting-shu": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f4cc2f894066cc4ed40abb5eaa7df048/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/王宇宙leto-乔浚丞": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/d869f600e25a5b6b6782273ea232b89d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_wang_yuzhou_leto",
+    "confidence": 0.88,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "lbi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2a07c5b7b63e79198918cc75ad765bd0/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "honeyworks": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a054b8e2b3a78f56b54210bef568eb8f/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "from-youtube/于冬然": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/576479c6ab08f930f76126efb635c4e5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search",
+    "confidence": 0.92,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/魏晨-魏大勋-白敬亭-2024央视春晚歌曲": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4ccf94ae8bd9cd9112be739e67a32783/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_vision_wei_primary",
+    "confidence": 0.85,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "from-youtube/乘风破浪启航曲": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Sisters_Who_Make_Waves_logo.jpeg/330px-Sisters_Who_Make_Waves_logo.jpeg",
+    "source": "wikipedia_en_show_logo",
+    "confidence": 0.9,
+    "locked": true,
+    "imageKind": "key_art"
+  },
+  "from-youtube/bilibili-2021毕业歌": {
+    "url": "https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Bilibili_screenshot.png/330px-Bilibili_screenshot.png",
+    "source": "wikipedia_en_infobox_product_shot",
+    "confidence": 0.75,
+    "locked": true,
+    "imageKind": "project_logo"
+  },
+  "silence-wang": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Silence_Wang_01.jpg/330px-Silence_Wang_01.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "zhang-bi-chen": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Kpop_World_Festival_42_%288156750340%29_%28cropped%29_%28cropped%29.jpg/330px-Kpop_World_Festival_42_%288156750340%29_%28cropped%29_%28cropped%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "lay-zhang": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Zhang_Yixing_at_press_conference_of_The_Founding_of_an_Army.jpg/330px-Zhang_Yixing_at_press_conference_of_The_Founding_of_an_Army.jpg",
+    "source": "wikipedia_zh_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "sean-tang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/08e44af686f13e1c8d8b3a98ed074759/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "faye-zhan": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7670e0d8154d8afafbe22863ad1208a4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "zheng-zhi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/f091eb2fc44240d2b6a4e6b0ee9ce2e7/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_manual",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "mai-kuraki": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Mai_Kuraki_Live_Tour_2019_Asia_%28Beijing%29_%28cropped%29.jpg/330px-Mai_Kuraki_Live_Tour_2019_Asia_%28Beijing%29_%28cropped%29.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "zico": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/ZICO_Damiani_May_2024.jpg/330px-ZICO_Damiani_May_2024.jpg",
+    "source": "wikipedia_en_commons",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "liu-yu-ning": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ef308bdca454a56b4acd2787c17a6811/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "gem": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/823a00b5eafeaddd60ce40aaefd4394a/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "liu-yao-wen": {
+    "url": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/1a/db/a5/1adba5bc-ecc3-79f6-6caf-9b8aaca5c62f/mzl.bhtdloiy.jpg/600x600bb.jpg",
+    "source": "apple_music_us_artist_mzstatic_hero_1429669950",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "zhang-jie": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/bb221ef5bc874f157b53ec3d7624c23d/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "hu-meng-zhou": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/3c581ef43680337482691bfe4db20e21/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "chen-xue-ran": {
+    "url": "https://is1-ssl.mzstatic.com/image/thumb/Features125/v4/80/d5/20/80d5205e-e9a8-8979-9253-c5a367b9dd73/mzl.riytxykk.jpg/600x600bb.jpg",
+    "source": "apple_music_us_artist_mzstatic_hero_1348213979",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "takahiro": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/7803098bba78a8cf8a9d16e54ee666ea/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "zhao-lu-si": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e018de2ab02ec77ca720682b902b0663/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "liu-shuang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/48a608c9a9026b352c16fa140f60b6b6/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "li-jian": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/4495e012b4b3475d399e76dd28ca7872/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "yi-yang-qian-xi": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a6577735df3397ea109003320458d523/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "ding-chengxin": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a8920709edd7bcd7f4fe0b245e4575a8/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "lu-han": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e043ab32b97962d618834053de48dca4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "shan-yi-chun": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2b613896e18a9bf3a70a1dbcfcadb660/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "wang-yi-bo": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2a7db1e828506b34a5617d0acb3dd229/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "faye-wong": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ac410f624102d4df46715368e2373fa4/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_official_artist_refresh",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "joey-yung": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Joey_Yung_2019_%28cropped%29.jpg/500px-Joey_Yung_2019_%28cropped%29.jpg",
+    "source": "wikipedia_commons_joey_yung_2019_cropped",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "liu-yu-xin": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/a98266834cb573b70a56ba5cf9244271/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search_xin_liu",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "seventeen": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/6e358a63b8d449f701a742d45adef635/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer_artist_search_seventeen_alt",
+    "confidence": 0.95,
+    "locked": true,
+    "imageKind": "group_photo"
+  }
+}
