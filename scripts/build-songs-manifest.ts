@@ -56,6 +56,34 @@ type ImageCacheEntry = {
 
 type SupabaseSongRow = Record<string, unknown>;
 
+type DisplayTitles = NonNullable<Track['metadata']['display']['titles']>;
+
+/** 与 local manifest 同源：用 buildLocalImportTrack 抽出的 titles，按 slug / 中文标题 对齐 production 行。 */
+let productionLocalTitleLookups: {
+  bySlug: Map<string, DisplayTitles>;
+  byZhTitle: Map<string, DisplayTitles>;
+} | null = null;
+
+function getProductionLocalTitleLookups() {
+  if (productionLocalTitleLookups) return productionLocalTitleLookups;
+  const bySlug = new Map<string, DisplayTitles>();
+  const byZhTitle = new Map<string, DisplayTitles>();
+  for (const seed of LOCAL_IMPORT_SEEDS) {
+    const track = buildLocalImportTrack(seed);
+    const raw = track.metadata.display.titles;
+    if (!raw) continue;
+    if (!raw.zhHans && !raw.zhHant && !raw.en) continue;
+    const titles: DisplayTitles = { ...raw };
+    bySlug.set(seed.slug, titles);
+    const d = track.metadata.display;
+    if (d.title?.trim()) byZhTitle.set(d.title.trim(), titles);
+    const dt = d.displayTitle?.trim();
+    if (dt && dt !== d.title?.trim()) byZhTitle.set(dt, titles);
+  }
+  productionLocalTitleLookups = { bySlug, byZhTitle };
+  return productionLocalTitleLookups;
+}
+
 function loadImagesCache(): Record<string, ImageCacheEntry> {
   try {
     const raw = fs.readFileSync(imagesCachePath, 'utf8');
@@ -133,6 +161,9 @@ function mapSupabaseSongRowToTrack(row: SupabaseSongRow, supabaseUrl: string): T
     ? secondaryCategory.filter((value): value is string => typeof value === 'string')
     : [];
   const slug = pickString(row, 'slug') || id;
+  const { bySlug, byZhTitle } = getProductionLocalTitleLookups();
+  const fromLocal = bySlug.get(slug) || (title ? byZhTitle.get(title.trim()) : undefined);
+  const titles: DisplayTitles | undefined = fromLocal ? { ...fromLocal } : undefined;
 
   return {
     id,
@@ -175,6 +206,7 @@ function mapSupabaseSongRowToTrack(row: SupabaseSongRow, supabaseUrl: string): T
           tags,
         },
         cover: coverUrl,
+        ...(titles ? { titles } : {}),
       },
       assets: {
         audioUrl,
