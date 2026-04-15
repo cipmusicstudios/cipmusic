@@ -158,10 +158,10 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
     nationality: 'zh',
   },
   'tfboys': { id: 'tfboys', names: { zhHans: 'TFBOYS', en: 'TFBOYS' }, type: 'group', nationality: 'zh' },
-  /** 《彼岸》井胧、井迪儿 — 顿号后留空格；不含剧名 / OST 英文标题 */
+  /** 《彼岸》井胧、井迪儿；不含剧名 / OST 英文标题 */
   'jing-long-jing-dier': {
     id: 'jing-long-jing-dier',
-    names: { zhHans: '井胧、 井迪儿', zhHant: '井朧、 井迪兒', en: 'Jing Long, Jing Dier' },
+    names: { zhHans: '井胧、井迪儿', zhHant: '井朧、井迪兒', en: 'Jing Long, Jing Dier' },
     type: 'group',
     nationality: 'zh',
   },

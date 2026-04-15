@@ -1610,7 +1610,7 @@
       "id": "local_call_of_silence",
       "title": "Call of silence",
       "displayTitle": "Call of silence",
-      "originalArtist": "「進撃の巨人」",
+      "originalArtist": "泽野弘之",
       "canonicalArtistId": "hiroyuki-sawano",
       "canonicalArtistDisplayName": "泽野弘之",
       "artistReviewStatus": "ok",
@@ -2180,10 +2180,12 @@
         "priority_explicit_artist_in_haystack"
       ],
       "tags": [
-        "韩流流行"
+        "韩流流行",
+        "游戏"
       ],
       "categoryKeys": [
-        "kpop"
+        "kpop",
+        "game"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/30/59/e0/3059e000-eb6f-6c08-4387-c1ee9d38d962/00198704670657_Cover.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/GODS/GODS钢琴示例 - CIP Music编配演奏.mp3",
@@ -3289,7 +3291,7 @@
       "midiUrl": "/local-imports/楼外楼/performance.mid",
       "musicXmlUrl": "/local-imports/楼外楼/score.musicxml",
       "duration": "03:27",
-      "durationSeconds": 207.347687,
+      "durationSeconds": 207.408,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "楼外楼",
@@ -3571,7 +3573,7 @@
       "midiUrl": "/local-imports/想你的365天/performance.mid",
       "musicXmlUrl": "/local-imports/想你的365天/score.musicxml",
       "duration": "01:27",
-      "durationSeconds": 86.857166,
+      "durationSeconds": 86.90938775510205,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "想你的365天",
@@ -3808,7 +3810,7 @@
       "midiUrl": "/local-imports/崇拜/performance.mid",
       "musicXmlUrl": "/local-imports/崇拜/score.musicxml",
       "duration": "04:57",
-      "durationSeconds": 296.683605,
+      "durationSeconds": 296.736,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "崇拜",
@@ -3977,7 +3979,7 @@
       "id": "local_calling",
       "title": "Calling",
       "displayTitle": "Calling",
-      "originalArtist": "SPIDER-MAN ACROSS THE SPIDER-VERSE",
+      "originalArtist": "Metro Boomin",
       "canonicalArtistId": "metro-boomin",
       "canonicalArtistDisplayName": "Metro Boomin",
       "artistReviewStatus": "ok",

@@ -49,7 +49,7 @@
     },
     {
       "id": "local_Blue_zerobaseone",
-      "title": "Blue(zerobaseone)",
+      "title": "Blue",
       "displayTitle": "Blue",
       "originalArtist": "ZEROBASEONE",
       "canonicalArtistId": "zerobaseone",
@@ -77,10 +77,12 @@
       "youtubeVideoTitle": "ZEROBASEONE (제로베이스원) - “BLUE” Piano Cover | Piano by CIP Music",
       "youtubeVideoId": "aRFbLRX1Idk",
       "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/247277",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/257776",
       "linkStatus": "linked",
       "titles": {
-        "en": "BLUE"
+        "zhHans": "Blue",
+        "zhHant": "Blue",
+        "en": "Blue"
       },
       "artists": {
         "zhHans": "ZEROBASEONE",
@@ -1899,10 +1901,12 @@
         "priority_explicit_artist_in_haystack"
       ],
       "tags": [
-        "欧美流行"
+        "欧美流行",
+        "游戏"
       ],
       "categoryKeys": [
-        "western"
+        "western",
+        "game"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/69/21/cf/6921cff3-7074-118a-ece2-4012450e6c75/093624839811.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/heavy is the crown/audio.mp3",
@@ -2275,11 +2279,9 @@
         "youtube_title_structured_dict"
       ],
       "tags": [
-        "华语流行",
         "游戏"
       ],
       "categoryKeys": [
-        "cpop",
         "game"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/a5/2c/38/a52c386a-442f-b657-50e9-dc9058cbc0e7/6926105825581.jpg/600x600bb.jpg",
@@ -2491,8 +2493,8 @@
       "sheetUrl": "https://mymusic.st/cipmusic/187940",
       "linkStatus": "linked",
       "titles": {
-        "zhHans": "三叶的主题",
-        "zhHant": "三葉的主題",
+        "zhHans": "《你的名字》三叶的主题",
+        "zhHant": "《你的名字》三葉的主題",
         "en": "Mitsuha Theme"
       },
       "artists": {

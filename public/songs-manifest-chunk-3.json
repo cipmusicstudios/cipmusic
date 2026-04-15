@@ -26,8 +26,8 @@
       "mp3Url": "/local-imports/铃芽之旅/audio.mp3",
       "midiUrl": "/local-imports/铃芽之旅/performance.mid",
       "musicXmlUrl": "/local-imports/铃芽之旅/score.musicxml",
-      "duration": "04:03",
-      "durationSeconds": 243.461542,
+      "duration": "04:04",
+      "durationSeconds": 243.528,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "铃芽之旅",
@@ -74,7 +74,7 @@
       "midiUrl": "/local-imports/5点23/performance.mid",
       "musicXmlUrl": "/local-imports/5点23/score.musicxml",
       "duration": "03:29",
-      "durationSeconds": 208.888896,
+      "durationSeconds": 208.944,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "5点23",
@@ -121,7 +121,7 @@
       "midiUrl": "/local-imports/乌梅子酱/performance.mid",
       "musicXmlUrl": "/local-imports/乌梅子酱/score.musicxml",
       "duration": "03:58",
-      "durationSeconds": 238.235193,
+      "durationSeconds": 238.296,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "乌梅子酱",
@@ -636,7 +636,7 @@
       "midiUrl": "/local-imports/偷/performance.mid",
       "musicXmlUrl": "/local-imports/偷/score.musicxml",
       "duration": "03:48",
-      "durationSeconds": 227.948639,
+      "durationSeconds": 228,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "偷",
@@ -1047,10 +1047,12 @@
         "youtube_title_freeform"
       ],
       "tags": [
-        "华语流行"
+        "欧美流行",
+        "游戏"
       ],
       "categoryKeys": [
-        "cpop"
+        "western",
+        "game"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music112/v4/30/4c/3a/304c3ad3-91a8-c075-9708-152c4ea8b786/196589436092.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/STAR WALKIN'/audio.mp3",
@@ -1176,9 +1178,9 @@
       "id": "local_彼岸",
       "title": "彼岸",
       "displayTitle": "彼岸",
-      "originalArtist": "彼岸",
+      "originalArtist": "井胧、井迪儿",
       "canonicalArtistId": "jing-long-jing-dier",
-      "canonicalArtistDisplayName": "井胧、 井迪儿",
+      "canonicalArtistDisplayName": "井胧、井迪儿",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
         "track_canglan_jue_bian_singers"
@@ -1209,8 +1211,8 @@
         "en": "Bi An"
       },
       "artists": {
-        "zhHans": "井胧、 井迪儿",
-        "zhHant": "井朧、 井迪兒",
+        "zhHans": "井胧、井迪儿",
+        "zhHant": "井朧、井迪兒",
         "en": "Jing Long, Jing Dier"
       },
       "youtubeSortIndex": 358,
@@ -1800,7 +1802,7 @@
       "midiUrl": "/local-imports/红颜如霜/performance.mid",
       "musicXmlUrl": "/local-imports/红颜如霜/score.musicxml",
       "duration": "04:16",
-      "durationSeconds": 256.125011,
+      "durationSeconds": 256.176,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "红颜如霜",
@@ -3246,8 +3248,8 @@
     },
     {
       "id": "local_still_life",
-      "title": "Still life",
-      "displayTitle": "Still life",
+      "title": "Still Life",
+      "displayTitle": "春夏秋冬",
       "originalArtist": "BIGBANG",
       "canonicalArtistId": "bigbang",
       "canonicalArtistDisplayName": "BIGBANG",
@@ -3277,6 +3279,8 @@
       "sheetUrl": "https://mymusic.st/cipmusic/60924",
       "linkStatus": "linked",
       "titles": {
+        "zhHans": "春夏秋冬",
+        "zhHant": "春夏秋冬",
         "en": "Still Life"
       },
       "artists": {
@@ -3588,10 +3592,12 @@
         "priority_explicit_artist_in_haystack"
       ],
       "tags": [
-        "华语流行"
+        "华语流行",
+        "游戏"
       ],
       "categoryKeys": [
-        "cpop"
+        "cpop",
+        "game"
       ],
       "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002T4oh209x2ro.jpg",
       "mp3Url": "/local-imports/名场面/audio.mp3",
@@ -3740,7 +3746,7 @@
       "midiUrl": "/local-imports/旅行/performance.mid",
       "musicXmlUrl": "/local-imports/旅行/score.musicxml",
       "duration": "02:32",
-      "durationSeconds": 152,
+      "durationSeconds": 152.0326530612245,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "旅行",
@@ -3880,7 +3886,7 @@
       "midiUrl": "/local-imports/笨小孩的道歉信/performance.mid",
       "musicXmlUrl": "/local-imports/笨小孩的道歉信/score.musicxml",
       "duration": "04:15",
-      "durationSeconds": 255.36,
+      "durationSeconds": 255.3991836734694,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "笨小孩的道歉信",
@@ -3927,7 +3933,7 @@
       "midiUrl": "/local-imports/我的答案/performance.mid",
       "musicXmlUrl": "/local-imports/我的答案/score.musicxml",
       "duration": "03:36",
-      "durationSeconds": 215.757506,
+      "durationSeconds": 215.79755102040815,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "我的答案",
@@ -4020,7 +4026,7 @@
       "midiUrl": "/local-imports/踏雪/performance.mid",
       "musicXmlUrl": "/local-imports/踏雪/score.musicxml",
       "duration": "02:56",
-      "durationSeconds": 175.999977,
+      "durationSeconds": 176.03918367346938,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "踏雪",
@@ -4049,7 +4055,7 @@
       "id": "local_Bridge_over_troubled_water",
       "title": "Bridge over troubled water",
       "displayTitle": "Bridge over troubled water",
-      "originalArtist": "Bridge Over Troubled Water",
+      "originalArtist": "Simon and Garfunkel",
       "canonicalArtistId": "simon-garfunkel",
       "canonicalArtistDisplayName": "Simon and Garfunkel",
       "artistReviewStatus": "ok",
@@ -4078,6 +4084,8 @@
       "sheetUrl": "https://www.mymusic5.com/cipmusic/69070",
       "linkStatus": "linked",
       "titles": {
+        "zhHans": "忧愁河上的金桥",
+        "zhHant": "憂愁河上的金橋",
         "en": "Bridge Over Troubled Water"
       },
       "artists": {
@@ -4114,8 +4122,8 @@
       "mp3Url": "/local-imports/光字片/audio.mp3",
       "midiUrl": "/local-imports/光字片/performance.mid",
       "musicXmlUrl": "/local-imports/光字片/score.musicxml",
-      "duration": "04:18",
-      "durationSeconds": 258.461519,
+      "duration": "04:19",
+      "durationSeconds": 258.5077551020408,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "光字片",
@@ -4162,7 +4170,7 @@
       "midiUrl": "/local-imports/渐暖/performance.mid",
       "musicXmlUrl": "/local-imports/渐暖/score.musicxml",
       "duration": "03:12",
-      "durationSeconds": 192,
+      "durationSeconds": 192.02612244897958,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "渐暖",
@@ -4258,7 +4266,7 @@
       "midiUrl": "/local-imports/雪花/performance.mid",
       "musicXmlUrl": "/local-imports/雪花/score.musicxml",
       "duration": "03:13",
-      "durationSeconds": 192.5,
+      "durationSeconds": 192.54857142857142,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "雪花",
@@ -4307,7 +4315,7 @@
       "midiUrl": "/local-imports/星鱼/performance.mid",
       "musicXmlUrl": "/local-imports/星鱼/score.musicxml",
       "duration": "04:18",
-      "durationSeconds": 258,
+      "durationSeconds": 258.03755102040816,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "星鱼",
@@ -4354,7 +4362,7 @@
       "midiUrl": "/local-imports/雪龙吟/performance.mid",
       "musicXmlUrl": "/local-imports/雪龙吟/score.musicxml",
       "duration": "02:08",
-      "durationSeconds": 128,
+      "durationSeconds": 128.02612244897958,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "雪龙吟",
@@ -4447,7 +4455,7 @@
       "midiUrl": "/local-imports/相遇/performance.mid",
       "musicXmlUrl": "/local-imports/相遇/score.musicxml",
       "duration": "03:56",
-      "durationSeconds": 235.826122,
+      "durationSeconds": 235.8595918367347,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "相遇",
@@ -4494,7 +4502,7 @@
       "midiUrl": "/local-imports/除夕/performance.mid",
       "musicXmlUrl": "/local-imports/除夕/score.musicxml",
       "duration": "03:17",
-      "durationSeconds": 196.834535,
+      "durationSeconds": 196.88489795918366,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "除夕",

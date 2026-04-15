@@ -1599,7 +1599,7 @@
       "id": "local_free",
       "title": "Free",
       "displayTitle": "Free",
-      "originalArtist": "KPOP Demon Hunters",
+      "originalArtist": "HUNTR/X",
       "canonicalArtistId": "huntr-x",
       "canonicalArtistDisplayName": "HUNTR/X",
       "artistReviewStatus": "ok",
@@ -1793,10 +1793,10 @@
         "youtube_title_freeform"
       ],
       "tags": [
-        "华语流行"
+        "韩流流行"
       ],
       "categoryKeys": [
-        "cpop"
+        "kpop"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/07/b1/d0/07b1d01f-eada-50a5-bdf5-f3f86b1de566/198704622366_Cover.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/GO!/audio.mp3",
@@ -1930,12 +1930,10 @@
         "priority_explicit_artist_in_haystack"
       ],
       "tags": [
-        "华语流行",
-        "影视"
+        "游戏"
       ],
       "categoryKeys": [
-        "cpop",
-        "film"
+        "game"
       ],
       "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002LICDP45fXGx.jpg",
       "mp3Url": "/local-imports/Sacrifice/audio.mp3",
@@ -2442,7 +2440,7 @@
       "id": "local_take_down",
       "title": "Take Down",
       "displayTitle": "Take Down",
-      "originalArtist": "KPOP Demon Hunters",
+      "originalArtist": "HUNTR/X",
       "canonicalArtistId": "huntr-x",
       "canonicalArtistDisplayName": "HUNTR/X",
       "artistReviewStatus": "ok",
@@ -2680,10 +2678,10 @@
         "youtube_title_freeform"
       ],
       "tags": [
-        "华语流行"
+        "韩流流行"
       ],
       "categoryKeys": [
-        "cpop"
+        "kpop"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f4/d2/b7/f4d2b722-8292-9123-2282-22cb2b54200a/199538356090.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/dancing-alone/audio.mp3",

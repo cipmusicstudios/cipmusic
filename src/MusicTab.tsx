@@ -21,9 +21,9 @@ import type { MusicPlaybackContext } from './music-playback-context';
 const MUSIC_ALL_CATEGORY = 'all';
 const SEARCH_DEBOUNCE_MS = 240;
 
-/** 音乐页浏览区：与全局 glass-panel 一致，圆角用 Tailwind 覆盖默认 30px */
+/** 音乐页浏览区：静态磨砂（无 backdrop-filter，性能优先） */
 const MUSIC_BROWSE_PANEL =
-  'glass-panel !rounded-2xl mb-6 px-4 py-3.5 sm:px-5 sm:py-4';
+  'glass-panel-static !rounded-2xl mb-6 px-4 py-3.5 sm:px-5 sm:py-4';
 const MUSIC_SEARCH_INPUT =
   'h-9 w-full min-w-0 rounded-xl border border-white/18 bg-white/[0.08] pl-9 pr-3 text-sm text-[var(--color-mist-text)] placeholder:text-[var(--color-mist-text)]/38 shadow-[inset_0_1px_2px_rgba(255,255,255,0.35)] focus:outline-none focus:border-amber-200/45 focus:bg-white/14 focus:ring-1 focus:ring-amber-200/35';
 const MUSIC_SORT_TRIGGER =
@@ -246,22 +246,80 @@ function MusicPaginationBar({
   totalPages,
   onPrev,
   onNext,
+  onPageJump,
 }: {
   page: number;
   totalPages: number;
   onPrev: () => void;
   onNext: () => void;
+  onPageJump?: (page: number) => void;
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleCommit = () => {
+    setIsEditing(false);
+    if (!inputValue.trim()) return;
+    const num = parseInt(inputValue, 10);
+    if (isNaN(num)) return;
+    let target = num;
+    if (target < 1) target = 1;
+    if (target > totalPages) target = totalPages;
+    if (target !== page && onPageJump) {
+      onPageJump(target);
+    }
+  };
+
   const pageBtn =
     'rounded-xl border border-white/18 bg-white/15 px-5 py-2 text-sm font-semibold text-[var(--color-mist-text)] shadow-[0_0_14px_rgba(253,224,180,0.18)] transition-colors hover:bg-white/24 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:bg-white/15';
+  
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 border-t border-white/10 bg-white/[0.04] px-4 py-3">
       <button type="button" disabled={page <= 1} onClick={onPrev} className={pageBtn}>
         Previous
       </button>
-      <span className="font-mono text-sm tabular-nums text-[var(--color-mist-text)]/75">
-        Page {page} / {totalPages}
-      </span>
+      
+      <div className="flex items-center gap-2 font-mono text-sm text-[var(--color-mist-text)]/75">
+        <span>Page</span>
+        {isEditing ? (
+          <div className="relative flex items-center">
+            <span className="text-[var(--color-mist-text)]/50 mr-1">[</span>
+            <input
+              ref={inputRef}
+              type="text"
+              className="w-10 bg-transparent text-center text-[var(--color-mist-text)] outline-none tabular-nums"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value.replace(/\D/g, ''))}
+              onBlur={handleCommit}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleCommit();
+                else if (e.key === 'Escape') setIsEditing(false);
+              }}
+            />
+            <span className="text-[var(--color-mist-text)]/50 ml-1">]</span>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="tabular-nums hover:text-[var(--color-mist-text)] hover:underline underline-offset-2 transition-colors cursor-pointer outline-none px-1"
+            onClick={() => {
+              setInputValue(String(page));
+              setIsEditing(true);
+            }}
+          >
+            {page}
+          </button>
+        )}
+        <span>/ {totalPages}</span>
+      </div>
+
       <button type="button" disabled={page >= totalPages} onClick={onNext} className={pageBtn}>
         Next
       </button>
@@ -600,7 +658,7 @@ const SongListChrome = memo(function SongListChrome({
         )}
       </div>
 
-      <div className="music-list glass-panel rounded-[32px] overflow-hidden flex flex-col">
+      <div className="music-list glass-panel-static rounded-[32px] overflow-hidden flex flex-col">
         <div className="music-list-header grid grid-cols-12 gap-4 px-8 py-4 border-b border-white/10 text-sm font-medium text-[var(--color-mist-text)]/60 uppercase tracking-wider">
           <div className="col-span-1 text-center">#</div>
           <div className="col-span-6">{t.music.title}</div>
@@ -630,6 +688,7 @@ const SongListChrome = memo(function SongListChrome({
           totalPages={songTotalPages}
           onPrev={() => onSongPageChange(songPage - 1)}
           onNext={() => onSongPageChange(songPage + 1)}
+          onPageJump={onSongPageChange}
         />
       </div>
     </div>
@@ -1112,6 +1171,7 @@ export const MusicTab = memo(function MusicTab({
         totalPages={artistGridTotalPages}
         onPrev={() => setArtistGridPage(p => Math.max(1, p - 1))}
         onNext={() => setArtistGridPage(p => Math.min(artistGridTotalPages, p + 1))}
+        onPageJump={(p) => setArtistGridPage(p)}
       />
     </div>
   );

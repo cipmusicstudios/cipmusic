@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-04-13T06:02:07.351Z",
+  "generatedAt": "2026-04-15T00:03:59.109Z",
   "artists": [
     {
       "canonicalArtistId": "zhou-shen",
@@ -333,6 +333,35 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "kep1er",
+      "displayName": "Kep1er",
+      "songCount": 10,
+      "songIds": [
+        "local_shooting_star",
+        "local_wadada",
+        "local_another_dream",
+        "local_shine",
+        "local_u_me_love",
+        "local_Utopia",
+        "local_snake",
+        "local_shoot",
+        "local_姻缘",
+        "local_O_O_O"
+      ],
+      "sampleOriginalArtists": [
+        "Kep1er",
+        "Girls Planet 999 COMPLETION MISSION",
+        "U Me LOVE",
+        "Utopia",
+        "Snake"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Kep1er_Nov%2724_%28cropped%29.png/330px-Kep1er_Nov%2724_%28cropped%29.png",
+      "artistImageSource": "wikipedia_en_commons_group_photo",
+      "artistImageConfidence": 0.95,
+      "artistImageKind": "group_photo"
+    },
+    {
       "canonicalArtistId": "kun",
       "displayName": "蔡徐坤",
       "songCount": 10,
@@ -357,34 +386,6 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "kep1er",
-      "displayName": "Kep1er",
-      "songCount": 9,
-      "songIds": [
-        "local_shooting_star",
-        "local_wadada",
-        "local_another_dream",
-        "local_u_me_love",
-        "local_Utopia",
-        "local_snake",
-        "local_shoot",
-        "local_姻缘",
-        "local_O_O_O"
-      ],
-      "sampleOriginalArtists": [
-        "Kep1er",
-        "Girls Planet 999 COMPLETION MISSION",
-        "U Me LOVE",
-        "Utopia",
-        "Snake"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Kep1er_Nov%2724_%28cropped%29.png/330px-Kep1er_Nov%2724_%28cropped%29.png",
-      "artistImageSource": "wikipedia_en_commons_group_photo",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "group_photo"
     },
     {
       "canonicalArtistId": "aespa",
@@ -661,7 +662,7 @@
       ],
       "sampleOriginalArtists": [
         "KPOP Demon Hunters HUNTR/X",
-        "KPOP Demon Hunters"
+        "HUNTR/X"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/131e4e97636af9fb65728f8d367cd2b2/1000x1000-000000-80-0-0.jpg",
@@ -706,6 +707,27 @@
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ef308bdca454a56b4acd2787c17a6811/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer_official_artist_refresh",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "liu-yao-wen",
+      "displayName": "刘耀文",
+      "songCount": 5,
+      "songIds": [
+        "local_blue_刘耀文",
+        "local_耀眼的你",
+        "local_falling_you",
+        "local_Got_You",
+        "local_不冬眠"
+      ],
+      "sampleOriginalArtists": [
+        "刘耀文",
+        "时代少年团 刘耀文"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/1a/db/a5/1adba5bc-ecc3-79f6-6caf-9b8aaca5c62f/mzl.bhtdloiy.jpg/600x600bb.jpg",
+      "artistImageSource": "apple_music_us_artist_mzstatic_hero_1429669950",
       "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
     },
@@ -802,8 +824,7 @@
         "local_Promise"
       ],
       "sampleOriginalArtists": [
-        "THE9",
-        ""
+        "THE9"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/240f02644a1d044036dead7419823f31/1000x1000-000000-80-0-0.jpg",
@@ -830,26 +851,6 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "liu-yao-wen",
-      "displayName": "刘耀文",
-      "songCount": 4,
-      "songIds": [
-        "local_blue_刘耀文",
-        "local_耀眼的你",
-        "local_falling_you",
-        "local_Got_You"
-      ],
-      "sampleOriginalArtists": [
-        "刘耀文",
-        "时代少年团 刘耀文"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://is1-ssl.mzstatic.com/image/thumb/Features211/v4/1a/db/a5/1adba5bc-ecc3-79f6-6caf-9b8aaca5c62f/mzl.bhtdloiy.jpg/600x600bb.jpg",
-      "artistImageSource": "apple_music_us_artist_mzstatic_hero_1429669950",
-      "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "zhang-jie",
@@ -1027,24 +1028,6 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "__unknown__",
-      "displayName": "Unknown artist",
-      "songCount": 3,
-      "songIds": [
-        "local_勾指起誓",
-        "local_不冬眠",
-        "local_normal_no_more"
-      ],
-      "sampleOriginalArtists": [
-        ""
-      ],
-      "reviewStatus": "unknown",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
     },
     {
       "canonicalArtistId": "liu-yu-xin",
@@ -1531,6 +1514,24 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "luo-tianyi",
+      "displayName": "洛天依",
+      "songCount": 2,
+      "songIds": [
+        "local_time_to_shine",
+        "local_勾指起誓"
+      ],
+      "sampleOriginalArtists": [
+        "洛天依 钢琴版 北京冬奥会应援歌曲",
+        "洛天依"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/e/ec/Luotianyivocaloid.jpg",
+      "artistImageSource": "wikipedia_en_vocaloid_art",
+      "artistImageConfidence": 0.9,
+      "artistImageKind": "key_art"
+    },
+    {
       "canonicalArtistId": "wang-lee-hom",
       "displayName": "王力宏",
       "songCount": 2,
@@ -1634,23 +1635,6 @@
       "artistImageUrl": "https://is1-ssl.mzstatic.com/image/thumb/Features125/v4/80/d5/20/80d5205e-e9a8-8979-9253-c5a367b9dd73/mzl.riytxykk.jpg/600x600bb.jpg",
       "artistImageSource": "apple_music_us_artist_mzstatic_hero_1348213979",
       "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "zhang-hao",
-      "displayName": "章昊",
-      "songCount": 2,
-      "songIds": [
-        "local_coming_for_you",
-        "local_shine"
-      ],
-      "sampleOriginalArtists": [
-        "章昊"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/26777e82e1f969582fb4bf5495fb0b3a/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
       "artistImageKind": "artist_photo"
     },
     {
@@ -1888,7 +1872,7 @@
         "local_你眼里的光"
       ],
       "sampleOriginalArtists": [
-        ""
+        "老番茄"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Bilibili_screenshot.png/330px-Bilibili_screenshot.png",
@@ -2176,7 +2160,7 @@
         "local_calling"
       ],
       "sampleOriginalArtists": [
-        "SPIDER-MAN ACROSS THE SPIDER-VERSE"
+        "Metro Boomin"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Metro_Boomin_November_2025.jpg/330px-Metro_Boomin_November_2025.jpg",
@@ -2256,7 +2240,7 @@
         "local_Burn_it_all_down"
       ],
       "sampleOriginalArtists": [
-        "Burn It All Down"
+        "PVRIS"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/1c90e135a4c10be64e1b41b4838d7ee1/1000x1000-000000-80-0-0.jpg",
@@ -2288,7 +2272,7 @@
         "local_Bridge_over_troubled_water"
       ],
       "sampleOriginalArtists": [
-        "Bridge Over Troubled Water"
+        "Simon and Garfunkel"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/SimonandGarfunkel.jpg/330px-SimonandGarfunkel.jpg",
@@ -2359,6 +2343,22 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
+    },
+    {
+      "canonicalArtistId": "review/local_normal_no_more",
+      "displayName": "TYSM",
+      "songCount": 1,
+      "songIds": [
+        "local_normal_no_more"
+      ],
+      "sampleOriginalArtists": [
+        "TYSM"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "from-youtube/when-the-phone-rings",
@@ -2506,13 +2506,13 @@
     },
     {
       "canonicalArtistId": "jing-long-jing-dier",
-      "displayName": "井胧、 井迪儿",
+      "displayName": "井胧、井迪儿",
       "songCount": 1,
       "songIds": [
         "local_彼岸"
       ],
       "sampleOriginalArtists": [
-        "彼岸"
+        "井胧、井迪儿"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/f3a8f29584119bb8aa7339ace2c93c7a/1000x1000-000000-80-0-0.jpg",
@@ -3200,29 +3200,13 @@
         "local_call_of_silence"
       ],
       "sampleOriginalArtists": [
-        "「進撃の巨人」"
+        "泽野弘之"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/e00822bee264f4888fb7e069eaa45967/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer",
       "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "luo-tianyi",
-      "displayName": "洛天依",
-      "songCount": 1,
-      "songIds": [
-        "local_time_to_shine"
-      ],
-      "sampleOriginalArtists": [
-        "洛天依 钢琴版 北京冬奥会应援歌曲"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/e/ec/Luotianyivocaloid.jpg",
-      "artistImageSource": "wikipedia_en_vocaloid_art",
-      "artistImageConfidence": 0.9,
-      "artistImageKind": "key_art"
     },
     {
       "canonicalArtistId": "hai-lai-a-mu",
@@ -3673,6 +3657,22 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "zhang-hao",
+      "displayName": "章昊",
+      "songCount": 1,
+      "songIds": [
+        "local_coming_for_you"
+      ],
+      "sampleOriginalArtists": [
+        "章昊"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/26777e82e1f969582fb4bf5495fb0b3a/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "takahiro",
       "displayName": "高桥优",
       "songCount": 1,
@@ -3722,6 +3722,15 @@
       "canonicalArtistId": "review/local-hakimi-meme",
       "notes": [
         "no_singer_meme_cover_use_tags_not_artist"
+      ]
+    },
+    {
+      "trackId": "local_normal_no_more",
+      "displayTitle": "Normal No More",
+      "originalArtist": "TYSM",
+      "canonicalArtistId": "review/local_normal_no_more",
+      "notes": [
+        "dictionary_miss"
       ]
     },
     {

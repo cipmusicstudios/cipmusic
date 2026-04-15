@@ -338,12 +338,12 @@
       "id": "local_yes_ok",
       "title": "Yes ok",
       "displayTitle": "Yes ok",
-      "originalArtist": "",
+      "originalArtist": "THE9",
       "canonicalArtistId": "the9",
       "canonicalArtistDisplayName": "THE9",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
-        "survival_show_youth_with_you_the9"
+        "priority_explicit_artist_in_haystack"
       ],
       "tags": [
         "华语流行"
@@ -709,7 +709,7 @@
       "id": "local_你眼里的光",
       "title": "你眼里的光",
       "displayTitle": "你眼里的光",
-      "originalArtist": "",
+      "originalArtist": "老番茄",
       "canonicalArtistId": "from-youtube/bilibili-2021毕业歌",
       "canonicalArtistDisplayName": "Bilibili 2021毕业歌",
       "artistReviewStatus": "ok",
@@ -741,7 +741,10 @@
         "zhHans": "你眼里的光",
         "en": "Ni Yan Li De Guang"
       },
-      "artists": {},
+      "artists": {
+        "zhHans": "老番茄",
+        "en": "Lao Fanqie"
+      },
       "youtubeSortIndex": 604,
       "youtubePublishedAt": "2021-06-13T12:00:00.000Z",
       "listSortPublishedAtMs": 1623585600000,
@@ -1831,12 +1834,12 @@
       "id": "local_你就不要想起我",
       "title": "你就不要想起我",
       "displayTitle": "你就不要想起我",
-      "originalArtist": "",
+      "originalArtist": "INTO1",
       "canonicalArtistId": "into1",
       "canonicalArtistDisplayName": "INTO1",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
-        "survival_show_chuang2021_into1"
+        "priority_explicit_artist_in_haystack"
       ],
       "tags": [
         "华语流行"
@@ -1878,12 +1881,12 @@
       "id": "local_fix_me",
       "title": "Fix me",
       "displayTitle": "Fix me",
-      "originalArtist": "",
+      "originalArtist": "INTO1",
       "canonicalArtistId": "into1",
       "canonicalArtistDisplayName": "INTO1",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
-        "survival_show_chuang2021_into1"
+        "priority_explicit_artist_in_haystack"
       ],
       "tags": [
         "华语流行"
@@ -1907,7 +1910,7 @@
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33761",
       "linkStatus": "linked",
       "titles": {
-        "en": "Fix Me"
+        "en": "Fix me"
       },
       "artists": {
         "zhHans": "INTO1",
@@ -2303,10 +2306,10 @@
         "youtube_title_freeform"
       ],
       "tags": [
-        "华语流行"
+        "欧美流行"
       ],
       "categoryKeys": [
-        "cpop"
+        "western"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/9d/24/8c/9d248c25-4249-b9ee-58b4-4c22af30204c/artwork.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/empty love/audio.mp3",
@@ -2337,12 +2340,12 @@
       "id": "local_不冬眠",
       "title": "不冬眠",
       "displayTitle": "不冬眠",
-      "originalArtist": "",
-      "canonicalArtistId": "__unknown__",
-      "canonicalArtistDisplayName": "Unknown artist",
-      "artistReviewStatus": "unknown",
+      "originalArtist": "刘耀文",
+      "canonicalArtistId": "liu-yao-wen",
+      "canonicalArtistDisplayName": "刘耀文",
+      "artistReviewStatus": "ok",
       "artistResolutionNotes": [
-        "empty_artist"
+        "priority_explicit_artist_in_haystack"
       ],
       "tags": [
         "华语流行"
@@ -2359,17 +2362,21 @@
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "不冬眠",
-      "youtubeVideoUrl": null,
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=7ZG9ddgw68s",
       "youtubeVideoTitle": "【钢琴】时代少年团刘耀文《不冬眠》钢琴完整版（附谱）",
-      "youtubeVideoId": null,
+      "youtubeVideoId": "7ZG9ddgw68s",
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1a14y1A721/",
-      "sheetUrl": "https://k.youshop10.com/qmeWIMP7",
+      "sheetUrl": "https://mymusic5.com/cipmusic/375227",
       "linkStatus": "linked",
       "titles": {
         "zhHans": "不冬眠",
         "en": "Bu Dong Mian"
       },
-      "artists": {},
+      "artists": {
+        "zhHans": "刘耀文",
+        "zhHant": "劉耀文",
+        "en": "Liu Yaowen"
+      },
       "listSortPublishedAtMs": 400061905171,
       "listSortPublishedAt": "1982-09-05T08:18:25.171Z",
       "listSortSource": "fallback_no_youtube_order"
@@ -2430,10 +2437,12 @@
         "no_singer_meme_cover_use_tags_not_artist"
       ],
       "tags": [
-        "华语流行"
+        "日系流行",
+        "动漫"
       ],
       "categoryKeys": [
-        "cpop"
+        "jpop",
+        "anime"
       ],
       "coverUrl": "https://cdn-images.dzcdn.net/images/cover/ae0efcff5562e7063416578f752534cd/1000x1000-000000-80-0-0.jpg",
       "mp3Url": "/local-imports/哈基米/audio.mp3",
@@ -2696,18 +2705,18 @@
       "id": "local_normal_no_more",
       "title": "Normal No More",
       "displayTitle": "Normal No More",
-      "originalArtist": "",
-      "canonicalArtistId": "__unknown__",
-      "canonicalArtistDisplayName": "Unknown artist",
-      "artistReviewStatus": "unknown",
+      "originalArtist": "TYSM",
+      "canonicalArtistId": "review/local_normal_no_more",
+      "canonicalArtistDisplayName": "TYSM",
+      "artistReviewStatus": "needsReview",
       "artistResolutionNotes": [
-        "empty_artist"
+        "dictionary_miss"
       ],
       "tags": [
-        "华语流行"
+        "欧美流行"
       ],
       "categoryKeys": [
-        "cpop"
+        "western"
       ],
       "coverUrl": "https://i2.hdslb.com/bfs/archive/8670366d9d2af24a1637f0265bb577326fc105e9.jpg",
       "mp3Url": "/local-imports/normal no more/audio.mp3",
@@ -2718,16 +2727,19 @@
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "normal no more",
-      "youtubeVideoUrl": null,
+      "youtubeVideoUrl": "https://youtube.com/shorts/qUqr2ewWD74?feature=share",
       "youtubeVideoTitle": "【钢琴】战歌起！Normal No More (附免费钢琴谱）",
-      "youtubeVideoId": null,
+      "youtubeVideoId": "qUqr2ewWD74",
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1A14y1777Z/",
       "sheetUrl": "https://mymusic5.com/cipmusic/341127",
       "linkStatus": "linked",
       "titles": {
         "en": "Normal No More"
       },
-      "artists": {},
+      "artists": {
+        "zhHans": "TYSM",
+        "en": "TYSM"
+      },
       "listSortPublishedAtMs": 400022987535,
       "listSortPublishedAt": "1982-09-04T21:29:47.535Z",
       "listSortSource": "fallback_no_youtube_order"
