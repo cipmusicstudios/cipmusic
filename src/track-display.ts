@@ -79,10 +79,9 @@ export const getLocalizedTrackTitle = (track: Track, currentLang: string) => {
   return titles.en || titles.zhHans || titles.zhHant || fallbackTitle;
 };
 
+/** UI 标题始终走 manifest 多语言字段；勿因 approved 的 sourceSongTitle 绕过 locale（source 常为平台原始中文名）。 */
 export const getDisplayTrackTitle = (track: Track, currentLang = 'English') =>
-  (track.metadataStatus === 'approved' && track.sourceSongTitle)
-    ? track.sourceSongTitle
-    : getLocalizedTrackTitle(track, currentLang);
+  getLocalizedTrackTitle(track, currentLang);
 
 /** Seed / video-parse lines like "Be Mine CHUANG2021" — show canonical INTO1 instead. */
 function artistFieldsMentionChuang2021(track: Track): boolean {
