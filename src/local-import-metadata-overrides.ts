@@ -76,6 +76,17 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artists: { zhHans: '刘耀文', zhHant: '劉耀文', en: 'Liu Yaowen' },
     categoryTags: ['华语流行'],
   },
+  'Blue(zerobaseone)': {
+    displayTitle: 'Blue',
+    title: 'Blue',
+    titles: { zhHans: 'Blue', zhHant: 'Blue', en: 'Blue' },
+    artist: 'ZEROBASEONE',
+    artists: { zhHans: 'ZEROBASEONE', zhHant: 'ZEROBASEONE', en: 'ZEROBASEONE' },
+    links: {
+      sheet: 'https://www.mymusic5.com/cipmusic/257776',
+    },
+    categoryTags: ['韩流流行'],
+  },
   /** 双人曲 — 同时归入张靓颖、薛之谦。 */
   可: {
     artist: '张靓颖、薛之谦',
@@ -250,15 +261,33 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
       en: 'Lu Yuanyi',
     },
   },
-  /** 与 `coming-for-you`（Coming For You）区分：同剧 OST，独立视频；勿与卢苑仪片头曲共用 id */
+  /** Kep1er《Shine》（Girls Planet 999）；曾误绑骄阳似我 OST，已按曲库/B站片源纠正。 */
   shine: {
+    artist: 'Kep1er',
+    artists: {
+      zhHans: 'Kep1er',
+      zhHant: 'Kep1er',
+      en: 'Kep1er',
+    },
+    category: '韩流流行',
+    categoryTags: ['韩流流行'],
     links: {
       youtube: 'https://www.youtube.com/watch?v=krvKaVcFBEE',
       video: 'https://www.youtube.com/watch?v=krvKaVcFBEE',
+      bilibili: 'https://www.bilibili.com/video/BV1yQ4y1i7U5/',
       sheet: 'https://mymusic5.com/cipmusic/348048',
     },
-    matchedVideoTitle:
-      '《骄阳似我》OST 章昊（ZEROBASEONE）《Shine on Me》钢琴版 | Piano by CIP Music',
+    matchedVideoTitle: 'Kep1er《Shine》钢琴完整版（附谱）| Piano by CIP Music',
+  },
+  /** BIGBANG《Still Life》；简繁界面标题用「春夏秋冬」，英文仍可用 Still Life。 */
+  'still life': {
+    displayTitle: '春夏秋冬',
+    title: 'Still Life',
+    titles: {
+      zhHans: '春夏秋冬',
+      zhHant: '春夏秋冬',
+      en: 'Still Life',
+    },
   },
   '5点23': {
     title: '5点23',
@@ -390,8 +419,8 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     title: '三叶的主题',
     displayTitle: '三叶的主题',
     titles: {
-      zhHans: '三叶的主题',
-      zhHant: '三葉的主題',
+      zhHans: '《你的名字》三叶的主题',
+      zhHant: '《你的名字》三葉的主題',
       en: 'Mitsuha Theme',
     },
     artist: 'RADWIMPS',
@@ -672,13 +701,27 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artists: { zhHans: '纸嫁衣', en: 'Paper Bride' },
     categoryTags: ['游戏'],
   },
-  /** B 站完整版；mymusic 无单独「不冬眠」页，谱为 B 站简介中的 CIP 微店购谱链。 */
+  /** B 站完整版；谱面用 mymusic 正式页。 */
   不冬眠: {
+    artist: '刘耀文',
+    artists: { zhHans: '刘耀文', zhHant: '劉耀文', en: 'Liu Yaowen' },
     links: {
+      youtube: 'https://www.youtube.com/watch?v=7ZG9ddgw68s',
+      video: 'https://www.youtube.com/watch?v=7ZG9ddgw68s',
       bilibili: 'https://www.bilibili.com/video/BV1a14y1A721/',
-      sheet: 'https://k.youshop10.com/qmeWIMP7',
+      sheet: 'https://mymusic5.com/cipmusic/375227',
     },
     matchedVideoTitle: '【钢琴】时代少年团刘耀文《不冬眠》钢琴完整版（附谱）',
+  },
+  勾指起誓: {
+    artist: '洛天依',
+    artists: { zhHans: '洛天依', en: 'Luo Tianyi' },
+    categoryTags: ['华语流行'],
+  },
+  你眼里的光: {
+    artist: '老番茄',
+    artists: { zhHans: '老番茄', en: 'Lao Fanqie' },
+    categoryTags: ['华语流行'],
   },
   /** CIP catalog matched a wrong sheet; this upload has no published score. */
   想你的365天: {
@@ -704,6 +747,16 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
   'be mine': {
     artist: 'INTO1',
     artists: { zhHans: 'INTO1', zhHant: 'INTO1', en: 'INTO1' },
+  },
+  'yes ok': {
+    artist: 'THE9',
+    artists: { zhHans: 'THE9', zhHant: 'THE9', en: 'THE9' },
+    categoryTags: ['华语流行'],
+  },
+  你就不要想起我: {
+    artist: 'INTO1',
+    artists: { zhHans: 'INTO1', zhHant: 'INTO1', en: 'INTO1' },
+    categoryTags: ['华语流行'],
   },
   /** 与派偉俊合作 — 列表/艺人桶只展示周杰伦，勿带「派偉俊 钢琴版」尾缀。 */
   'Six Degrees': {
@@ -777,6 +830,12 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artist: '周深',
     artists: { zhHans: '周深', en: 'Charlie Zhou Shen' },
     links: { noExternalVideo: true, noSheet: true },
+  },
+  'fix me': {
+    title: 'Fix me',
+    displayTitle: 'Fix me',
+    artist: 'INTO1',
+    artists: { zhHans: 'INTO1', zhHant: 'INTO1', en: 'INTO1' },
   },
   我们一起闯: {
     links: {
@@ -908,7 +967,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artist: '华晨宇',
     artists: { zhHans: '华晨宇', zhHant: '華晨宇', en: 'Hua Chenyu' },
     category: '华语流行',
-    categoryTags: ['华语流行'],
+    categoryTags: ['华语流行', '游戏'],
     cover: 'https://img.youtube.com/vi/AI--uQ-dIIs/hqdefault.jpg',
     officialLinks: {
       youtube: 'https://www.youtube.com/watch?v=AI--uQ-dIIs',
@@ -1193,6 +1252,63 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
       youtube: 'https://www.youtube.com/watch?v=xfqBQ2XhBCg',
       video: 'https://www.youtube.com/watch?v=xfqBQ2XhBCg',
       noSheet: true,
+    },
+  },
+
+  // ── 艺人显示口径（canonical 与 seed original对齐；不新建词条）──
+  /** HUNTR/X 为歌手名；KPOP Demon Hunters 为作品/项目名。 */
+  free: {
+    artist: 'HUNTR/X',
+    artists: { zhHans: 'HUNTR/X', zhHant: 'HUNTR/X', en: 'HUNTR/X' },
+  },
+  'take-down': {
+    artist: 'HUNTR/X',
+    artists: { zhHans: 'HUNTR/X', zhHant: 'HUNTR/X', en: 'HUNTR/X' },
+  },
+  'call of silence': {
+    artist: '泽野弘之',
+    artists: { zhHans: '泽野弘之', zhHant: '澤野弘之', en: 'Hiroyuki Sawano' },
+  },
+  calling: {
+    artist: 'Metro Boomin',
+    artists: { zhHans: 'Metro Boomin', en: 'Metro Boomin' },
+  },
+  彼岸: {
+    artist: '井胧、井迪儿',
+    artists: { zhHans: '井胧、井迪儿', zhHant: '井朧、井迪兒', en: 'Jing Long, Jing Dier' },
+  },
+  'Bridge over troubled water': {
+    title: 'Bridge over troubled water',
+    displayTitle: 'Bridge over troubled water',
+    titles: {
+      zhHans: '忧愁河上的金桥',
+      zhHant: '憂愁河上的金橋',
+      en: 'Bridge Over Troubled Water',
+    },
+    artist: 'Simon and Garfunkel',
+    artists: {
+      zhHans: 'Simon and Garfunkel',
+      zhHant: 'Simon and Garfunkel',
+      en: 'Simon and Garfunkel',
+    },
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=NMUIDV3m3zk',
+      video: 'https://www.youtube.com/watch?v=NMUIDV3m3zk',
+    },
+  },
+  'Burn it all down': {
+    title: 'Burn it all down',
+    displayTitle: 'Burn it all down',
+    titles: {
+      zhHans: '不可阻挡',
+      zhHant: '不可阻擋',
+      en: 'Burn It All Down',
+    },
+    artist: 'PVRIS',
+    artists: { zhHans: 'PVRIS', zhHant: 'PVRIS', en: 'PVRIS' },
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=JWbhkFJSz4E',
+      video: 'https://www.youtube.com/watch?v=JWbhkFJSz4E',
     },
   },
 
@@ -1576,8 +1692,12 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
   'normal no more': {
     title: 'Normal No More',
     displayTitle: 'Normal No More',
+    artist: 'TYSM',
+    artists: { zhHans: 'TYSM', en: 'TYSM' },
     categoryTags: ['欧美流行'],
     links: {
+      youtube: 'https://youtube.com/shorts/qUqr2ewWD74?feature=share',
+      video: 'https://youtube.com/shorts/qUqr2ewWD74?feature=share',
       bilibili: 'https://www.bilibili.com/video/BV1A14y1777Z/',
       sheet: 'https://mymusic5.com/cipmusic/341127',
     },
