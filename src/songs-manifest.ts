@@ -627,7 +627,10 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
 }
 
 function extractVideoId(url: string): string | null {
-  const m = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/) || url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  const m =
+    url.match(/[?&]v=([a-zA-Z0-9_-]{11})/) ||
+    url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/) ||
+    url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i);
   return m?.[1] || null;
 }
 

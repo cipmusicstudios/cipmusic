@@ -1,14 +1,65 @@
 {
-  "generatedAt": "2026-04-06T18:46:32.355Z",
-  "manifestGeneratedAt": "2026-04-06T18:46:16.781Z",
-  "trackCount": 547,
+  "generatedAt": "2026-04-14T18:35:15.297Z",
+  "manifestGeneratedAt": "2026-04-14T18:35:14.467Z",
+  "trackCount": 544,
   "durationSummary": {
-    "ok": 547,
+    "ok": 544,
     "badCount": 0,
     "badSlugs": [],
-    "withSeconds": 547
+    "withSeconds": 544
   },
-  "issueCount": 0,
-  "issuesByCode": {},
-  "issues": []
+  "issueCount": 4,
+  "issuesByCode": {
+    "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH": 4
+  },
+  "issues": [
+    {
+      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
+      "severity": "warn",
+      "trackId": "local_像你这样的朋友",
+      "slug": "像你这样的朋友",
+      "displayTitle": "像你这样的朋友",
+      "message": "originalArtist (陈楚生、王栎鑫、王铮亮、陆虎、苏醒 、张远) differs from canonical display (0713男团) after normalization.",
+      "hints": [
+        "May be intentional (feat.)",
+        "Verify artist dictionary + overrides"
+      ]
+    },
+    {
+      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
+      "severity": "warn",
+      "trackId": "local_chains",
+      "slug": "chains",
+      "displayTitle": "Chains",
+      "message": "originalArtist (BOYS ll PLANET) differs from canonical display (Alpha Drive One) after normalization.",
+      "hints": [
+        "May be intentional (feat.)",
+        "Verify artist dictionary + overrides"
+      ]
+    },
+    {
+      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
+      "severity": "warn",
+      "trackId": "local_恋与深空主题曲",
+      "slug": "恋与深空主题曲",
+      "displayTitle": "恋与深空主题曲",
+      "message": "originalArtist (莎拉·布莱曼) differs from canonical display (恋与深空) after normalization.",
+      "hints": [
+        "May be intentional (feat.)",
+        "Verify artist dictionary + overrides"
+      ]
+    },
+    {
+      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
+      "severity": "warn",
+      "trackId": "local_斗地主",
+      "slug": "斗地主",
+      "displayTitle": "斗地主",
+      "message": "originalArtist (（无原唱）) differs from canonical display (斗地主（游戏）) after normalization.",
+      "hints": [
+        "May be intentional (feat.)",
+        "Verify artist dictionary + overrides"
+      ]
+    }
+  ]
 }

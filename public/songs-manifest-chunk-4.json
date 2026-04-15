@@ -27,7 +27,7 @@
       "midiUrl": "/local-imports/Regression/performance.mid",
       "musicXmlUrl": "/local-imports/Regression/score.musicxml",
       "duration": "03:57",
-      "durationSeconds": 236.712336,
+      "durationSeconds": 236.74775510204083,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "Regression",
@@ -75,7 +75,7 @@
       "midiUrl": "/local-imports/鸳鸯债/performance.mid",
       "musicXmlUrl": "/local-imports/鸳鸯债/score.musicxml",
       "duration": "02:21",
-      "durationSeconds": 141,
+      "durationSeconds": 141.03510204081633,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "鸳鸯债",
@@ -170,7 +170,7 @@
       "midiUrl": "/local-imports/my only/performance.mid",
       "musicXmlUrl": "/local-imports/my only/score.musicxml",
       "duration": "03:39",
-      "durationSeconds": 219.047619,
+      "durationSeconds": 219.08897959183673,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "my only",
@@ -311,7 +311,7 @@
       "midiUrl": "/local-imports/洛城/performance.mid",
       "musicXmlUrl": "/local-imports/洛城/score.musicxml",
       "duration": "04:09",
-      "durationSeconds": 249.142857,
+      "durationSeconds": 249.18204081632652,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "洛城",
@@ -454,7 +454,7 @@
       "midiUrl": "/local-imports/廿/performance.mid",
       "musicXmlUrl": "/local-imports/廿/score.musicxml",
       "duration": "04:15",
-      "durationSeconds": 255.428571,
+      "durationSeconds": 255.47755102040816,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "廿",
@@ -548,7 +548,7 @@
       "midiUrl": "/local-imports/有你/performance.mid",
       "musicXmlUrl": "/local-imports/有你/score.musicxml",
       "duration": "03:22",
-      "durationSeconds": 202.105261,
+      "durationSeconds": 202.13551020408164,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "有你",
@@ -595,7 +595,7 @@
       "midiUrl": "/local-imports/风吹沙成海/performance.mid",
       "musicXmlUrl": "/local-imports/风吹沙成海/score.musicxml",
       "duration": "03:46",
-      "durationSeconds": 226.363628,
+      "durationSeconds": 226.40326530612245,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "风吹沙成海",
@@ -642,7 +642,7 @@
       "midiUrl": "/local-imports/dreams come true/performance.mid",
       "musicXmlUrl": "/local-imports/dreams come true/score.musicxml",
       "duration": "03:26",
-      "durationSeconds": 206.060612,
+      "durationSeconds": 206.1061224489796,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "dreams come true",
@@ -688,7 +688,7 @@
       "midiUrl": "/local-imports/小镇里的花/performance.mid",
       "musicXmlUrl": "/local-imports/小镇里的花/score.musicxml",
       "duration": "06:43",
-      "durationSeconds": 403.2,
+      "durationSeconds": 403.2261224489796,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "小镇里的花",
@@ -735,7 +735,7 @@
       "midiUrl": "/local-imports/点睛/performance.mid",
       "musicXmlUrl": "/local-imports/点睛/score.musicxml",
       "duration": "02:36",
-      "durationSeconds": 156.40449,
+      "durationSeconds": 156.4473469387755,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "点睛",
@@ -878,7 +878,7 @@
       "midiUrl": "/local-imports/Y/performance.mid",
       "musicXmlUrl": "/local-imports/Y/score.musicxml",
       "duration": "02:59",
-      "durationSeconds": 179.240499,
+      "durationSeconds": 179.27836734693878,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "Y",
@@ -1020,7 +1020,7 @@
       "midiUrl": "/local-imports/借给我一盒火柴/performance.mid",
       "musicXmlUrl": "/local-imports/借给我一盒火柴/score.musicxml",
       "duration": "03:20",
-      "durationSeconds": 200,
+      "durationSeconds": 200.0457142857143,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "借给我一盒火柴",
@@ -1069,7 +1069,7 @@
       "midiUrl": "/local-imports/念/performance.mid",
       "musicXmlUrl": "/local-imports/念/score.musicxml",
       "duration": "04:29",
-      "durationSeconds": 269.072154,
+      "durationSeconds": 269.1134693877551,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "念",
@@ -1163,7 +1163,7 @@
       "midiUrl": "/local-imports/花落时相遇/performance.mid",
       "musicXmlUrl": "/local-imports/花落时相遇/score.musicxml",
       "duration": "05:46",
-      "durationSeconds": 346.451587,
+      "durationSeconds": 346.4881632653061,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "花落时相遇",
@@ -1355,7 +1355,7 @@
       "midiUrl": "/local-imports/一定会/performance.mid",
       "musicXmlUrl": "/local-imports/一定会/score.musicxml",
       "duration": "03:47",
-      "durationSeconds": 226.771655,
+      "durationSeconds": 226.82122448979592,
       "hasPracticeMode": true,
       "importSource": "local",
       "slug": "一定会",
@@ -2149,18 +2149,18 @@
       "id": "local_shine",
       "title": "Shine",
       "displayTitle": "Shine",
-      "originalArtist": "章昊",
-      "canonicalArtistId": "zhang-hao",
-      "canonicalArtistDisplayName": "章昊",
+      "originalArtist": "Kep1er",
+      "canonicalArtistId": "kep1er",
+      "canonicalArtistDisplayName": "Kep1er",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
         "priority_explicit_artist_in_haystack"
       ],
       "tags": [
-        "华语流行"
+        "韩流流行"
       ],
       "categoryKeys": [
-        "cpop"
+        "kpop"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/b4/a2/e1/b4a2e1c1-5608-c5fd-0783-2187238f0361/4896004744165.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/shine/audio.mp3",
@@ -2172,18 +2172,18 @@
       "importSource": "local",
       "slug": "shine",
       "youtubeVideoUrl": "https://www.youtube.com/watch?v=krvKaVcFBEE",
-      "youtubeVideoTitle": "《骄阳似我》OST 章昊（ZEROBASEONE）《Shine on Me》钢琴版 | Piano by CIP Music",
+      "youtubeVideoTitle": "Kep1er《Shine》钢琴完整版（附谱）| Piano by CIP Music",
       "youtubeVideoId": "krvKaVcFBEE",
-      "bilibiliVideoUrl": null,
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1yQ4y1i7U5/",
       "sheetUrl": "https://mymusic5.com/cipmusic/348048",
       "linkStatus": "linked",
       "titles": {
         "en": "Shine"
       },
       "artists": {
-        "zhHans": "章昊",
-        "zhHant": "章昊",
-        "en": "Zhang Hao"
+        "zhHans": "Kep1er",
+        "zhHant": "Kep1er",
+        "en": "Kep1er"
       },
       "youtubeSortIndex": 529,
       "youtubePublishedAt": "2021-10-23T12:00:00.000Z",
@@ -2797,7 +2797,7 @@
       "id": "local_Burn_it_all_down",
       "title": "Burn it all down",
       "displayTitle": "Burn it all down",
-      "originalArtist": "Burn It All Down",
+      "originalArtist": "PVRIS",
       "canonicalArtistId": "pvris",
       "canonicalArtistDisplayName": "PVRIS",
       "artistReviewStatus": "ok",
@@ -2805,10 +2805,12 @@
         "track_worlds2021_burn_it_all_down_pvris"
       ],
       "tags": [
-        "欧美流行"
+        "欧美流行",
+        "游戏"
       ],
       "categoryKeys": [
-        "western"
+        "western",
+        "game"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/ac/4e/62/ac4e6215-cb01-9bf4-3bdf-313e7d7f69b4/00198704672439_Cover.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/Burn it all down/audio.mp3",
@@ -2826,6 +2828,8 @@
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/46758",
       "linkStatus": "linked",
       "titles": {
+        "zhHans": "不可阻挡",
+        "zhHant": "不可阻擋",
         "en": "Burn It All Down"
       },
       "artists": {
@@ -3939,12 +3943,12 @@
       "id": "local_勾指起誓",
       "title": "勾指起誓",
       "displayTitle": "勾指起誓",
-      "originalArtist": "",
-      "canonicalArtistId": "__unknown__",
-      "canonicalArtistDisplayName": "Unknown artist",
-      "artistReviewStatus": "unknown",
+      "originalArtist": "洛天依",
+      "canonicalArtistId": "luo-tianyi",
+      "canonicalArtistDisplayName": "洛天依",
+      "artistReviewStatus": "ok",
       "artistResolutionNotes": [
-        "empty_artist"
+        "priority_explicit_artist_in_haystack"
       ],
       "tags": [
         "华语流行"
@@ -3971,7 +3975,11 @@
         "zhHans": "勾指起誓",
         "en": "Gou Zhi Qi Shi"
       },
-      "artists": {},
+      "artists": {
+        "zhHans": "洛天依",
+        "zhHant": "洛天依",
+        "en": "Luo Tianyi"
+      },
       "youtubeSortIndex": 573,
       "youtubePublishedAt": "2021-08-14T12:00:00.000Z",
       "listSortPublishedAtMs": 1628942400000,
@@ -4180,10 +4188,12 @@
         "youtube_title_freeform"
       ],
       "tags": [
-        "华语流行"
+        "日系流行",
+        "动漫"
       ],
       "categoryKeys": [
-        "cpop"
+        "jpop",
+        "anime"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/29/c0/2b/29c02b24-7de3-c908-d0bb-fd551d9a7740/ANTCD-12163.jpg/600x600bb.jpg",
       "mp3Url": "/local-imports/masayume chasing/audio.mp3",

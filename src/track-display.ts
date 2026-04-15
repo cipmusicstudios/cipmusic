@@ -1,12 +1,17 @@
 import type { Track } from './types/track';
 import { dictionaryCanonicalId } from './artist-canonical';
 import { ARTIST_DICTIONARY } from './local-import-artist-normalization';
+import { getVideoOverrideZhHansUrl } from './video-overrides';
 
 /** True if URL is a concrete YouTube watch page (not channel search / browse). */
 export function isRealYoutubeWatchUrl(url?: string | null): boolean {
   if (!url || typeof url !== 'string') return false;
   if (url.includes('/search?') || url.includes('@')) return false;
-  return /[?&]v=[\w-]{11}/.test(url) || /youtu\.be\/[\w-]{11}/.test(url);
+  return (
+    /[?&]v=[\w-]{11}/.test(url) ||
+    /youtu\.be\/[\w-]{11}/.test(url) ||
+    /youtube\.com\/shorts\/[\w-]+/i.test(url)
+  );
 }
 
 /** True if URL is a concrete CIP sheet page on mymusic (not keyword search fallback). */
@@ -34,6 +39,16 @@ export function getTrackBilibiliUrl(track: Track): string | undefined {
   return u.replace(/\/?$/, '');
 }
 
+/**
+ * 曲目已有 B 站链接时沿用；否则在「简体中文」下使用 `data/video-overrides.json` 的 videoUrlZhHans。
+ */
+export function getTrackBilibiliUrlForLocale(track: Track, currentLang: string): string | undefined {
+  const direct = getTrackBilibiliUrl(track);
+  if (direct) return direct;
+  if (currentLang === '简体中文') return getVideoOverrideZhHansUrl(track);
+  return undefined;
+}
+
 export function getTrackYoutubeUrl(track: Track): string | undefined {
   const u = track.youtubeUrl || track.metadata?.links?.youtube || track.metadata?.links?.video;
   return isRealYoutubeWatchUrl(u) ? u : undefined;
@@ -44,9 +59,14 @@ export function getTrackSheetUrl(track: Track): string | undefined {
   return isRealSheetUrl(u) ? u : undefined;
 }
 
-/** True when the track has either a real YouTube watch URL or a Bilibili video URL. */
-export function trackHasExternalVideo(track: Track): boolean {
-  return Boolean(getTrackYoutubeUrl(track) || getTrackBilibiliUrl(track));
+/**
+ * True when the track has a real YouTube watch URL,或 B 站视频页，或在简中模式下命中 video-overrides。
+ */
+export function trackHasExternalVideo(track: Track, currentLang?: string): boolean {
+  const yt = getTrackYoutubeUrl(track);
+  const bili = getTrackBilibiliUrl(track);
+  const zhBili = currentLang === '简体中文' ? getVideoOverrideZhHansUrl(track) : undefined;
+  return Boolean(yt || bili || zhBili);
 }
 
 export const getLocalizedTrackTitle = (track: Track, currentLang: string) => {

@@ -67,7 +67,7 @@ import {
   getDisplayTrackTitle,
   getDisplayTrackArtist,
   getTrackYoutubeUrl,
-  getTrackBilibiliUrl,
+  getTrackBilibiliUrlForLocale,
   trackHasExternalVideo,
   getTrackSheetUrl,
   hasPracticeAssets,
@@ -272,7 +272,6 @@ const AMBIENCE_GAIN_TRIMS: Record<AmbientKey, number> = {
   fireplace: 1.9,
   cafe: 1.6,
 };
-
 const AMBIENCE_KEYS = Object.keys(AMBIENCE_AUDIO_URLS) as AmbientKey[];
 const AMBIENCE_FADE_IN_MS = 180;
 const AMBIENCE_FADE_OUT_MS = 220;
@@ -285,51 +284,87 @@ const BackgroundLayer = memo(function BackgroundLayer({
   lightweight?: boolean;
 }) {
   const [videoError, setVideoError] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
+  const [showImg, setShowImg] = useState(true);
 
   React.useEffect(() => {
     setVideoError(false);
+    setVideoReady(false);
+    setShowImg(true);
   }, [scene.url]);
 
-  const style: React.CSSProperties = {
+  React.useEffect(() => {
+    // 跨越 220ms 的 opacity fade-out 后，彻底卸载 <img> 释放显存图层
+    if (videoReady && scene.type === 'video') {
+      const tmr = setTimeout(() => setShowImg(false), 300);
+      return () => clearTimeout(tmr);
+    }
+  }, [videoReady, scene.type]);
+
+  const wrapperStyle: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    width: '100vw',
+    height: '100vh',
+    zIndex: 0,
+    pointerEvents: 'none',
+    isolation: 'isolate',
+    contain: 'paint',
+  };
+
+  const mediaStyle: React.CSSProperties = {
     position: 'fixed',
     inset: 0,
     width: '100vw',
     height: '100vh',
     objectFit: 'cover',
-    /** 勿用 -1：在根堆叠上下文中会落到 html 实色背景之下，整屏只剩浅色底 */
     zIndex: 0,
     pointerEvents: 'none',
+    transform: 'translateZ(0)',
+    backfaceVisibility: 'hidden',
+    willChange: 'opacity, transform',
   };
 
-  if (lightweight || scene.type === 'image' || videoError) {
-    return (
-      <img
-        key={scene.thumbnail || scene.url}
-        src={scene.thumbnail || scene.url}
-        alt={scene.name}
-        referrerPolicy="no-referrer"
-        crossOrigin="anonymous"
-        loading="eager"
-        decoding="async"
-        fetchPriority="high"
-        style={style}
-      />
-    );
-  }
+  const canUseVideo = scene.type === 'video' && !lightweight && !videoError;
 
   return (
-    <video
-      key={scene.url}
-      src={scene.url}
-      autoPlay
-      loop
-      muted
-      playsInline
-      preload="metadata"
-      poster={scene.thumbnail}
-      onError={() => setVideoError(true)}
-      style={style}
-    />
+    <div style={wrapperStyle}>
+      {showImg && (
+        <img
+          src={scene.thumbnail || scene.url}
+          alt={scene.name}
+          referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          style={{
+            ...mediaStyle,
+            opacity: canUseVideo && videoReady ? 0 : 1,
+            transition: 'opacity 220ms ease',
+          }}
+        />
+      )}
+      {canUseVideo && (
+        <video
+          src={scene.url}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={scene.thumbnail}
+          onLoadedData={() => setVideoReady(true)}
+          onCanPlay={() => setVideoReady(true)}
+          onError={() => setVideoError(true)}
+          style={{
+            ...mediaStyle,
+            opacity: videoReady ? 1 : 0,
+            transition: 'opacity 220ms ease',
+          }}
+        />
+      )}
+    </div>
   );
 });
 
@@ -449,6 +484,15 @@ export default function App() {
         return [...localList, ...remoteList.filter(r => !localIds.has(r.id))];
       };
 
+      const dedupeTracksById = (arr: Track[]): Track[] => {
+        const seen = new Set<string>();
+        return arr.filter(t => {
+          if (seen.has(t.id)) return false;
+          seen.add(t.id);
+          return true;
+        });
+      };
+
       let localEntries: SongManifestEntry[] = [];
       const manifestUrl = getSongsManifestUrl();
 
@@ -495,7 +539,9 @@ export default function App() {
                     const cj = await cr.json();
                     acc = acc.concat((cj.tracks ?? []) as SongManifestEntry[]);
                     if (cancelled) return;
-                    const mappedLocals = acc.map(e => ensureCategoryKeys(manifestEntryToTrack(e)));
+                    const mappedLocals = dedupeTracksById(
+                      acc.map(e => ensureCategoryKeys(manifestEntryToTrack(e))),
+                    );
                     setTracks(prev => {
                       const remoteOnly = prev.filter(t => t.importSource === 'remote');
                       return mergeLocalRemote(mappedLocals, remoteOnly);
@@ -514,7 +560,7 @@ export default function App() {
         console.warn('[songs] manifest fetch failed', err);
       }
 
-      const localTracks = localEntries.map(e => ensureCategoryKeys(manifestEntryToTrack(e)));
+      const localTracks = dedupeTracksById(localEntries.map(e => ensureCategoryKeys(manifestEntryToTrack(e))));
 
       const mergedLocalOnly: Track[] = [...localTracks.map(ensureCategoryKeys)];
 
@@ -886,7 +932,7 @@ export default function App() {
     setShowPracticePanel(false);
     setPracticeTransportSeekTarget(null);
     resetPlaybackTimeline();
-    setPlaybackTimelineTime(resumeAtSec);
+    setPlaybackTimelineTime(resumeAtSec, true);
     setCurrentTrack(track);
     setIsPlaying(true);
   }, [isGuest]);
@@ -1388,7 +1434,7 @@ const PlayerProgressStrip = memo(function PlayerProgressStrip({
   );
 });
 
-function BottomPlayer({
+const BottomPlayer = memo(function BottomPlayer({
   currentTrack,
   isPlaying,
   setIsPlaying,
@@ -1515,8 +1561,8 @@ function BottomPlayer({
     return () => document.removeEventListener('mousedown', onDown);
   }, [showSpeedMenu, showVolumePopover]);
   const resolvedYoutubeUrl = getTrackYoutubeUrl(currentTrack);
-  const resolvedBilibiliUrl = getTrackBilibiliUrl(currentTrack);
-  const canOpenExternalVideo = trackHasExternalVideo(currentTrack);
+  const resolvedBilibiliUrl = getTrackBilibiliUrlForLocale(currentTrack, currentLang);
+  const canOpenExternalVideo = trackHasExternalVideo(currentTrack, currentLang);
   const resolvedSheetUrl = getTrackSheetUrl(currentTrack);
   const linkStatus = currentTrack.metadata?.enrichment?.linkStatus;
 
@@ -1561,7 +1607,7 @@ function BottomPlayer({
         } catch {
           /* ignore */
         }
-        setPlaybackTimelineTime(handoff);
+        setPlaybackTimelineTime(handoff, true);
       };
       if (audio) {
         if (audio.readyState >= 1) applyMeta();
@@ -1583,7 +1629,7 @@ function BottomPlayer({
     if (!isPlaying) {
       const live = audioRef.current.currentTime;
       if (Number.isFinite(live)) {
-        setPlaybackTimelineTime(live);
+        setPlaybackTimelineTime(live, true);
         setProgressSyncTick(x => x + 1);
       }
     }
@@ -1760,7 +1806,7 @@ function BottomPlayer({
       isScrubbingRef.current = false;
       scrubClientXRef.current = null;
       audio.currentTime = clampedTime;
-      setPlaybackTimelineTime(clampedTime);
+      setPlaybackTimelineTime(clampedTime, true);
       setProgressSyncTick(x => x + 1);
     };
 
@@ -1784,7 +1830,7 @@ function BottomPlayer({
   const applySeek = (targetTime: number) => {
     if (showPracticePanel) {
       setPracticeSeekTarget(targetTime);
-      setPlaybackTimelineTime(targetTime);
+      setPlaybackTimelineTime(targetTime, true);
       return;
     }
     if (!audioRef.current) return;
@@ -1821,7 +1867,7 @@ function BottomPlayer({
       firstStablePerfTime: null,
     });
     audioRef.current.currentTime = targetTime;
-    setPlaybackTimelineTime(targetTime);
+    setPlaybackTimelineTime(targetTime, true);
     setProgressSyncTick(x => x + 1);
   };
 
@@ -1902,7 +1948,7 @@ function BottomPlayer({
         snappedBeatNumber: null,
         measureStartTime: null,
       };
-      setPlaybackTimelineTime(actualTime);
+      setPlaybackTimelineTime(actualTime, true);
       setProgressSyncTick(x => x + 1);
     };
 
@@ -2371,7 +2417,7 @@ function BottomPlayer({
       </div>
     </footer>
   );
-}
+});
 
 function HorizontalScroller({ children, showHint = false, t }: { children: React.ReactNode, showHint?: boolean, t: any }) {
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -2439,7 +2485,7 @@ function HorizontalScroller({ children, showHint = false, t }: { children: React
   );
 }
 
-function FocusTab({
+const FocusTab = memo(function FocusTab({
   currentTrack,
   isPlaying,
   setIsPlaying,
@@ -2723,7 +2769,7 @@ function FocusTab({
 
   return (
     <div className="focus-page w-full max-w-5xl mx-auto animate-in fade-in duration-500 pb-12">
-      <div className="focus-panel glass-effect p-8 rounded-[40px] flex flex-col gap-10">
+      <div className="focus-panel glass-effect-static p-8 rounded-[40px] flex flex-col gap-10">
 
         {/* 1) THEME STRIP */}
         <div className="flex flex-col gap-4">
@@ -2858,7 +2904,7 @@ function FocusTab({
             <h3 className="text-lg font-medium text-[var(--color-mist-text)]">{t.home.pomodoro}</h3>
           </div>
 
-          <div className="glass-panel px-6 py-5 flex flex-col gap-5 shadow-sm">
+          <div className="glass-panel-static px-6 py-5 flex flex-col gap-5 shadow-sm">
 
             {/* ── IDLE: 3-column grid layout ────────────────────── */}
             {status === 'idle' && (
@@ -3000,9 +3046,9 @@ function FocusTab({
       </div>
     </div>
   );
-}
+});
 
-function SettingsTab({
+const SettingsTab = memo(function SettingsTab({
   isPremium,
   setIsPremium,
   isGuest,
@@ -3282,15 +3328,15 @@ function SettingsTab({
                 <p className="text-sm leading-6 text-[var(--color-mist-text)]/68">
                   {guestPremiumSummary}
                 </p>
-                <div className="grid gap-1.5">
+                <div className="flex flex-col gap-1.5">
                   {benefitCards.map((benefit: any) => (
-                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-center gap-2.5 px-3 py-0.5`}>
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
-                        <Sparkles className="h-3 w-3" />
+                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-2.5 px-3 py-1.5`}>
+                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
+                        <Sparkles className="h-[13px] w-[13px]" />
                       </div>
-                      <div className="min-w-0 flex flex-col gap-0">
-                        <p className="m-0 text-sm font-semibold leading-none text-[var(--color-mist-text)]/90">{benefit.title}</p>
-                        <p className="m-0 -mt-1 text-[13px] font-normal leading-tight text-[var(--color-mist-text)]/68">{benefit.desc}</p>
+                      <div className="flex min-w-0 flex-col gap-[1px] pt-[2px]">
+                        <p className="m-0 text-[14px] font-[650] leading-tight text-[var(--color-mist-text)]/90">{benefit.title}</p>
+                        <p className="m-0 text-[13px] font-normal leading-tight text-[var(--color-mist-text)]/65">{benefit.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -3328,15 +3374,15 @@ function SettingsTab({
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42 leading-snug">
                   {premiumFeatureLead}
                 </p>
-                <div className="grid gap-1.5">
+                <div className="flex flex-col gap-1.5">
                   {benefitCards.map((benefit: any) => (
-                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-center gap-2.5 px-3 py-0.5`}>
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
-                        <Sparkles className="h-3 w-3" />
+                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-2.5 px-3 py-1.5`}>
+                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
+                        <Sparkles className="h-[13px] w-[13px]" />
                       </div>
-                      <div className="min-w-0 flex flex-col gap-0">
-                        <p className="m-0 text-sm font-semibold leading-none text-[var(--color-mist-text)]/90">{benefit.title}</p>
-                        <p className="m-0 -mt-1 text-[13px] font-normal leading-tight text-[var(--color-mist-text)]/68">{benefit.desc}</p>
+                      <div className="flex min-w-0 flex-col gap-[1px] pt-[2px]">
+                        <p className="m-0 text-[14px] font-[650] leading-tight text-[var(--color-mist-text)]/90">{benefit.title}</p>
+                        <p className="m-0 text-[13px] font-normal leading-tight text-[var(--color-mist-text)]/65">{benefit.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -3381,7 +3427,7 @@ function SettingsTab({
       </div>
     </div>
   );
-}
+});
 
 function AdminTab({ tracks, setTracks, artistsData, setArtistsData }: { tracks: Track[], setTracks: React.Dispatch<React.SetStateAction<Track[]>>, artistsData: any[], setArtistsData: React.Dispatch<React.SetStateAction<any[]>> }) {
   const [adminView, setAdminView] = useState<'songs' | 'artists'>('songs');
@@ -3568,7 +3614,7 @@ function AdminTab({ tracks, setTracks, artistsData, setArtistsData }: { tracks: 
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col animate-in fade-in duration-500 pb-20">
-      <div className="glass-panel p-8 rounded-[32px]">
+      <div className="glass-panel-static p-8 rounded-[32px]">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-medium tracking-wide text-[var(--color-mist-text)]">Metadata Diagnostics</h2>
           <div className="flex bg-black/20 rounded-full p-1 border border-white/5">

@@ -51,7 +51,7 @@ function main() {
 
   const report = {
     generatedAt: new Date().toISOString(),
-    manifestGeneratedAt: manifest.generatedAt,
+    manifestGeneratedAt: (raw as { generatedAt?: string }).generatedAt,
     trackCount: entries.length,
     durationSummary,
     issueCount: issues.length,

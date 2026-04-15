@@ -3,8 +3,8 @@
  * Do not duplicate these strings elsewhere; import from here.
  */
 export const premiumUi = {
-  /** Main column card (matches SettingsTab `cardClass`) */
-  card: 'glass-panel rounded-[32px] p-6',
+  /** Main column card — uses static acrylic (no backdrop-filter) for performance */
+  card: 'glass-panel-static rounded-[32px] p-6',
   /** Nested row / benefit tile (matches `subtleCardClass`) */
   subtleCard: 'glass-tile rounded-[24px]',
   /** Section headings e.g. Membership, Account (matches `titleClass`) */

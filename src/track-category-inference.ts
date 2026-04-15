@@ -10,6 +10,23 @@ import { normalizeCategoryKeyStatic } from './category-keys';
 /** Seed / UI labels that map to filter buckets (language + source + style). */
 export const SOURCE_TAG_LABELS = new Set(['影视', '动漫', '游戏', '纯音乐']);
 
+/**
+ * 少数曲目：艺人国籍桶与作品语境冲突（如 LoL 全球曲被标成华语、梗曲被标成华语等），
+ * 在 manifest 合并时直接使用固定展示标签（与 `metadata.identity.slug` 一致）。
+ */
+const SLUG_EXACT_DISPLAY_TAGS: Record<string, string[]> = {
+  Sacrifice: ['游戏'],
+  黑神话悟空主题曲: ['游戏'],
+  'masayume chasing': ['日系流行', '动漫'],
+  哈基米: ['日系流行', '动漫'],
+  'GO!': ['韩流流行'],
+  'dancing-alone': ['韩流流行'],
+  "STAR WALKIN'": ['欧美流行', '游戏'],
+  'empty love': ['欧美流行'],
+  'normal no more': ['欧美流行'],
+  calling: ['欧美流行'],
+};
+
 /** Canonical artist ids that always imply 「游戏」. */
 const GAME_PROJECT_IDS = new Set([
   'love-and-deepspace',
@@ -53,6 +70,9 @@ export function inferLabelsFromHaystack(haystack: string): string[] {
   if (/碧蓝航线|azur\s*lane/i.test(s)) {
     out.add('游戏');
   }
+  if (/英雄联盟|league\s*of\s*legends|worlds\s*20\d\d|worlds\s+anthem/i.test(s)) {
+    out.add('游戏');
+  }
 
   if (
     /进击的巨人|進擊的巨人|attack\s*on\s*titan|shingeki|泽野弘之|澤野弘之|Hiroyuki\s*Sawano/i.test(s) ||
@@ -72,7 +92,9 @@ export function inferLabelsFromHaystack(haystack: string): string[] {
   if (
     /主题曲|主題曲/.test(s) &&
     !realityTalentTheme &&
-    !/原神|genshin|崩坏|星穹|honkai|纸嫁衣|恋与深空|光与夜|王者荣耀|黑神话|mihoyo/i.test(s)
+    !/原神|genshin|崩坏|星穹|honkai|纸嫁衣|恋与深空|光与夜|王者荣耀|黑神话|mihoyo|英雄联盟|league\s*of\s*legends|worlds\s*20\d\d/i.test(
+      s,
+    )
   ) {
     out.add('影视');
   }
@@ -83,7 +105,7 @@ export function inferLabelsFromHaystack(haystack: string): string[] {
 /** 游戏 IP 稿件里常写「主题曲」——避免误标「影视」盖住「游戏」 */
 export function stripFilmWhenGameFranchiseText(tags: string[], haystack: string): string[] {
   if (
-    !/原神|genshin|崩坏|崩壞|星穹|honkai|纸嫁衣|恋与深空|光与夜|王者荣耀|黑神话|mihoyo|genshin\s*impact|碧蓝航线|azur\s*lane/i.test(
+    !/原神|genshin|崩坏|崩壞|星穹|honkai|纸嫁衣|恋与深空|光与夜|王者荣耀|黑神话|mihoyo|genshin\s*impact|碧蓝航线|azur\s*lane|英雄联盟|league\s*of\s*legends|worlds\s*20\d\d|worlds\s+anthem/i.test(
       haystack,
     )
   ) {
@@ -174,6 +196,17 @@ export function mergeTrackCategoryLabels(input: {
   /** When ok and dictionary has nationality, drop wrong language labels from seeds (e.g. 华语 + JP artist). */
   artistReviewStatus?: ArtistReviewStatus;
 }): { displayTags: string[]; filterKeys: string[] } {
+  const slugKey = input.slug?.trim();
+  if (slugKey && SLUG_EXACT_DISPLAY_TAGS[slugKey]) {
+    const displayTags = sortTagsForDisplay(dedupePreserveOrder(SLUG_EXACT_DISPLAY_TAGS[slugKey]));
+    const filterKeys = new Set<string>();
+    for (const label of displayTags) {
+      const k = normalizeCategoryKeyStatic(label);
+      if (k) filterKeys.add(k);
+    }
+    return { displayTags, filterKeys: Array.from(filterKeys) };
+  }
+
   const haystack = [
     input.displayTitle,
     input.originalArtist,

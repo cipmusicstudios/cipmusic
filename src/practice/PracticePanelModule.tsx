@@ -22,8 +22,8 @@ import { premiumUi, premiumUiModal } from '../premium-ui';
 import {
   setPlaybackTimelineDuration,
   setPlaybackTimelineTime,
-  usePlaybackDurationValue,
-  usePlaybackTimelineTime,
+  getPlaybackTimelineSnapshot,
+  subscribePlaybackTimeline,
 } from '../playback-timeline-store';
 function getTempoAtAudioTimeForHeader(header: PracticeMidiHeaderLite | null, timeSecs: number) {
   if (!header?.tempos?.length) return null;
@@ -207,20 +207,25 @@ function getMusicalPositionAtAudioTimeForMeasureTimeline(
   header: PracticeMidiHeaderLite | null,
   timeline: PracticeMeasureTimelineEntry[] | null,
   timeSecs: number,
-  displayMeasureOffset = 0
+  displayMeasureOffset = 0,
+  startIndex = 0
 ): MusicalPosition {
   if (!header?.ppq || !timeline?.length) {
     return getMusicalPositionAtAudioTimeForHeader(header, timeSecs, displayMeasureOffset);
   }
 
   const absoluteTick = Math.max(0, getAbsoluteTickAtAudioTimeForHeader(header, timeSecs));
-  let activeMeasure = timeline[0];
-  for (let i = timeline.length - 1; i >= 0; i--) {
-    if (absoluteTick >= timeline[i].startTick) {
-      activeMeasure = timeline[i];
-      break;
+  let activeIndex = Math.min(Math.max(0, Math.floor(startIndex)), timeline.length - 1);
+  if (absoluteTick < timeline[activeIndex].startTick) {
+    while (activeIndex > 0 && absoluteTick < timeline[activeIndex].startTick) {
+      activeIndex--;
+    }
+  } else {
+    while (activeIndex + 1 < timeline.length && absoluteTick >= timeline[activeIndex + 1].startTick) {
+      activeIndex++;
     }
   }
+  const activeMeasure = timeline[activeIndex];
 
   const tickInMeasure = Math.max(0, absoluteTick - activeMeasure.startTick);
   const ticksPerBeat = header.ppq * (4 / Math.max(1, activeMeasure.beatUnit));
@@ -396,7 +401,7 @@ function performPracticeMeasureSeek(args: {
       actualDelta: actualTime - snappedTime,
       seekedEventTime,
     }));
-    setPlaybackTimelineTime(actualTime);
+    setPlaybackTimelineTime(actualTime, true);
 
     if (alwaysResume) {
       const playCallTime = performance.now();
@@ -417,7 +422,7 @@ function performPracticeMeasureSeek(args: {
     playEventTime: null,
     playingEventTime: null,
   }));
-  setPlaybackTimelineTime(snappedTime);
+  setPlaybackTimelineTime(snappedTime, true);
 
   if (Math.abs(snappedTime - targetTime) > 0.001) {
     onPracticeSnap(snapMessage);
@@ -438,7 +443,7 @@ function performPracticeMeasureSeek(args: {
   audio.addEventListener('seeked', handleSeeked);
   audio.currentTime = snappedTime;
 }
-export function PracticePanel({
+export const PracticePanel = React.memo(function PracticePanel({
   currentTrack,
   isPlaying,
   setIsPlaying,
@@ -473,11 +478,11 @@ export function PracticePanel({
   practiceMidiOutputMuted: boolean,
   t: any
 }) {
-  const currentTime = usePlaybackTimelineTime();
-  const duration = usePlaybackDurationValue();
+  const playbackSnapshot = getPlaybackTimelineSnapshot();
   const lightweightMode = false;
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [osmdReady, setOsmdReady] = useState(false);
   const [midiNotes, setMidiNotes] = useState<any[]>([]);
   const [midiHeader, setMidiHeader] = useState<any>(null);
   const [practicePianoReady, setPracticePianoReady] = useState(false);
@@ -492,10 +497,11 @@ export function PracticePanel({
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const staffViewportRef = React.useRef<HTMLDivElement>(null);
   const osmdRef = React.useRef<OpenSheetMusicDisplay | null>(null);
-  const currentTimeRef = React.useRef(currentTime);
-  const lastMonotonicTimeRef = React.useRef(currentTime);
+  const currentTimeRef = React.useRef(playbackSnapshot.currentTime);
   const renderedBlockRef = React.useRef(-1);
   const lastAutoScrollMeasureRef = React.useRef<number | null>(null);
+  const lastRedLineFrameRef = React.useRef({ display: '', transform: '', width: '', height: '' });
+  const lastScrollFrameRef = React.useRef({ clipPath: '', transform: '' });
   const practiceTransportFrameRef = React.useRef<number | null>(null);
   const practicePianoRef = React.useRef<any>(null);
   const practiceSchedulerTimerRef = React.useRef<number | null>(null);
@@ -542,10 +548,10 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
   const practiceActiveMetronomeSourcesRef = React.useRef<AudioScheduledSourceNode[]>([]);
   const practiceInitialMountHandledRef = React.useRef(false);
   const practiceTransportRef = React.useRef({
-    currentTime,
-    startedAtTime: currentTime,
+    currentTime: playbackSnapshot.currentTime,
+    startedAtTime: playbackSnapshot.currentTime,
     startedAtPerf: 0,
-    duration,
+    duration: playbackSnapshot.duration,
     isPlaying: false,
     playbackRate: 1,
   });
@@ -605,7 +611,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
   const [isLoopSelectMode, setIsLoopSelectMode] = useState(false);
   const loopRef = React.useRef<{ M1: number | null, M2: number | null }>({ M1: null, M2: null });
   const currentMeasureIndexRef = React.useRef(0);
-  const [practiceMeasureTimeline, setPracticeMeasureTimeline] = React.useState<PracticeMeasureTimelineEntry[]>([]);
+  const practiceMeasureTimelineRef = React.useRef<PracticeMeasureTimelineEntry[]>([]);
   const leadInMeasures = React.useMemo(() => {
     if (!midiHeader?.ppq || !midiNotes.length) return 0;
     const firstNoteTick = midiNotes.reduce((min, note) => Math.min(min, note.ticks ?? Infinity), Infinity);
@@ -746,7 +752,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       practiceTransportRef.current.startedAtTime = seekSecs;
       practiceTransportRef.current.startedAtPerf = performance.now();
       practiceTransportRef.current.isPlaying = false;
-      setPlaybackTimelineTime(seekSecs);
+      setPlaybackTimelineTime(seekSecs, true);
       setPracticeSeekDebug(prev => ({
         ...prev,
         targetTime: seekSecs,
@@ -878,7 +884,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
     } catch { }
     stopPracticeScheduledNotes();
     stopPracticeFallbackVoices();
-    setPlaybackTimelineTime(loopStartTime);
+    setPlaybackTimelineTime(loopStartTime, true);
     setPracticeSeekDebug(prev => ({
       ...prev,
       targetTime: loopStartTime,
@@ -937,17 +943,24 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
     }
   };
 
-  // Keep ref sync
+  // Keep playback refs in sync without re-rendering the whole practice panel.
   React.useEffect(() => {
-    currentTimeRef.current = currentTime;
-  }, [currentTime]);
+    const syncPlaybackSnapshot = () => {
+      const snapshot = getPlaybackTimelineSnapshot();
+      currentTimeRef.current = snapshot.currentTime;
+      practiceTransportRef.current.duration = snapshot.duration;
+    };
+
+    syncPlaybackSnapshot();
+    return subscribePlaybackTimeline(syncPlaybackSnapshot);
+  }, []);
 
   React.useEffect(() => {
     practiceTransportRef.current.duration = practiceTrackDuration;
     practiceTransportRef.current.playbackRate = playbackRate;
     if (practiceTransportEnabled) {
       setPlaybackTimelineDuration(practiceTrackDuration);
-      setPlaybackTimelineTime(practiceTransportRef.current.currentTime);
+      setPlaybackTimelineTime(practiceTransportRef.current.currentTime, true);
     }
   }, [practiceTrackDuration, playbackRate, practiceTransportEnabled, setPlaybackTimelineTime, setPlaybackTimelineDuration]);
 
@@ -979,7 +992,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
           } catch { }
           stopPracticeScheduledNotes();
           stopPracticeFallbackVoices();
-          setPlaybackTimelineTime(nextStartTime);
+          setPlaybackTimelineTime(nextStartTime, true);
         }
       }
       practiceTransportRef.current.isPlaying = true;
@@ -993,7 +1006,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
     practiceTransportRef.current.currentTime = getPracticeTransportTime();
     practiceTransportRef.current.isPlaying = false;
     stopPracticeTransportFrame();
-    setPlaybackTimelineTime(practiceTransportRef.current.currentTime);
+    setPlaybackTimelineTime(practiceTransportRef.current.currentTime, true);
     return stopPracticeTransportFrame;
   }, [getMeasureStartTime, getPracticeNoteIndexAtTime, getPracticeTransportTime, isPlaying, midiHeader, playbackRate, practiceTransportEnabled, setPlaybackTimelineTime, stopPracticeFallbackVoices, stopPracticeScheduledNotes, stopPracticeTransportFrame, syncPracticeTransportFrame]);
 
@@ -1005,7 +1018,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       practiceTransportRef.current.startedAtPerf = performance.now();
       practiceTransportRef.current.isPlaying = false;
       if (practiceTransportEnabled) {
-        setPlaybackTimelineTime(currentTimeRef.current);
+        setPlaybackTimelineTime(currentTimeRef.current, true);
         setPlaybackTimelineDuration(practiceTrackDuration);
       }
       return;
@@ -1016,7 +1029,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
     practiceTransportRef.current.startedAtPerf = performance.now();
     practiceTransportRef.current.isPlaying = false;
     if (practiceTransportEnabled) {
-      setPlaybackTimelineTime(0);
+      setPlaybackTimelineTime(0, true);
       setPlaybackTimelineDuration(practiceTrackDuration);
     }
   }, [currentTrack.id, practiceTrackDuration, practiceTransportEnabled, setPlaybackTimelineTime, setPlaybackTimelineDuration]);
@@ -1043,8 +1056,10 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
   React.useEffect(() => {
     if (!currentTrack.midiUrl) return;
     let cancelled = false;
+    let rafId = 0;
 
-    (async () => {
+    rafId = window.requestAnimationFrame(() => {
+      (async () => {
       try {
         const res = await fetch(currentTrack.midiUrl);
         const buf = await res.arrayBuffer();
@@ -1150,109 +1165,122 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       } catch (err) {
         console.error(err);
       }
-    })();
+      })();
+    });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(rafId);
+    };
   }, [currentTrack.midiUrl, currentTrack.musicxmlUrl]);
 
   React.useEffect(() => {
     let cancelled = false;
+    let rafId = 0;
+    let ctx: AudioContext | null = null;
 
     setPracticePianoReady(false);
     setPracticePianoLoadError(null);
     practicePianoRef.current = null;
     practiceEngineLoggedRef.current = false;
 
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) {
-      setPracticePianoLoadError('Web Audio unavailable');
-      return;
-    }
+    rafId = window.requestAnimationFrame(() => {
+      if (cancelled) return;
 
-    const toneContext = Tone.getContext();
-    const ctx = toneContext.rawContext as AudioContext;
-    const pianoEq = new Tone.EQ3({
-      low: 0.3,
-      mid: 1.5,
-      high: 3.2,
-      lowFrequency: 180,
-      highFrequency: 2600,
-    });
-    const pianoLowpass = new Tone.Filter({
-      type: 'lowpass',
-      frequency: 15500,
-      rolloff: -12,
-      Q: 0.6,
-    });
-    const pianoCompressor = new Tone.Compressor({
-      threshold: -18,
-      ratio: 2.2,
-      attack: 0.01,
-      release: 0.18,
-    });
-    const pianoOutput = new Tone.Gain(Math.min(2.25, 0.7 * PRACTICE_MIDI_OUTPUT_GAIN_BOOST));
-    const lowSampler = new Tone.Sampler({
-      urls: PRACTICE_TONE_SAMPLER_LOW_URLS,
-      baseUrl: PRACTICE_TONE_SAMPLER_BASE_URL,
-      release: 2.05,
-      volume: -3.2,
-      onerror: (error) => {
-        console.error('Failed to load Tone sampler piano', error);
-        if (cancelled) return;
-        practicePianoRef.current = { ctx, piano: null };
-        setPracticePianoLoadError('Preparing piano failed');
-      },
-    });
-    const highSampler = new Tone.Sampler({
-      urls: PRACTICE_TONE_SAMPLER_HIGH_URLS,
-      baseUrl: PRACTICE_TONE_SAMPLER_BASE_URL,
-      release: 1.92,
-      volume: -4.2,
-      onerror: (error) => {
-        console.error('Failed to load Tone high sampler piano', error);
-        if (cancelled) return;
-        practicePianoRef.current = { ctx, piano: null };
-        setPracticePianoLoadError('Preparing piano failed');
-      },
-    });
-    lowSampler.chain(pianoEq, pianoLowpass, pianoCompressor, pianoOutput, Tone.Destination);
-    highSampler.chain(pianoEq, pianoLowpass, pianoCompressor, pianoOutput, Tone.Destination);
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) {
+        setPracticePianoLoadError('Web Audio unavailable');
+        return;
+      }
 
-    Tone.loaded()
-      .then(() => {
-        if (cancelled) return;
-        practicePianoRef.current = {
-          ctx,
-          piano: lowSampler,
-          pianoHigh: highSampler,
-          output: pianoOutput,
-          stop: (time?: number) => {
-            const stopTime = time ?? Tone.now();
-            lowSampler.releaseAll(stopTime);
-            highSampler.releaseAll(stopTime);
-          },
-          dispose: () => {
-            lowSampler.dispose();
-            highSampler.dispose();
-            pianoEq.dispose();
-            pianoLowpass.dispose();
-            pianoCompressor.dispose();
-            pianoOutput.dispose();
-          },
-        };
-        setPracticePianoReady(true);
-      })
-      .catch((error) => {
-        console.error('Failed to finish loading Tone sampler piano', error);
-        if (cancelled) return;
-        practicePianoRef.current = { ctx, piano: null };
-        setPracticePianoLoadError('Preparing piano failed');
+      const toneContext = Tone.getContext();
+      ctx = toneContext.rawContext as AudioContext;
+      const pianoEq = new Tone.EQ3({
+        low: 0.3,
+        mid: 1.5,
+        high: 3.2,
+        lowFrequency: 180,
+        highFrequency: 2600,
       });
+      const pianoLowpass = new Tone.Filter({
+        type: 'lowpass',
+        frequency: 15500,
+        rolloff: -12,
+        Q: 0.6,
+      });
+      const pianoCompressor = new Tone.Compressor({
+        threshold: -18,
+        ratio: 2.2,
+        attack: 0.01,
+        release: 0.18,
+      });
+      const pianoOutput = new Tone.Gain(Math.min(2.25, 0.7 * PRACTICE_MIDI_OUTPUT_GAIN_BOOST));
+      const lowSampler = new Tone.Sampler({
+        urls: PRACTICE_TONE_SAMPLER_LOW_URLS,
+        baseUrl: PRACTICE_TONE_SAMPLER_BASE_URL,
+        release: 2.05,
+        volume: -3.2,
+        onerror: (error) => {
+          console.error('Failed to load Tone sampler piano', error);
+          if (cancelled) return;
+          practicePianoRef.current = { ctx, piano: null };
+          setPracticePianoLoadError('Preparing piano failed');
+        },
+      });
+      const highSampler = new Tone.Sampler({
+        urls: PRACTICE_TONE_SAMPLER_HIGH_URLS,
+        baseUrl: PRACTICE_TONE_SAMPLER_BASE_URL,
+        release: 1.92,
+        volume: -4.2,
+        onerror: (error) => {
+          console.error('Failed to load Tone high sampler piano', error);
+          if (cancelled) return;
+          practicePianoRef.current = { ctx, piano: null };
+          setPracticePianoLoadError('Preparing piano failed');
+        },
+      });
+      lowSampler.chain(pianoEq, pianoLowpass, pianoCompressor, pianoOutput, Tone.Destination);
+      highSampler.chain(pianoEq, pianoLowpass, pianoCompressor, pianoOutput, Tone.Destination);
+
+      Tone.loaded()
+        .then(() => {
+          if (cancelled) return;
+          practicePianoRef.current = {
+            ctx,
+            piano: lowSampler,
+            pianoHigh: highSampler,
+            output: pianoOutput,
+            stop: (time?: number) => {
+              const stopTime = time ?? Tone.now();
+              lowSampler.releaseAll(stopTime);
+              highSampler.releaseAll(stopTime);
+            },
+            dispose: () => {
+              lowSampler.dispose();
+              highSampler.dispose();
+              pianoEq.dispose();
+              pianoLowpass.dispose();
+              pianoCompressor.dispose();
+              pianoOutput.dispose();
+            },
+          };
+          setPracticePianoReady(true);
+        })
+        .catch((error) => {
+          console.error('Failed to finish loading Tone sampler piano', error);
+          if (cancelled) return;
+          practicePianoRef.current = { ctx, piano: null };
+          setPracticePianoLoadError('Preparing piano failed');
+        });
+    });
 
     return () => {
       cancelled = true;
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
       const current = practicePianoRef.current;
-      if (current?.ctx === ctx) {
+      if (ctx && current?.ctx === ctx) {
         try {
           current.stop?.();
           current.dispose?.();
@@ -1313,7 +1341,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
     practiceTransportRef.current.currentTime = clampedTime;
     practiceTransportRef.current.startedAtTime = clampedTime;
     practiceTransportRef.current.startedAtPerf = performance.now();
-    setPlaybackTimelineTime(clampedTime);
+    setPlaybackTimelineTime(clampedTime, true);
     setPracticeSeekTarget(null);
   }, [
     getPracticeNoteIndexAtTime,
@@ -1622,53 +1650,76 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
     setIsLoading(true);
     setLoadError(null);
-    setPracticeMeasureTimeline([]);
+    setOsmdReady(false);
+    practiceMeasureTimelineRef.current = [];
+    lastRedLineFrameRef.current = { display: '', transform: '', width: '', height: '' };
+    lastScrollFrameRef.current = { clipPath: '', transform: '' };
     containerRef.current.innerHTML = '';
 
-    // Create OSMD instance
-    const osmd = new OpenSheetMusicDisplay(containerRef.current, {
-      autoResize: false,
-      drawTitle: false,
-      drawSubtitle: false,
-      drawComposer: false,
-      drawLyricist: false,
-      drawPartNames: false,
-      backend: "svg"
-    });
+    let cancelled = false;
+    const rafId = window.requestAnimationFrame(() => {
+      if (cancelled || !containerRef.current) return;
 
-    // Shrink internal zoom heavily to safely fit container height natively without CSS scale destruction
-    osmd.zoom = 0.55;
-    osmdRef.current = osmd;
+      // Create OSMD instance
+      const osmd = new OpenSheetMusicDisplay(containerRef.current, {
+        autoResize: false,
+        drawTitle: false,
+        drawSubtitle: false,
+        drawComposer: false,
+        drawLyricist: false,
+        drawPartNames: false,
+        backend: "svg"
+      });
 
-    // Set OSMD to single system format (Endless) and limit initial render to First Block (4 measures)
-    osmd.setOptions({
-      pageBottomMargin: 0,
-      pageTopMargin: 0,
-      pageFormat: "Endless",
-      spacingBetweenTextAndSystem: 0,
-      drawFromMeasureNumber: 1,
-      drawUpToMeasureNumber: Number.MAX_SAFE_INTEGER,
-      cursorsOptions: [{ type: 0, color: "transparent", alpha: 0, follow: false }]
-    } as any);
+      // Shrink internal zoom heavily to safely fit container height natively without CSS scale destruction
+      osmd.zoom = 0.55;
+      osmdRef.current = osmd;
 
-    osmd.load(currentTrack.musicxmlUrl).then(() => {
-      osmd.render();
-      setPracticeMeasureTimeline(buildPracticeMeasureTimeline(osmd, midiHeader, midiNotes));
-      renderedBlockRef.current = 0;
-      osmd.cursor.show();
-      setIsLoading(false);
-    }).catch((err) => {
-      console.error("OSMD Load Error", err);
-      setLoadError(err.message || "Failed to parse or load sheet music.");
-      setIsLoading(false);
+      // Set OSMD to single system format (Endless) and limit initial render to First Block (4 measures)
+      osmd.setOptions({
+        pageBottomMargin: 0,
+        pageTopMargin: 0,
+        pageFormat: "Endless",
+        spacingBetweenTextAndSystem: 0,
+        drawFromMeasureNumber: 1,
+        drawUpToMeasureNumber: Number.MAX_SAFE_INTEGER,
+        cursorsOptions: [{ type: 0, color: "transparent", alpha: 0, follow: false }]
+      } as any);
+
+      osmd.load(currentTrack.musicxmlUrl).then(() => {
+        if (cancelled) return;
+        window.requestAnimationFrame(() => {
+          if (cancelled) return;
+          osmd.render();
+          if (!osmdReady) setOsmdReady(true);
+        });
+      }).catch((err) => {
+        if (cancelled) return;
+        console.error("OSMD Load Error", err);
+        setLoadError(err.message || "Failed to parse or load sheet music.");
+        setIsLoading(false);
+      });
     });
 
     return () => {
-      osmd.clear();
+      cancelled = true;
+      window.cancelAnimationFrame(rafId);
+      const osmd = osmdRef.current;
+      osmd?.clear();
       osmdRef.current = null;
-      setPracticeMeasureTimeline([]);
+      practiceMeasureTimelineRef.current = [];
+      lastRedLineFrameRef.current = { display: '', transform: '', width: '', height: '' };
+      lastScrollFrameRef.current = { clipPath: '', transform: '' };
     };
-  }, [currentTrack.musicxmlUrl, midiHeader, midiNotes]);
+  }, [currentTrack.musicxmlUrl]);
+
+  React.useEffect(() => {
+    if (!osmdReady || !osmdRef.current || !midiHeader || !midiNotes.length) return;
+    practiceMeasureTimelineRef.current = buildPracticeMeasureTimeline(osmdRef.current, midiHeader, midiNotes);
+    renderedBlockRef.current = 0;
+    osmdRef.current.cursor.show();
+    setIsLoading(false);
+  }, [midiHeader, midiNotes, osmdReady]);
 
   // Global Time Loop Syncing
   React.useEffect(() => {
@@ -1759,10 +1810,12 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
       // Bypass React's 4fps onTimeUpdate throttle for true 60fps audio sync precision
       const timeSecs = practiceTransportEnabled ? getPracticeTransportTime() : (audioElement?.currentTime ?? 0);
+      const VISUAL_OFFSET = 0.08; // Conservative 80ms lookahead to compensate for audio buffer/hardware output lag
+      const visualTimeSecs = timeSecs + VISUAL_OFFSET;
 
       // Calculate delta to handle seeks cleanly
-      if (Math.abs(timeSecs - lastTimeSecs) > 1.0) {
-        lastTimeSecs = timeSecs;
+      if (Math.abs(visualTimeSecs - lastTimeSecs) > 1.0) {
+        lastTimeSecs = visualTimeSecs;
         trackStartIndex = 0; // reset pointer on heavy seek
       }
 
@@ -1801,11 +1854,11 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         return active.time + sElapsed;
       };
 
-      const checkStart = Math.min(lastTimeSecs, timeSecs);
+      const checkStart = Math.min(lastTimeSecs, visualTimeSecs);
 
       // Performance Pass: O(1) Sliding Window rather than generic filter over 5000 array elements
       // Forward the starting pointer for notes that are safely in the past (assume 10s max note hold)
-      while (trackStartIndex < midiNotes.length && midiNotes[trackStartIndex].time < timeSecs - 10.0) {
+      while (trackStartIndex < midiNotes.length && midiNotes[trackStartIndex].time < visualTimeSecs - 10.0) {
         trackStartIndex++;
       }
 
@@ -1813,11 +1866,11 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       if (keyboardFxEnabled) {
         for (let i = trackStartIndex; i < midiNotes.length; i++) {
           const n = midiNotes[i];
-          if (n.time > timeSecs + 0.5) break; // Prune future loop evaluation due to ascending sort
+          if (n.time > visualTimeSecs + 0.5) break; // Prune future loop evaluation due to ascending sort
 
           const visualEnd = n.time + Math.max(0.1, n.duration);
-          const isCurrentlyActive = timeSecs >= n.time && timeSecs <= visualEnd;
-          const startedJustNow = n.time >= checkStart && n.time <= timeSecs;
+          const isCurrentlyActive = visualTimeSecs >= n.time && visualTimeSecs <= visualEnd;
+          const startedJustNow = n.time >= checkStart && n.time <= visualTimeSecs;
 
           if (isCurrentlyActive || startedJustNow) {
             currentActive.push(n);
@@ -1854,25 +1907,6 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
           notesToUpdate = Array.from(new Set([...newRight, ...newLeft, ...prevRSet, ...prevLSet]));
         }
 
-        // Hard reset all keyboard visuals first so previous test states don't linger.
-        keyNodes.forEach(({ el, span }) => {
-          const isBlack = el.hasAttribute('data-is-black');
-          if (span) {
-            span.style.opacity = '0';
-            span.style.color = isBlack ? 'white' : 'black';
-          }
-          if (isBlack) {
-            el.className = 'absolute top-0 right-0 w-[60%] h-[60%] rounded-b-sm z-30 translate-x-1/2 shadow-xl border-x border-b border-black/80 transition-all duration-[50ms] bg-[#111] hover:bg-black flex items-end justify-center pb-1';
-            el.style.backgroundColor = '';
-            el.style.boxShadow = '';
-          } else {
-            el.className = 'flex-1 border-r border-[#1a1a1a] last:border-0 relative flex flex-col justify-end items-center pb-2 transition-all duration-[50ms] bg-[#fffff0]';
-            el.style.backgroundColor = '';
-            el.style.boxShadow = '';
-            el.style.borderRadius = '0 0 3px 3px';
-          }
-        });
-
         const getIdleLabel = (note: string, isBlack: boolean) => {
           if (noteNameMode === 'number') {
             return note.startsWith('C') && !isBlack ? getJianpuLabel(note, isBlack) : '';
@@ -1901,10 +1935,15 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
             if (span) {
               const labelHtml = isActive ? getActiveLabel(note, isBlack) : getIdleLabel(note, isBlack);
-              if (noteNameMode === 'number' || (isActive && noteNameMode === 'off')) {
-                span.innerHTML = labelHtml;
-              } else {
-                span.innerText = labelHtml;
+              const nextLabelMode = noteNameMode === 'number' || (isActive && noteNameMode === 'off') ? 'html' : 'text';
+              if (span.dataset.labelMode !== nextLabelMode || span.dataset.labelValue !== labelHtml) {
+                if (nextLabelMode === 'html') {
+                  span.innerHTML = labelHtml;
+                } else {
+                  span.innerText = labelHtml;
+                }
+                span.dataset.labelMode = nextLabelMode;
+                span.dataset.labelValue = labelHtml;
               }
             }
 
@@ -1965,13 +2004,14 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         prevLeftStr = newLeftStr;
       }
 
-      lastTimeSecs = timeSecs;
+      lastTimeSecs = visualTimeSecs;
 
       const musicalPosition = getMusicalPositionAtAudioTimeForMeasureTimeline(
         midiHeader,
-        practiceMeasureTimeline,
-        timeSecs,
-        0
+        practiceMeasureTimelineRef.current,
+        visualTimeSecs,
+        0,
+        currentMeasureIndexRef.current
       );
       const displayedMeasureIndex = Math.max(0, musicalPosition.displayMeasure - 1);
       currentMeasureIndexRef.current = displayedMeasureIndex;
@@ -2006,13 +2046,30 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       if (redLineRef.current && scrollContainerRef.current) {
 
         // Measure Highlight Application
+        const nextRedLineDisplay = diagRef.current.diagMaster && diagRef.current.diagMeasure && cursorHeight > 0 ? 'block' : 'none';
+        const nextRedLineTransform = `translate(${cursorX}px, ${cursorY}px)`;
+        const nextRedLineWidth = `${cursorWidth}px`;
+        const nextRedLineHeight = `${cursorHeight}px`;
         if (diagRef.current.diagMaster && diagRef.current.diagMeasure && cursorHeight > 0) {
-          redLineRef.current.style.display = 'block';
-          redLineRef.current.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
-          redLineRef.current.style.width = `${cursorWidth}px`;
-          redLineRef.current.style.height = `${cursorHeight}px`;
-        } else {
-          redLineRef.current.style.display = 'none';
+          if (lastRedLineFrameRef.current.display !== nextRedLineDisplay) {
+            redLineRef.current.style.display = nextRedLineDisplay;
+            lastRedLineFrameRef.current.display = nextRedLineDisplay;
+          }
+          if (lastRedLineFrameRef.current.transform !== nextRedLineTransform) {
+            redLineRef.current.style.transform = nextRedLineTransform;
+            lastRedLineFrameRef.current.transform = nextRedLineTransform;
+          }
+          if (lastRedLineFrameRef.current.width !== nextRedLineWidth) {
+            redLineRef.current.style.width = nextRedLineWidth;
+            lastRedLineFrameRef.current.width = nextRedLineWidth;
+          }
+          if (lastRedLineFrameRef.current.height !== nextRedLineHeight) {
+            redLineRef.current.style.height = nextRedLineHeight;
+            lastRedLineFrameRef.current.height = nextRedLineHeight;
+          }
+        } else if (lastRedLineFrameRef.current.display !== nextRedLineDisplay) {
+          redLineRef.current.style.display = nextRedLineDisplay;
+          lastRedLineFrameRef.current.display = nextRedLineDisplay;
         }
 
         // Score display and CSS Single-Line Masking
@@ -2026,13 +2083,21 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
             // Buffer to not clip the bass line or pedaling
             const paddingBottom = 15;
             const scrollHeightAdjusted = cursorHeight + paddingBottom;
-
-            scrollContainerRef.current.style.clipPath = `inset(${Math.max(0, cursorY - paddingTop)}px 0px calc(100% - ${cursorY + scrollHeightAdjusted}px) 0px)`;
+            const nextClipPath = `inset(${Math.max(0, cursorY - paddingTop)}px 0px calc(100% - ${cursorY + scrollHeightAdjusted}px) 0px)`;
+            if (lastScrollFrameRef.current.clipPath !== nextClipPath) {
+              scrollContainerRef.current.style.clipPath = nextClipPath;
+              lastScrollFrameRef.current.clipPath = nextClipPath;
+            }
           } else {
-            scrollContainerRef.current.style.clipPath = 'none';
+            if (lastScrollFrameRef.current.clipPath !== 'none') {
+              scrollContainerRef.current.style.clipPath = 'none';
+              lastScrollFrameRef.current.clipPath = 'none';
+            }
           }
         } else {
-          scrollContainerRef.current.style.opacity = '0';
+          if (scrollContainerRef.current.style.opacity !== '0') {
+            scrollContainerRef.current.style.opacity = '0';
+          }
         }
 
         // Performance Pass: Cached parent height approximation prevents DOM Reflow/Layout Thrashing
@@ -2058,10 +2123,17 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         const maxScroll = 40;
 
         // Auto Follow Toggle
+        const nextScrollTransform = `translateY(${Math.round(Math.min(maxScroll, smoothedY) * 2) / 2}px)`;
         if (!lightweightMode && diagRef.current.diagMaster && diagRef.current.diagScroll) {
-          scrollContainerRef.current.style.transform = `translateY(${Math.min(maxScroll, smoothedY)}px)`;
+          if (lastScrollFrameRef.current.transform !== nextScrollTransform) {
+            scrollContainerRef.current.style.transform = nextScrollTransform;
+            lastScrollFrameRef.current.transform = nextScrollTransform;
+          }
         } else {
-          scrollContainerRef.current.style.transform = `translateY(0px)`;
+          if (lastScrollFrameRef.current.transform !== 'translateY(0px)') {
+            scrollContainerRef.current.style.transform = 'translateY(0px)';
+            lastScrollFrameRef.current.transform = 'translateY(0px)';
+          }
         }
 
         if (lightweightMode && staffViewportRef.current && cursorHeight > 0) {
@@ -2171,10 +2243,10 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       className={`practice-container fixed left-0 right-0 z-40 ${lightweightMode ? '' : 'animate-in slide-in-from-bottom duration-500'}`}
       style={{
         bottom: 'calc(var(--player-bar-stack-h, calc(6rem + 1.1rem)) + var(--practice-above-player-gap, 0.5rem))',
-        top: 'max(2.25rem, env(safe-area-inset-top, 0px))',
+        top: 'max(1.5rem, calc(100vh - 48rem), env(safe-area-inset-top, 0px))',
       }}
     >
-      <div className={`${lightweightMode ? 'w-full h-full min-h-0 border-t border-white/20 flex flex-col rounded-t-[28px] overflow-hidden bg-[rgba(247,242,235,0.96)] relative' : 'w-full h-full min-h-0 glass-effect border-t border-white/40 flex flex-col rounded-t-[40px] shadow-2xl overflow-hidden bg-[var(--color-mist-bg)] relative'}`}>
+      <div className={`${lightweightMode ? 'w-full h-full min-h-0 border-t border-white/20 flex flex-col justify-end rounded-t-[28px] overflow-hidden bg-[rgba(247,242,235,0.96)] relative' : 'w-full h-full min-h-0 glass-effect-static border-t border-white/40 flex flex-col justify-end rounded-t-[40px] shadow-2xl overflow-hidden bg-[var(--color-mist-bg)] relative'}`}>
 
         {/* PREMIUM STATIC OVERLAY */}
         {!isPremium && (
@@ -2216,12 +2288,12 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
           </div>
         )}
 
-	        {/* 1) 谱面 flex-1 + 限高滚动：恢复可见谱子，压缩高度贴近键盘 */}
+	        {/* 1) 谱面 flex-1 + 限高滚动：恢复可见谱子，温和放宽高度 */}
 	        <div
             ref={staffViewportRef}
-            className={`practice-staff relative flex min-h-0 w-full max-h-[min(45vh,21rem)] flex-1 flex-col justify-start overflow-y-auto overflow-x-hidden bg-[#f8f6f0] shadow-inner`}
+            className={`practice-staff relative flex min-h-0 w-full max-h-[min(58vh,32rem)] flex-1 flex-col justify-start overflow-y-auto overflow-x-hidden bg-[#f8f6f0] shadow-inner`}
           >
-	          <div className={`${lightweightMode ? 'relative w-full flex flex-col items-start pt-4 pb-10' : 'absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-4'}`}>
+	          <div className={`${lightweightMode ? 'relative w-full flex flex-col items-start pt-1 pb-10' : 'absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-1'}`}>
             <div ref={scrollContainerRef} className={`relative w-full px-[5vw] transition-none origin-top ${lightweightMode ? 'min-h-max' : ''}`}>
               <div
                 ref={containerRef}
@@ -2357,59 +2429,59 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
             <div className="mx-0.5 h-4 w-px shrink-0 bg-[var(--color-mist-text)]/15" aria-hidden />
 
-            <div className="flex shrink-0 gap-0.5 rounded-full border border-white/40 bg-white/22 p-0.5">
+            <div className="flex shrink-0 gap-0.5 rounded-full border border-white/40 bg-[rgba(255,255,255,0.22)] p-0.5 shadow-sm">
               <button
                 type="button"
                 onClick={() => setHandFilter('both')}
-                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-colors md:px-3 ${handFilter === 'both' ? 'bg-white/55 ring-1 ring-white/45 shadow-sm' : 'hover:bg-white/35'}`}
+                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-all md:px-3 ${handFilter === 'both' ? 'bg-gradient-to-b from-white/95 to-white/75 text-[#3A2A1A] font-semibold tracking-wide shadow-[0_1px_4px_rgba(0,0,0,0.06)] ring-1 ring-white/60' : 'text-[#3A2A1A]/70 hover:bg-white/40'}`}
               >{t.player.handBoth}</button>
               <button
                 type="button"
                 onClick={() => handSeparationAvailable && setHandFilter('left')}
                 disabled={!handSeparationAvailable}
-                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-colors md:px-3 ${!handSeparationAvailable
+                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-all md:px-3 ${!handSeparationAvailable
                   ? 'cursor-not-allowed opacity-45'
-                  : handFilter === 'left' ? 'bg-white/55 ring-1 ring-white/45 shadow-sm' : 'hover:bg-white/35'}`}
+                  : handFilter === 'left' ? 'bg-gradient-to-b from-white/95 to-white/75 text-[#3A2A1A] font-semibold tracking-wide shadow-[0_1px_4px_rgba(0,0,0,0.06)] ring-1 ring-white/60' : 'text-[#3A2A1A]/70 hover:bg-white/40'}`}
                 title={handSeparationAvailable ? undefined : t.player.handSeparationUnavailable ?? 'Hand separation unavailable for this track'}
               >{t.player.handLeft}</button>
               <button
                 type="button"
                 onClick={() => handSeparationAvailable && setHandFilter('right')}
                 disabled={!handSeparationAvailable}
-                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-colors md:px-3 ${!handSeparationAvailable
+                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-all md:px-3 ${!handSeparationAvailable
                   ? 'cursor-not-allowed opacity-45'
-                  : handFilter === 'right' ? 'bg-white/55 ring-1 ring-white/45 shadow-sm' : 'hover:bg-white/35'}`}
+                  : handFilter === 'right' ? 'bg-gradient-to-b from-white/95 to-white/75 text-[#3A2A1A] font-semibold tracking-wide shadow-[0_1px_4px_rgba(0,0,0,0.06)] ring-1 ring-white/60' : 'text-[#3A2A1A]/70 hover:bg-white/40'}`}
                 title={handSeparationAvailable ? undefined : t.player.handSeparationUnavailable ?? 'Hand separation unavailable for this track'}
               >{t.player.handRight}</button>
             </div>
 
             <div className="mx-0.5 hidden h-4 w-px shrink-0 bg-[var(--color-mist-text)]/15 sm:block" aria-hidden />
 
-            <div className="flex shrink-0 items-center gap-0.5 rounded-full border border-white/40 bg-white/22 p-0.5">
+            <div className="flex shrink-0 items-center gap-0.5 rounded-full border border-white/40 bg-[rgba(255,255,255,0.22)] p-0.5 shadow-sm">
               <button
                 type="button"
                 onClick={() => setNoteNameMode('off')}
-                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-colors md:px-3 ${noteNameMode === 'off' ? 'bg-white/55 ring-1 ring-white/45 shadow-sm' : 'hover:bg-white/35'}`}
+                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-all md:px-3 ${noteNameMode === 'off' ? 'bg-gradient-to-b from-white/95 to-white/75 text-[#3A2A1A] font-semibold tracking-wide shadow-[0_1px_4px_rgba(0,0,0,0.06)] ring-1 ring-white/60' : 'text-[#3A2A1A]/70 hover:bg-white/40'}`}
               >{t.common.off}</button>
               <button
                 type="button"
                 onClick={() => setNoteNameMode('letter')}
-                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-colors md:px-3 ${noteNameMode === 'letter' ? 'bg-white/55 ring-1 ring-white/45 shadow-sm' : 'hover:bg-white/35'}`}
+                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-all md:px-3 ${noteNameMode === 'letter' ? 'bg-gradient-to-b from-white/95 to-white/75 text-[#3A2A1A] font-semibold tracking-wide shadow-[0_1px_4px_rgba(0,0,0,0.06)] ring-1 ring-white/60' : 'text-[#3A2A1A]/70 hover:bg-white/40'}`}
               >{t.player.letter}</button>
               <button
                 type="button"
                 onClick={() => setNoteNameMode('number')}
-                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-colors md:px-3 ${noteNameMode === 'number' ? 'bg-white/55 ring-1 ring-white/45 shadow-sm' : 'hover:bg-white/35'}`}
+                className={`min-h-[30px] rounded-full px-2.5 py-1 text-[11px] font-medium leading-tight transition-all md:px-3 ${noteNameMode === 'number' ? 'bg-gradient-to-b from-white/95 to-white/75 text-[#3A2A1A] font-semibold tracking-wide shadow-[0_1px_4px_rgba(0,0,0,0.06)] ring-1 ring-white/60' : 'text-[#3A2A1A]/70 hover:bg-white/40'}`}
               >{t.player.number}</button>
             </div>
 
             <div className="mx-0.5 h-4 w-px shrink-0 bg-[var(--color-mist-text)]/15" aria-hidden />
 
-            <div className={`flex min-h-[30px] shrink-0 items-center rounded-full border transition-colors ${metronomeOn ? 'border-white/50 bg-white/35' : 'border-white/40 bg-white/22'}`}>
+            <div className={`flex min-h-[30px] shrink-0 items-center rounded-full border transition-all ${metronomeOn ? 'border-[#E2D4C3] bg-gradient-to-b from-white/95 to-white/80 text-[#3A2A1A] shadow-[0_1px_5px_rgba(0,0,0,0.08)]' : 'border-white/40 bg-[rgba(255,255,255,0.22)]'}`}>
               <button
                 type="button"
                 onClick={() => setMetronomeOn(!metronomeOn)}
-                className="flex min-h-[30px] items-center rounded-l-full border-r border-white/35 px-2.5 text-[11px] font-medium leading-tight transition-colors md:px-3"
+                className={`flex min-h-[30px] items-center rounded-l-full border-r px-2.5 text-[11px] leading-tight transition-all md:px-3 ${metronomeOn ? 'border-[#E2D4C3]/80 font-semibold tracking-wide' : 'border-white/35 font-medium hover:bg-white/35 text-[#3A2A1A]/80'}`}
               >
                 {t.player.metronome}
               </button>
@@ -2439,4 +2511,4 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       </div>
     </div>
   );
-}
+});

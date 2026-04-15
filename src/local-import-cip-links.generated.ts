@@ -3512,11 +3512,9 @@ export const LOCAL_IMPORT_CIP_LINKS = {
     "matchedVideoTitle": "Radio Piano Cover - HENRY 헨리 刘宪华"
   },
   "shine": {
-    "youtube": "https://www.youtube.com/watch?v=krvKaVcFBEE",
-    "video": "https://www.youtube.com/watch?v=krvKaVcFBEE",
     "sheet": "https://mymusic5.com/cipmusic/348048",
     "matchTitle": "Shine",
-    "matchedVideoTitle": "《骄阳似我》OST 章昊（ZEROBASEONE）《Shine on Me》钢琴版 | Piano by CIP Music",
+    "matchedVideoTitle": "Kep1er《Shine》钢琴完整版（附谱）| Piano by CIP Music",
     "cipLinkConfidence": "high"
   },
   "shoot": {
