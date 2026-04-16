@@ -24,6 +24,10 @@ interface ImportMetaEnv {
   readonly VITE_AUTHING_LANG?: string;
   /** 登出后重定向（可选）；不填则用当前 origin + pathname */
   readonly VITE_AUTHING_LOGOUT_REDIRECT_URI?: string;
+  /** 覆盖 ZPay 下单 Function URL（默认 `/.netlify/functions/create-zpay-order`） */
+  readonly VITE_ZPAY_CREATE_ORDER_URL?: string;
+  /** 覆盖会员读取 Function URL（默认 `/.netlify/functions/read-membership`） */
+  readonly VITE_READ_MEMBERSHIP_URL?: string;
 }
 
 interface ImportMeta {

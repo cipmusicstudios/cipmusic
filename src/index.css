@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* Supabase auth modal inputs: neutral autofill, no WebKit yellow / extra chrome */
+input.supabase-auth-input:-webkit-autofill,
+input.supabase-auth-input:-webkit-autofill:hover,
+input.supabase-auth-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px rgba(253, 250, 246, 0.97) inset !important;
+  box-shadow: 0 0 0 1000px rgba(253, 250, 246, 0.97) inset !important;
+}
+input.supabase-auth-input {
+  appearance: none;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-mist-base: rgba(205, 198, 189, 0.93);

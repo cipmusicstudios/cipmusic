@@ -74,7 +74,7 @@ export const SettingsAccountLibraryBlock = memo(function SettingsAccountLibraryB
   };
 
   return (
-    <div className="settings-account-library-stack flex w-full flex-col gap-3">
+    <div className="settings-account-library-stack flex w-full flex-col gap-4">
       <div className={foldCardClass}>
         <button
           type="button"

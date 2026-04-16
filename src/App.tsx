@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo, useCallback, memo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo, Suspense, useRef } from 'react';
 import { supabase } from './lib/supabase';
 import {
   Play, Pause, SkipBack, SkipForward, Volume2, Volume1, VolumeX,
@@ -21,14 +21,21 @@ import { zhCN } from './locales/zh-cn';
 import { zhTW } from './locales/zh-tw';
 import type { View } from './types/view';
 import { premiumUi, premiumUiModal } from './premium-ui';
+import {MembershipCheckoutModal} from './membership-checkout-modal';
+import {
+  daysUntilDate,
+  fetchRemoteUserMembership,
+  formatMembershipDateOnly,
+  normalizePaymentProvider,
+  premiumUntilActive,
+  type RemoteMembershipFetchFailureReason,
+  type RemoteUserMembership,
+} from './lib/membership-remote';
 import { SettingsAccountLibraryBlock } from './settings-account-library';
-import { getAuthLoginUrl, getAuthSignupUrl, openAuthUrlInNewTab } from './auth-external-links';
-import { authingDevLog, isAuthingConfigured } from './auth/authing-config';
-import { openAuthingGuardEmbed, setAuthingSiteUiLang, syncAuthingGuardEmbedLangFromSite } from './auth/authing-guard-embed';
-import { useAuthingAuth } from './auth/authing-provider';
-import { TopNavAuth } from './auth/TopNavAuth';
 import { UiGlassPreviewTab } from './UiGlassPreviewTab';
-import { authingDisplayName, authingEmail } from './auth/authing-profile';
+import { supabaseUserDisplayName, useSupabaseAuth } from './auth/supabase-auth-provider';
+import { SupabaseAuthModal, type SupabaseAuthModalMode } from './auth/supabase-auth-modal';
+import { SupabaseResetPasswordGate } from './auth/supabase-reset-password-gate';
 import { defaultMusicPlaybackContext, type MusicPlaybackContext } from './music-playback-context';
 import { pickNextSmartRadioTrack, pushRecentTrackId } from './smart-radio-pick';
 import {
@@ -72,6 +79,8 @@ import {
   getTrackSheetUrl,
   hasPracticeAssets,
 } from './track-display';
+
+type MembershipFetchIssue = 'none' | RemoteMembershipFetchFailureReason;
 
 const PracticePanel = React.lazy(() =>
   import('./practice/PracticePanelModule').then(m => ({ default: m.PracticePanel })),
@@ -393,11 +402,43 @@ export default function App() {
   const [homeBackgroundVideoEnabled, setHomeBackgroundVideoEnabled] = useState(false);
   const [currentLang, setCurrentLang] = useState('English');
   const t = translations[currentLang] || en;
+  const { session } = useSupabaseAuth();
+  const [appPathname, setAppPathname] = useState(() =>
+    typeof window !== 'undefined' ? window.location.pathname : '/',
+  );
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<SupabaseAuthModalMode>('sign-in');
+  const [checkoutBump, setCheckoutBump] = useState(0);
+  const pendingCheckoutAfterAuthRef = useRef(false);
+
+  const openAuthModal = useCallback((mode: SupabaseAuthModalMode, afterAuth?: 'checkout') => {
+    setAuthModalMode(mode);
+    pendingCheckoutAfterAuthRef.current = afterAuth === 'checkout';
+    setAuthModalOpen(true);
+  }, []);
+
+  const closeAuthModal = useCallback(() => {
+    pendingCheckoutAfterAuthRef.current = false;
+    setAuthModalOpen(false);
+  }, []);
+
+  const clearResetPasswordPath = useCallback(() => {
+    window.history.replaceState({}, '', '/');
+    setAppPathname('/');
+  }, []);
 
   useEffect(() => {
-    setAuthingSiteUiLang(currentLang);
-    syncAuthingGuardEmbedLangFromSite();
-  }, [currentLang]);
+    const onPop = () => setAppPathname(window.location.pathname);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const handleAuthModalSuccess = useCallback(() => {
+    if (pendingCheckoutAfterAuthRef.current) {
+      pendingCheckoutAfterAuthRef.current = false;
+      setCheckoutBump(b => b + 1);
+    }
+  }, []);
   const musicPlaybackContext = useMemo((): MusicPlaybackContext => {
     if (activeView !== 'music') {
       return { ...defaultMusicPlaybackContext, musicLibraryActive: false };
@@ -631,9 +672,9 @@ export default function App() {
   const [devAccountTier, setDevAccountTier] = useState<'guest' | 'basic' | 'premium' | null>(null);
   const [showGuestFeaturePrompt, setShowGuestFeaturePrompt] = useState(false);
   const accountTier = devAccountTier ?? (isPremium ? 'premium' : 'basic');
-  const isGuest = accountTier === 'guest';
+  /** Dev「访客」模式，或未登录 Supabase（logout 后必须走此分支，避免假 Basic 账号 UI） */
+  const isGuest = accountTier === 'guest' || !session?.user;
   const hasPremiumAccess = accountTier === 'premium';
-  const authingAuth = useAuthingAuth();
 
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => loadFavoriteIds());
   const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => loadRecentTrackIds());
@@ -1073,6 +1114,9 @@ export default function App() {
                 recentTrackIds={recentTrackIds}
                 tracks={tracks}
                 t={t}
+                openAuthModal={openAuthModal}
+                checkoutBump={checkoutBump}
+                onSignedOut={() => setDevAccountTier(null)}
               />
             )}
             {activeView === 'admin' && <AdminTab tracks={tracks} setTracks={setTracks} artistsData={artistsData} setArtistsData={setArtistsData} />}
@@ -1155,15 +1199,7 @@ export default function App() {
                         type="button"
                         onClick={() => {
                           setShowGuestFeaturePrompt(false);
-                          if (isAuthingConfigured()) {
-                            void openAuthingGuardEmbed('register');
-                            return;
-                          }
-                          const url = getAuthSignupUrl();
-                          if (openAuthUrlInNewTab(url)) return;
-                          authingDevLog(
-                            'guest prompt Sign Up: 未配置 Authing 且无外链，不切换 Dev 会员态（请用顶部 Dev Preview）',
-                          );
+                          openAuthModal('sign-up');
                         }}
                         className="flex-1 rounded-2xl bg-white/82 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white"
                       >
@@ -1173,15 +1209,7 @@ export default function App() {
                         type="button"
                         onClick={() => {
                           setShowGuestFeaturePrompt(false);
-                          if (isAuthingConfigured()) {
-                            void openAuthingGuardEmbed('login');
-                            return;
-                          }
-                          const url = getAuthLoginUrl();
-                          if (openAuthUrlInNewTab(url)) return;
-                          authingDevLog(
-                            'guest prompt Log In: 未配置 Authing 且无外链，不切换 Dev 会员态（请用顶部 Dev Preview）',
-                          );
+                          openAuthModal('sign-in');
                         }}
                         className="flex-1 rounded-2xl border border-white/36 bg-white/34 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)]/86 transition-colors hover:bg-white/48"
                       >
@@ -1259,6 +1287,19 @@ export default function App() {
           {ambienceToast}
         </div>
       )}
+      <SupabaseAuthModal
+        open={authModalOpen}
+        mode={authModalMode}
+        onClose={closeAuthModal}
+        onSuccess={handleAuthModalSuccess}
+        onModeChange={setAuthModalMode}
+        authCopy={t.authModal}
+      />
+      <SupabaseResetPasswordGate
+        open={appPathname === '/reset-password'}
+        authCopy={t.authModal}
+        onDone={clearResetPasswordPath}
+      />
     </div>
   );
 }
@@ -1306,7 +1347,7 @@ const TopNav = memo(function TopNav({ activeView, setActiveView, onSelectTrack, 
     <header className="topnav-header fixed top-6 left-0 right-0 z-50 flex justify-center px-0 pointer-events-none">
       <div className="app-chrome-shell pointer-events-auto w-full max-w-5xl px-3 md:px-6">
         <div className="topnav-bar glass-panel relative w-full rounded-full py-2.5 shadow-md md:py-3">
-          <nav className="topnav-tabs flex items-center justify-center gap-4 overflow-x-auto custom-scrollbar pl-2.5 pr-[5.75rem] sm:gap-5 sm:pr-[6.5rem] md:gap-6 md:pl-3 md:pr-[7.25rem]">
+          <nav className="topnav-tabs flex items-center justify-center gap-4 overflow-x-auto custom-scrollbar pl-2.5 pr-14 sm:gap-5 sm:pr-16 md:gap-6 md:pl-3 md:pr-[4.5rem]">
             {tabs.map(tab => (
               <button
                 key={tab.id}
@@ -1320,7 +1361,6 @@ const TopNav = memo(function TopNav({ activeView, setActiveView, onSelectTrack, 
           </nav>
 
           <div className="topnav-right pointer-events-auto absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1.5 sm:right-2 sm:gap-2 md:right-3 md:gap-3">
-            <TopNavAuth t={t} />
             <div className="relative">
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
@@ -3062,7 +3102,10 @@ const SettingsTab = memo(function SettingsTab({
   favoriteIds,
   recentTrackIds,
   tracks,
-  t
+  t,
+  openAuthModal,
+  checkoutBump,
+  onSignedOut,
 }: {
   isPremium: boolean,
   setIsPremium: (v: boolean) => void,
@@ -3077,16 +3120,105 @@ const SettingsTab = memo(function SettingsTab({
   favoriteIds: string[],
   recentTrackIds: string[],
   tracks: Track[],
-  t: any
+  t: any,
+  openAuthModal: (mode: SupabaseAuthModalMode, afterAuth?: 'checkout') => void,
+  checkoutBump: number,
+  onSignedOut: () => void,
 }) {
-  const authingAuth = useAuthingAuth();
+  const { session, user, signOut } = useSupabaseAuth();
+  const lastCheckoutBumpRef = useRef(0);
+  const userId = useMemo(() => {
+    if (isGuest || !user?.id) return null;
+    return String(user.id);
+  }, [isGuest, user?.id]);
+
+  const [remoteMembership, setRemoteMembership] = useState<RemoteUserMembership | null>(null);
+  const [remoteMembershipLoading, setRemoteMembershipLoading] = useState(false);
+  const [membershipFetchIssue, setMembershipFetchIssue] = useState<MembershipFetchIssue>('none');
+  const [remoteRetryToken, setRemoteRetryToken] = useState(0);
+  const [portalComingSoonShown, setPortalComingSoonShown] = useState(false);
+
+  React.useEffect(() => {
+    setPortalComingSoonShown(false);
+  }, [userId]);
+
+  React.useEffect(() => {
+    if (!userId) {
+      setRemoteMembership(null);
+      setRemoteMembershipLoading(false);
+      setMembershipFetchIssue('none');
+      return;
+    }
+    let cancelled = false;
+    setRemoteMembershipLoading(true);
+    setMembershipFetchIssue('none');
+    void (async () => {
+      const result = await fetchRemoteUserMembership(userId);
+      if (cancelled) return;
+      setRemoteMembershipLoading(false);
+      if (result.ok) {
+        setRemoteMembership(result.data);
+        setMembershipFetchIssue('none');
+      } else {
+        setRemoteMembership(null);
+        setMembershipFetchIssue(result.reason);
+        if (result.reason === 'function_unavailable') {
+          const host = typeof window !== 'undefined' ? window.location.hostname : '';
+          const isLocal =
+            host === 'localhost' ||
+            host === '127.0.0.1' ||
+            host === '[::1]' ||
+            host.endsWith('.local');
+          console.warn(
+            isLocal
+              ? 'read-membership function unavailable in local preview'
+              : `[read-membership] endpoint unreachable (status ${result.httpStatus ?? 'network'})`,
+          );
+        } else {
+          console.warn('[read-membership] request failed', result.httpStatus);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, remoteRetryToken]);
+
+  const isRemotePremiumActive = useMemo(
+    () => premiumUntilActive(remoteMembership?.premiumUntil),
+    [remoteMembership?.premiumUntil],
+  );
+  const isRemoteExpired = useMemo(() => {
+    const iso = remoteMembership?.premiumUntil;
+    if (!iso) return false;
+    const t = new Date(iso).getTime();
+    if (Number.isNaN(t)) return false;
+    return t <= Date.now();
+  }, [remoteMembership?.premiumUntil]);
+
+  const hasRemotePremium = isRemotePremiumActive;
+  const effectivePremium = isPremium || hasRemotePremium;
+
+  const accountPremiumUntilIso = remoteMembership?.premiumUntil ?? null;
+  const accountMembershipDaysLeft = daysUntilDate(accountPremiumUntilIso);
+  const accountMembershipDateLabel =
+    accountPremiumUntilIso && !Number.isNaN(new Date(accountPremiumUntilIso).getTime())
+      ? formatMembershipDateOnly(accountPremiumUntilIso, currentLang)
+      : '—';
+  const accountPaymentProvider = normalizePaymentProvider(remoteMembership?.paymentProvider);
+  const accountAutoRenewLabel =
+    accountPaymentProvider === 'stripe'
+      ? t.settings.membershipAutoRenewOn
+      : accountPaymentProvider === 'zpay'
+        ? t.settings.membershipAutoRenewOff
+        : t.settings.membershipAutoRenewUnknown;
+
   const accountName = isGuest
     ? t.settings.guestTitle
-    : authingAuth.user
-      ? authingDisplayName(authingAuth.user)
-      : 'AlexChenMusic';
-  const accountEmail = isGuest ? '' : authingAuth.user ? authingEmail(authingAuth.user) || '—' : 'alex.chen@example.com';
-  const planName = isPremium ? t.settings.premiumPlanName : t.settings.basicPlanName;
+    : user
+      ? supabaseUserDisplayName(user)
+      : '—';
+  const accountEmail = isGuest ? '' : user?.email || '—';
   const links = [
     { label: t.settings.youtube, icon: Youtube, url: 'https://www.youtube.com/@CIPMusic' },
     { label: t.settings.bilibili, icon: Tv, url: 'https://space.bilibili.com/1467634/' },
@@ -3103,10 +3235,12 @@ const SettingsTab = memo(function SettingsTab({
   const infoValueClass = 'mt-2 text-[15px] font-medium text-[var(--color-mist-text)]/88';
   const actionButtonClass = 'inline-flex h-11 items-center justify-center rounded-2xl px-4 text-sm font-semibold transition-colors';
   const primaryButtonClass = `${actionButtonClass} bg-white/70 text-[var(--color-mist-text)] shadow-sm hover:bg-white/85`;
-  const secondaryButtonClass = `${actionButtonClass} border border-white/18 bg-white/14 text-[var(--color-mist-text)]/84 hover:bg-white/22`;
   const tertiaryButtonClass = 'inline-flex h-10 items-center justify-center rounded-2xl px-3 text-sm font-medium text-[var(--color-mist-text)]/68 transition-colors hover:bg-white/12 hover:text-[var(--color-mist-text)]/84';
-  const badgeClass = `inline-flex h-7 items-center rounded-full px-3 text-[11px] font-semibold whitespace-nowrap ${isGuest ? 'bg-white/35 text-[var(--color-mist-text)]/78' : isPremium ? 'bg-amber-500/18 text-amber-800/80' : 'bg-white/35 text-[var(--color-mist-text)]/78'}`;
-  const detailRowClass = 'flex items-start justify-between gap-4';
+  const badgeClass = `inline-flex h-7 items-center rounded-full px-3 text-[11px] font-semibold whitespace-nowrap ${isGuest ? 'bg-white/35 text-[var(--color-mist-text)]/78' : effectivePremium ? 'bg-amber-500/18 text-amber-800/80' : 'bg-white/35 text-[var(--color-mist-text)]/78'}`;
+  const accountMembershipRowClass = 'flex items-baseline justify-between gap-3 py-0.5';
+  const accountMembershipLabelClass = 'shrink-0 text-[11px] leading-tight text-[var(--color-mist-text)]/52';
+  const accountMembershipValueClass =
+    'max-w-[62%] text-right text-[12px] font-medium leading-tight text-[var(--color-mist-text)]/86';
   const benefitCards = t.premium.benefits.slice(0, 4);
   const memberCenterTitle = isGuest
     ? currentLang === 'English'
@@ -3162,25 +3296,26 @@ const SettingsTab = memo(function SettingsTab({
     : currentLang === '繁體中文'
       ? '除免費註冊權益外，升級後還可解鎖'
       : '除免费注册权益外，升级后还可解锁';
-  const premiumManageAction = () => {
-    window.open('mailto:cipmusicstudios@gmail.com?subject=Membership%20Support', '_blank');
-  };
   const manageButtonClass = 'inline-flex h-12 w-full items-center justify-center rounded-2xl bg-white/72 px-6 text-[15px] font-semibold text-[var(--color-mist-text)] shadow-[0_12px_28px_rgba(92,68,44,0.14)] transition-colors hover:bg-white/86';
   const handleGuestAuthCta = () => {
-    if (isAuthingConfigured()) {
-      void openAuthingGuardEmbed('login');
+    openAuthModal('sign-in');
+  };
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const handleUpgrade = () => {
+    if (!session?.user) {
+      openAuthModal('sign-in', 'checkout');
       return;
     }
-    if (openAuthUrlInNewTab(getAuthSignupUrl())) return;
-    if (openAuthUrlInNewTab(getAuthLoginUrl())) return;
-    authingDevLog(
-      'Guest 卡片 Sign in / Sign up: 未配置 Authing 且无外链，不切换 Dev 会员态（请用顶部 Dev Preview）',
-    );
+    setCheckoutOpen(true);
   };
-  const handleUpgrade = () => {
-    if (showDevPreview) setDevAccountTier('premium');
-    setIsPremium(true);
-  };
+
+  React.useEffect(() => {
+    if (checkoutBump > lastCheckoutBumpRef.current) {
+      lastCheckoutBumpRef.current = checkoutBump;
+      setCheckoutOpen(true);
+    }
+  }, [checkoutBump]);
+  const upgradeModalCopy = t.settings.upgradeModal;
 
   React.useEffect(() => {
     if (settingsMembershipScrollToken <= 0) return;
@@ -3195,6 +3330,15 @@ const SettingsTab = memo(function SettingsTab({
 
   return (
     <div className="settings-page mx-auto flex w-full max-w-6xl flex-col gap-6 pb-20">
+      <MembershipCheckoutModal
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        copy={upgradeModalCopy}
+        closeLabel={t.common.close}
+        backLabel={t.common.back}
+        userId={userId}
+        onRequireLogin={() => openAuthModal('sign-in')}
+      />
       {showDevPreview && (
         <div className="glass-tile self-start rounded-full px-2 py-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -3217,7 +3361,9 @@ const SettingsTab = memo(function SettingsTab({
       )}
 
       <div className="settings-grid grid grid-cols-1 gap-5 xl:grid-cols-[1.06fr_1.02fr_0.88fr]">
-        <section className={`settings-card ${premiumUi.card} flex min-h-[520px] flex-col`}>
+        <section
+          className={`settings-card ${premiumUi.card} flex ${isGuest ? 'min-h-[520px]' : 'min-h-0 xl:min-h-[360px]'} flex-col`}
+        >
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className={premiumUi.iconWrap}>
@@ -3227,7 +3373,7 @@ const SettingsTab = memo(function SettingsTab({
             </div>
             {!isGuest && (
               <span className={badgeClass}>
-                {isPremium ? t.settings.premiumMember : t.settings.freeMember}
+                {effectivePremium ? t.settings.premiumMember : t.settings.freeMember}
               </span>
             )}
           </div>
@@ -3259,47 +3405,143 @@ const SettingsTab = memo(function SettingsTab({
                 >
                   {t.settings.guestAuthCta}
                 </button>
-                <p className="max-w-[320px] text-center text-[11px] font-normal leading-relaxed text-[var(--color-mist-text)]/45">
+                <p className="max-w-[300px] text-center text-[11px] font-normal leading-relaxed text-[var(--color-mist-text)]/45">
                   {t.settings.guestAuthCtaHint}
                 </p>
               </div>
+              <p className="mt-5 text-center text-[11px] leading-snug text-[var(--color-mist-text)]/42">
+                <span>{t.settings.freeMember}</span>
+                <span className="mx-1.5 opacity-50">·</span>
+                <span>{t.settings.membershipNotActivated}</span>
+              </p>
             </div>
           ) : (
-            <div className="mt-6 flex flex-1 flex-col gap-4">
-              <div className={`settings-account-info-card ${premiumUi.subtleCard} flex flex-col gap-4 px-4 py-4`}>
-                <div className="settings-info-group grid gap-4">
-                  <div className="settings-info-item">
+            <div className="mt-4 flex flex-1 flex-col gap-4">
+              <div className={`settings-account-info-card ${premiumUi.subtleCard} flex flex-col gap-3 px-4 py-3`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
                     <p className={infoLabelClass}>{t.settings.username}</p>
-                    <p className={infoValueClass}>{accountName}</p>
+                    <p className="mt-1 text-[15px] font-medium leading-snug text-[var(--color-mist-text)]/88">{accountName}</p>
                   </div>
-                  <div className="settings-info-item">
-                    <p className={infoLabelClass}>{t.settings.email}</p>
-                    <p className={infoValueClass}>{accountEmail}</p>
-                  </div>
-                </div>
-                <div className="settings-account-actions flex flex-col gap-2 border-t border-white/14 pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
-                  <button type="button" className={`${secondaryButtonClass} w-full sm:w-auto`}>
-                    {t.settings.changePassword}
-                  </button>
                   <button
                     type="button"
                     onClick={() => {
-                      if (authingAuth.isConfigured) void authingAuth.logout();
+                      void signOut().then(() => onSignedOut());
                     }}
-                    className="logout-btn inline-flex h-11 w-full items-center justify-center rounded-2xl px-4 text-sm font-medium text-[var(--color-mist-text)]/54 transition-colors hover:bg-white/10 hover:text-[var(--color-mist-text)]/78 sm:h-10 sm:w-auto"
+                    className="logout-btn mt-0.5 shrink-0 rounded-full border border-white/28 bg-white/18 px-3 py-1.5 text-[11px] font-semibold text-[var(--color-mist-text)]/62 transition-colors hover:bg-white/28 hover:text-[var(--color-mist-text)]/78"
                   >
                     {t.settings.logout}
                   </button>
                 </div>
+                <div>
+                  <p className={infoLabelClass}>{t.settings.email}</p>
+                  <p className="mt-1 text-[15px] font-medium leading-snug text-[var(--color-mist-text)]/88">{accountEmail}</p>
+                </div>
               </div>
 
-              <SettingsAccountLibraryBlock
-                favoriteIds={favoriteIds}
-                recentTrackIds={recentTrackIds}
-                tracks={tracks}
-                currentLang={currentLang}
-                t={t}
-              />
+              <div className="flex flex-col gap-2.5">
+                {!remoteMembershipLoading && membershipFetchIssue === 'request_failed' ? (
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                    <p className="m-0 flex-1 rounded-lg border border-amber-900/12 bg-amber-500/10 px-2.5 py-1.5 text-[11px] leading-snug text-amber-950/85">
+                      {t.settings.membershipRefreshFailedHint}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setRemoteRetryToken(n => n + 1)}
+                      className={`${tertiaryButtonClass} shrink-0 self-start`}
+                    >
+                      {t.settings.membershipRetry}
+                    </button>
+                  </div>
+                ) : null}
+                <div className={`${premiumUi.subtleCard} settings-account-membership-compact rounded-xl px-3 py-2.5`}>
+                  {remoteMembershipLoading ? (
+                    <p className="text-[12px] leading-snug text-[var(--color-mist-text)]/65">{t.settings.membershipLoading}</p>
+                  ) : isRemotePremiumActive ? (
+                    <>
+                      <div className="flex flex-col gap-0.5">
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.currentPlan}</span>
+                          <span className={accountMembershipValueClass}>{t.settings.premiumPlanName}</span>
+                        </div>
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
+                          <span className={accountMembershipValueClass}>{accountAutoRenewLabel}</span>
+                        </div>
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.membershipEnds}</span>
+                          <span className={accountMembershipValueClass}>{accountMembershipDateLabel}</span>
+                        </div>
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
+                          <span className={accountMembershipValueClass}>{t.settings.membershipActive}</span>
+                        </div>
+                      </div>
+                      {accountMembershipDaysLeft != null && accountMembershipDaysLeft >= 0 ? (
+                        <p className="mt-1.5 text-[10px] leading-snug text-[var(--color-mist-text)]/55">
+                          {t.settings.membershipDaysRemaining.replace('{n}', String(accountMembershipDaysLeft))}
+                        </p>
+                      ) : null}
+                      {accountMembershipDaysLeft != null && accountMembershipDaysLeft > 0 && accountMembershipDaysLeft <= 7 ? (
+                        <p className="mt-1 text-[10px] font-medium leading-snug text-amber-900/78">
+                          {t.settings.membershipExpiresInDays.replace('{n}', String(accountMembershipDaysLeft))}
+                        </p>
+                      ) : null}
+                    </>
+                  ) : isRemoteExpired ? (
+                    <>
+                      <p className="mb-1.5 text-[11px] leading-snug text-amber-900/82">{t.settings.membershipExpiredNotice}</p>
+                      <div className="flex flex-col gap-0.5">
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.currentPlan}</span>
+                          <span className={accountMembershipValueClass}>{t.settings.freeMember}</span>
+                        </div>
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
+                          <span className={accountMembershipValueClass}>{t.settings.membershipAutoRenewUnknown}</span>
+                        </div>
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.membershipEnds}</span>
+                          <span className={accountMembershipValueClass}>{t.settings.membershipValidityExpired}</span>
+                        </div>
+                        <div className={accountMembershipRowClass}>
+                          <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
+                          <span className={accountMembershipValueClass}>{t.settings.membershipExpiredStatus}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col gap-0.5">
+                      <div className={accountMembershipRowClass}>
+                        <span className={accountMembershipLabelClass}>{t.settings.currentPlan}</span>
+                        <span className={accountMembershipValueClass}>{t.settings.freeMember}</span>
+                      </div>
+                      <div className={accountMembershipRowClass}>
+                        <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
+                        <span className={accountMembershipValueClass}>{t.settings.membershipAutoRenewUnknown}</span>
+                      </div>
+                      <div className={accountMembershipRowClass}>
+                        <span className={accountMembershipLabelClass}>{t.settings.membershipEnds}</span>
+                        <span className={accountMembershipValueClass}>{t.settings.membershipValidityDash}</span>
+                      </div>
+                      <div className={accountMembershipRowClass}>
+                        <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
+                        <span className={accountMembershipValueClass}>{t.settings.membershipNotActivated}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <SettingsAccountLibraryBlock
+                  favoriteIds={favoriteIds}
+                  recentTrackIds={recentTrackIds}
+                  tracks={tracks}
+                  currentLang={currentLang}
+                  t={t}
+                />
+              </div>
             </div>
           )}
         </section>
@@ -3308,27 +3550,19 @@ const SettingsTab = memo(function SettingsTab({
           id="settings-membership-section"
           className={`settings-card ${premiumUi.card} scroll-mt-28 flex min-h-0 flex-col`}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className={premiumUi.iconWrap}>
-                <Sparkles className="h-4.5 w-4.5" />
-              </div>
-              <h2 className={premiumUi.title}>{memberCenterTitle}</h2>
+          <div className="flex items-center gap-3">
+            <div className={premiumUi.iconWrap}>
+              <Sparkles className="h-4.5 w-4.5" />
             </div>
-            {!isGuest && (
-              <span className={badgeClass}>
-                {isPremium ? t.settings.premiumMember : t.settings.freeMember}
-              </span>
-            )}
+            <h2 className={premiumUi.title}>{memberCenterTitle}</h2>
           </div>
 
-          <div className={`mt-4 flex flex-col ${isPremium ? 'flex-1 gap-5' : 'gap-3'}`}>
+          <div className="mt-4 flex min-h-0 flex-1 flex-col gap-4">
             {isGuest ? (
               <>
-                <p className="text-sm leading-6 text-[var(--color-mist-text)]/68">
-                  {guestPremiumSummary}
-                </p>
-                <div className="flex flex-col gap-1.5">
+                <p className="text-[13px] leading-relaxed text-[var(--color-mist-text)]/65">{t.settings.membershipGuestHint}</p>
+                <p className="text-sm leading-6 text-[var(--color-mist-text)]/68">{guestPremiumSummary}</p>
+                <div className="settings-premium-benefits flex min-h-0 flex-1 flex-col gap-3">
                   {benefitCards.map((benefit: any) => (
                     <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-2.5 px-3 py-1.5`}>
                       <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
@@ -3340,33 +3574,6 @@ const SettingsTab = memo(function SettingsTab({
                       </div>
                     </div>
                   ))}
-                </div>
-              </>
-            ) : isPremium ? (
-              <>
-                <p className={premiumUi.body}>{t.settings.premiumDescShort}</p>
-                <div className={`settings-membership-details ${premiumUi.subtleCard} grid gap-4 px-5 py-5`}>
-                  <div className={`settings-info-item ${detailRowClass}`}>
-                    <span className="label text-sm text-[var(--color-mist-text)]/64">{t.settings.currentPlan}</span>
-                    <span className="value text-sm font-semibold text-[var(--color-mist-text)]/88">{planName}</span>
-                  </div>
-                  <div className={`settings-info-item ${detailRowClass}`}>
-                    <span className="label text-sm text-[var(--color-mist-text)]/64">{t.settings.autoRenew}</span>
-                    <span className="value text-sm font-semibold text-[var(--color-mist-text)]/88">{t.common.enabled}</span>
-                  </div>
-                  <div className={`settings-info-item ${detailRowClass}`}>
-                    <span className="label text-sm text-[var(--color-mist-text)]/64">{t.settings.membershipEnds}</span>
-                    <span className="value text-sm font-semibold text-[var(--color-mist-text)]/88">{t.common.longTerm}</span>
-                  </div>
-                  <div className={`settings-info-item ${detailRowClass}`}>
-                    <span className="label text-sm text-[var(--color-mist-text)]/64">{t.settings.membershipStatus}</span>
-                    <span className="value text-sm font-semibold text-[var(--color-mist-text)]/88">{t.settings.membershipActive}</span>
-                  </div>
-                </div>
-                <div className="mt-auto pt-1">
-                  <button onClick={premiumManageAction} className={manageButtonClass}>
-                    {t.settings.manageMembership}
-                  </button>
                 </div>
               </>
             ) : (
@@ -3374,7 +3581,7 @@ const SettingsTab = memo(function SettingsTab({
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42 leading-snug">
                   {premiumFeatureLead}
                 </p>
-                <div className="flex flex-col gap-1.5">
+                <div className="settings-premium-benefits flex min-h-0 flex-1 flex-col gap-3">
                   {benefitCards.map((benefit: any) => (
                     <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-2.5 px-3 py-1.5`}>
                       <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
@@ -3387,8 +3594,33 @@ const SettingsTab = memo(function SettingsTab({
                     </div>
                   ))}
                 </div>
-                <div className="mt-3">
-                  <button onClick={handleUpgrade} className={premiumUi.upgradeButton}>{t.settings.upgradeNow}</button>
+                <div className="mt-2 shrink-0">
+                  {remoteMembershipLoading ? (
+                    <p className="text-center text-[12px] leading-snug text-[var(--color-mist-text)]/58">
+                      {t.settings.membershipLoading}
+                    </p>
+                  ) : isRemotePremiumActive ? (
+                    accountPaymentProvider === 'stripe' ? (
+                      <>
+                        <button type="button" onClick={() => setPortalComingSoonShown(true)} className={manageButtonClass}>
+                          {t.settings.manageMembership}
+                        </button>
+                        {portalComingSoonShown ? (
+                          <p className="mt-2 text-center text-[12px] leading-snug text-[var(--color-mist-text)]/62">
+                            {t.settings.subscriptionPortalComingSoon}
+                          </p>
+                        ) : null}
+                      </>
+                    ) : (
+                      <button type="button" onClick={handleUpgrade} className={premiumUi.upgradeButton}>
+                        {t.settings.renewMembership}
+                      </button>
+                    )
+                  ) : (
+                    <button type="button" onClick={handleUpgrade} className={premiumUi.upgradeButton}>
+                      {t.settings.upgradeNow}
+                    </button>
+                  )}
                 </div>
               </>
             )}
@@ -3403,7 +3635,7 @@ const SettingsTab = memo(function SettingsTab({
             <h2 className={premiumUi.title}>{t.settings.links}</h2>
           </div>
 
-          <div className="mt-6 flex flex-1 flex-col gap-3">
+          <div className="mt-6 flex flex-1 flex-col gap-4">
             {links.map(link => {
               const Icon = link.icon;
               return (
