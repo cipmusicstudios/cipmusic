@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "vite --port=3001 --host=0.0.0.0",
     "dev:preview": "vite --port=3001 --host=0.0.0.0 --open /index-preview.html",
+    "dev:settings-preview": "vite --port=3001 --host=0.0.0.0 --open /index-settings-preview.html",
     "dev:authing-smoke": "vite --port=3001 --host=0.0.0.0 --open /authing-smoke.html",
     "dev:artist-audit": "vite --port=3001 --host=0.0.0.0 --open /audit.html",
     "build": "vite build",

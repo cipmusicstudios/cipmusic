@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'motion/react';
 import {X} from 'lucide-react';
 import {STRIPE_CHECKOUT_MONTHLY_URL, STRIPE_CHECKOUT_YEARLY_URL, isCheckoutUrlReady, openMembershipCheckoutUrl} from './checkout-links';
-import {createZpayOrderCheckout} from './lib/zpay-order';
+import {createZpayOrderCheckout, type CreateZpayOrderResult} from './lib/zpay-order';
 
 export type UpgradeBillingCardCopy = {
   title: string;
@@ -35,6 +35,8 @@ export type UpgradeModalCopyZhCN = {
   linkNotReadyHint: string;
   zpayNeedLogin: string;
   zpayFailed: string;
+  zpayFunctionUnavailable: string;
+  zpayServiceNotConfigured: string;
   step1: {
     title: string;
     subtitle: string;
@@ -134,6 +136,27 @@ function ChannelChoiceCard({
   );
 }
 
+function zpayFailureUserMessage(
+  result: Extract<CreateZpayOrderResult, {ok: false}>,
+  copy: Pick<
+    UpgradeModalCopyZhCN,
+    'zpayNeedLogin' | 'zpayFailed' | 'zpayFunctionUnavailable' | 'zpayServiceNotConfigured'
+  >,
+): string {
+  const c = result.code ?? result.error;
+  if (c === 'AUTH_REQUIRED') return copy.zpayNeedLogin;
+  if (c === 'FUNCTION_UNAVAILABLE' || c === 'NETWORK_ERROR') return copy.zpayFunctionUnavailable;
+  if (
+    c === 'ZPAY_NOT_CONFIGURED' ||
+    c === 'ZPAY_URLS_NOT_CONFIGURED' ||
+    c === 'SUPABASE_NOT_CONFIGURED' ||
+    c === 'SERVICE_ENV_INCOMPLETE'
+  ) {
+    return copy.zpayServiceNotConfigured;
+  }
+  return copy.zpayFailed;
+}
+
 function ZpayBillingCard({
   card,
   days,
@@ -141,6 +164,8 @@ function ZpayBillingCard({
   onRequireLogin,
   zpayNeedLogin,
   zpayFailed,
+  zpayFunctionUnavailable,
+  zpayServiceNotConfigured,
   zpayBusy,
   setZpayBusy,
   setZpayError,
@@ -151,6 +176,8 @@ function ZpayBillingCard({
   onRequireLogin?: () => void;
   zpayNeedLogin: string;
   zpayFailed: string;
+  zpayFunctionUnavailable: string;
+  zpayServiceNotConfigured: string;
   zpayBusy: null | 30 | 365;
   setZpayBusy: (v: null | 30 | 365) => void;
   setZpayError: (v: string | null) => void;
@@ -171,12 +198,25 @@ function ZpayBillingCard({
           setZpayBusy(days);
           const result = await createZpayOrderCheckout(days, userId);
           setZpayBusy(null);
-          if (result.ok) {
+          if (result.ok === true) {
             window.location.href = result.payUrl;
             return;
           }
-          console.warn('[AuraSounds] ZPay order failed', result);
-          setZpayError(result.hint ? `${zpayFailed} (${result.error})` : zpayFailed);
+          const failed = result;
+          console.warn('[AuraSounds] ZPay order failed', {
+            code: failed.code,
+            error: failed.error,
+            hint: failed.hint,
+            debug: failed.debug,
+          });
+          setZpayError(
+            zpayFailureUserMessage(failed, {
+              zpayNeedLogin,
+              zpayFailed,
+              zpayFunctionUnavailable,
+              zpayServiceNotConfigured,
+            }),
+          );
         })()
       }
       className={choiceCardClass}
@@ -365,6 +405,8 @@ export function MembershipCheckoutModal({
                       onRequireLogin={onRequireLogin}
                       zpayNeedLogin={copy.zpayNeedLogin}
                       zpayFailed={copy.zpayFailed}
+                      zpayFunctionUnavailable={copy.zpayFunctionUnavailable}
+                      zpayServiceNotConfigured={copy.zpayServiceNotConfigured}
                       zpayBusy={zpayBusy}
                       setZpayBusy={setZpayBusy}
                       setZpayError={setZpayError}
@@ -376,6 +418,8 @@ export function MembershipCheckoutModal({
                       onRequireLogin={onRequireLogin}
                       zpayNeedLogin={copy.zpayNeedLogin}
                       zpayFailed={copy.zpayFailed}
+                      zpayFunctionUnavailable={copy.zpayFunctionUnavailable}
+                      zpayServiceNotConfigured={copy.zpayServiceNotConfigured}
                       zpayBusy={zpayBusy}
                       setZpayBusy={setZpayBusy}
                       setZpayError={setZpayError}

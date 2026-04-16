@@ -273,6 +273,9 @@ export const zhCN = {
       linkNotReadyHint: '即将开放',
       zpayNeedLogin: '请先登录后再使用微信支付开通。',
       zpayFailed: '暂时无法发起支付，请稍后重试。',
+      zpayFunctionUnavailable:
+        '当前本地预览无法发起支付，请使用 Netlify Dev（netlify dev）或线上部署 / Deploy Preview 测试。',
+      zpayServiceNotConfigured: '支付服务尚未配置，请稍后再试或联系支持。',
       step1: {
         title: '升级高级会员',
         subtitle: '请选择适合你的支付方式。',

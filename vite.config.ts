@@ -19,6 +19,7 @@ export default defineConfig(({mode}) => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           preview: path.resolve(__dirname, 'index-preview.html'),
+          settingsPreview: path.resolve(__dirname, 'index-settings-preview.html'),
           checkoutPreview: path.resolve(__dirname, 'index-checkout-preview.html'),
           authingSmoke: path.resolve(__dirname, 'authing-smoke.html'),
         },

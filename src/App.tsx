@@ -379,8 +379,10 @@ const BackgroundLayer = memo(function BackgroundLayer({
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>(() => {
-    if (typeof window !== 'undefined' && window.location.hash.replace(/^#/, '') === 'glass-ui') {
-      return 'uiPreview';
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (hash === 'glass-ui') return 'uiPreview';
+      if (hash === 'settings-preview') return 'settings';
     }
     return 'home';
   });
@@ -3237,10 +3239,12 @@ const SettingsTab = memo(function SettingsTab({
   const primaryButtonClass = `${actionButtonClass} bg-white/70 text-[var(--color-mist-text)] shadow-sm hover:bg-white/85`;
   const tertiaryButtonClass = 'inline-flex h-10 items-center justify-center rounded-2xl px-3 text-sm font-medium text-[var(--color-mist-text)]/68 transition-colors hover:bg-white/12 hover:text-[var(--color-mist-text)]/84';
   const badgeClass = `inline-flex h-7 items-center rounded-full px-3 text-[11px] font-semibold whitespace-nowrap ${isGuest ? 'bg-white/35 text-[var(--color-mist-text)]/78' : effectivePremium ? 'bg-amber-500/18 text-amber-800/80' : 'bg-white/35 text-[var(--color-mist-text)]/78'}`;
-  const accountMembershipRowClass = 'flex items-baseline justify-between gap-3 py-0.5';
-  const accountMembershipLabelClass = 'shrink-0 text-[11px] leading-tight text-[var(--color-mist-text)]/52';
+  const accountMembershipRowClass = 'flex items-baseline justify-between gap-3 py-1';
+  const accountMembershipLabelClass = 'shrink-0 text-xs leading-snug text-[var(--color-mist-text)]/56';
   const accountMembershipValueClass =
-    'max-w-[62%] text-right text-[12px] font-medium leading-tight text-[var(--color-mist-text)]/86';
+    'min-w-0 max-w-[60%] text-right text-sm font-medium leading-snug text-[var(--color-mist-text)]/88 sm:max-w-[64%]';
+  const accountMembershipValueHighlightClass =
+    'min-w-0 max-w-[60%] text-right text-sm font-semibold leading-snug text-[var(--color-mist-text)]/92 sm:max-w-[64%]';
   const benefitCards = t.premium.benefits.slice(0, 4);
   const memberCenterTitle = isGuest
     ? currentLang === 'English'
@@ -3454,15 +3458,15 @@ const SettingsTab = memo(function SettingsTab({
                     </button>
                   </div>
                 ) : null}
-                <div className={`${premiumUi.subtleCard} settings-account-membership-compact rounded-xl px-3 py-2.5`}>
+                <div className={`${premiumUi.subtleCard} settings-account-membership-compact rounded-xl px-4 py-3.5`}>
                   {remoteMembershipLoading ? (
-                    <p className="text-[12px] leading-snug text-[var(--color-mist-text)]/65">{t.settings.membershipLoading}</p>
+                    <p className="text-sm leading-snug text-[var(--color-mist-text)]/70">{t.settings.membershipLoading}</p>
                   ) : isRemotePremiumActive ? (
                     <>
-                      <div className="flex flex-col gap-0.5">
+                      <div className="flex flex-col gap-1">
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.currentPlan}</span>
-                          <span className={accountMembershipValueClass}>{t.settings.premiumPlanName}</span>
+                          <span className={accountMembershipValueHighlightClass}>{t.settings.premiumPlanName}</span>
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
@@ -3474,27 +3478,27 @@ const SettingsTab = memo(function SettingsTab({
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
-                          <span className={accountMembershipValueClass}>{t.settings.membershipActive}</span>
+                          <span className={accountMembershipValueHighlightClass}>{t.settings.membershipActive}</span>
                         </div>
                       </div>
                       {accountMembershipDaysLeft != null && accountMembershipDaysLeft >= 0 ? (
-                        <p className="mt-1.5 text-[10px] leading-snug text-[var(--color-mist-text)]/55">
+                        <p className="mt-2 text-xs leading-snug text-[var(--color-mist-text)]/58">
                           {t.settings.membershipDaysRemaining.replace('{n}', String(accountMembershipDaysLeft))}
                         </p>
                       ) : null}
                       {accountMembershipDaysLeft != null && accountMembershipDaysLeft > 0 && accountMembershipDaysLeft <= 7 ? (
-                        <p className="mt-1 text-[10px] font-medium leading-snug text-amber-900/78">
+                        <p className="mt-1.5 text-xs font-medium leading-snug text-amber-900/82">
                           {t.settings.membershipExpiresInDays.replace('{n}', String(accountMembershipDaysLeft))}
                         </p>
                       ) : null}
                     </>
                   ) : isRemoteExpired ? (
                     <>
-                      <p className="mb-1.5 text-[11px] leading-snug text-amber-900/82">{t.settings.membershipExpiredNotice}</p>
-                      <div className="flex flex-col gap-0.5">
+                      <p className="mb-2 text-xs leading-snug text-amber-900/85">{t.settings.membershipExpiredNotice}</p>
+                      <div className="flex flex-col gap-1">
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.currentPlan}</span>
-                          <span className={accountMembershipValueClass}>{t.settings.freeMember}</span>
+                          <span className={accountMembershipValueHighlightClass}>{t.settings.freeMember}</span>
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
@@ -3506,15 +3510,15 @@ const SettingsTab = memo(function SettingsTab({
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
-                          <span className={accountMembershipValueClass}>{t.settings.membershipExpiredStatus}</span>
+                          <span className={accountMembershipValueHighlightClass}>{t.settings.membershipExpiredStatus}</span>
                         </div>
                       </div>
                     </>
                   ) : (
-                    <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col gap-1">
                       <div className={accountMembershipRowClass}>
                         <span className={accountMembershipLabelClass}>{t.settings.currentPlan}</span>
-                        <span className={accountMembershipValueClass}>{t.settings.freeMember}</span>
+                        <span className={accountMembershipValueHighlightClass}>{t.settings.freeMember}</span>
                       </div>
                       <div className={accountMembershipRowClass}>
                         <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
@@ -3526,7 +3530,7 @@ const SettingsTab = memo(function SettingsTab({
                       </div>
                       <div className={accountMembershipRowClass}>
                         <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
-                        <span className={accountMembershipValueClass}>{t.settings.membershipNotActivated}</span>
+                        <span className={accountMembershipValueHighlightClass}>{t.settings.membershipNotActivated}</span>
                       </div>
                     </div>
                   )}
