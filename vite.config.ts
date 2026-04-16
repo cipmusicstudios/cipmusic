@@ -4,8 +4,12 @@ import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
-  const env = loadEnv(mode, '.', '');
+  /** 与 vite.config.ts 同目录为项目根，确保 dev / preview 均能读取根目录 `.env.local` 中的 `VITE_*` */
+  const root = path.resolve(__dirname);
+  const env = loadEnv(mode, root, '');
   return {
+    root,
+    envDir: root,
     plugins: [react(), tailwindcss()],
     optimizeDeps: {
       include: ['@authing/guard'],
@@ -15,6 +19,8 @@ export default defineConfig(({mode}) => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           preview: path.resolve(__dirname, 'index-preview.html'),
+          settingsPreview: path.resolve(__dirname, 'index-settings-preview.html'),
+          checkoutPreview: path.resolve(__dirname, 'index-checkout-preview.html'),
           authingSmoke: path.resolve(__dirname, 'authing-smoke.html'),
         },
         output: {

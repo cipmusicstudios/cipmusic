@@ -1,0 +1,13 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# SPA: email password-recovery deep link must serve index.html
+[[redirects]]
+  from = "/reset-password"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
