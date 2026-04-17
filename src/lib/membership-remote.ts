@@ -17,7 +17,15 @@ export type RemoteMembershipFetchFailureReason = 'function_unavailable' | 'reque
 
 export type RemoteMembershipFetchResult =
   | {ok: true; data: RemoteUserMembership | null}
-  | {ok: false; data: null; reason: RemoteMembershipFetchFailureReason; httpStatus?: number};
+  | {
+      ok: false;
+      data: null;
+      reason: RemoteMembershipFetchFailureReason;
+      httpStatus?: number;
+      serverCode?: string;
+      serverMessage?: string;
+      serverDebug?: unknown;
+    };
 
 function normalizePayload(parsed: Record<string, unknown>): RemoteUserMembership | null {
   const premiumUntil = (parsed.premiumUntil ?? parsed.premium_until) as string | null | undefined;
@@ -29,6 +37,36 @@ function normalizePayload(parsed: Record<string, unknown>): RemoteUserMembership
     membershipStatus: membershipStatus ?? null,
     paymentProvider: paymentProvider ?? null,
     lastPaymentAt: lastPaymentAt ?? null,
+  };
+}
+
+/** 从200 响应中取出会员字段对象（支持 ok:true + 顶层字段，或 ok:true + data 嵌套） */
+function extractMembershipRecord(obj: Record<string, unknown>): Record<string, unknown> {
+  if (obj.ok === true && obj.data != null && typeof obj.data === 'object' && !Array.isArray(obj.data)) {
+    return obj.data as Record<string, unknown>;
+  }
+  return obj;
+}
+
+function readFailureFromBody(parsed: unknown, httpStatus: number): RemoteMembershipFetchResult {
+  let serverCode: string | undefined;
+  let serverMessage: string | undefined;
+  let serverDebug: unknown;
+  if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    const errObj = parsed as Record<string, unknown>;
+    if (typeof errObj.code === 'string') serverCode = errObj.code;
+    else if (typeof errObj.error === 'string') serverCode = errObj.error;
+    if (typeof errObj.message === 'string') serverMessage = errObj.message;
+    if ('debug' in errObj) serverDebug = errObj.debug;
+  }
+  return {
+    ok: false,
+    data: null,
+    reason: 'request_failed',
+    httpStatus,
+    serverCode,
+    serverMessage,
+    serverDebug,
   };
 }
 
@@ -59,7 +97,7 @@ export async function fetchRemoteUserMembership(userId: string): Promise<RemoteM
       if (res.status === 404 || res.status === 405) {
         return {ok: false, data: null, reason: 'function_unavailable', httpStatus: res.status};
       }
-      return {ok: false, data: null, reason: 'request_failed', httpStatus: res.status};
+      return readFailureFromBody(parsed, res.status);
     }
 
     if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
@@ -67,11 +105,13 @@ export async function fetchRemoteUserMembership(userId: string): Promise<RemoteM
     }
 
     const obj = parsed as Record<string, unknown>;
-    if ('error' in obj && !('premiumUntil' in obj) && !('premium_until' in obj)) {
-      return {ok: false, data: null, reason: 'request_failed', httpStatus: res.status};
+
+    if (obj.ok === false) {
+      return readFailureFromBody(parsed, res.status);
     }
 
-    const data = normalizePayload(obj);
+    const record = extractMembershipRecord(obj);
+    const data = normalizePayload(record);
     return {ok: true, data};
   } catch {
     return {ok: false, data: null, reason: 'function_unavailable'};
@@ -107,6 +147,19 @@ export function premiumUntilActive(iso: string | null | undefined): boolean {
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return false;
   return t > Date.now();
+}
+
+/**
+ * 是否应解锁 Premium 能力：优先未过期的 premium_until；若无结束日期字段但 status 为有效会员，也视为 entitled。
+ * （若存在 premium_until 字符串但未通过时间校验，则不以 status 覆盖，避免已过期行被误判。）
+ */
+export function remotePremiumEntitled(m: RemoteUserMembership | null | undefined): boolean {
+  if (!m) return false;
+  if (premiumUntilActive(m.premiumUntil)) return true;
+  const iso = m.premiumUntil;
+  if (iso != null && String(iso).trim() !== '') return false;
+  const st = (m.membershipStatus || '').toLowerCase().trim();
+  return st === 'active' || st === 'premium';
 }
 
 export type NormalizedPaymentProvider = 'stripe' | 'zpay' | 'unknown';

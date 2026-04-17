@@ -27,7 +27,7 @@ import {
   fetchRemoteUserMembership,
   formatMembershipDateOnly,
   normalizePaymentProvider,
-  premiumUntilActive,
+  remotePremiumEntitled,
   type RemoteMembershipFetchFailureReason,
   type RemoteUserMembership,
 } from './lib/membership-remote';
@@ -676,7 +676,80 @@ export default function App() {
   const accountTier = devAccountTier ?? (isPremium ? 'premium' : 'basic');
   /** Dev「访客」模式，或未登录 Supabase（logout 后必须走此分支，避免假 Basic 账号 UI） */
   const isGuest = accountTier === 'guest' || !session?.user;
-  const hasPremiumAccess = accountTier === 'premium';
+
+  /** 与 read-membership 同步的 Supabase user id；访客 / Dev 访客不请求 */
+  const membershipUserId = useMemo(() => {
+    if (isGuest || !session?.user?.id) return null;
+    return String(session.user.id);
+  }, [isGuest, session?.user?.id]);
+
+  const [remoteMembership, setRemoteMembership] = useState<RemoteUserMembership | null>(null);
+  const [remoteMembershipLoading, setRemoteMembershipLoading] = useState(false);
+  const [membershipFetchIssue, setMembershipFetchIssue] = useState<MembershipFetchIssue>('none');
+  const [remoteMembershipRetryToken, setRemoteMembershipRetryToken] = useState(0);
+
+  const isRemotePremiumActive = useMemo(
+    () => remotePremiumEntitled(remoteMembership),
+    [remoteMembership],
+  );
+
+  React.useEffect(() => {
+    if (!membershipUserId) {
+      setRemoteMembership(null);
+      setRemoteMembershipLoading(false);
+      setMembershipFetchIssue('none');
+      return;
+    }
+    let cancelled = false;
+    setRemoteMembershipLoading(true);
+    setMembershipFetchIssue('none');
+    void (async () => {
+      const result = await fetchRemoteUserMembership(membershipUserId);
+      if (cancelled) return;
+      setRemoteMembershipLoading(false);
+      if (result.ok === true) {
+        setRemoteMembership(result.data);
+        setMembershipFetchIssue('none');
+      } else {
+        setRemoteMembership(null);
+        setMembershipFetchIssue(result.reason);
+        if (result.reason === 'function_unavailable') {
+          const host = typeof window !== 'undefined' ? window.location.hostname : '';
+          const isLocal =
+            host === 'localhost' ||
+            host === '127.0.0.1' ||
+            host === '[::1]' ||
+            host.endsWith('.local');
+          console.warn(
+            isLocal
+              ? 'read-membership function unavailable in local preview'
+              : `[read-membership] endpoint unreachable (status ${result.httpStatus ?? 'network'})`,
+          );
+        } else {
+          console.warn('[read-membership] request failed', {
+            httpStatus: result.httpStatus,
+            code: result.serverCode ?? result.reason,
+            message: result.serverMessage,
+            debug: result.serverDebug,
+          });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [membershipUserId, remoteMembershipRetryToken]);
+
+  /**
+   * 全站 Premium 能力门控单一来源：远程会员有效 || Dev 显式 Premium || URL ?premium=1（便于本地试）
+   * Dev 下 basic/guest 强制非 Premium，便于对照测试。
+   */
+  const resolvedPremiumAccess = useMemo(() => {
+    if (showDevTierPreview && devAccountTier === 'premium') return true;
+    if (isPremium) return true;
+    if (isGuest) return false;
+    return isRemotePremiumActive;
+  }, [showDevTierPreview, devAccountTier, isPremium, isGuest, isRemotePremiumActive]);
 
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => loadFavoriteIds());
   const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => loadRecentTrackIds());
@@ -817,7 +890,7 @@ export default function App() {
       return;
     }
 
-    if (!hasPremiumAccess) {
+    if (!resolvedPremiumAccess) {
       if (activeAmbiences.length >= AMBIENT_LIMIT_FREE) {
         showAmbienceToast(t.common.ambienceLimit);
       }
@@ -1093,7 +1166,7 @@ export default function App() {
                 ambienceVolumes={ambienceVolumes}
                 setAmbienceVolumes={setAmbienceVolumes}
                 toggleAmbience={toggleAmbience}
-                isPremium={hasPremiumAccess}
+                isPremium={resolvedPremiumAccess}
                 isGuest={isGuest}
                 onGuestFeatureBlocked={() => setShowGuestFeaturePrompt(true)}
                 showAmbienceToast={showAmbienceToast}
@@ -1102,8 +1175,7 @@ export default function App() {
             )}
             {activeView === 'settings' && (
               <SettingsTab
-                isPremium={hasPremiumAccess}
-                setIsPremium={setIsPremium}
+                resolvedPremiumAccess={resolvedPremiumAccess}
                 isGuest={isGuest}
                 accountTier={accountTier}
                 showDevPreview={showDevTierPreview}
@@ -1119,6 +1191,10 @@ export default function App() {
                 openAuthModal={openAuthModal}
                 checkoutBump={checkoutBump}
                 onSignedOut={() => setDevAccountTier(null)}
+                remoteMembership={remoteMembership}
+                remoteMembershipLoading={remoteMembershipLoading}
+                membershipFetchIssue={membershipFetchIssue}
+                onMembershipRetry={() => setRemoteMembershipRetryToken(n => n + 1)}
               />
             )}
             {activeView === 'admin' && <AdminTab tracks={tracks} setTracks={setTracks} artistsData={artistsData} setArtistsData={setArtistsData} />}
@@ -1235,7 +1311,7 @@ export default function App() {
             playbackRate={playbackRate}
             setPlaybackRate={setPlaybackRate}
             onClose={() => setShowPracticePanel(false)}
-            isPremium={isPremium}
+            isPremium={resolvedPremiumAccess}
             setActiveView={setActiveView}
             practiceSeekDebug={practiceSeekDebug}
             setPracticeSeekDebug={setPracticeSeekDebug}
@@ -1257,7 +1333,7 @@ export default function App() {
         setPlaybackRate={setPlaybackRate}
         showPracticePanel={showPracticePanel}
         setShowPracticePanel={setShowPracticePanel}
-        isPremium={hasPremiumAccess}
+        isPremium={resolvedPremiumAccess}
         currentLang={currentLang}
         setShowSheetOptions={setShowSheetOptions}
         setPracticeSeekDebug={setPracticeSeekDebug}
@@ -2696,8 +2772,6 @@ const FocusTab = memo(function FocusTab({
   const fmtSecs = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
   const progress = totalSecs > 0 ? 1 - secsLeft / totalSecs : 0;
 
-  const isPremium_local = false; // UI only — now using prop
-
   // Ambience catalog — each item is an independently playable sound layer
   const ambienceGroups: { title: string; items: AmbientCatalogItem[] }[] = [
     {
@@ -3091,8 +3165,7 @@ const FocusTab = memo(function FocusTab({
 });
 
 const SettingsTab = memo(function SettingsTab({
-  isPremium,
-  setIsPremium,
+  resolvedPremiumAccess,
   isGuest,
   accountTier,
   showDevPreview,
@@ -3108,9 +3181,12 @@ const SettingsTab = memo(function SettingsTab({
   openAuthModal,
   checkoutBump,
   onSignedOut,
+  remoteMembership,
+  remoteMembershipLoading,
+  membershipFetchIssue,
+  onMembershipRetry,
 }: {
-  isPremium: boolean,
-  setIsPremium: (v: boolean) => void,
+  resolvedPremiumAccess: boolean,
   isGuest: boolean,
   accountTier: 'guest' | 'basic' | 'premium',
   showDevPreview: boolean,
@@ -3126,6 +3202,10 @@ const SettingsTab = memo(function SettingsTab({
   openAuthModal: (mode: SupabaseAuthModalMode, afterAuth?: 'checkout') => void,
   checkoutBump: number,
   onSignedOut: () => void,
+  remoteMembership: RemoteUserMembership | null,
+  remoteMembershipLoading: boolean,
+  membershipFetchIssue: MembershipFetchIssue,
+  onMembershipRetry: () => void,
 }) {
   const { session, user, signOut } = useSupabaseAuth();
   const lastCheckoutBumpRef = useRef(0);
@@ -3134,61 +3214,15 @@ const SettingsTab = memo(function SettingsTab({
     return String(user.id);
   }, [isGuest, user?.id]);
 
-  const [remoteMembership, setRemoteMembership] = useState<RemoteUserMembership | null>(null);
-  const [remoteMembershipLoading, setRemoteMembershipLoading] = useState(false);
-  const [membershipFetchIssue, setMembershipFetchIssue] = useState<MembershipFetchIssue>('none');
-  const [remoteRetryToken, setRemoteRetryToken] = useState(0);
   const [portalComingSoonShown, setPortalComingSoonShown] = useState(false);
 
   React.useEffect(() => {
     setPortalComingSoonShown(false);
   }, [userId]);
 
-  React.useEffect(() => {
-    if (!userId) {
-      setRemoteMembership(null);
-      setRemoteMembershipLoading(false);
-      setMembershipFetchIssue('none');
-      return;
-    }
-    let cancelled = false;
-    setRemoteMembershipLoading(true);
-    setMembershipFetchIssue('none');
-    void (async () => {
-      const result = await fetchRemoteUserMembership(userId);
-      if (cancelled) return;
-      setRemoteMembershipLoading(false);
-      if (result.ok) {
-        setRemoteMembership(result.data);
-        setMembershipFetchIssue('none');
-      } else {
-        setRemoteMembership(null);
-        setMembershipFetchIssue(result.reason);
-        if (result.reason === 'function_unavailable') {
-          const host = typeof window !== 'undefined' ? window.location.hostname : '';
-          const isLocal =
-            host === 'localhost' ||
-            host === '127.0.0.1' ||
-            host === '[::1]' ||
-            host.endsWith('.local');
-          console.warn(
-            isLocal
-              ? 'read-membership function unavailable in local preview'
-              : `[read-membership] endpoint unreachable (status ${result.httpStatus ?? 'network'})`,
-          );
-        } else {
-          console.warn('[read-membership] request failed', result.httpStatus);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [userId, remoteRetryToken]);
-
   const isRemotePremiumActive = useMemo(
-    () => premiumUntilActive(remoteMembership?.premiumUntil),
-    [remoteMembership?.premiumUntil],
+    () => remotePremiumEntitled(remoteMembership),
+    [remoteMembership],
   );
   const isRemoteExpired = useMemo(() => {
     const iso = remoteMembership?.premiumUntil;
@@ -3198,8 +3232,11 @@ const SettingsTab = memo(function SettingsTab({
     return t <= Date.now();
   }, [remoteMembership?.premiumUntil]);
 
-  const hasRemotePremium = isRemotePremiumActive;
-  const effectivePremium = isPremium || hasRemotePremium;
+  /** 远程有效期满之外，Dev / URL 门控下的 Premium 也走「已开通」展示 */
+  const showMembershipAsActive = isRemotePremiumActive || (resolvedPremiumAccess && !isRemoteExpired);
+
+  /** 与全站门控一致；Account 徽章与 Focus / Player 同源 */
+  const effectivePremium = resolvedPremiumAccess;
 
   const accountPremiumUntilIso = remoteMembership?.premiumUntil ?? null;
   const accountMembershipDaysLeft = daysUntilDate(accountPremiumUntilIso);
@@ -3364,9 +3401,9 @@ const SettingsTab = memo(function SettingsTab({
         </div>
       )}
 
-      <div className="settings-grid grid grid-cols-1 gap-5 xl:grid-cols-[1.06fr_1.02fr_0.88fr]">
+      <div className="settings-grid grid grid-cols-1 gap-5 xl:grid-cols-[1.06fr_1.02fr_0.88fr] xl:items-start">
         <section
-          className={`settings-card ${premiumUi.card} flex ${isGuest ? 'min-h-[520px]' : 'min-h-0 xl:min-h-[360px]'} flex-col`}
+          className={`settings-card ${premiumUi.card} !p-5 flex ${isGuest ? 'min-h-[520px]' : 'min-h-0'} flex-col sm:!px-6`}
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -3420,8 +3457,8 @@ const SettingsTab = memo(function SettingsTab({
               </p>
             </div>
           ) : (
-            <div className="mt-4 flex flex-1 flex-col gap-4">
-              <div className={`settings-account-info-card ${premiumUi.subtleCard} flex flex-col gap-3 px-4 py-3`}>
+            <div className="mt-2 flex flex-1 flex-col gap-2.5">
+              <div className={`settings-account-info-card ${premiumUi.subtleCard} flex flex-col gap-2.5 px-4 py-2.5`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <p className={infoLabelClass}>{t.settings.username}</p>
@@ -3443,7 +3480,7 @@ const SettingsTab = memo(function SettingsTab({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-1.5">
                 {!remoteMembershipLoading && membershipFetchIssue === 'request_failed' ? (
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                     <p className="m-0 flex-1 rounded-lg border border-amber-900/12 bg-amber-500/10 px-2.5 py-1.5 text-[11px] leading-snug text-amber-950/85">
@@ -3451,17 +3488,17 @@ const SettingsTab = memo(function SettingsTab({
                     </p>
                     <button
                       type="button"
-                      onClick={() => setRemoteRetryToken(n => n + 1)}
+                      onClick={() => onMembershipRetry()}
                       className={`${tertiaryButtonClass} shrink-0 self-start`}
                     >
                       {t.settings.membershipRetry}
                     </button>
                   </div>
                 ) : null}
-                <div className={`${premiumUi.subtleCard} settings-account-membership-compact rounded-xl px-4 py-3.5`}>
+                <div className={`${premiumUi.subtleCard} settings-account-membership-compact rounded-xl px-4 py-3`}>
                   {remoteMembershipLoading ? (
                     <p className="text-sm leading-snug text-[var(--color-mist-text)]/70">{t.settings.membershipLoading}</p>
-                  ) : isRemotePremiumActive ? (
+                  ) : showMembershipAsActive ? (
                     <>
                       <div className="flex flex-col gap-1">
                         <div className={accountMembershipRowClass}>
@@ -3537,7 +3574,7 @@ const SettingsTab = memo(function SettingsTab({
                 </div>
               </div>
 
-              <div className="mt-5">
+              <div className="mt-2">
                 <SettingsAccountLibraryBlock
                   favoriteIds={favoriteIds}
                   recentTrackIds={recentTrackIds}
@@ -3552,7 +3589,7 @@ const SettingsTab = memo(function SettingsTab({
 
         <section
           id="settings-membership-section"
-          className={`settings-card ${premiumUi.card} scroll-mt-28 flex min-h-0 flex-col`}
+          className={`settings-card ${premiumUi.card} !p-5 scroll-mt-28 flex min-h-0 flex-col sm:!px-6`}
         >
           <div className="flex items-center gap-3">
             <div className={premiumUi.iconWrap}>
@@ -3561,16 +3598,16 @@ const SettingsTab = memo(function SettingsTab({
             <h2 className={premiumUi.title}>{memberCenterTitle}</h2>
           </div>
 
-          <div className="mt-4 flex min-h-0 flex-1 flex-col gap-4">
+          <div className="mt-2.5 flex min-h-0 flex-col gap-4">
             {isGuest ? (
               <>
                 <p className="text-[13px] leading-relaxed text-[var(--color-mist-text)]/65">{t.settings.membershipGuestHint}</p>
                 <p className="text-sm leading-6 text-[var(--color-mist-text)]/68">{guestPremiumSummary}</p>
-                <div className="settings-premium-benefits flex min-h-0 flex-1 flex-col gap-3">
+                <div className="settings-premium-benefits flex min-h-0 flex-col gap-4">
                   {benefitCards.map((benefit: any) => (
-                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-2.5 px-3 py-1.5`}>
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
-                        <Sparkles className="h-[13px] w-[13px]" />
+                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-3.5 px-4 py-3`}>
+                      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
+                        <Sparkles className="h-4 w-4" />
                       </div>
                       <div className="flex min-w-0 flex-col gap-[1px] pt-[2px]">
                         <p className="m-0 text-[14px] font-[650] leading-tight text-[var(--color-mist-text)]/90">{benefit.title}</p>
@@ -3585,11 +3622,11 @@ const SettingsTab = memo(function SettingsTab({
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42 leading-snug">
                   {premiumFeatureLead}
                 </p>
-                <div className="settings-premium-benefits flex min-h-0 flex-1 flex-col gap-3">
+                <div className="settings-premium-benefits flex min-h-0 flex-col gap-4">
                   {benefitCards.map((benefit: any) => (
-                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-2.5 px-3 py-1.5`}>
-                      <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
-                        <Sparkles className="h-[13px] w-[13px]" />
+                    <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-3.5 px-4 py-3`}>
+                      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-white/14 bg-white/14 text-[var(--color-mist-text)]/60">
+                        <Sparkles className="h-4 w-4" />
                       </div>
                       <div className="flex min-w-0 flex-col gap-[1px] pt-[2px]">
                         <p className="m-0 text-[14px] font-[650] leading-tight text-[var(--color-mist-text)]/90">{benefit.title}</p>
@@ -3598,12 +3635,12 @@ const SettingsTab = memo(function SettingsTab({
                     </div>
                   ))}
                 </div>
-                <div className="mt-2 shrink-0">
+                <div className="mt-3 shrink-0 pt-0.5">
                   {remoteMembershipLoading ? (
                     <p className="text-center text-[12px] leading-snug text-[var(--color-mist-text)]/58">
                       {t.settings.membershipLoading}
                     </p>
-                  ) : isRemotePremiumActive ? (
+                  ) : showMembershipAsActive ? (
                     accountPaymentProvider === 'stripe' ? (
                       <>
                         <button type="button" onClick={() => setPortalComingSoonShown(true)} className={manageButtonClass}>
@@ -3631,7 +3668,7 @@ const SettingsTab = memo(function SettingsTab({
           </div>
         </section>
 
-        <section className={`settings-card ${premiumUi.card} flex min-h-[520px] flex-col`}>
+        <section className={`settings-card ${premiumUi.card} !p-5 flex min-h-[520px] flex-col sm:!px-6`}>
           <div className="flex items-center gap-3">
             <div className={premiumUi.iconWrap}>
               <ExternalLink className="h-4.5 w-4.5" />
