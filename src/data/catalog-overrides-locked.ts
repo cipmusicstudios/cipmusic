@@ -287,8 +287,8 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     }
   },
   /**
-   * 远程 slug `falling you`（UUID 见 CATALOG_OVERRIDES_BY_TRACK_ID）与本地文件夹
-   * `Falling You（刘耀文）` / `Falling You（都智文 曾可妮）` 拆开；勿再增加第三条同标题混用 slug。
+   * Supabase 行 `slug` 与下列键一致；manifest 不再含 Falling You（仅远端两条）。
+   * 勿再增加第三条同标题混用 slug。
    */
   "Falling You（刘耀文）": {
     title: "Falling You",
@@ -327,7 +327,8 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
       zhHant: "Falling You",
       en: "Falling You"
     },
-    coverUrl: "https://i.ytimg.com/vi/XNcEv7WXb8U/hqdefault.jpg",
+    coverUrl:
+      "https://i.scdn.co/image/ab67616d0000b273a3677ba94a4ad68ddc6f4563",
     artist: "都智文",
     artists: {
       zhHans: "都智文、曾可妮",
@@ -2557,6 +2558,8 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     }
   },
   "约定之初": {
+    coverUrl:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhr0zyQmLm0SW_2RbKiB1r_c9HzFybApT72Q&s",
     artist: "光与夜之恋",
     artists: {
       zhHans: "光与夜之恋",

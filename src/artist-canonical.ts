@@ -356,13 +356,6 @@ export const TRACK_CANONICAL_BY_ID: Record<string, TrackCanonicalFix> = {
     artistReviewStatus: 'ok',
     note: 'remote_shine_kep1er_not_zhang_hao',
   },
-  /** 远端 slug `falling you` — 刘耀文版（拆条后见 `falling-you-liu-yao-wen`）。 */
-  '76ac6f51-d656-4ba7-a5cb-d72026e3b573': {
-    canonicalId: 'liu-yao-wen',
-    displayNameOverride: '刘耀文',
-    artistReviewStatus: 'ok',
-    note: 'remote_falling_you_liu_yaowen',
-  },
   /** 《陈情令》无羁 — 远端行。 */
   '671d8dce-5f47-4d69-8891-5b3763d10d43': {
     canonicalId: 'wang-yi-bo',

@@ -443,21 +443,39 @@ export function ensureCanonicalOnEntry(entry: SongManifestEntry): Required<
 
 /** Apply canonical artist resolution to any track (e.g. Supabase rows). */
 export function mergeCanonicalIntoTrack(track: Track): Track {
+  const base = applyCatalogOverridesToTrack(track);
   const rawDisplayTitle =
-    track.metadata.display.displayTitle || track.sourceSongTitle || track.title;
+    base.metadata.display.displayTitle || base.sourceSongTitle || base.title;
   const displayTitle = cleanDisplayTitle(rawDisplayTitle);
-  const rawArtist = track.sourceArtist || track.artist || '';
-  const videoHint = (track as { _cipMatchedVideoTitle?: string })._cipMatchedVideoTitle || null;
-  const resolution = resolveCanonicalArtist({
+  const rawArtist = base.sourceArtist || base.artist || '';
+  const videoHint = (base as { _cipMatchedVideoTitle?: string })._cipMatchedVideoTitle || null;
+  const cov = getMergedCatalogOverride(base.metadata?.identity?.slug, base.id);
+  let resolution = resolveCanonicalArtist({
     rawArtist,
     displayTitle,
-    trackId: track.id,
-    slug: track.metadata.identity.slug,
-    tags: track.tags || track.metadata.display.categories?.tags || [],
+    trackId: base.id,
+    slug: base.metadata.identity.slug,
+    tags: base.tags || base.metadata.display.categories?.tags || [],
     videoTitleHint: videoHint,
   });
+  if (
+    cov &&
+    (cov.canonicalArtistId ||
+      cov.coCanonicalArtistIds ||
+      cov.canonicalArtistDisplayName != null ||
+      cov.artistReviewStatus != null)
+  ) {
+    resolution = ensureBlackpinkCoBucket({
+      ...resolution,
+      canonicalArtistId: cov.canonicalArtistId ?? resolution.canonicalArtistId,
+      coCanonicalArtistIds: cov.coCanonicalArtistIds ?? resolution.coCanonicalArtistIds,
+      canonicalArtistDisplayName: cov.canonicalArtistDisplayName ?? resolution.canonicalArtistDisplayName,
+      artistReviewStatus: cov.artistReviewStatus ?? resolution.artistReviewStatus,
+      notes: [...resolution.notes, 'catalog_override_canonical'],
+    });
+  }
   const displayArtist = resolution.canonicalArtistDisplayName || rawArtist;
-  const existingContextTags = (track.tags || track.metadata.display.categories?.tags || [])
+  const existingContextTags = (base.tags || base.metadata.display.categories?.tags || [])
     .filter(t => CONTEXT_CATEGORY_TAGS.has(t));
   const { primaryCategory } = computeCategoryFromArtist(
     resolution.canonicalArtistId,
@@ -465,16 +483,16 @@ export function mergeCanonicalIntoTrack(track: Track): Track {
     existingContextTags,
   );
   return {
-    ...track,
+    ...base,
     title: displayTitle,
     artist: displayArtist,
     category: primaryCategory,
     canonicalArtistId: resolution.canonicalArtistId,
     coCanonicalArtistIds: resolution.coCanonicalArtistIds,
     metadata: {
-      ...track.metadata,
+      ...base.metadata,
       display: {
-        ...track.metadata.display,
+        ...base.metadata.display,
         displayTitle,
         artist: displayArtist,
         canonicalArtistId: resolution.canonicalArtistId,
@@ -483,7 +501,7 @@ export function mergeCanonicalIntoTrack(track: Track): Track {
         artistReviewStatus: resolution.artistReviewStatus,
         category: primaryCategory,
         categories: {
-          ...track.metadata.display.categories,
+          ...base.metadata.display.categories,
           primary: primaryCategory,
         },
         normalizedArtistsInfo: normalizedArtistsFromCanonicalFields(

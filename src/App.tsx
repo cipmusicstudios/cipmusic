@@ -165,7 +165,7 @@ export const SCENES: Scene[] = [
 /** Remote `songs` columns used in UI (avoid `select('*')` payload). Full rows load after idle. */
 /** 与当前 Supabase 表结构一致（远端若无 bilibili_url 列则勿选，否则会 42703） */
 const SUPABASE_REMOTE_SONG_COLUMNS =
-  'id,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,musicxml_url,midi_url,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
+  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,musicxml_url,midi_url,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
 
 const SUPABASE_SONGS_BUCKET = (import.meta.env.VITE_SUPABASE_SONGS_BUCKET as string | undefined)?.trim() || 'songs';
 
@@ -214,6 +214,7 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
     metadata: {
       identity: {
         id: song.id as string,
+        slug: (song.slug as string | undefined) || undefined,
         importSource: 'remote' as const,
       },
       display: {

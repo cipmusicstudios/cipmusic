@@ -844,6 +844,60 @@
       "listSortSource": "youtube_published"
     },
     {
+      "id": "519cb660-d7c9-4b14-85bb-a03487224918",
+      "title": "Falling You",
+      "displayTitle": "Falling You",
+      "originalArtist": "都智文",
+      "canonicalArtistId": "du-zhi-wen",
+      "coCanonicalArtistIds": [
+        "zeng-ke-ni"
+      ],
+      "canonicalArtistDisplayName": "都智文、曾可妮",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273a3677ba94a4ad68ddc6f4563",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you-du-zeng-keni/audio.mp3",
+      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you-du-zeng-keni/performance.mid",
+      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you-du-zeng-keni/score.musicxml",
+      "duration": "03:58",
+      "durationSeconds": 238,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Falling You（都智文 曾可妮）",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=XNcEv7WXb8U",
+      "youtubeVideoTitle": "Falling You - 曾可妮 Jenny Zeng & 都智文 Baby.J（点燃我，温暖你 电视剧OST）| CIP Music",
+      "youtubeVideoId": "XNcEv7WXb8U",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1hg411H7dB",
+      "sheetUrl": "https://mymusic.st/cipmusic/87942",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Falling You",
+        "zhHant": "Falling You",
+        "en": "Falling You"
+      },
+      "artists": {
+        "zhHans": "都智文、曾可妮",
+        "zhHant": "都智文、曾可妮",
+        "en": "Bernard Du, Jenny Zeng"
+      },
+      "youtubeSortIndex": 347,
+      "youtubePublishedAt": "2022-12-03T12:00:00.000Z",
+      "listSortPublishedAtMs": 1670068800000,
+      "listSortPublishedAt": "2022-12-03T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "f263def3-5dc0-455d-90ff-3511cdc93015",
       "title": "Birthday",
       "displayTitle": "Birthday",
@@ -2682,7 +2736,7 @@
       "listSortSource": "youtube_published"
     },
     {
-      "id": "76ac6f51-d656-4ba7-a5cb-d72026e3b573",
+      "id": "17aab9ca-df33-485b-8937-79bd767090ec",
       "title": "Falling You",
       "displayTitle": "Falling You",
       "originalArtist": "刘耀文",
@@ -2690,7 +2744,7 @@
       "canonicalArtistDisplayName": "刘耀文",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
-        "remote_falling_you_liu_yaowen"
+        "priority_explicit_artist_in_haystack"
       ],
       "tags": [
         "华语流行"
@@ -2699,18 +2753,18 @@
         "cpop"
       ],
       "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/b1/56/b0/b156b0f2-5545-c4ca-a6d6-873eca1a2e30/24UMGIM08763.rgb.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you/audio.mp3",
-      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you/performance.mid",
-      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you/score.musicxml",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you-liu-yao-wen/audio.mp3",
+      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you-liu-yao-wen/performance.mid",
+      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/falling-you-liu-yao-wen/score.musicxml",
       "duration": "03:43",
       "durationSeconds": 223,
       "hasPracticeMode": true,
       "importSource": "remote",
-      "slug": "falling you",
+      "slug": "目标全角 slug 整段复制",
       "youtubeVideoUrl": "https://www.youtube.com/watch?v=De-FuM4-G04",
       "youtubeVideoTitle": null,
       "youtubeVideoId": "De-FuM4-G04",
-      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1dF411L7SP",
+      "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/64427",
       "linkStatus": "linked",
       "titles": {
@@ -4469,53 +4523,6 @@
       "youtubePublishedAt": "2022-02-08T12:00:00.000Z",
       "listSortPublishedAtMs": 1644321600000,
       "listSortPublishedAt": "2022-02-08T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "a9c2052c-95f0-456f-a41d-564ef681b3cd",
-      "title": "雪龙吟",
-      "displayTitle": "雪龙吟",
-      "originalArtist": "张杰",
-      "canonicalArtistId": "zhang-jie",
-      "canonicalArtistDisplayName": "张杰",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000003p3eFp2DQ2YI.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b14236c186/audio.mp3",
-      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b14236c186/performance.mid",
-      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b14236c186/score.musicxml",
-      "duration": "02:08",
-      "durationSeconds": 128,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "雪龙吟",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=sy9duXh3RZM",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "sy9duXh3RZM",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/56978",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "雪龙吟",
-        "en": "Xue Long Yin"
-      },
-      "artists": {
-        "zhHans": "张杰",
-        "zhHant": "张杰",
-        "en": "Jason Zhang"
-      },
-      "youtubeSortIndex": 444,
-      "youtubePublishedAt": "2022-02-06T12:00:00.000Z",
-      "listSortPublishedAtMs": 1644148800000,
-      "listSortPublishedAt": "2022-02-06T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

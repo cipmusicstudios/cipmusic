@@ -1050,6 +1050,8 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     titles: { zhHans: 'Falling You', zhHant: 'Falling You', en: 'Falling You' },
     artist: '都智文',
     artists: { zhHans: '都智文、曾可妮', zhHant: '都智文、曾可妮', en: 'Bernard Du, Jenny Zeng' },
+    coverUrl:
+      'https://i.scdn.co/image/ab67616d0000b273a3677ba94a4ad68ddc6f4563',
     categoryTags: ['华语流行', '影视'],
     links: {
       youtube: 'https://www.youtube.com/watch?v=XNcEv7WXb8U',
@@ -1059,52 +1061,6 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     },
     matchedVideoTitle:
       'Falling You - 曾可妮 Jenny Zeng & 都智文 Baby.J（点燃我，温暖你 电视剧OST）| CIP Music',
-  },
-  /**
-   * 远端 Supabase 拆条后与 slug 对齐（执行 `scripts/sql/falling-you-rebuild.sql` 后生效）。
-   * 在迁移前，仍可继续用 slug `falling you` 的覆盖锁定刘耀文版元数据。
-   */
-  'falling you': {
-    title: 'Falling You',
-    displayTitle: 'Falling You',
-    titles: { zhHans: 'Falling You', zhHant: 'Falling You', en: 'Falling You' },
-    artist: '刘耀文',
-    artists: { zhHans: '刘耀文', zhHant: '劉耀文', en: 'Liu Yaowen' },
-    categoryTags: ['华语流行'],
-    links: {
-      youtube: 'https://www.youtube.com/watch?v=De-FuM4-G04',
-      video: 'https://www.youtube.com/watch?v=De-FuM4-G04',
-      bilibili: 'https://www.bilibili.com/video/BV1dF411L7SP',
-      sheet: 'https://mymusic.st/cipmusic/64427',
-    },
-  },
-  'falling-you-liu-yao-wen': {
-    title: 'Falling You',
-    displayTitle: 'Falling You',
-    titles: { zhHans: 'Falling You', zhHant: 'Falling You', en: 'Falling You' },
-    artist: '刘耀文',
-    artists: { zhHans: '刘耀文', zhHant: '劉耀文', en: 'Liu Yaowen' },
-    categoryTags: ['华语流行'],
-    links: {
-      youtube: 'https://www.youtube.com/watch?v=De-FuM4-G04',
-      video: 'https://www.youtube.com/watch?v=De-FuM4-G04',
-      bilibili: 'https://www.bilibili.com/video/BV1dF411L7SP',
-      sheet: 'https://mymusic.st/cipmusic/64427',
-    },
-  },
-  'falling-you-du-zeng': {
-    title: 'Falling You',
-    displayTitle: 'Falling You',
-    titles: { zhHans: 'Falling You', zhHant: 'Falling You', en: 'Falling You' },
-    artist: '都智文',
-    artists: { zhHans: '都智文、曾可妮', zhHant: '都智文、曾可妮', en: 'Bernard Du, Jenny Zeng' },
-    categoryTags: ['华语流行', '影视'],
-    links: {
-      youtube: 'https://www.youtube.com/watch?v=XNcEv7WXb8U',
-      video: 'https://www.youtube.com/watch?v=XNcEv7WXb8U',
-      bilibili: 'https://www.bilibili.com/video/BV1hg411H7dB',
-      sheet: 'https://mymusic.st/cipmusic/87942',
-    },
   },
   全世界在你身后: {
     artist: '都智文',

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-04-18T04:02:39.784Z",
+  "generatedAt": "2026-04-18T20:28:27.228Z",
   "artists": [
     {
       "canonicalArtistId": "zhou-shen",
@@ -768,7 +768,7 @@
       "songIds": [
         "0fda8d98-f0b6-4d12-a559-d5751531a06f",
         "5fbc21da-eba5-4458-b95e-e3d38a5980c8",
-        "76ac6f51-d656-4ba7-a5cb-d72026e3b573",
+        "17aab9ca-df33-485b-8937-79bd767090ec",
         "cd48f39a-20f8-4542-a5d5-f0e57e67dea6",
         "af8458f8-fa23-4634-ad03-675b96409145"
       ],
@@ -1666,6 +1666,23 @@
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/7670e0d8154d8afafbe22863ad1208a4/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer_manual",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "du-zhi-wen",
+      "displayName": "都智文",
+      "songCount": 2,
+      "songIds": [
+        "519cb660-d7c9-4b14-85bb-a03487224918",
+        "9211fc81-8922-4953-94ee-52d71a1c55e0"
+      ],
+      "sampleOriginalArtists": [
+        "都智文"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/970243a04e36a3a44f4bedb136ff33ba/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer_manual",
       "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
@@ -3259,6 +3276,22 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "zeng-ke-ni",
+      "displayName": "曾可妮",
+      "songCount": 1,
+      "songIds": [
+        "519cb660-d7c9-4b14-85bb-a03487224918"
+      ],
+      "sampleOriginalArtists": [
+        "都智文"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "g-dragon",
       "displayName": "权志龙",
       "songCount": 1,
@@ -3864,22 +3897,6 @@
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/c30b7ab344c24ed2143d058710c13f57/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "du-zhi-wen",
-      "displayName": "都智文",
-      "songCount": 1,
-      "songIds": [
-        "9211fc81-8922-4953-94ee-52d71a1c55e0"
-      ],
-      "sampleOriginalArtists": [
-        "都智文"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/970243a04e36a3a44f4bedb136ff33ba/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_manual",
-      "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
     },
     {
