@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly MODE: string;
   readonly VITE_SUPABASE_URL: string;
   readonly VITE_SUPABASE_ANON_KEY: string;
+  /** 歌曲音频 / 练习资源所在 Storage bucket，默认 `songs`（与 build-songs-manifest 一致） */
+  readonly VITE_SUPABASE_SONGS_BUCKET?: string;
   readonly VITE_SONGS_MANIFEST_URL?: string;
   /** Guest 注册页完整 URL（游客弹窗 / Account） */
   readonly VITE_AUTH_SIGNUP_URL?: string;

@@ -70,6 +70,9 @@ const SYNC_SLUGS = [
   'normal no more',
   '无人乐园',
   '明天见',
+  '爱琴海',
+  '恋人',
+  '摆脱地心引力',
 ];
 
 for (const slug of SYNC_SLUGS) {

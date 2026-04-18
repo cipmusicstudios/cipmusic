@@ -55,6 +55,13 @@ export type UpgradeModalCopyZhCN = {
     days30: UpgradeBillingCardCopy;
     days365: UpgradeBillingCardCopy;
   };
+  /** 微信支付收银台（站内层，不跳转当前窗口） */
+  zpayCheckout: {
+    title: string;
+    readyLine: string;
+    openInNewWindow: string;
+    iframeHint: string;
+  };
 };
 
 export type UpgradeModalCopy = UpgradeModalCopyStripeOnly | UpgradeModalCopyZhCN;
@@ -157,6 +164,12 @@ function zpayFailureUserMessage(
   return copy.zpayFailed;
 }
 
+export type ZpayCheckoutPayload = {
+  payUrl: string;
+  qrUrl?: string;
+  qrImageUrl?: string;
+};
+
 function ZpayBillingCard({
   card,
   days,
@@ -169,6 +182,7 @@ function ZpayBillingCard({
   zpayBusy,
   setZpayBusy,
   setZpayError,
+  onZpayReady,
 }: {
   card: UpgradeBillingCardCopy;
   days: 30 | 365;
@@ -181,6 +195,7 @@ function ZpayBillingCard({
   zpayBusy: null | 30 | 365;
   setZpayBusy: (v: null | 30 | 365) => void;
   setZpayError: (v: string | null) => void;
+  onZpayReady: (payload: ZpayCheckoutPayload) => void;
 }) {
   const busy = zpayBusy !== null;
   return (
@@ -199,7 +214,11 @@ function ZpayBillingCard({
           const result = await createZpayOrderCheckout(days, userId);
           setZpayBusy(null);
           if (result.ok === true) {
-            window.location.href = result.payUrl;
+            onZpayReady({
+              payUrl: result.payUrl,
+              qrUrl: result.qrUrl,
+              qrImageUrl: result.qrImageUrl,
+            });
             return;
           }
           const failed = result;
@@ -255,12 +274,14 @@ export function MembershipCheckoutModal({
   const [zhStep, setZhStep] = useState<ZhCNSubStep>('channels');
   const [zpayBusy, setZpayBusy] = useState<null | 30 | 365>(null);
   const [zpayError, setZpayError] = useState<string | null>(null);
+  const [zpayCheckout, setZpayCheckout] = useState<ZpayCheckoutPayload | null>(null);
 
   useEffect(() => {
     if (open && copy.mode === 'zh-cn') {
       setZhStep('channels');
       setZpayError(null);
       setZpayBusy(null);
+      setZpayCheckout(null);
     }
   }, [open, copy]);
 
@@ -270,6 +291,7 @@ export function MembershipCheckoutModal({
       setZhStep('channels');
       setZpayError(null);
       setZpayBusy(null);
+      setZpayCheckout(null);
     }
   };
 
@@ -292,6 +314,7 @@ export function MembershipCheckoutModal({
       onBack = () => {
         setZhStep('channels');
         setZpayError(null);
+        setZpayCheckout(null);
       };
     } else {
       title = copy.step2Wechat.title;
@@ -300,13 +323,17 @@ export function MembershipCheckoutModal({
       onBack = () => {
         setZhStep('channels');
         setZpayError(null);
+        setZpayCheckout(null);
       };
     }
   }
 
+  const zpayCopy = copy.mode === 'zh-cn' ? copy.zpayCheckout : null;
+
   return (
     <AnimatePresence>
       {open && (
+        <>
         <div className="pointer-events-auto fixed inset-0 z-[130] flex items-center justify-center p-3 sm:p-5">
           <motion.div
             initial={{opacity: 0}}
@@ -410,6 +437,7 @@ export function MembershipCheckoutModal({
                       zpayBusy={zpayBusy}
                       setZpayBusy={setZpayBusy}
                       setZpayError={setZpayError}
+                      onZpayReady={setZpayCheckout}
                     />
                     <ZpayBillingCard
                       card={copy.step2Wechat.days365}
@@ -423,6 +451,7 @@ export function MembershipCheckoutModal({
                       zpayBusy={zpayBusy}
                       setZpayBusy={setZpayBusy}
                       setZpayError={setZpayError}
+                      onZpayReady={setZpayCheckout}
                     />
                   </>
                 )}
@@ -436,6 +465,77 @@ export function MembershipCheckoutModal({
             </div>
           </motion.div>
         </div>
+
+        {copy.mode === 'zh-cn' && zpayCheckout && zpayCopy ? (
+          <div className="pointer-events-auto fixed inset-0 z-[136] flex items-center justify-center p-3 sm:p-5">
+            <motion.div
+              initial={{opacity: 0}}
+              animate={{opacity: 1}}
+              exit={{opacity: 0}}
+              onClick={() => setZpayCheckout(null)}
+              className="absolute inset-0 bg-[rgba(22,18,14,0.55)]"
+            />
+            <motion.div
+              initial={{opacity: 0, y: 6}}
+              animate={{opacity: 1, y: 0}}
+              exit={{opacity: 0, y: 4}}
+              transition={{duration: 0.15}}
+              className="relative z-[1] flex w-full max-w-[440px] flex-col rounded-[20px] border border-[rgba(90,72,52,0.12)] bg-[#fffaf5] p-4 shadow-[0_16px_40px_rgba(42,32,24,0.14)]"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="text-[1.05rem] font-semibold leading-tight text-[var(--color-mist-text)]">{zpayCopy.title}</h3>
+                  <p className="mt-1 text-[13px] leading-snug text-[var(--color-mist-text)]/62">{zpayCopy.readyLine}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setZpayCheckout(null)}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--color-mist-text)]/40 transition-colors hover:bg-black/[0.05] hover:text-[var(--color-mist-text)]/65"
+                  aria-label={closeLabel}
+                >
+                  <X className="h-4 w-4" strokeWidth={2} aria-hidden />
+                </button>
+              </div>
+
+              <div className="mt-3 min-h-[200px] w-full flex-1 overflow-hidden rounded-xl border border-[rgba(90,72,52,0.1)] bg-white/90">
+                {zpayCheckout.qrImageUrl ? (
+                  <div className="flex flex-col items-center gap-3 p-4">
+                    <img
+                      src={zpayCheckout.qrImageUrl}
+                      alt=""
+                      className="max-h-[min(52vh,360px)] w-auto max-w-full object-contain"
+                    />
+                  </div>
+                ) : zpayCheckout.qrUrl ? (
+                  <div className="flex flex-col items-center gap-3 p-4">
+                    <img src={zpayCheckout.qrUrl} alt="" className="max-h-[min(52vh,360px)] w-auto max-w-full object-contain" />
+                  </div>
+                ) : (
+                  <iframe
+                    title={zpayCopy.title}
+                    src={zpayCheckout.payUrl}
+                    className="h-[min(52vh,380px)] w-full border-0 bg-white"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                )}
+              </div>
+
+              <p className="mt-2 text-[11px] leading-snug text-[var(--color-mist-text)]/48">{zpayCopy.iframeHint}</p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  window.open(zpayCheckout.payUrl, '_blank', 'noopener,noreferrer');
+                }}
+                className="mt-3 w-full rounded-xl border border-[rgba(182,132,84,0.35)] bg-[linear-gradient(180deg,rgba(255,252,248,0.98)_0%,rgba(246,238,228,0.96)_100%)] px-4 py-2.5 text-[13px] font-semibold text-[var(--color-mist-text)]/88 shadow-sm transition-colors hover:border-[rgba(182,132,84,0.5)]"
+              >
+                {zpayCopy.openInNewWindow}
+              </button>
+            </motion.div>
+          </div>
+        ) : null}
+        </>
       )}
     </AnimatePresence>
   );

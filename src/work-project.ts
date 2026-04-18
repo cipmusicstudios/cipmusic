@@ -15,6 +15,10 @@ export function inferWorkProjectKeyFromText(haystack: string | undefined | null)
   if (/恋与深空|Love and Deepspace/i.test(s)) return 'love-and-deepspace';
   if (/你是我的荣耀/i.test(s)) return 'ni-shi-wo-de-rong-yao';
   if (/王者荣耀|Honor of Kings/i.test(s)) return 'honor-of-kings';
+  if (/英雄联盟|英雄聯盟|league\s*of\s*legends|\bLoL\b|worlds\s*anthem/i.test(s)) return 'league-of-legends';
+  if (/纸嫁衣|Paper Bride/i.test(s)) return 'paper-bride';
+  if (/黑神话|黑神話|Black Myth:\s*Wukong|Black Myth Wukong/i.test(s)) return 'black-myth-wukong';
+  if (/恋与制作人|戀與製作人|Mr\.?\s*Love|Love and Producer/i.test(s)) return 'love-and-producer';
   return undefined;
 }
 

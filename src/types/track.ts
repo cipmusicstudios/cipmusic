@@ -73,6 +73,8 @@ export type TrackMetadata = {
     bilibili?: string;
     /** When true: no published sheet URL by design; do not count as missingSheet if video exists. */
     noSheet?: boolean;
+    /** When true: no playable external video; skip CIP YouTube / channel fallback (align with import overrides). */
+    noExternalVideo?: boolean;
   };
   enrichment?: {
     status?: 'seed' | 'manual' | 'auto';
@@ -99,7 +101,7 @@ export type TrackMetadata = {
     listSortPublishedAtMs?: number | null;
     /** ISO 8601 aligned with listSortPublishedAtMs (for display/debug; not always a true release date). */
     listSortPublishedAt?: string | null;
-    listSortSource?: 'youtube_published' | 'youtube_channel_index' | 'fallback_no_youtube_order';
+    listSortSource?: 'youtube_published' | 'youtube_channel_index' | 'fallback_no_youtube_order' | 'catalog_override';
   };
 };
 

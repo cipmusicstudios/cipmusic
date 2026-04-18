@@ -20,7 +20,7 @@ export type CreateZpayOrderDebug = {
 };
 
 export type CreateZpayOrderResult =
-  | {ok: true; payUrl: string}
+  | {ok: true; payUrl: string; qrUrl?: string; qrImageUrl?: string}
   | {
       ok: false;
       error: string;
@@ -62,6 +62,11 @@ export async function createZpayOrderCheckout(
 
   let data: {
     payUrl?: string;
+    qrUrl?: string;
+    qr_image_url?: string;
+    qrImageUrl?: string;
+    qrcode?: string;
+    qrcode_url?: string;
     error?: string;
     message?: string;
     hint?: string;
@@ -128,5 +133,18 @@ export async function createZpayOrderCheckout(
     };
   }
 
-  return {ok: true, payUrl: data.payUrl};
+  const rawQrCandidates = [data.qrImageUrl, data.qr_image_url, data.qrcode_url, data.qrcode];
+  let qrImageUrl: string | undefined;
+  for (const u of rawQrCandidates) {
+    if (typeof u !== 'string' || !u.trim()) continue;
+    const t = u.trim();
+    if (t.startsWith('data:image/') || /^https?:\/\//i.test(t)) {
+      qrImageUrl = t;
+      break;
+    }
+  }
+  const qrUrl =
+    typeof data.qrUrl === 'string' && /^https?:\/\//i.test(data.qrUrl.trim()) ? data.qrUrl.trim() : undefined;
+
+  return {ok: true, payUrl: data.payUrl, qrUrl, qrImageUrl};
 }

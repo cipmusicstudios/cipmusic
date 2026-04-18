@@ -790,10 +790,12 @@ export const LOCAL_IMPORT_CIP_LINKS = {
   },
   "normal no more": {
     "sheet": "https://mymusic5.com/cipmusic/341127",
-    "matchTitle": "Normal no more",
+    "matchTitle": "Normal No More",
     "cipLinkConfidence": "high",
     "matchedVideoTitle": "【钢琴】战歌起！Normal No More (附免费钢琴谱）",
-    "cipRefineNote": "sync_from_override_bilibili_only"
+    "cipRefineNote": "sync_from_override",
+    "youtube": "https://youtube.com/shorts/qUqr2ewWD74?feature=share",
+    "video": "https://youtube.com/shorts/qUqr2ewWD74?feature=share"
   },
   "not-cute-anymore": {
     "youtube": "https://www.youtube.com/watch?v=XUcULdbbWPI",
@@ -2188,7 +2190,7 @@ export const LOCAL_IMPORT_CIP_LINKS = {
   "无人乐园": {
     "youtube": "https://www.youtube.com/watch?v=2TcJqYwJhoQ",
     "video": "https://www.youtube.com/watch?v=2TcJqYwJhoQ",
-    "sheet": "https://mymusic.st/cipmusic/95208",
+    "sheet": "https://www.mymusic5.com/cipmusic/373321",
     "matchTitle": "王俊凯 无人乐园",
     "matchedVideoTitle": "王俊凯《无人乐园》钢琴版 Karry Wang Junkai - 'No One's Paradise' Piano Cover | Piano by CIP Music",
     "cipLinkConfidence": "high",
@@ -4022,7 +4024,7 @@ export const LOCAL_IMPORT_CIP_LINKS = {
   },
   "我的舞台": {
     "matchTitle": "我的舞台",
-    "matchedVideoTitle": "《我的舞台》用户指定 Bilibili 片源（创造营2021 舞台）",
+    "matchedVideoTitle": "《我的舞台》武星、任胤蓬（用户指定 Bilibili 片源）",
     "sheet": "https://www.mymusic5.com/cipmusic/158001",
     "sheetSource": "mymusic5_catalog",
     "cipLinkConfidence": "high",
@@ -4381,5 +4383,29 @@ export const LOCAL_IMPORT_CIP_LINKS = {
     "sheet": "https://www.mymusic5.com/cipmusic/120423",
     "matchedVideoTitle": "TFBOYS十周年新歌《明天见》 Piano Cover | Piano by CIP Music",
     "matchTitle": "明天见"
+  },
+  "爱琴海": {
+    "youtube": "https://www.youtube.com/watch?v=BM8Fz49vLpg",
+    "video": "https://www.youtube.com/watch?v=BM8Fz49vLpg",
+    "cipLinkConfidence": "high",
+    "cipRefineNote": "sync_from_override",
+    "sheet": "https://www.mymusic5.com/cipmusic/374036",
+    "matchTitle": "爱琴海"
+  },
+  "恋人": {
+    "youtube": "https://www.youtube.com/watch?v=tB4Bmv-JjXA",
+    "video": "https://www.youtube.com/watch?v=tB4Bmv-JjXA",
+    "cipLinkConfidence": "high",
+    "cipRefineNote": "sync_from_override",
+    "sheet": "https://www.mymusic5.com/cipmusic/374985",
+    "matchTitle": "恋人"
+  },
+  "摆脱地心引力": {
+    "youtube": "https://www.youtube.com/watch?v=bxtYrbUOQPM",
+    "video": "https://www.youtube.com/watch?v=bxtYrbUOQPM",
+    "cipLinkConfidence": "high",
+    "cipRefineNote": "sync_from_override",
+    "sheet": "https://www.mymusic5.com/cipmusic/376065",
+    "matchTitle": "摆脱地心引力"
   }
 } as const;

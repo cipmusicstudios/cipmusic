@@ -1,3 +1,8 @@
+/**
+ * 本地导入用 metadata 补丁（历史批量录入）。
+ * **已确认的锁定元数据** 以 `src/data/catalog-overrides-locked.ts` 为准（由 `catalog-overrides.ts` 应用）；本文件不再驱动 catalog。
+ * 仅作 legacy 补充，优先级低于 catalog；新纠错请只改 locked 文件。
+ */
 export type LocalizedDisplayTitles = {
   zhHans?: string;
   zhHant?: string;
@@ -105,6 +110,21 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artists: { zhHans: '（无原唱）' },
     categoryTags: ['游戏'],
   },
+  /** 梗曲翻奏 — 勿将视频标题误作歌手。 */
+  哈基米: {
+    artist: '（无原唱）',
+    artists: { zhHans: '（无原唱）' },
+    categoryTags: ['日系流行', '动漫'],
+  },
+  /** KiiiKiii《DANCING ALONE》— 与「Dancing Along」为同一英文检索常用名。 */
+  'dancing-alone': {
+    title: 'Dancing Alone',
+    displayTitle: 'Dancing Alone',
+    titles: { zhHans: 'Dancing Alone', en: 'DANCING ALONE' },
+    artist: 'KiiiKiii',
+    artists: { zhHans: 'KiiiKiii', zhHant: 'KiiiKiii', en: 'KiiiKiii' },
+    categoryTags: ['韩流流行'],
+  },
   /** CHUANG2021 曲目。 */
   冒险计划: {
     artist: 'INTO1',
@@ -156,6 +176,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artist: '王力宏',
     artists: { zhHans: '王力宏', en: 'Leehom Wang' },
     categoryTags: ['华语流行'],
+    links: { noSheet: true },
   },
   小小: {
     artist: '容祖儿',
@@ -165,7 +186,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
   新宝岛: {
     artist: '（无原唱）',
     artists: { zhHans: '（无原唱）' },
-    categoryTags: ['华语流行'],
+    categoryTags: ['日系流行'],
   },
   /** 奥特曼中文主题曲 — 展示为特摄 IP，不挂「毛华锋」独立艺人词条。 */
   信念之光: {
@@ -182,6 +203,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artist: "Kep1er（Girls' Planet 999）",
     artists: { zhHans: "Kep1er（Girls' Planet 999）", en: 'Kep1er (GP999)' },
     categoryTags: ['韩流流行'],
+    links: { noSheet: true },
   },
   有你: {
     artist: '时代少年团',
@@ -382,6 +404,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     },
   },
   'soda-pop': {
+    workProjectKey: 'kpop-demon-hunters',
     links: {
       youtube: 'https://www.youtube.com/watch?v=bkgFKxWLrS0',
       video: 'https://www.youtube.com/watch?v=bkgFKxWLrS0',
@@ -650,7 +673,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     officialLinks: {
       spotify: 'https://open.spotify.com/track/4m4aE47bzubKFFuYphjOiM',
     },
-    categoryTags: ['华语流行'],
+    categoryTags: ['影视'],
   },
   /** 《崩坏：星穹铁道》— 封面与用户指定 Spotify 单曲一致（Robin / HOYO-MiX / Chevy）。 */
   希望有羽毛和翅膀: {
@@ -662,11 +685,54 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
   },
   /** aespa《Dreams Come True》SM STATION — 封面与用户指定 Spotify 单曲一致（避免错误商店图）。 */
   'dreams come true': {
+    artist: 'aespa',
+    artists: { zhHans: 'aespa', zhHant: 'aespa', en: 'aespa' },
+    categoryTags: ['韩流流行'],
     suppressOfficialCover: true,
     cover: 'https://i.scdn.co/image/ab67616d0000b2735b1ee39743c40b88a80b4ccf',
     officialLinks: {
       spotify: 'https://open.spotify.com/track/6rVCUwfnuYTAsX4P9fIdIu',
     },
+  },
+  /** 少女时代《Forever 1》— 简繁「少女时代」，英文「Girls' Generation」。 */
+  'Forever 1': {
+    titles: {
+      zhHans: 'Forever 1',
+      zhHant: 'Forever 1',
+      en: "Girls' Generation — Forever 1",
+    },
+    artist: "Girls' Generation",
+    artists: {
+      zhHans: '少女时代',
+      zhHant: '少女時代',
+      en: "Girls' Generation",
+    },
+    categoryTags: ['韩流流行'],
+  },
+  /** Girls Planet 999 任务曲；界面显示完整符号。 */
+  'u+me=love': {
+    title: 'You+Me=Love',
+    displayTitle: 'You+Me=Love',
+    titles: {
+      zhHans: 'You+Me=Love',
+      zhHant: 'You+Me=Love',
+      en: 'You+Me=Love',
+    },
+  },
+  /** 英雄联盟 Worlds 2022；简中「逐星」。 */
+  "STAR WALKIN'": {
+    artist: 'Lil Nas X',
+    artists: { zhHans: 'Lil Nas X', zhHant: 'Lil Nas X', en: 'Lil Nas X' },
+    categoryTags: ['欧美流行', '游戏'],
+    titles: {
+      zhHans: '逐星',
+      zhHant: '逐星',
+      en: "Star Walkin'",
+    },
+    workProjectKey: 'league-of-legends',
+  },
+  漠河舞厅: {
+    links: { noSheet: true },
   },
   /** aespa《Life's Too Short (English Version)》— 与 Spotify 单曲一致；曾误显为「Life」。 */
   "life's too short": {
@@ -771,8 +837,9 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
       zhHant: '餘生，請多指教',
       en: 'The Oath of Love',
     },
-    artist: '杨紫、肖战',
-    artists: { zhHans: '杨紫、肖战', en: 'Yang Zi, Xiao Zhan' },
+    /** 列表主展示杨紫；肖战通过 canonical co-bucket 关联同一首歌（非组合艺人词条）。 */
+    artist: '杨紫',
+    artists: { zhHans: '杨紫', zhHant: '杨紫', en: 'Yang Zi' },
     category: '华语流行',
     categoryTags: ['影视', '华语流行'],
     links: {
@@ -897,6 +964,11 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     matchedVideoTitle:
       'TNT时代少年团 马嘉祺 宋亚轩 张真源《抬起头来》钢琴版 Teens In Times Ma Jiaqi Song Yaxuan Zhang Zhenyuan Wish Piano Cover | CIP Music',
   },
+  光亮: {
+    links: {
+      sheet: 'https://www.mymusic5.com/cipmusic/49061',
+    },
+  },
   无人乐园: {
     artist: '王俊凯',
     artists: { zhHans: '王俊凯', zhHant: '王俊凱', en: 'Karry Wang' },
@@ -905,10 +977,98 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     links: {
       youtube: 'https://www.youtube.com/watch?v=2TcJqYwJhoQ',
       video: 'https://www.youtube.com/watch?v=2TcJqYwJhoQ',
-      sheet: 'https://mymusic.st/cipmusic/95208',
+      sheet: 'https://www.mymusic5.com/cipmusic/373321',
     },
     matchedVideoTitle:
       "王俊凯《无人乐园》钢琴版 Karry Wang Junkai - 'No One's Paradise' Piano Cover | Piano by CIP Music",
+  },
+  爱琴海: {
+    title: '爱琴海',
+    displayTitle: '爱琴海',
+    titles: { zhHans: '爱琴海', zhHant: '愛琴海', en: 'Aegean Sea' },
+    artist: '周杰伦',
+    artists: { zhHans: '周杰伦', zhHant: '周杰倫', en: 'Jay Chou' },
+    category: '华语流行',
+    categoryTags: ['华语流行'],
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=BM8Fz49vLpg',
+      video: 'https://www.youtube.com/watch?v=BM8Fz49vLpg',
+      bilibili: 'https://www.bilibili.com/video/BV1C3DxBBEGX',
+      sheet: 'https://www.mymusic5.com/cipmusic/374036',
+    },
+  },
+  恋人: {
+    title: '恋人',
+    displayTitle: '恋人',
+    titles: { zhHans: '恋人', zhHant: '戀人', en: 'Lover' },
+    artist: '李荣浩',
+    artists: { zhHans: '李荣浩', zhHant: '李榮浩', en: 'Li Ronghao' },
+    category: '华语流行',
+    categoryTags: ['华语流行'],
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=tB4Bmv-JjXA',
+      video: 'https://www.youtube.com/watch?v=tB4Bmv-JjXA',
+      bilibili: 'https://www.bilibili.com/video/BV1RPQhBrEQM/',
+      sheet: 'https://www.mymusic5.com/cipmusic/374985',
+    },
+  },
+  摆脱地心引力: {
+    title: '摆脱地心引力',
+    displayTitle: '摆脱地心引力',
+    titles: { zhHans: '摆脱地心引力', zhHant: '擺脫地心引力', en: 'Escape Gravity' },
+    artist: '时代少年团',
+    artists: { zhHans: '时代少年团', zhHant: '時代少年團', en: 'Teens in Times' },
+    category: '华语流行',
+    categoryTags: ['华语流行'],
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=bxtYrbUOQPM',
+      video: 'https://www.youtube.com/watch?v=bxtYrbUOQPM',
+      bilibili: 'https://www.bilibili.com/video/BV18jdvB9EA8',
+      sheet: 'https://www.mymusic5.com/cipmusic/376065',
+    },
+  },
+  /** 本地导入拆条：文件夹名含区分；界面只显示「Falling You」。 */
+  'Falling You（刘耀文）': {
+    title: 'Falling You',
+    displayTitle: 'Falling You',
+    titles: { zhHans: 'Falling You', zhHant: 'Falling You', en: 'Falling You' },
+    artist: '刘耀文',
+    artists: { zhHans: '刘耀文', zhHant: '劉耀文', en: 'Liu Yaowen' },
+    categoryTags: ['华语流行'],
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=De-FuM4-G04',
+      video: 'https://www.youtube.com/watch?v=De-FuM4-G04',
+      bilibili: 'https://www.bilibili.com/video/BV1dF411L7SP',
+      sheet: 'https://mymusic.st/cipmusic/64427',
+    },
+    matchedVideoTitle:
+      'TNT时代少年团 刘耀文《Falling You》钢琴版 Teens In Times Liu Yaowen Piano Cover | CIP Music',
+  },
+  'Falling You（都智文 曾可妮）': {
+    title: 'Falling You',
+    displayTitle: 'Falling You',
+    titles: { zhHans: 'Falling You', zhHant: 'Falling You', en: 'Falling You' },
+    artist: '都智文',
+    artists: { zhHans: '都智文、曾可妮', zhHant: '都智文、曾可妮', en: 'Bernard Du, Jenny Zeng' },
+    coverUrl:
+      'https://i.scdn.co/image/ab67616d0000b273a3677ba94a4ad68ddc6f4563',
+    categoryTags: ['华语流行', '影视'],
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=XNcEv7WXb8U',
+      video: 'https://www.youtube.com/watch?v=XNcEv7WXb8U',
+      bilibili: 'https://www.bilibili.com/video/BV1hg411H7dB',
+      sheet: 'https://mymusic.st/cipmusic/87942',
+    },
+    matchedVideoTitle:
+      'Falling You - 曾可妮 Jenny Zeng & 都智文 Baby.J（点燃我，温暖你 电视剧OST）| CIP Music',
+  },
+  全世界在你身后: {
+    artist: '都智文',
+    artists: { zhHans: '都智文', zhHant: '都智文', en: 'Bernard Du' },
+    categoryTags: ['华语流行', '影视'],
+  },
+  'masayume chasing': {
+    links: { noSheet: true },
   },
   明早老地方出发: {
     links: {
@@ -1064,6 +1224,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artist: '鞠婧祎',
     artists: { zhHans: '鞠婧祎', zhHant: '鞠婧禕', en: 'Ju Jingyi' },
     categoryTags: ['影视', '华语流行'],
+    links: { noSheet: true },
   },
   续写: {
     artist: '单依纯',
@@ -1146,10 +1307,12 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     title: 'Pop/Star',
     displayTitle: 'Pop/Star',
     titles: { zhHans: 'Pop/Star', zhHant: 'Pop/Star', en: 'Pop/Star' },
-    artist: 'I-DLE',
-    artists: { zhHans: 'I-DLE', zhHant: 'I-DLE', en: 'I-DLE' },
+    artist: 'K/DA',
+    artists: { zhHans: 'K/DA', zhHant: 'K/DA', en: 'K/DA' },
     category: '韩流流行',
     categoryTags: ['韩流流行', '游戏'],
+    links: { noSheet: true },
+    workProjectKey: 'league-of-legends',
   },
   'queen card': {
     artist: 'I-DLE',
@@ -1260,11 +1423,18 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
   free: {
     artist: 'HUNTR/X',
     artists: { zhHans: 'HUNTR/X', zhHant: 'HUNTR/X', en: 'HUNTR/X' },
+    categoryTags: ['韩流流行', '影视'],
+    workProjectKey: 'kpop-demon-hunters',
   },
   'take-down': {
     artist: 'HUNTR/X',
     artists: { zhHans: 'HUNTR/X', zhHant: 'HUNTR/X', en: 'HUNTR/X' },
+    categoryTags: ['韩流流行', '影视'],
+    workProjectKey: 'kpop-demon-hunters',
   },
+  golden: { workProjectKey: 'kpop-demon-hunters' },
+  'your-idol': { workProjectKey: 'kpop-demon-hunters' },
+  "How it's done": { workProjectKey: 'kpop-demon-hunters' },
   'call of silence': {
     artist: '泽野弘之',
     artists: { zhHans: '泽野弘之', zhHant: '澤野弘之', en: 'Hiroyuki Sawano' },
@@ -1304,8 +1474,9 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
       zhHant: '不可阻擋',
       en: 'Burn It All Down',
     },
-    artist: 'PVRIS',
-    artists: { zhHans: 'PVRIS', zhHant: 'PVRIS', en: 'PVRIS' },
+    artist: '英雄联盟',
+    artists: { zhHans: '英雄联盟', zhHant: '英雄聯盟', en: 'League of Legends' },
+    workProjectKey: 'league-of-legends',
     links: {
       youtube: 'https://www.youtube.com/watch?v=JWbhkFJSz4E',
       video: 'https://www.youtube.com/watch?v=JWbhkFJSz4E',
@@ -1420,7 +1591,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     links: {
       youtube: 'https://www.youtube.com/watch?v=N5ne2BvRgQc',
       video: 'https://www.youtube.com/watch?v=N5ne2BvRgQc',
-      sheet: 'https://mymusic.st/cipmusic/251891',
+      sheet: 'https://www.mymusic5.com/cipmusic/49395',
     },
     matchedVideoTitle: '哪吒钢琴版 - TNT时代少年团 NeZha Piano Cover - Teens In Times',
   },
@@ -1580,6 +1751,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     artists: { zhHans: '鞠婧祎', zhHant: '鞠婧禕', en: 'Ju Jingyi' },
     categoryTags: ['影视', '华语流行'],
     links: {
+      noSheet: true,
       youtube: 'https://www.youtube.com/watch?v=nQJ6gQzCVIw',
       video: 'https://www.youtube.com/watch?v=nQJ6gQzCVIw',
     },
@@ -1671,7 +1843,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
       zhHant: 'Rosé和Bruno Mars',
       en: 'Rosé & Bruno Mars',
     },
-    categoryTags: ['K-POP'],
+    categoryTags: ['韩流流行'],
   },
   /** 武星、任胤蓬 舞台曲；封面以 Spotify track 为准。 */
   我的舞台: {

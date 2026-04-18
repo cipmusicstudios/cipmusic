@@ -5,12 +5,14 @@
 import { ARTIST_DICTIONARY } from './local-import-artist-normalization';
 
 /** Game / IP project rows we still show as a single “project” card (logo / key art). */
-const PROJECT_ARTISTS_ALLOWED_ON_GRID = new Set<string>([
+export const PROJECT_ARTISTS_ALLOWED_ON_GRID = new Set<string>([
   'love-and-deepspace',
   'genshin-impact',
   'honkai-star-rail',
   'honkai-impact-3',
   'honor-of-kings',
+  'league-of-legends',
+  'kpop-demon-hunters',
   'paper-bride',
   'black-myth-wukong',
   'fairy-town',
@@ -35,6 +37,22 @@ const FROM_YOUTUBE_PERFORMER_ALLOWLIST = new Set<string>([
   'from-youtube/就是南方凯',
   'from-youtube/spider',
 ]);
+
+/**
+ * 艺人页 / 艺人网格聚合：除 primary + co 外，把 `workProjectKey` 指到允许展示的项目桶时也算入该桶，
+ * 否则仅写在 locked 的 IP 项目 key 不会出现在「英雄联盟」等项目卡下。
+ */
+export function workProjectAugmentedArtistBucketIds(
+  primary: string | undefined,
+  co: string[] | undefined,
+  workProjectKey: string | undefined,
+): string[] {
+  const base = Array.from(new Set([primary, ...(co ?? [])].filter(Boolean) as string[]));
+  if (workProjectKey && PROJECT_ARTISTS_ALLOWED_ON_GRID.has(workProjectKey) && !base.includes(workProjectKey)) {
+    base.push(workProjectKey);
+  }
+  return base;
+}
 
 export function shouldShowArtistOnArtistPage(canonicalArtistId: string | undefined): boolean {
   if (!canonicalArtistId) return false;

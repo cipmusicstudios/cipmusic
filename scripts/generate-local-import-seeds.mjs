@@ -7,6 +7,8 @@ const outputFile = path.join(projectRoot, 'src', 'local-import-seeds.generated.t
 
 /** Slugs removed from the catalog (user request) */
 const EXCLUDED_SLUGS = new Set([
+  /** 已由 `Falling You（刘耀文）` / `Falling You（都智文 曾可妮）` 两文件夹拆条替代。 */
+  'falling you',
   '生如夏花',
   /** Merged into `Merry Christmas Mr.Lawrence` (same piece; duplicate catalog entry removed). */
   '圣诞快乐',

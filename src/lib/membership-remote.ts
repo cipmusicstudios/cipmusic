@@ -170,3 +170,38 @@ export function normalizePaymentProvider(raw: string | null | undefined): Normal
   if (s === 'zpay' || s === 'wechat' || s.includes('wechat')) return 'zpay';
   return 'unknown';
 }
+
+/**
+ * 是否 Stripe **订阅**自动续费（与一次性 Checkout、后台 manual 开通区分）。
+ * 依赖 `user_membership.membership_status` 等字段由支付回调写入；若无 subscription 标记则视为未开启自动续费。
+ */
+export function isStripeSubscriptionAutoRenew(m: RemoteUserMembership | null | undefined): boolean {
+  if (!m) return false;
+  const p = (m.paymentProvider || '').toLowerCase().trim();
+  if (p !== 'stripe') return false;
+  const st = (m.membershipStatus || '').toLowerCase().trim();
+  if (!st) return false;
+  return (
+    st.includes('subscription') ||
+    st === 'stripe_subscription' ||
+    st === 'recurring' ||
+    st.endsWith('_subscription')
+  );
+}
+
+export type AccountAutoRenewCopy = {
+  membershipAutoRenewOn: string;
+  membershipAutoRenewOff: string;
+  membershipAutoRenewUnknown: string;
+};
+
+/** Account「自动续费」行：仅 Stripe 订阅为已开启，其余为未开启；无 provider 信息时为 — */
+export function accountAutoRenewLabel(
+  m: RemoteUserMembership | null | undefined,
+  t: AccountAutoRenewCopy,
+): string {
+  if (isStripeSubscriptionAutoRenew(m)) return t.membershipAutoRenewOn;
+  const raw = (m?.paymentProvider || '').trim();
+  if (!raw) return t.membershipAutoRenewUnknown;
+  return t.membershipAutoRenewOff;
+}

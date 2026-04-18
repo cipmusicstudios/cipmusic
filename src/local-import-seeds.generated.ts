@@ -488,12 +488,20 @@ export const LOCAL_IMPORT_SEEDS = [
     "titleOverride": "Fallin flower"
   },
   {
-    "id": "local_falling_you",
-    "slug": "falling you",
+    "id": "local_Falling_You_刘耀文",
+    "slug": "Falling You（刘耀文）",
     "audioFile": "audio.mp3",
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
-    "titleOverride": "Falling you"
+    "titleOverride": "Falling You"
+  },
+  {
+    "id": "local_Falling_You_都智文_曾可妮",
+    "slug": "Falling You（都智文 曾可妮）",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Falling You"
   },
   {
     "id": "local_famous",
@@ -3428,6 +3436,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "titleOverride": "爱恨的泪"
   },
   {
+    "id": "local_爱琴海",
+    "slug": "爱琴海",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "爱琴海"
+  },
+  {
     "id": "local_爱错",
     "slug": "爱错",
     "audioFile": "audio.mp3",
@@ -3526,6 +3542,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
     "titleOverride": "百忧戒"
+  },
+  {
+    "id": "local_摆脱地心引力",
+    "slug": "摆脱地心引力",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "摆脱地心引力"
   },
   {
     "id": "local_相思莫负",
@@ -3642,6 +3666,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "slug": "练习曲",
     "audioFile": "audio.mp3",
     "titleOverride": "练习曲"
+  },
+  {
+    "id": "local_恋人",
+    "slug": "恋人",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "恋人"
   },
   {
     "id": "local_经过",

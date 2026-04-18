@@ -83,7 +83,7 @@ function applyCanonicalIdRedirects(res: CanonicalArtistResolution): CanonicalArt
   };
 }
 
-type TrackCanonicalFix = {
+export type TrackCanonicalFix = {
   canonicalId: string;
   note: string;
   /** When set, overrides dictionary display name (e.g. review buckets not in ARTIST_DICTIONARY). */
@@ -94,14 +94,14 @@ type TrackCanonicalFix = {
 };
 
 /** Per-track overrides when seed/YouTube parsing cannot express the real singer or project bucket. */
-const TRACK_CANONICAL_BY_ID: Record<string, TrackCanonicalFix> = {
+export const TRACK_CANONICAL_BY_ID: Record<string, TrackCanonicalFix> = {
   local_bye_bye_bye: { canonicalId: 'nsync', note: 'manual_confirmed_nsync' },
-  /** Meme / no singer — category tags only; do not show as a normal artist card. */
+  /** 哈基米 — 无明确原唱；梗曲封面，不按标题误解析歌手。 */
   local_哈基米: {
-    canonicalId: 'review/local-hakimi-meme',
-    displayNameOverride: '网络梗曲（待确认）',
-    artistReviewStatus: 'needsReview',
-    note: 'no_singer_meme_cover_use_tags_not_artist',
+    canonicalId: 'review/meme-no-vocal',
+    displayNameOverride: '（无原唱）',
+    artistReviewStatus: 'unknown',
+    note: 'hakimi_meme_no_vocal',
   },
   local_撒野: { canonicalId: 'kai-se-miao', note: 'track_saye_vocalist_凯瑟喵' },
   /** 《陈情令》无羁 — 双原唱，同时归入王一博、肖战艺人桶。 */
@@ -262,15 +262,220 @@ const TRACK_CANONICAL_BY_ID: Record<string, TrackCanonicalFix> = {
   local_take_down: { canonicalId: 'huntr-x', note: 'track_kpop_movie_huntr_x_not_movie_title' },
   local_soda_pop: { canonicalId: 'saja-boys', note: 'track_kpop_movie_saja_boys' },
   local_your_idol: { canonicalId: 'saja-boys', note: 'track_kpop_movie_saja_boys' },
-  /** 《余生，请多指教》双人曲 — aggregate under both actors. */
+  /** 《余生，请多指教》— 主桶杨紫、副桶肖战；非「组合艺人」词条。 */
   local_余生请多指教: {
     canonicalId: 'yang-zi',
     coCanonicalArtistIds: ['xiao-zhan'],
-    displayNameOverride: '杨紫、肖战',
-    note: 'duet_oath_of_love_both_singers',
+    displayNameOverride: '杨紫',
+    artistReviewStatus: 'ok',
+    note: 'oath_of_love_yang_zi_primary_xiao_zhan_co',
   },
-  /** Worlds 2021 anthem — performer is PVRIS, not the event title string. */
-  local_Burn_it_all_down: { canonicalId: 'pvris', note: 'track_worlds2021_burn_it_all_down_pvris' },
+  /** 同上（Supabase 行 / manifest 远程 id）。 */
+  '08d4ba85-3267-46c6-8ff2-47e43ea5135f': {
+    canonicalId: 'yang-zi',
+    coCanonicalArtistIds: ['xiao-zhan'],
+    displayNameOverride: '杨紫',
+    artistReviewStatus: 'ok',
+    note: 'remote_oath_of_love_dual_bucket',
+  },
+  '86934514-6ca8-41c2-bee0-e2a600d906de': {
+    canonicalId: 'review/meme-no-vocal',
+    displayNameOverride: '（无原唱）',
+    artistReviewStatus: 'unknown',
+    note: 'remote_hakimi_no_vocal',
+  },
+  'f32015b8-c2da-4d14-b341-9b93482f2d1e': {
+    canonicalId: 'dou-dizhu-game',
+    displayNameOverride: '（无原唱）',
+    artistReviewStatus: 'ok',
+    note: 'remote_dou_dizhu_game_bucket',
+  },
+  '312afe3d-ee3c-4a6c-829a-85b05d9a1c9a': {
+    canonicalId: 'hearts2hearts',
+    artistReviewStatus: 'ok',
+    note: 'remote_style_hearts2hearts',
+  },
+  '25349319-a16a-4628-900f-db645bfcc630': {
+    canonicalId: 'rose',
+    artistReviewStatus: 'ok',
+    note: 'remote_messy_rosé',
+  },
+  'e17a0211-1411-4406-aadb-5d9235a268d0': {
+    canonicalId: 'rose',
+    coCanonicalArtistIds: ['bruno-mars'],
+    displayNameOverride: 'Rosé和Bruno Mars',
+    artistReviewStatus: 'ok',
+    note: 'remote_apt_rosé_bruno',
+  },
+  'da08d496-7d6a-4c9d-9a2c-b0e13050881f': {
+    canonicalId: 'zerobaseone',
+    artistReviewStatus: 'ok',
+    note: 'remote_good_so_bad_zb1',
+  },
+  '66c8d624-fa20-45b6-84e2-8dbae7a0b5e8': {
+    canonicalId: 'kiiikiii',
+    artistReviewStatus: 'ok',
+    note: 'remote_i_do_me',
+  },
+  '7087d95a-e7dc-498b-b70a-580fdfdb935e': {
+    canonicalId: 'kiiikiii',
+    artistReviewStatus: 'ok',
+    note: 'remote_dancing_alone',
+  },
+  /** Arcane S2 / 陈奕迅；曾误解析原唱字段。 */
+  'ad55d05d-c0cb-46fc-89b8-5f779540874d': {
+    canonicalId: 'eason-chan',
+    displayNameOverride: '陈奕迅',
+    artistReviewStatus: 'ok',
+    note: 'remote_zheyang_hen_hao_arcane_eason',
+  },
+  /** Worlds 2022 anthem。 */
+  '725e0fea-983b-459f-b027-104aaf0bacb7': {
+    canonicalId: 'lil-nas-x',
+    displayNameOverride: 'Lil Nas X',
+    artistReviewStatus: 'ok',
+    note: 'remote_star_walkin_worlds',
+  },
+  local_Falling_You_刘耀文: {
+    canonicalId: 'liu-yao-wen',
+    displayNameOverride: '刘耀文',
+    artistReviewStatus: 'ok',
+    note: 'falling_you_liu_yaowen_folder',
+  },
+  local_Falling_You_都智文_曾可妮: {
+    canonicalId: 'du-zhi-wen',
+    coCanonicalArtistIds: ['zeng-ke-ni'],
+    displayNameOverride: '都智文、曾可妮',
+    artistReviewStatus: 'ok',
+    note: 'falling_you_du_zhiwen_zeng_keni_folder',
+  },
+  /** 《骄阳似我》OST 误绑章昊；本音频为 Kep1er《Shine》(GP999)。 */
+  'bca4dd1b-8dcd-44ba-9b49-e0523faa3b90': {
+    canonicalId: 'kep1er',
+    displayNameOverride: 'Kep1er',
+    artistReviewStatus: 'ok',
+    note: 'remote_shine_kep1er_not_zhang_hao',
+  },
+  /** 《陈情令》无羁 — 远端行。 */
+  '671d8dce-5f47-4d69-8891-5b3763d10d43': {
+    canonicalId: 'wang-yi-bo',
+    coCanonicalArtistIds: ['xiao-zhan'],
+    displayNameOverride: '王一博、肖战',
+    artistReviewStatus: 'ok',
+    note: 'remote_wuji_both_vocalists',
+  },
+  local_全世界在你身后: {
+    canonicalId: 'du-zhi-wen',
+    displayNameOverride: '都智文',
+    artistReviewStatus: 'ok',
+    note: 'track_the_world_is_behind_you_du_zhiwen',
+  },
+  local_笨小孩的道歉信: {
+    canonicalId: 'tf-family-3rd',
+    displayNameOverride: 'TF家族三代',
+    artistReviewStatus: 'ok',
+    note: 'track_tf3_apology_letter',
+  },
+  local_等你的回答: {
+    canonicalId: 'tf-family-3rd',
+    displayNameOverride: 'TF家族三代',
+    artistReviewStatus: 'ok',
+    note: 'track_tf3_waiting_for_your_answer',
+  },
+  local_花西子: {
+    canonicalId: 'zhou-shen',
+    displayNameOverride: '周深',
+    artistReviewStatus: 'ok',
+    note: 'track_huaxizi_zhou_shen',
+  },
+  local_万里: {
+    canonicalId: 'zhou-shen',
+    displayNameOverride: '周深',
+    artistReviewStatus: 'ok',
+    note: 'track_wan_li_zhou_shen',
+  },
+  local_好好生活就是美好生活: {
+    canonicalId: 'zhou-shen',
+    displayNameOverride: '周深',
+    artistReviewStatus: 'ok',
+    note: 'track_haohao_shenghuo_zhou_shen',
+  },
+  local_桃花诺: {
+    canonicalId: 'zhou-shen',
+    coCanonicalArtistIds: ['song-ya-xuan'],
+    displayNameOverride: '周深、宋亚轩',
+    artistReviewStatus: 'ok',
+    note: 'track_taohua_nuo_zhou_song',
+  },
+  local_forever_forever: {
+    canonicalId: 'jay-chou',
+    coCanonicalArtistIds: ['mayday', 'f4'],
+    displayNameOverride: '周杰伦、五月天、F4',
+    artistReviewStatus: 'ok',
+    note: 'track_forever_forever_jay_mayday_f4',
+  },
+  local_像晴天像雨天任性: {
+    canonicalId: 'silence-wang',
+    coCanonicalArtistIds: ['mayday'],
+    displayNameOverride: '汪苏泷、五月天',
+    artistReviewStatus: 'ok',
+    note: 'track_like_sunday_mayday_collab',
+  },
+  local_流星雨: {
+    canonicalId: 'f4',
+    displayNameOverride: 'F4',
+    artistReviewStatus: 'ok',
+    note: 'track_meteor_rain_f4',
+  },
+  local_dawn_to_dusk: {
+    canonicalId: 'lay-zhang',
+    displayNameOverride: '张艺兴',
+    artistReviewStatus: 'ok',
+    note: 'track_dawn_to_dusk_lay_only',
+  },
+  local_在加纳共和国离婚: {
+    canonicalId: 'zhang-bi-chen',
+    displayNameOverride: '张碧晨、杨坤',
+    artistReviewStatus: 'ok',
+    note: 'track_divorce_ghana_zhang_yangkun_no_yang_bucket',
+  },
+  local_我的舞台: {
+    canonicalId: 'review/local-wodewutai-wuxing-ren',
+    displayNameOverride: '武星、任胤蓬',
+    artistReviewStatus: 'ok',
+    note: 'track_my_stage_wuxing_renyinpeng_no_dict',
+  },
+  local_snake: { canonicalId: 'kep1er', artistReviewStatus: 'ok', note: 'track_snake_kep1er' },
+  local_Utopia: { canonicalId: 'kep1er', artistReviewStatus: 'ok', note: 'track_utopia_kep1er' },
+  local_xoxo: { canonicalId: 'jeon-somi', artistReviewStatus: 'ok', note: 'track_xoxo_somi' },
+  local_the_feels: { canonicalId: 'twice', artistReviewStatus: 'ok', note: 'track_the_feels_twice' },
+  local_dreams_come_true: { canonicalId: 'aespa', artistReviewStatus: 'ok', note: 'track_dreams_come_true_aespa' },
+  local_Forever_1: { canonicalId: 'girls-generation', artistReviewStatus: 'ok', note: 'track_forever1_snsd' },
+  local_Lalisa: {
+    canonicalId: 'lisa',
+    artistReviewStatus: 'ok',
+    note: 'track_lalisa_lisa_solo',
+  },
+  local_pop_star: {
+    canonicalId: 'league-of-legends',
+    displayNameOverride: 'K/DA',
+    artistReviewStatus: 'ok',
+    note: 'track_popstar_kda_lol_virtual',
+  },
+  local_不眠之夜: {
+    canonicalId: 'honkai-star-rail',
+    coCanonicalArtistIds: ['zhang-jie'],
+    displayNameOverride: '张杰、HOYO-MiX',
+    artistReviewStatus: 'ok',
+    note: 'track_hsr_white_night_zhang_jie_vocal',
+  },
+  /** Worlds 2021 — 产品口径归「英雄联盟」IP 原声（表演者 PVRIS）。 */
+  local_Burn_it_all_down: {
+    canonicalId: 'league-of-legends',
+    displayNameOverride: '英雄联盟',
+    artistReviewStatus: 'ok',
+    note: 'track_worlds2021_burn_league_ip',
+  },
   /** Fairy Town in title is the song; 小野来了 is the pianist / performer. */
   local_童话镇: { canonicalId: 'xiao-ye-lai-le', note: 'track_fairy_town_xiao_ye_lai_le' },
   /** AoT OST — composer only, not the anime title string. */
@@ -695,13 +900,14 @@ function resolveCanonicalArtistCore(input: {
     const displayName =
       trackFix.displayNameOverride ??
       (ARTIST_DICTIONARY[finalId] ? displayNameForDictionaryId(finalId) : finalId);
+    const co = trackFix.coCanonicalArtistIds?.length ? [...trackFix.coCanonicalArtistIds] : undefined;
     return {
       originalArtistRaw: raw0,
       canonicalArtistId: finalId,
       canonicalArtistDisplayName: displayName,
       artistReviewStatus: status,
       notes: [trackFix.note],
-      coCanonicalArtistIds: trackFix.coCanonicalArtistIds?.length ? [...trackFix.coCanonicalArtistIds] : undefined,
+      coCanonicalArtistIds: co?.length ? co : undefined,
     };
   }
 
@@ -871,6 +1077,15 @@ function resolveCanonicalArtistCore(input: {
   );
 }
 
+/** 导出供 manifest 在应用 catalog canonical 覆盖后再次套用 */
+export function ensureBlackpinkCoBucket(res: CanonicalArtistResolution): CanonicalArtistResolution {
+  const id = dictionaryCanonicalId(res.canonicalArtistId);
+  if (id !== 'jennie' && id !== 'rose' && id !== 'lisa') return res;
+  const co = res.coCanonicalArtistIds ?? [];
+  if (co.includes('blackpink')) return res;
+  return { ...res, coCanonicalArtistIds: [...co, 'blackpink'] };
+}
+
 export function resolveCanonicalArtist(input: {
   rawArtist: string;
   displayTitle: string;
@@ -879,5 +1094,5 @@ export function resolveCanonicalArtist(input: {
   tags?: string[];
   videoTitleHint?: string | null;
 }): CanonicalArtistResolution {
-  return applyCanonicalIdRedirects(resolveCanonicalArtistCore(input));
+  return ensureBlackpinkCoBucket(applyCanonicalIdRedirects(resolveCanonicalArtistCore(input)));
 }

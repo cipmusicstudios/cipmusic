@@ -14,6 +14,13 @@
     "locked": true,
     "kind": "project_logo"
   },
+  "black-myth-wukong": {
+    "url": "https://cdn.akamai.steamstatic.com/steam/apps/2358720/header.jpg",
+    "source": "steam_store_capsule",
+    "confidence": 1,
+    "locked": true,
+    "kind": "project_key_art"
+  },
   "joker-xue": {
     "url": "https://cdn-images.dzcdn.net/images/artist/a2d6f0b0c7459292917e0f6c9a5d5da5/1000x1000-000000-80-0-0.jpg",
     "source": "deezer_manual",
@@ -235,9 +242,9 @@
     "imageKind": "group_photo"
   },
   "kep1er": {
-    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Kep1er_Nov%2724_%28cropped%29.png/330px-Kep1er_Nov%2724_%28cropped%29.png",
-    "source": "wikipedia_en_commons_group_photo",
-    "confidence": 0.95,
+    "url": "https://image-cdn-fa.spotifycdn.com/image/ab676161000051746099e814dcde84de16931134",
+    "source": "spotify_open_artist_5R7AMwDeroq6Ls0COQYpS4",
+    "confidence": 1,
     "locked": true,
     "imageKind": "group_photo"
   },
@@ -255,10 +262,17 @@
     "locked": true,
     "imageKind": "project_logo"
   },
+  "kiiikiii": {
+    "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174d02890f9fe5c400be1d4e846",
+    "source": "spotify_open_artist_63sat2XSMKdwKfqspmYQKP",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
   "from-youtube/kiiikiii": {
-    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/KiiiKiii_251025.jpg/330px-KiiiKiii_251025.jpg",
-    "source": "wikipedia_en_commons",
-    "confidence": 0.95,
+    "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174d02890f9fe5c400be1d4e846",
+    "source": "spotify_open_artist_63sat2XSMKdwKfqspmYQKP",
+    "confidence": 1,
     "locked": true,
     "imageKind": "group_photo"
   },
@@ -830,10 +844,52 @@
     "imageKind": "artist_photo"
   },
   "seventeen": {
-    "url": "https://cdn-images.dzcdn.net/images/artist/6e358a63b8d449f701a742d45adef635/1000x1000-000000-80-0-0.jpg",
-    "source": "deezer_artist_search_seventeen_alt",
-    "confidence": 0.95,
+    "url": "https://image-cdn-ak.spotifycdn.com/image/ab676161000051748da3a229445fd3cd896cdd5c",
+    "source": "spotify_open_artist_7nqOGRxlXj7N2JYbgNEjYH",
+    "confidence": 1,
     "locked": true,
     "imageKind": "group_photo"
+  },
+  "zerobaseone": {
+    "url": "https://kprofiles.com/wp-content/uploads/2023/07/ZB1-1-640x800.jpg",
+    "source": "kprofiles_zb1_group_photo_9",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "hearts2hearts": {
+    "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616100005174250c7f7b1d34d7410d9fb982",
+    "source": "spotify_open_artist_1ZLU77nRzQIaP23mVSYpCQ",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "group_photo"
+  },
+  "lisa": {
+    "url": "https://image-cdn-ak.spotifycdn.com/image/ab676161000051745cd3b3af8b72e32be78571ec",
+    "source": "spotify_open_artist_5L1lO4eRHmJ7a0Q6csE5cT",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "chevy-robin": {
+    "url": "https://image-cdn-fa.spotifycdn.com/image/ab6761610000517463d26df92617aee38fea0f6d",
+    "source": "spotify_open_artist_0lhcAgqzhRZuhHTXJsilSc",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "lil-nas-x": {
+    "url": "https://image-cdn-ak.spotifycdn.com/image/ab676161000051743758a33e782b46bd7f174e1d",
+    "source": "spotify_open_artist_7jVv8c5Fj3E9VhNjxT4snq",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "sarah-brightman": {
+    "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616100005174a0bcf0e980853b55d4b2f392",
+    "source": "spotify_open_artist_7Ead768rc4ShGxnqtqccU5",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
   }
 }

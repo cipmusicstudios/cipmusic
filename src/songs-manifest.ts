@@ -1,13 +1,47 @@
 import type { Track } from './types/track';
 import { normalizeTextStatic } from './category-keys';
 import { isRealBilibiliUrl, isRealSheetUrl, isRealYoutubeWatchUrl } from './track-display';
-import { resolveCanonicalArtist, dictionaryCanonicalId, type ArtistReviewStatus } from './artist-canonical';
+import {
+  resolveCanonicalArtist,
+  dictionaryCanonicalId,
+  ensureBlackpinkCoBucket,
+  type ArtistReviewStatus,
+} from './artist-canonical';
+import {
+  applyCatalogOverridesToTrack,
+  getCatalogOverrideForTrack,
+  getMergedCatalogOverride,
+} from './data/catalog-overrides';
 import { ARTIST_DICTIONARY } from './local-import-artist-normalization';
 import { inferBrowseClassificationForUnknownArtist } from './artist-browse-classify';
+import { workProjectAugmentedArtistBucketIds } from './artist-browse-filter';
 import { parseDurationMmSsToSeconds } from './duration-utils';
 import { mergeTrackCategoryLabels } from './track-category-inference';
 import type { ArtistImageKind } from './artist-image-kind';
+import { inferWorkProjectKeyFromText } from './work-project';
 export type { ArtistImageKind } from './artist-image-kind';
+
+/**
+ * Slug → 作品项目（build manifest 时写入；本地 seed 可用 overrides.workProjectKey 覆盖）。
+ * 与 Supabase 行并存时以显式 Track 字段优先。
+ */
+export const MANIFEST_WORK_PROJECT_KEY_BY_SLUG: Record<string, string> = {
+  Sacrifice: 'league-of-legends',
+  'heavy is the crown': 'league-of-legends',
+  /** Worlds 2024 — 与 slug `GODS`（全大写）一致 */
+  GODS: 'league-of-legends',
+  "STAR WALKIN'": 'league-of-legends',
+  'pop star': 'league-of-legends',
+  'Burn it all down': 'league-of-legends',
+  孤勇者: 'league-of-legends',
+  这样很好: 'league-of-legends',
+  free: 'kpop-demon-hunters',
+  'take-down': 'kpop-demon-hunters',
+  golden: 'kpop-demon-hunters',
+  "How it's done": 'kpop-demon-hunters',
+  'soda-pop': 'kpop-demon-hunters',
+  'your-idol': 'kpop-demon-hunters',
+};
 
 // ── Correct category from confirmed artist nationality ──
 
@@ -142,7 +176,7 @@ export type SongManifestEntry = {
    */
   listSortPublishedAtMs?: number | null;
   listSortPublishedAt?: string | null;
-  listSortSource?: 'youtube_published' | 'youtube_channel_index' | 'fallback_no_youtube_order';
+  listSortSource?: 'youtube_published' | 'youtube_channel_index' | 'fallback_no_youtube_order' | 'catalog_override';
   /**
    * 作品级来源（电影/游戏/剧集等），稳定 slug；可与推断逻辑并存，显式优先。
    */
@@ -164,6 +198,13 @@ function stableIdJitterMs(id: string): number {
  * Call after `enrichManifestEntriesWithYoutubeOrder`.
  */
 export function assignManifestListSort(entry: SongManifestEntry): SongManifestEntry {
+  if (
+    entry.listSortSource === 'catalog_override' &&
+    typeof entry.listSortPublishedAtMs === 'number' &&
+    Number.isFinite(entry.listSortPublishedAtMs)
+  ) {
+    return entry;
+  }
   const ytMs = entry.youtubePublishedAt ? Date.parse(String(entry.youtubePublishedAt)) : NaN;
   if (Number.isFinite(ytMs)) {
     return {
@@ -190,6 +231,19 @@ export function assignManifestListSort(entry: SongManifestEntry): SongManifestEn
     listSortPublishedAtMs: ms,
     listSortPublishedAt: new Date(ms).toISOString(),
     listSortSource: 'fallback_no_youtube_order',
+  };
+}
+
+/** 应用 `catalog-overrides-locked` 中的 `listSortPublishedAtMs`（Newest 置顶）。 */
+export function applyCatalogListSortToManifestEntry(entry: SongManifestEntry): SongManifestEntry {
+  const cov = getMergedCatalogOverride(entry.slug, entry.id);
+  const ms = cov?.listSortPublishedAtMs;
+  if (typeof ms !== 'number' || !Number.isFinite(ms)) return entry;
+  return {
+    ...entry,
+    listSortPublishedAtMs: ms,
+    listSortPublishedAt: new Date(ms).toISOString(),
+    listSortSource: 'catalog_override',
   };
 }
 
@@ -337,6 +391,9 @@ export function ensureCanonicalOnEntry(entry: SongManifestEntry): Required<
    * Always re-run resolution from seed + video title. Manifest JSON may contain stale canonical
    * fields from an older build; preview/dev must reflect current `resolveCanonicalArtist` rules
    * without requiring a manual `npm run build:manifest` refresh.
+   *
+   * **必须与 `trackToManifestEntry` 一致**：再合并 `catalog-overrides-locked`（canonical / co /
+   * display / review / workProjectKey），否则运行时 Track 会丢 locked 多艺人或项目归属。
    */
   const resolution = resolveCanonicalArtist({
     rawArtist: entry.originalArtist || '',
@@ -346,33 +403,79 @@ export function ensureCanonicalOnEntry(entry: SongManifestEntry): Required<
     tags: entry.tags || [],
     videoTitleHint: entry.youtubeVideoTitle || null,
   });
+  const cov = getMergedCatalogOverride(entry.slug, entry.id);
+  let merged = resolution;
+  if (
+    cov &&
+    (cov.canonicalArtistId ||
+      cov.coCanonicalArtistIds ||
+      cov.canonicalArtistDisplayName != null ||
+      cov.artistReviewStatus != null)
+  ) {
+    merged = ensureBlackpinkCoBucket({
+      ...resolution,
+      canonicalArtistId: cov.canonicalArtistId ?? resolution.canonicalArtistId,
+      coCanonicalArtistIds: cov.coCanonicalArtistIds ?? resolution.coCanonicalArtistIds,
+      canonicalArtistDisplayName: cov.canonicalArtistDisplayName ?? resolution.canonicalArtistDisplayName,
+      artistReviewStatus: cov.artistReviewStatus ?? resolution.artistReviewStatus,
+      notes: [...resolution.notes, 'catalog_override_canonical'],
+    });
+  }
+
+  const workProjectKey =
+    cov?.workProjectKey ??
+    entry.workProjectKey ??
+    (entry.slug ? MANIFEST_WORK_PROJECT_KEY_BY_SLUG[entry.slug] : undefined) ??
+    inferWorkProjectKeyFromText(
+      [entry.originalArtist, entry.displayTitle || entry.title, entry.youtubeVideoTitle].filter(Boolean).join(' '),
+    );
+
   return {
     ...entry,
-    canonicalArtistId: resolution.canonicalArtistId,
-    canonicalArtistDisplayName: resolution.canonicalArtistDisplayName,
-    artistReviewStatus: resolution.artistReviewStatus,
-    artistResolutionNotes: resolution.notes.length ? resolution.notes : entry.artistResolutionNotes,
-    coCanonicalArtistIds: resolution.coCanonicalArtistIds ?? entry.coCanonicalArtistIds,
+    canonicalArtistId: merged.canonicalArtistId,
+    canonicalArtistDisplayName: merged.canonicalArtistDisplayName,
+    artistReviewStatus: merged.artistReviewStatus,
+    artistResolutionNotes: merged.notes.length ? merged.notes : entry.artistResolutionNotes,
+    coCanonicalArtistIds: merged.coCanonicalArtistIds ?? entry.coCanonicalArtistIds,
+    workProjectKey,
   };
 }
 
 /** Apply canonical artist resolution to any track (e.g. Supabase rows). */
 export function mergeCanonicalIntoTrack(track: Track): Track {
+  const base = applyCatalogOverridesToTrack(track);
   const rawDisplayTitle =
-    track.metadata.display.displayTitle || track.sourceSongTitle || track.title;
+    base.metadata.display.displayTitle || base.sourceSongTitle || base.title;
   const displayTitle = cleanDisplayTitle(rawDisplayTitle);
-  const rawArtist = track.sourceArtist || track.artist || '';
-  const videoHint = (track as { _cipMatchedVideoTitle?: string })._cipMatchedVideoTitle || null;
-  const resolution = resolveCanonicalArtist({
+  const rawArtist = base.sourceArtist || base.artist || '';
+  const videoHint = (base as { _cipMatchedVideoTitle?: string })._cipMatchedVideoTitle || null;
+  const cov = getMergedCatalogOverride(base.metadata?.identity?.slug, base.id);
+  let resolution = resolveCanonicalArtist({
     rawArtist,
     displayTitle,
-    trackId: track.id,
-    slug: track.metadata.identity.slug,
-    tags: track.tags || track.metadata.display.categories?.tags || [],
+    trackId: base.id,
+    slug: base.metadata.identity.slug,
+    tags: base.tags || base.metadata.display.categories?.tags || [],
     videoTitleHint: videoHint,
   });
+  if (
+    cov &&
+    (cov.canonicalArtistId ||
+      cov.coCanonicalArtistIds ||
+      cov.canonicalArtistDisplayName != null ||
+      cov.artistReviewStatus != null)
+  ) {
+    resolution = ensureBlackpinkCoBucket({
+      ...resolution,
+      canonicalArtistId: cov.canonicalArtistId ?? resolution.canonicalArtistId,
+      coCanonicalArtistIds: cov.coCanonicalArtistIds ?? resolution.coCanonicalArtistIds,
+      canonicalArtistDisplayName: cov.canonicalArtistDisplayName ?? resolution.canonicalArtistDisplayName,
+      artistReviewStatus: cov.artistReviewStatus ?? resolution.artistReviewStatus,
+      notes: [...resolution.notes, 'catalog_override_canonical'],
+    });
+  }
   const displayArtist = resolution.canonicalArtistDisplayName || rawArtist;
-  const existingContextTags = (track.tags || track.metadata.display.categories?.tags || [])
+  const existingContextTags = (base.tags || base.metadata.display.categories?.tags || [])
     .filter(t => CONTEXT_CATEGORY_TAGS.has(t));
   const { primaryCategory } = computeCategoryFromArtist(
     resolution.canonicalArtistId,
@@ -380,16 +483,16 @@ export function mergeCanonicalIntoTrack(track: Track): Track {
     existingContextTags,
   );
   return {
-    ...track,
+    ...base,
     title: displayTitle,
     artist: displayArtist,
     category: primaryCategory,
     canonicalArtistId: resolution.canonicalArtistId,
     coCanonicalArtistIds: resolution.coCanonicalArtistIds,
     metadata: {
-      ...track.metadata,
+      ...base.metadata,
       display: {
-        ...track.metadata.display,
+        ...base.metadata.display,
         displayTitle,
         artist: displayArtist,
         canonicalArtistId: resolution.canonicalArtistId,
@@ -398,7 +501,7 @@ export function mergeCanonicalIntoTrack(track: Track): Track {
         artistReviewStatus: resolution.artistReviewStatus,
         category: primaryCategory,
         categories: {
-          ...track.metadata.display.categories,
+          ...base.metadata.display.categories,
           primary: primaryCategory,
         },
         normalizedArtistsInfo: normalizedArtistsFromCanonicalFields(
@@ -520,30 +623,59 @@ export function manifestEntryToTrack(entry: SongManifestEntry): Track {
 
 /** When building manifest from full Track objects (build script). */
 export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongManifestEntry {
+  /** 1) 人工锁定层（最高优先级）— 再进入 canonical / 分类合并 */
+  const locked = applyCatalogOverridesToTrack(track);
+  const cov = getCatalogOverrideForTrack(locked);
+
   const rel = (u: string) => (assetBaseUrl && u.startsWith('/') ? `${assetBaseUrl.replace(/\/$/, '')}${u}` : u);
-  const originalArtist = track.sourceArtist || track.artist;
-  const rawDisplayTitle = track.metadata.display.displayTitle || track.metadata.display.title || track.title;
+  const originalArtist = locked.sourceArtist || locked.artist;
+  const rawDisplayTitle = locked.metadata.display.displayTitle || locked.metadata.display.title || locked.title;
   const displayTitle = cleanDisplayTitle(rawDisplayTitle);
 
-  const rawYtUrl = track.metadata.links?.youtube || track.youtubeUrl || null;
-  const ytTitle = (track as { _cipMatchedVideoTitle?: string })._cipMatchedVideoTitle || null;
+  const rawYtUrl = locked.metadata.links?.youtube || locked.youtubeUrl || null;
+  const ytTitle = (locked as { _cipMatchedVideoTitle?: string })._cipMatchedVideoTitle || null;
 
-  const resolution = resolveCanonicalArtist({
+  let resolution = resolveCanonicalArtist({
     rawArtist: originalArtist,
     displayTitle,
-    trackId: track.id,
-    slug: track.metadata.identity.slug,
-    tags: track.tags || track.metadata.display.categories?.tags || [],
+    trackId: locked.id,
+    slug: locked.metadata.identity.slug,
+    tags: locked.tags || locked.metadata.display.categories?.tags || [],
     videoTitleHint: ytTitle,
   });
 
-  const seedTags = track.tags || track.metadata.display.categories?.tags || [];
+  if (
+    cov &&
+    (cov.canonicalArtistId ||
+      cov.coCanonicalArtistIds ||
+      cov.canonicalArtistDisplayName != null ||
+      cov.artistReviewStatus != null)
+  ) {
+    resolution = ensureBlackpinkCoBucket({
+      ...resolution,
+      canonicalArtistId: cov.canonicalArtistId ?? resolution.canonicalArtistId,
+      coCanonicalArtistIds: cov.coCanonicalArtistIds ?? resolution.coCanonicalArtistIds,
+      canonicalArtistDisplayName: cov.canonicalArtistDisplayName ?? resolution.canonicalArtistDisplayName,
+      artistReviewStatus: cov.artistReviewStatus ?? resolution.artistReviewStatus,
+      notes: [...resolution.notes, 'catalog_override_canonical'],
+    });
+  }
+
+  const seedTags = locked.tags || locked.metadata.display.categories?.tags || [];
   const existingContextTags = seedTags.filter(t => CONTEXT_CATEGORY_TAGS.has(t));
   const { primaryCategory, categoryKey, tags: computedTags } = computeCategoryFromArtist(
     resolution.canonicalArtistId,
     resolution.artistReviewStatus,
     existingContextTags,
   );
+
+  const workProjectKeyForCategories =
+    locked.workProjectKey ??
+    locked.metadata.display.workProjectKey ??
+    (locked.metadata.identity.slug
+      ? MANIFEST_WORK_PROJECT_KEY_BY_SLUG[locked.metadata.identity.slug]
+      : undefined) ??
+    inferWorkProjectKeyFromText([originalArtist, displayTitle, ytTitle].filter(Boolean).join(' '));
 
   const merged = mergeTrackCategoryLabels({
     primaryLanguageLabel: primaryCategory,
@@ -554,7 +686,8 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
     displayTitle,
     originalArtist,
     youtubeVideoTitle: ytTitle,
-    slug: track.metadata.identity.slug,
+    slug: locked.metadata.identity.slug,
+    workProjectKey: workProjectKeyForCategories,
     artistReviewStatus: resolution.artistReviewStatus,
   });
   const finalTags = merged.displayTags;
@@ -562,13 +695,13 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
 
   const ytVideoId = rawYtUrl ? extractVideoId(rawYtUrl) : null;
   const ytUrl = ytVideoId ? rawYtUrl : null;
-  const rawBili = track.metadata.links?.bilibili || track.bilibiliUrl || null;
+  const rawBili = locked.metadata.links?.bilibili || locked.bilibiliUrl || null;
   const biliUrl = rawBili && isRealBilibiliUrl(rawBili) ? rawBili : null;
-  const rawSheetLink = track.metadata.links?.sheet || track.sheetUrl || null;
+  const rawSheetLink = locked.metadata.links?.sheet || locked.sheetUrl || null;
   const sheetLink = rawSheetLink && !rawSheetLink.includes('keyword=') ? rawSheetLink : null;
 
-  const cipLinkConfidence = (track as { _cipLinkConfidence?: string })._cipLinkConfidence;
-  const intentionalNoSheet = Boolean(track.metadata.links?.noSheet);
+  const cipLinkConfidence = (locked as { _cipLinkConfidence?: string })._cipLinkConfidence;
+  const intentionalNoSheet = Boolean(locked.metadata.links?.noSheet);
 
   let linkStatus: LinkStatus;
   if (cipLinkConfidence === 'suspect' && ytVideoId) {
@@ -581,15 +714,15 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
     linkStatus = 'linked';
   }
 
-  const assetDur = track.metadata.assets?.duration;
+  const assetDur = locked.metadata.assets?.duration;
   const durationSeconds =
     typeof assetDur === 'number' && Number.isFinite(assetDur) && assetDur > 0
       ? assetDur
-      : parseDurationMmSsToSeconds(track.duration);
+      : parseDurationMmSsToSeconds(locked.duration);
 
   return {
-    id: track.id,
-    title: track.metadata.display.title,
+    id: locked.id,
+    title: locked.metadata.display.title,
     displayTitle,
     originalArtist,
     canonicalArtistId: resolution.canonicalArtistId,
@@ -599,30 +732,38 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
     artistResolutionNotes: resolution.notes.length ? resolution.notes : undefined,
     tags: finalTags,
     categoryKeys,
-    coverUrl: track.coverUrl,
-    mp3Url: rel(track.audioUrl),
-    midiUrl: track.midiUrl ? rel(track.midiUrl) : null,
-    musicXmlUrl: track.musicxmlUrl ? rel(track.musicxmlUrl) : null,
-    duration: track.duration,
+    coverUrl: locked.coverUrl,
+    mp3Url: rel(locked.audioUrl),
+    midiUrl: locked.midiUrl ? rel(locked.midiUrl) : null,
+    musicXmlUrl: locked.musicxmlUrl ? rel(locked.musicxmlUrl) : null,
+    duration: locked.duration,
     durationSeconds: durationSeconds ?? null,
-    hasPracticeMode: Boolean(track.practiceEnabled),
-    importSource: track.importSource || 'local',
-    slug: track.metadata.identity.slug,
+    hasPracticeMode: Boolean(locked.practiceEnabled),
+    importSource: locked.importSource || 'local',
+    slug: locked.metadata.identity.slug,
     youtubeVideoUrl: ytUrl,
     youtubeVideoTitle: ytTitle,
     youtubeVideoId: ytVideoId,
     bilibiliVideoUrl: biliUrl,
     sheetUrl: sheetLink,
     linkStatus,
-    titles: track.metadata.display.titles,
+    titles: locked.metadata.display.titles,
     artists:
       artistsFromDictionaryIfSoloOk(
         resolution.canonicalArtistId,
         resolution.coCanonicalArtistIds,
         resolution.artistReviewStatus,
         resolution.canonicalArtistDisplayName,
-      ) ?? track.metadata.display.artists,
-    workProjectKey: track.workProjectKey ?? track.metadata.display.workProjectKey,
+      ) ?? locked.metadata.display.artists,
+    workProjectKey:
+      locked.workProjectKey ??
+      locked.metadata.display.workProjectKey ??
+      (locked.metadata.identity.slug
+        ? MANIFEST_WORK_PROJECT_KEY_BY_SLUG[locked.metadata.identity.slug]
+        : undefined) ??
+      inferWorkProjectKeyFromText(
+        [originalArtist, displayTitle, ytTitle].filter(Boolean).join(' '),
+      ),
   };
 }
 
@@ -639,8 +780,10 @@ export function buildArtistManifestFromSongs(entries: SongManifestEntry[], gener
   const byId = new Map<string, { songIds: string[]; samples: Set<string>; review: ArtistReviewStatus }>();
 
   for (const e of full) {
-    const bucketIds = Array.from(
-      new Set([e.canonicalArtistId, ...(e.coCanonicalArtistIds ?? [])].filter(Boolean) as string[]),
+    const bucketIds = workProjectAugmentedArtistBucketIds(
+      e.canonicalArtistId,
+      e.coCanonicalArtistIds,
+      e.workProjectKey,
     );
     for (const aid of bucketIds) {
       const cur = byId.get(aid) ?? {

@@ -9,9 +9,11 @@ import {
   getTrackPrimaryCategoryKeyStatic,
   getCoverThumbnailUrl,
   DISPLAY_TAG_EN_BY_ZH,
+  normalizeCategoryKeyStatic,
 } from './category-keys';
 import { getDisplayTrackTitle, getDisplayTrackArtist } from './track-display';
-import { shouldShowArtistOnArtistPage } from './artist-browse-filter';
+import { shouldShowArtistOnArtistPage, workProjectAugmentedArtistBucketIds } from './artist-browse-filter';
+import { getWorkProjectKey } from './work-project';
 import { dictionaryCanonicalId } from './artist-canonical';
 import { ARTIST_DICTIONARY } from './local-import-artist-normalization';
 import { getTrackListDurationLabel } from './duration-utils';
@@ -90,6 +92,18 @@ const parseDurationToSecondsStatic = (value: unknown) => {
 
 const SONG_ROW_HEIGHT = 76;
 
+/** 易混歌名/俗称，拼进标题检索（正式 `title` 不变）。key = metadata.identity.slug */
+const EXTRA_TRACK_TITLE_SEARCH_BY_SLUG: Record<string, string> = {
+  'dancing-alone': 'Dancing Along',
+};
+
+function trackTitleSearchNormalized(track: Track): string {
+  const base = track?.title ?? '';
+  const slug = track?.metadata?.identity?.slug;
+  const extra = slug ? EXTRA_TRACK_TITLE_SEARCH_BY_SLUG[slug] : '';
+  return normalizeSearchStatic([base, extra].filter(Boolean).join(' '));
+}
+
 /**
  * Artist grid tabs: 「其他」only shows project/IP buckets + unknown rows needing review;
  * project rows do not appear under 华语/欧美/韩/日.
@@ -158,22 +172,62 @@ function artistCardLabelsForBucket(
   return { displayName, searchHaystack, name: displayName };
 }
 
+/** 与 normalizeCategoryKeyStatic 对齐的英文行展示（避免「韩流流行」与「K-POP」重复成两个 badge） */
+const CATEGORY_EN_BY_FILTER_KEY: Record<string, string> = {
+  cpop: 'C-pop',
+  kpop: 'K-pop',
+  jpop: 'J-pop',
+  western: 'Western',
+  film: 'Film',
+  anime: 'Anime',
+  game: 'Game',
+  instrumental: 'Instrumental',
+};
+
 function formatTrackCategoryBadges(
   track: Track,
   songCategoryLabelMap: Map<string, string>,
   currentLang: string,
 ): string {
   const multi = track.metadata?.display?.categories?.tags || track.tags;
-  const mapTag = (t: string) => {
-    if (currentLang !== 'English') return t;
-    return DISPLAY_TAG_EN_BY_ZH[t] ?? t;
+
+  const displayOneTag = (raw: string): string => {
+    const t = typeof raw === 'string' ? raw.trim() : '';
+    if (!t) return '';
+    const key = normalizeCategoryKeyStatic(t);
+
+    if (key === 'kpop') {
+      if (currentLang === 'English') return 'K-pop';
+      if (currentLang === '繁體中文') return '韓流流行';
+      return '韩流流行';
+    }
+    if (currentLang === 'English') {
+      return CATEGORY_EN_BY_FILTER_KEY[key] ?? DISPLAY_TAG_EN_BY_ZH[t] ?? t;
+    }
+    if (currentLang === '繁體中文') {
+      if (key === 'cpop') return '華語流行';
+      if (key === 'jpop') return '日系流行';
+      if (key === 'western') return '歐美流行';
+      if (key === 'film') return '影視';
+      if (key === 'anime') return '動漫';
+      if (key === 'game') return '遊戲';
+      if (key === 'instrumental') return '純音樂';
+    }
+    return t;
   };
+
   if (Array.isArray(multi) && multi.length > 0) {
-    const labels = multi
-      .slice(0, 5)
-      .map(t => (typeof t === 'string' ? t.trim() : ''))
-      .filter(Boolean)
-      .map(mapTag);
+    const seen = new Set<string>();
+    const labels: string[] = [];
+    for (const raw of multi.slice(0, 8)) {
+      const t = typeof raw === 'string' ? raw.trim() : '';
+      if (!t) continue;
+      const dedupeKey = normalizeCategoryKeyStatic(t) || t;
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+      const label = displayOneTag(t);
+      if (label) labels.push(label);
+    }
     if (labels.length > 0) return labels.join(' · ');
   }
   const pk = getTrackPrimaryCategoryKeyStatic(track);
@@ -367,7 +421,7 @@ const SongRow = memo(function SongRow({ index, style, data }: ListChildComponent
             >
               {getDisplayTrackTitle(track, currentLang) || 'Untitled'}
             </span>
-            <span className="text-xs text-[var(--color-mist-text)]/60 truncate">{getDisplayTrackArtist(track, currentLang) || 'Unknown Artist'}</span>
+            <span className="text-xs text-[var(--color-mist-text)]/60 truncate">{getDisplayTrackArtist(track, currentLang)}</span>
           </div>
         </div>
         <div className="col-span-3 flex items-center">
@@ -803,10 +857,10 @@ export const MusicTab = memo(function MusicTab({
     return tracks.map(track => {
       const primary = track.canonicalArtistId || track.metadata.display.canonicalArtistId;
       const co = track.coCanonicalArtistIds ?? track.metadata.display.coCanonicalArtistIds ?? [];
-      const artistIds = Array.from(new Set([primary, ...co].filter(Boolean) as string[]));
+      const artistIds = workProjectAugmentedArtistBucketIds(primary, co, getWorkProjectKey(track));
       return {
         track,
-        titleN: normalizeSearchStatic(track?.title),
+        titleN: trackTitleSearchNormalized(track),
         artistN: normalizeSearchStatic(track?.artist),
         catKeys: track.categoryFilterKeys ?? getTrackCategoryKeysStatic(track),
         artistIds,
@@ -819,7 +873,7 @@ export const MusicTab = memo(function MusicTab({
     tracks.forEach(trk => {
       const primary = trk.canonicalArtistId || trk.metadata.display.canonicalArtistId;
       const co = trk.coCanonicalArtistIds ?? trk.metadata.display.coCanonicalArtistIds ?? [];
-      const bucketIds = Array.from(new Set([primary, ...co].filter(Boolean) as string[]));
+      const bucketIds = workProjectAugmentedArtistBucketIds(primary, co, getWorkProjectKey(trk));
       const review = trk.metadata.display.artistReviewStatus || 'needsReview';
       if (review !== 'ok') return;
 

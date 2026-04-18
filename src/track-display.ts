@@ -83,6 +83,12 @@ export const getLocalizedTrackTitle = (track: Track, currentLang: string) => {
 export const getDisplayTrackTitle = (track: Track, currentLang = 'English') =>
   getLocalizedTrackTitle(track, currentLang);
 
+function shouldHideArtistLine(s: string | undefined): boolean {
+  const t = (s ?? '').trim();
+  if (!t) return true;
+  return /（无原唱）|無原唱|Unknown\s*Artist/i.test(t);
+}
+
 /** Seed / video-parse lines like "Be Mine CHUANG2021" — show canonical INTO1 instead. */
 function artistFieldsMentionChuang2021(track: Track): boolean {
   const d = track.metadata.display;
@@ -108,10 +114,36 @@ export const getLocalizedTrackArtist = (track: Track, currentLang: string) => {
     return d.canonicalArtistDisplayName;
   }
 
+  /** 多艺人 / co-artist / review 桶：不能仅用词典「主艺人」单名，否则第二位（如杨坤、Bruno Mars）被吃掉。 */
+  const coMerged = Array.from(
+    new Set(
+      [...(track.coCanonicalArtistIds ?? []), ...(d.coCanonicalArtistIds ?? [])].filter(
+        Boolean,
+      ) as string[],
+    ),
+  );
+  const isMultiArtist = coMerged.length > 0;
+  if (d.artistReviewStatus === 'ok' && isMultiArtist) {
+    if (artists) {
+      if (currentLang === '简体中文') return artists.zhHans || artists.zhHant || artists.en || d.canonicalArtistDisplayName || fallbackArtist;
+      if (currentLang === '繁體中文') return artists.zhHant || artists.zhHans || artists.en || d.canonicalArtistDisplayName || fallbackArtist;
+      return artists.en || artists.zhHans || artists.zhHant || d.canonicalArtistDisplayName || fallbackArtist;
+    }
+    if (d.canonicalArtistDisplayName?.trim()) return d.canonicalArtistDisplayName.trim();
+  }
+
   const cid = d.canonicalArtistId;
   if (d.artistReviewStatus === 'ok' && cid) {
     const row = ARTIST_DICTIONARY[dictionaryCanonicalId(cid)];
-    if (row) {
+    const disp = d.canonicalArtistDisplayName?.trim();
+    const zh = row?.names.zhHans?.trim();
+    const zt = row?.names.zhHant?.trim() || zh;
+    const en = row?.names.en?.trim();
+    /** 词典团名仅在与 locked「展示名」一致时使用；否则视为组合桶下的成员/别名行（如 i-dle + Minnie），交给下方 `artists`。 */
+    const displayMatchesDictionary =
+      row &&
+      (!disp || disp === zh || disp === zt || disp === en);
+    if (row && displayMatchesDictionary) {
       if (currentLang === '简体中文') return row.names.zhHans || row.names.en;
       if (currentLang === '繁體中文') return row.names.zhHant || row.names.zhHans || row.names.en;
       return row.names.en || row.names.zhHans;
@@ -124,10 +156,13 @@ export const getLocalizedTrackArtist = (track: Track, currentLang: string) => {
   return artists.en || artists.zhHans || artists.zhHant || fallbackArtist;
 };
 
-export const getDisplayTrackArtist = (track: Track, currentLang = 'English') =>
-  (track.metadataStatus === 'approved' && track.sourceArtist)
-    ? track.sourceArtist
-    : getLocalizedTrackArtist(track, currentLang);
+export const getDisplayTrackArtist = (track: Track, currentLang = 'English') => {
+  const raw =
+    track.metadataStatus === 'approved' && track.sourceArtist
+      ? track.sourceArtist
+      : getLocalizedTrackArtist(track, currentLang);
+  return shouldHideArtistLine(raw) ? '' : raw;
+};
 
 export const hasPracticeAssets = (track: Track) =>
   Boolean(track.audioUrl && track.midiUrl && track.musicxmlUrl);

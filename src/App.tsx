@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, memo, Suspense, useRef } from 'react';
 import { supabase } from './lib/supabase';
+import { toSupabaseStoragePublicUrl } from './lib/supabase-storage-public-url';
 import {
   Play, Pause, SkipBack, SkipForward, Volume2, Volume1, VolumeX,
   Search, Settings, CloudRain, CloudLightning, Clock,
@@ -22,7 +23,10 @@ import { zhTW } from './locales/zh-tw';
 import type { View } from './types/view';
 import { premiumUi, premiumUiModal } from './premium-ui';
 import {MembershipCheckoutModal} from './membership-checkout-modal';
+import {ImmersiveCoverOrb} from './ImmersiveCoverOrb';
+import {ImmersiveModeEntryButton} from './ImmersiveModeEntryButton';
 import {
+  accountAutoRenewLabel,
   daysUntilDate,
   fetchRemoteUserMembership,
   formatMembershipDateOnly,
@@ -161,27 +165,43 @@ export const SCENES: Scene[] = [
 /** Remote `songs` columns used in UI (avoid `select('*')` payload). Full rows load after idle. */
 /** 与当前 Supabase 表结构一致（远端若无 bilibili_url 列则勿选，否则会 42703） */
 const SUPABASE_REMOTE_SONG_COLUMNS =
-  'id,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,musicxml_url,midi_url,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
+  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,musicxml_url,midi_url,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
 
+const SUPABASE_SONGS_BUCKET = (import.meta.env.VITE_SUPABASE_SONGS_BUCKET as string | undefined)?.trim() || 'songs';
+
+/**
+ * 与 `scripts/build-songs-manifest.ts` 的 `toPublicStorageUrl` 一致：库内若存相对路径（如 `songs/slug/audio.mp3`），
+ * 必须展开为 `https://…/storage/v1/object/public/{bucket}/…`，否则浏览器会把 `audio.mp3` 解析成站点根路径 `/audio.mp3`。
+ */
 function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+  const resolve = (v: unknown) => toSupabaseStoragePublicUrl(supabaseUrl, SUPABASE_SONGS_BUCKET, v as string | undefined);
+  const audioUrl = resolve(song.audio_url);
+  const coverUrl = resolve(song.cover_url) || '';
+  const sourceCoverUrl = resolve(song.source_cover_url) || undefined;
+  const midiUrl = resolve(song.midi_url);
+  const musicxmlUrl = resolve(song.musicxml_url);
+  const duration = (song.duration as string) || '00:00';
+  const hasPracticeAssetsRow = Boolean(song.audio_url && song.midi_url && song.musicxml_url);
+
   return {
     id: song.id as string,
     title: song.title as string,
     artist: song.artist as string,
     category: (song.primary_category as string) || 'Originals',
     tags: (song.secondary_category as string[]) || [],
-    duration: (song.duration as string) || '00:00',
-    audioUrl: song.audio_url as string,
-    coverUrl: (song.cover_url as string) || '',
-    musicxmlUrl: song.musicxml_url as string,
-    midiUrl: song.midi_url as string,
-    practiceEnabled: Boolean(song.audio_url && song.midi_url && song.musicxml_url),
+    duration,
+    audioUrl,
+    coverUrl,
+    musicxmlUrl,
+    midiUrl,
+    practiceEnabled: hasPracticeAssetsRow,
     youtubeUrl: song.youtube_url as string,
     bilibiliUrl: (song.bilibili_url as string | undefined) ?? '',
     sheetUrl: song.sheet_url as string,
     sourceSongTitle: song.source_song_title as string,
     sourceArtist: song.source_artist as string,
-    sourceCoverUrl: song.source_cover_url as string,
+    sourceCoverUrl,
     sourceAlbum: song.source_album as string,
     sourceReleaseYear: song.source_release_year as string,
     sourceCategory: song.source_category as string,
@@ -194,6 +214,7 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
     metadata: {
       identity: {
         id: song.id as string,
+        slug: (song.slug as string | undefined) || undefined,
         importSource: 'remote' as const,
       },
       display: {
@@ -204,15 +225,15 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
           primary: (song.primary_category as string) || 'Originals',
           tags: (song.secondary_category as string[]) || [],
         },
-        cover: (song.cover_url as string) || '',
+        cover: coverUrl,
       },
       assets: {
-        audioUrl: song.audio_url as string,
-        midiUrl: song.midi_url as string,
-        musicxmlUrl: song.musicxml_url as string,
-        hasPracticeAssets: Boolean(song.audio_url && song.midi_url && song.musicxml_url),
-        practiceEnabled: Boolean(song.audio_url && song.midi_url && song.musicxml_url),
-        durationLabel: (song.duration as string) || '00:00',
+        audioUrl,
+        midiUrl,
+        musicxmlUrl,
+        hasPracticeAssets: hasPracticeAssetsRow,
+        practiceEnabled: hasPracticeAssetsRow,
+        durationLabel: duration,
       },
       links: {
         youtube: song.youtube_url as string,
@@ -506,7 +527,11 @@ export default function App() {
           liveTrack.sourceArtist !== currentTrack.sourceArtist ||
           liveTrack.youtubeUrl !== currentTrack.youtubeUrl ||
           liveTrack.sheetUrl !== currentTrack.sheetUrl ||
-          liveTrack.bilibiliUrl !== currentTrack.bilibiliUrl)
+          liveTrack.bilibiliUrl !== currentTrack.bilibiliUrl ||
+          liveTrack.audioUrl !== currentTrack.audioUrl ||
+          liveTrack.duration !== currentTrack.duration ||
+          liveTrack.midiUrl !== currentTrack.midiUrl ||
+          liveTrack.musicxmlUrl !== currentTrack.musicxmlUrl)
       ) {
         setCurrentTrack(liveTrack);
       }
@@ -663,6 +688,7 @@ export default function App() {
 
   const [activeSceneId, setActiveSceneId] = useState<string>('tideHaven');
   const [showPracticePanel, setShowPracticePanel] = useState(false);
+  const [immersiveMode, setImmersiveMode] = useState(false);
   const [practiceMidiOutputVolume, setPracticeMidiOutputVolume] = useState(0.7);
   const [practiceMidiOutputMuted, setPracticeMidiOutputMuted] = useState(false);
   const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
@@ -899,7 +925,7 @@ export default function App() {
     }
 
     if (activeAmbiences.length >= AMBIENT_LIMIT_PREMIUM) {
-      showAmbienceToast(currentLang === 'English' ? `Premium supports up to ${AMBIENT_LIMIT_PREMIUM} ambience layers` : currentLang === '繁體中文' ? `高級會員最多可同時播放 ${AMBIENT_LIMIT_PREMIUM} 個環境音` : `高级会员最多可同时播放 ${AMBIENT_LIMIT_PREMIUM} 个环境音`);
+      showAmbienceToast(currentLang === 'English' ? `For the best listening experience, you can mix up to ${AMBIENT_LIMIT_PREMIUM} ambience layers.` : currentLang === '繁體中文' ? `為確保最佳聆聽體驗，最多可同時混合 ${AMBIENT_LIMIT_PREMIUM} 個環境音。` : `为保证最佳聆听体验，最多可同时混合 ${AMBIENT_LIMIT_PREMIUM} 个环境音。`);
       return;
     }
 
@@ -1093,6 +1119,23 @@ export default function App() {
     }
   }, [currentTrack, showPracticePanel]);
 
+  useEffect(() => {
+    if (!immersiveMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setImmersiveMode(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [immersiveMode]);
+
+  useEffect(() => {
+    if (showPracticePanel) setImmersiveMode(false);
+  }, [showPracticePanel]);
+
+  useEffect(() => {
+    if (activeView === 'settings') setImmersiveMode(false);
+  }, [activeView]);
+
   // Click-outside-main-panel → go Home
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (activeView === 'home') return;
@@ -1128,11 +1171,17 @@ export default function App() {
             setCurrentLang={setCurrentLang}
             t={t}
             onSelectTrack={handleTopNavSelectTrack}
+            immersiveMode={immersiveMode}
+            onEnterImmersive={() => setImmersiveMode(true)}
+            immersiveEntryHidden={showPracticePanel}
           />
 
           <main
-            className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 z-10 relative"
+            className={`flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 z-10 relative transition-all duration-300 ease-out ${
+              immersiveMode ? 'pointer-events-none opacity-0 translate-y-1' : ''
+            }`}
             onClick={e => e.stopPropagation()}
+            aria-hidden={immersiveMode}
           >
             {activeView === 'home' && (
               <HomeTab
@@ -1207,34 +1256,35 @@ export default function App() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setShowSheetOptions(false)}
-                    className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+                    className="absolute inset-0 bg-black/50"
                   />
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    initial={{ opacity: 0, scale: 0.98, y: 8 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    className="relative glass-panel p-10 max-w-sm w-full flex flex-col items-center gap-6"
+                    exit={{ opacity: 0, scale: 0.98, y: 8 }}
+                    className="relative flex w-full max-w-sm flex-col items-center gap-5 rounded-[24px] border border-[rgba(90,72,52,0.1)] bg-[#fffaf5] p-8 shadow-[0_20px_48px_rgba(42,32,24,0.12)]"
                   >
-                    <div className="flex flex-col items-center text-center gap-2">
-                      <h3 className="text-xl font-bold text-white tracking-tight">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <h3 className="text-lg font-semibold tracking-tight text-[var(--color-mist-text)]">
                         {t.settings.wechatQrTitle}
                       </h3>
-                      <p className="text-xs text-white/50 leading-relaxed font-medium">
+                      <p className="text-xs font-medium leading-relaxed text-[var(--color-mist-text)]/55">
                         {t.settings.wechatQrDesc}
                       </p>
                     </div>
 
-                    <div className="relative p-2 bg-white rounded-2xl shadow-xl transition-transform hover:scale-[1.02] duration-500 overflow-hidden">
+                    <div className="relative overflow-hidden rounded-2xl border border-[rgba(90,72,52,0.08)] bg-white p-2 shadow-sm">
                       <img
                         src="https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/pics/gzh.jpg"
                         alt=""
-                        className="w-48 h-48 object-contain"
+                        className="h-48 w-48 object-contain"
                       />
                     </div>
 
                     <button
+                      type="button"
                       onClick={() => setShowSheetOptions(false)}
-                      className="mt-2 py-2.5 px-8 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold uppercase tracking-widest text-white/80 transition-all border border-white/10"
+                      className="rounded-full border border-[rgba(90,72,52,0.14)] bg-white/90 px-8 py-2.5 text-xs font-semibold tracking-wide text-[var(--color-mist-text)]/78 transition-colors hover:bg-white"
                     >
                       {t.common.close}
                     </button>
@@ -1353,8 +1403,22 @@ export default function App() {
         onToggleFavorite={toggleFavorite}
         isGuest={isGuest}
         onGuestFavoriteBlocked={() => setShowGuestFeaturePrompt(true)}
+        immersiveMode={immersiveMode}
+        onEnterImmersive={() => setImmersiveMode(true)}
         t={t}
       />
+      {immersiveMode && !showPracticePanel && (
+        <ImmersiveCoverOrb
+          coverUrl={
+            (currentTrack.metadataStatus === 'approved' && currentTrack.sourceCoverUrl
+              ? currentTrack.sourceCoverUrl
+              : currentTrack.coverUrl) || undefined
+          }
+          isPlaying={isPlaying}
+          onExit={() => setImmersiveMode(false)}
+          showControlsTitle={t.player.showControls}
+        />
+      )}
       {showPracticePanel && practiceSnapNotice && (
         <div className="fixed bottom-16 md:bottom-28 left-1/2 -translate-x-1/2 z-[210] rounded-full border border-white/20 bg-[rgba(255,249,242,0.94)] px-4 py-1.5 md:py-2 text-[10px] md:text-xs font-semibold text-[var(--color-mist-text)] shadow-sm">
           {practiceSnapNotice}
@@ -1390,13 +1454,26 @@ const HomeTab = memo(function HomeTab({ t }: { t: any }) {
   );
 });
 
-const TopNav = memo(function TopNav({ activeView, setActiveView, onSelectTrack, currentLang, setCurrentLang, t }: {
+const TopNav = memo(function TopNav({
+  activeView,
+  setActiveView,
+  onSelectTrack,
+  currentLang,
+  setCurrentLang,
+  t,
+  immersiveMode = false,
+  onEnterImmersive,
+  immersiveEntryHidden = false,
+}: {
   activeView: View,
   setActiveView: (v: View) => void,
   onSelectTrack: (t: Track) => void,
   currentLang: string,
   setCurrentLang: (v: string) => void,
-  t: any
+  t: any,
+  immersiveMode?: boolean,
+  onEnterImmersive: () => void,
+  immersiveEntryHidden?: boolean,
 }) {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const normalizeSearchText = (value: unknown) => {
@@ -1422,9 +1499,18 @@ const TopNav = memo(function TopNav({ activeView, setActiveView, onSelectTrack, 
   const activeLang = languages.find(l => l.name === currentLang) || languages[0];
 
   return (
-    <header className="topnav-header fixed top-6 left-0 right-0 z-50 flex justify-center px-0 pointer-events-none">
-      <div className="app-chrome-shell pointer-events-auto w-full max-w-5xl px-3 md:px-6">
-        <div className="topnav-bar glass-panel relative w-full rounded-full py-2.5 shadow-md md:py-3">
+    <header
+      className={`topnav-header fixed top-6 left-0 right-0 z-50 flex justify-center px-0 pointer-events-none transition-all duration-300 ease-out ${
+        immersiveMode ? 'opacity-0 -translate-y-[120%]' : ''
+      }`}
+      aria-hidden={immersiveMode}
+    >
+      <div
+        className={`app-chrome-shell w-full max-w-5xl overflow-visible px-3 md:px-6 transition-all duration-300 ease-out ${
+          immersiveMode ? 'pointer-events-none' : 'pointer-events-auto'
+        }`}
+      >
+        <div className="topnav-bar glass-panel group/topnav relative w-full overflow-visible rounded-full py-2.5 shadow-md md:py-3">
           <nav className="topnav-tabs flex items-center justify-center gap-4 overflow-x-auto custom-scrollbar pl-2.5 pr-14 sm:gap-5 sm:pr-16 md:gap-6 md:pl-3 md:pr-[4.5rem]">
             {tabs.map(tab => (
               <button
@@ -1438,7 +1524,15 @@ const TopNav = memo(function TopNav({ activeView, setActiveView, onSelectTrack, 
             ))}
           </nav>
 
-          <div className="topnav-right pointer-events-auto absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1.5 sm:right-2 sm:gap-2 md:right-3 md:gap-3">
+          {!immersiveMode && !immersiveEntryHidden && (
+            <ImmersiveModeEntryButton
+              variant="topnav"
+              onClick={onEnterImmersive}
+              title={t.player.immersiveMode}
+            />
+          )}
+
+          <div className="topnav-right pointer-events-auto absolute right-1.5 top-1/2 z-[35] flex -translate-y-1/2 items-center gap-1.5 sm:right-2 sm:gap-2 md:right-3 md:gap-3">
             <div className="relative">
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
@@ -1580,6 +1674,8 @@ const BottomPlayer = memo(function BottomPlayer({
   onToggleFavorite,
   isGuest,
   onGuestFavoriteBlocked,
+  immersiveMode,
+  onEnterImmersive,
   t
 }: {
   currentTrack: Track,
@@ -1609,6 +1705,8 @@ const BottomPlayer = memo(function BottomPlayer({
   onToggleFavorite: (trackId: string) => void,
   isGuest: boolean,
   onGuestFavoriteBlocked: () => void,
+  immersiveMode: boolean,
+  onEnterImmersive: () => void,
   t: any
 }) {
   const compactPracticeMode = false;
@@ -2171,7 +2269,7 @@ const BottomPlayer = memo(function BottomPlayer({
   };
 
   return (
-    <footer className="player-bar-dock fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center px-0 pb-2.5 pt-0 md:pb-4 pointer-events-none">
+    <footer className="player-bar-dock fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center overflow-visible px-0 pb-2.5 pt-0 md:pb-4 pointer-events-none">
       <audio
         ref={audioRef}
         data-role="main-player"
@@ -2226,10 +2324,21 @@ const BottomPlayer = memo(function BottomPlayer({
         )}
       </AnimatePresence>
 
-      <div className="app-chrome-shell w-full max-w-5xl px-3 md:px-6">
+      <div
+        className={`app-chrome-shell group/player relative w-full max-w-5xl overflow-visible px-3 md:px-6 transition-all duration-300 ease-out ${
+          immersiveMode ? 'translate-y-[115%] opacity-0 pointer-events-none' : 'pointer-events-auto'
+        }`}
+      >
         <div
-          className={`player-bar pointer-events-auto w-full ${compactPracticeMode ? 'flex px-4 gap-4' : 'grid grid-cols-[minmax(0,1fr)_minmax(0,2.05fr)_minmax(12.75rem,auto)] items-center gap-x-3 gap-y-1 py-2.5 px-4 sm:gap-x-4 sm:px-4 lg:px-5'}`}
+          className={`player-bar pointer-events-auto relative w-full overflow-visible ${compactPracticeMode ? 'flex px-4 gap-4' : 'grid grid-cols-[minmax(0,1fr)_minmax(0,2.05fr)_minmax(12.75rem,auto)] items-center gap-x-3 gap-y-1 py-2.5 px-4 sm:gap-x-4 sm:px-4 lg:px-5'}`}
         >
+        {!compactPracticeMode && !showPracticePanel && !immersiveMode && (
+          <ImmersiveModeEntryButton
+            variant="player"
+            onClick={onEnterImmersive}
+            title={t.player.immersiveMode}
+          />
+        )}
         <div className={`player-info ${compactPracticeMode ? 'flex items-center gap-3 w-auto min-w-0 max-w-[32%]' : 'flex min-w-0 items-center gap-3 justify-self-start sm:gap-3.5'}`}>
           <img
             src={(currentTrack.metadataStatus === 'approved' && currentTrack.sourceCoverUrl) ? currentTrack.sourceCoverUrl : (currentTrack.coverUrl || 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=200&auto=format&fit=crop')}
@@ -3245,12 +3354,11 @@ const SettingsTab = memo(function SettingsTab({
       ? formatMembershipDateOnly(accountPremiumUntilIso, currentLang)
       : '—';
   const accountPaymentProvider = normalizePaymentProvider(remoteMembership?.paymentProvider);
-  const accountAutoRenewLabel =
-    accountPaymentProvider === 'stripe'
-      ? t.settings.membershipAutoRenewOn
-      : accountPaymentProvider === 'zpay'
-        ? t.settings.membershipAutoRenewOff
-        : t.settings.membershipAutoRenewUnknown;
+  const accountAutoRenewDisplayText = accountAutoRenewLabel(remoteMembership, {
+    membershipAutoRenewOn: t.settings.membershipAutoRenewOn,
+    membershipAutoRenewOff: t.settings.membershipAutoRenewOff,
+    membershipAutoRenewUnknown: t.settings.membershipAutoRenewUnknown,
+  });
 
   const accountName = isGuest
     ? t.settings.guestTitle
@@ -3337,6 +3445,9 @@ const SettingsTab = memo(function SettingsTab({
     : currentLang === '繁體中文'
       ? '除免費註冊權益外，升級後還可解鎖'
       : '除免费注册权益外，升级后还可解锁';
+  /** Guest 会员说明两行：统一字号/字重/行高/色值，仅用间距区分层次 */
+  const guestMembershipIntroClass =
+    'm-0 text-[13px] font-normal leading-relaxed text-[var(--color-mist-text)]/64';
   const manageButtonClass = 'inline-flex h-12 w-full items-center justify-center rounded-2xl bg-white/72 px-6 text-[15px] font-semibold text-[var(--color-mist-text)] shadow-[0_12px_28px_rgba(92,68,44,0.14)] transition-colors hover:bg-white/86';
   const handleGuestAuthCta = () => {
     openAuthModal('sign-in');
@@ -3401,9 +3512,9 @@ const SettingsTab = memo(function SettingsTab({
         </div>
       )}
 
-      <div className="settings-grid grid grid-cols-1 gap-5 xl:grid-cols-[1.06fr_1.02fr_0.88fr] xl:items-start">
+      <div className="settings-grid grid grid-cols-1 gap-5 xl:grid-cols-[1.06fr_1.02fr_0.88fr] xl:items-stretch">
         <section
-          className={`settings-card ${premiumUi.card} !p-5 flex ${isGuest ? 'min-h-[520px]' : 'min-h-0'} flex-col sm:!px-6`}
+          className={`settings-card ${premiumUi.card} !p-5 flex min-h-0 flex-col sm:!px-6 xl:h-full xl:min-h-[32rem]`}
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -3420,7 +3531,7 @@ const SettingsTab = memo(function SettingsTab({
           </div>
 
           {isGuest ? (
-            <div className="mt-6 flex flex-col">
+            <div className="mt-6 flex min-h-0 flex-1 flex-col gap-0">
               <div className={`${premiumUi.subtleCard} px-4 py-4`}>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mist-text)]/42">
                   {guestFreeLead}
@@ -3450,11 +3561,6 @@ const SettingsTab = memo(function SettingsTab({
                   {t.settings.guestAuthCtaHint}
                 </p>
               </div>
-              <p className="mt-5 text-center text-[11px] leading-snug text-[var(--color-mist-text)]/42">
-                <span>{t.settings.freeMember}</span>
-                <span className="mx-1.5 opacity-50">·</span>
-                <span>{t.settings.membershipNotActivated}</span>
-              </p>
             </div>
           ) : (
             <div className="mt-2 flex flex-1 flex-col gap-2.5">
@@ -3507,15 +3613,15 @@ const SettingsTab = memo(function SettingsTab({
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
-                          <span className={accountMembershipValueClass}>{accountAutoRenewLabel}</span>
+                          <span className={accountMembershipValueClass}>{accountAutoRenewDisplayText}</span>
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.membershipEnds}</span>
                           <span className={accountMembershipValueClass}>{accountMembershipDateLabel}</span>
                         </div>
                         <div className={accountMembershipRowClass}>
-                          <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
-                          <span className={accountMembershipValueHighlightClass}>{t.settings.membershipActive}</span>
+                          <span className={accountMembershipLabelClass}>{t.settings.accessStatus}</span>
+                          <span className={accountMembershipValueHighlightClass}>{t.settings.accessStatusActive}</span>
                         </div>
                       </div>
                       {accountMembershipDaysLeft != null && accountMembershipDaysLeft >= 0 ? (
@@ -3539,15 +3645,15 @@ const SettingsTab = memo(function SettingsTab({
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
-                          <span className={accountMembershipValueClass}>{t.settings.membershipAutoRenewUnknown}</span>
+                          <span className={accountMembershipValueClass}>{accountAutoRenewDisplayText}</span>
                         </div>
                         <div className={accountMembershipRowClass}>
                           <span className={accountMembershipLabelClass}>{t.settings.membershipEnds}</span>
                           <span className={accountMembershipValueClass}>{t.settings.membershipValidityExpired}</span>
                         </div>
                         <div className={accountMembershipRowClass}>
-                          <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
-                          <span className={accountMembershipValueHighlightClass}>{t.settings.membershipExpiredStatus}</span>
+                          <span className={accountMembershipLabelClass}>{t.settings.accessStatus}</span>
+                          <span className={accountMembershipValueHighlightClass}>{t.settings.accessStatusExpired}</span>
                         </div>
                       </div>
                     </>
@@ -3559,15 +3665,15 @@ const SettingsTab = memo(function SettingsTab({
                       </div>
                       <div className={accountMembershipRowClass}>
                         <span className={accountMembershipLabelClass}>{t.settings.autoRenew}</span>
-                        <span className={accountMembershipValueClass}>{t.settings.membershipAutoRenewUnknown}</span>
+                        <span className={accountMembershipValueClass}>{accountAutoRenewDisplayText}</span>
                       </div>
                       <div className={accountMembershipRowClass}>
                         <span className={accountMembershipLabelClass}>{t.settings.membershipEnds}</span>
                         <span className={accountMembershipValueClass}>{t.settings.membershipValidityDash}</span>
                       </div>
                       <div className={accountMembershipRowClass}>
-                        <span className={accountMembershipLabelClass}>{t.settings.membershipStatus}</span>
-                        <span className={accountMembershipValueHighlightClass}>{t.settings.membershipNotActivated}</span>
+                        <span className={accountMembershipLabelClass}>{t.settings.accessStatus}</span>
+                        <span className={accountMembershipValueHighlightClass}>{t.settings.accessStatusNotActivated}</span>
                       </div>
                     </div>
                   )}
@@ -3589,7 +3695,7 @@ const SettingsTab = memo(function SettingsTab({
 
         <section
           id="settings-membership-section"
-          className={`settings-card ${premiumUi.card} !p-5 scroll-mt-28 flex min-h-0 flex-col sm:!px-6`}
+          className={`settings-card ${premiumUi.card} !p-5 scroll-mt-28 flex min-h-0 flex-col sm:!px-6 xl:h-full xl:min-h-[32rem]`}
         >
           <div className="flex items-center gap-3">
             <div className={premiumUi.iconWrap}>
@@ -3598,11 +3704,13 @@ const SettingsTab = memo(function SettingsTab({
             <h2 className={premiumUi.title}>{memberCenterTitle}</h2>
           </div>
 
-          <div className="mt-2.5 flex min-h-0 flex-col gap-4">
+          <div className="mt-2.5 flex min-h-0 flex-1 flex-col gap-4">
             {isGuest ? (
               <>
-                <p className="text-[13px] leading-relaxed text-[var(--color-mist-text)]/65">{t.settings.membershipGuestHint}</p>
-                <p className="text-sm leading-6 text-[var(--color-mist-text)]/68">{guestPremiumSummary}</p>
+                <div className="flex flex-col gap-2">
+                  <p className={guestMembershipIntroClass}>{t.settings.membershipGuestHint}</p>
+                  <p className={guestMembershipIntroClass}>{guestPremiumSummary}</p>
+                </div>
                 <div className="settings-premium-benefits flex min-h-0 flex-col gap-4">
                   {benefitCards.map((benefit: any) => (
                     <div key={benefit.title} className={`${premiumUi.subtleCard} flex items-start gap-3.5 px-4 py-3`}>
@@ -3668,7 +3776,7 @@ const SettingsTab = memo(function SettingsTab({
           </div>
         </section>
 
-        <section className={`settings-card ${premiumUi.card} !p-5 flex min-h-[520px] flex-col sm:!px-6`}>
+        <section className={`settings-card ${premiumUi.card} !p-5 flex min-h-0 flex-col sm:!px-6 xl:h-full xl:min-h-[32rem]`}>
           <div className="flex items-center gap-3">
             <div className={premiumUi.iconWrap}>
               <ExternalLink className="h-4.5 w-4.5" />
@@ -3676,7 +3784,7 @@ const SettingsTab = memo(function SettingsTab({
             <h2 className={premiumUi.title}>{t.settings.links}</h2>
           </div>
 
-          <div className="mt-6 flex flex-1 flex-col gap-4">
+          <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4">
             {links.map(link => {
               const Icon = link.icon;
               return (
@@ -3689,7 +3797,7 @@ const SettingsTab = memo(function SettingsTab({
                     <div className={premiumUi.iconWrap}>
                       <Icon className="h-4 w-4" />
                     </div>
-                    <span className="text-sm font-medium text-[var(--color-mist-text)]/84">{link.label}</span>
+                    <span className="min-w-0 break-words text-sm font-medium leading-snug text-[var(--color-mist-text)]/84">{link.label}</span>
                   </div>
                   <ChevronRight className="h-4 w-4 text-[var(--color-mist-text)]/42" />
                 </button>
