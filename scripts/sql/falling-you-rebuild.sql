@@ -1,0 +1,13 @@
+-- Falling You 拆条（需在 Supabase SQL 编辑器或 psql 中手动执行；执行前请备份 `songs` 表）。
+-- 代码侧已通过 `LOCAL_IMPORT_METADATA_OVERRIDES` 与 `applyProductionMetadataLocks` 锁定元数据；
+-- 数据库需将「一条混用」改为「两条独立行」，并上传各自 storage 音频/MIDI/XML。
+--
+-- 参考 UUID（当前 manifest 中刘耀文版）：
+--   76ac6f51-d656-4ba7-a5cb-d72026e3b573  slug: falling you
+--
+-- 建议步骤：
+-- 1) 将现有行重命名为稳定 slug，例如：
+--    UPDATE songs SET slug = 'falling-you-liu-yao-wen' WHERE id = '76ac6f51-d656-4ba7-a5cb-d72026e3b573';
+-- 2) 为「都智文 / 曾可妮」版 INSERT 新行（新 id），slug 使用 `falling-you-du-zeng`，
+--    并填写对应 `audio_url`、`midi_url`、`musicxml_url`、`youtube_url`、`sheet_url`、封面等。
+-- 3) 删除历史上错误混合的重复行（若有），勿删无关曲目。

@@ -1,57 +1,57 @@
 {
   "version": 1,
-  "generatedAt": "2026-04-16T23:13:10.375Z",
+  "generatedAt": "2026-04-18T04:02:39.784Z",
   "artists": [
     {
       "canonicalArtistId": "zhou-shen",
       "displayName": "周深",
       "songCount": 38,
       "songIds": [
-        "local_吉量",
-        "local_万里",
-        "local_桂花谣",
-        "local_若仙",
-        "local_少管我",
-        "local_春雪",
-        "local_借过一下",
-        "local_奇迹时刻",
-        "local_蜃楼",
-        "local_门",
-        "local_小美满",
-        "local_浮光",
-        "local_桃花诺",
-        "local_若梦",
-        "local_时间之海",
-        "local_明明",
-        "local_璀璨冒险人",
-        "local_铃芽之旅",
-        "local_人是",
-        "local_花开忘忧",
-        "local_一路生花",
-        "local_征途",
-        "local_调查中",
-        "local_卿卿",
-        "local_鲛人之歌",
-        "local_我的答案",
-        "local_光字片",
-        "local_星鱼",
-        "local_my_only",
-        "local_好好生活就是美好生活",
-        "local_花西子",
-        "local_借给我一盒火柴",
-        "local_以无旁骛之吻",
-        "local_光亮",
-        "local_思念便思念",
-        "local_时结",
-        "local_未闻花名",
-        "local_在意"
+        "1a3b7b08-8845-41ba-8593-882e5fa425e7",
+        "5ba8ee44-a0e7-42b4-bd9f-576dc453244b",
+        "ead126cf-0541-4cac-9af1-6234edf799bd",
+        "5ee2d636-75b6-4fe7-a6f1-a1881ff7c01a",
+        "bb3cd564-a10e-4d0f-b6bc-fc1ecd643cc5",
+        "9dfbd83b-7db9-4380-8400-791ab653a871",
+        "4aa72884-1432-4792-873d-234f856a0347",
+        "bc1c23a3-190c-4904-a0d2-36c129ecafa6",
+        "0df50156-94ef-4b0b-911b-8e080b6f2736",
+        "80463a43-faef-4ee1-9e79-b18ce38bd9d2",
+        "bc1e4929-dab3-4b05-ae5b-42c0e1722ac2",
+        "d0df6bde-6970-416f-ac1b-ab1f6f79fcf4",
+        "67b3b15b-648d-41ab-ada6-2f66233fda64",
+        "0109ffcd-462e-4e61-9621-d7958d19176e",
+        "ceaeea15-5604-42e1-a02c-ed1062b9ab61",
+        "2aa3b845-d9d9-44c4-b15f-a1b243fbc059",
+        "32823589-f5ec-4385-a7da-b7bb4688a2bf",
+        "f062358e-dd42-4c28-8ec3-a0c02f5e28ab",
+        "f9c97da5-9e55-49de-825f-d016504960c9",
+        "40f12af7-8682-4eb6-9639-9a1d4aebc844",
+        "b775148c-cd2b-48e9-b9cb-b5d131b7c500",
+        "6523f269-a1ad-4d77-b676-54002dfb9a4b",
+        "dcd4e05a-421a-41c7-8681-77e45e848380",
+        "b6ea69f8-34eb-4c10-a0c7-930c2d8c40de",
+        "dc0d4a8c-3b74-4769-8b90-6f3f14dd6a6e",
+        "9663af3c-71a0-44cd-b8f2-171004e372b3",
+        "568cf1cf-3828-4ad2-8cdc-efa7d2f899b4",
+        "1e546a03-aefb-4456-9219-4ecc05560c3a",
+        "456e85d3-bcbe-4532-b8af-af69d4924353",
+        "27fcb33e-a557-47dd-a816-9b51f2c6fb27",
+        "cab65aec-c8f7-4684-a496-158171e82967",
+        "6adddf3d-d797-4864-8ef1-c0d6203e4afe",
+        "92547f13-3126-4b55-9269-bca18cacf825",
+        "d8dec108-353f-4182-88f6-f95c5fc11bb3",
+        "26edf6cd-bd62-4e95-87b8-427926b0a9cb",
+        "b3b7e3e3-4227-464a-9a9f-e025a60043f0",
+        "5410b17e-8a6b-46f4-9ee4-7eb46c56a761",
+        "5ca2eb7b-1380-45a3-b493-117c794c9678"
       ],
       "sampleOriginalArtists": [
         "周深",
         "周深、钟天利",
-        "周深、王者荣耀",
-        "周深 \\宋亚轩",
-        "周深 动漫"
+        "周深、宋亚轩",
+        "周深 动漫",
+        "周深、张韶涵"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/cc20d446054c86d3d156a942713170c9/1000x1000-000000-80-0-0.jpg",
@@ -62,48 +62,53 @@
     {
       "canonicalArtistId": "tnt",
       "displayName": "时代少年团",
-      "songCount": 34,
+      "songCount": 38,
       "songIds": [
-        "local_冬日来信",
-        "local_这一程",
-        "local_I_Like_U_like",
-        "local_登顶",
-        "local_全世界我最美",
-        "local_至少我还算快乐",
-        "local_卧室巨星",
-        "local_月夜狂想曲",
-        "local_梦",
-        "local_那些我没说的话",
-        "local_非我不可",
-        "local_无尽的冒险",
-        "local_认输",
-        "local_爱到1440",
-        "local_躺着真舒服",
-        "local_楼外楼",
-        "local_背对地球奔跑",
-        "local_理想之途",
-        "local_有你的季节",
-        "local_百忧戒",
-        "local_侠",
-        "local_哭泣的游戏",
-        "local_绝配",
-        "local_你要快乐",
-        "local_披风",
-        "local_渐暖",
-        "local_相遇",
-        "local_有你",
-        "local_男儿歌",
-        "local_醉",
-        "local_哪吒",
-        "local_傻瓜",
-        "local_朱雀",
-        "local_我喜欢你"
+        "24d0000a-7b3c-464b-8c44-fcd771a30f74",
+        "73d7bfa7-ab8e-40b2-9be1-39c443624a2d",
+        "ff590101-0fca-4b0b-8094-f15cc6f8b9bf",
+        "cf65b5ac-5c9b-46c2-bd22-5fe1874e320f",
+        "c8bec2e7-a119-4083-b7ec-84d4414bf2dd",
+        "8f988d4e-4448-40a1-981d-92eda3b4de54",
+        "c4d6ff07-663b-4aa8-b82d-3c3359b21f6e",
+        "3c2735a1-2dd0-4c2f-9b0b-bf8f2e42d8d8",
+        "1d3ab356-7fe6-49b5-a930-beb40aa39c83",
+        "71bb05d1-6b88-4ad0-89d7-8482c67d8817",
+        "5a834793-3977-49db-8301-a81032ce7491",
+        "7bca926f-8b1b-4014-982e-0be89a2423ea",
+        "581a6dd0-daf5-4e71-a623-3ca03d9efd1b",
+        "e6b22c48-d1e4-4894-b86a-95a1c71495ef",
+        "c6e9a7b4-eb8b-4dd0-adae-0986f51249a7",
+        "82490eb7-181a-463e-baf4-a007ed76e472",
+        "d2a1ad48-4889-4299-bb33-a2db4a47c497",
+        "fe6bfbd1-e71c-4cde-bff5-8a69eed2e8ed",
+        "253864d1-4f1a-486b-86a2-d6f4d8fa097d",
+        "206ca38e-0ba4-4979-9de6-fc14ffac5458",
+        "03052ace-a028-408f-a376-5f15fc2d9371",
+        "06df603b-a416-4894-9c8e-625f728d1544",
+        "c19bfd25-2106-4936-8872-6230dfb9831e",
+        "3fb4a207-bc87-4723-8ab5-1369ff13d4c5",
+        "62db4c4e-a132-4d64-aed9-b0b7c3df7df5",
+        "fb40255e-1eb4-4da6-835f-4f650bb5253f",
+        "134d4530-d0ac-4aa8-8296-a05868a3d419",
+        "81250b0b-7d5c-4219-93f7-3513ac037581",
+        "ab07523c-cfd5-4a88-93ca-638bb3953dfd",
+        "82190fad-feab-4d16-82ad-7ef281e9797e",
+        "0879104a-059c-438f-92df-6bb63831a96b",
+        "3a45de1f-41c0-4d51-a2da-8f71d5d7e571",
+        "16153189-53fb-40c2-8f94-799d5534b811",
+        "89886903-baca-49c3-9341-c1514cc6236d",
+        "0f94599f-f9f5-4b0f-b95f-c8485b6ddf53",
+        "458d09d7-b97d-4374-ad05-ec048ab8f5f5",
+        "05f3dad7-7639-4085-a833-e53425aa3080",
+        "40234d49-d2a2-41bc-a2b6-748073123aca"
       ],
       "sampleOriginalArtists": [
         "时代少年团",
+        "时代少年团 严浩翔&贺峻霖",
         "时代少年团 张真源&严浩翔 合作曲",
-        "《傻瓜》钢琴版 时代少年团",
-        "《我喜欢你》钢琴版 时代少年团"
+        "时代少年团 马嘉祺&严浩翔",
+        "《傻瓜》钢琴版 时代少年团"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/f8d3ad9ceacd7b7e4626476d32d087eb/1000x1000-000000-80-0-0.jpg",
@@ -114,42 +119,39 @@
     {
       "canonicalArtistId": "into1",
       "displayName": "INTO1",
-      "songCount": 27,
+      "songCount": 24,
       "songIds": [
-        "local_i_hate_goodbye",
-        "local_就这样长大",
-        "local_一步一诗一梦",
-        "local_跳支夜的舞",
-        "local_天生就要飞",
-        "local_一杯火焰",
-        "local_白话文",
-        "local_柳叶刀",
-        "local_明早老地方出发",
-        "local_风吹沙成海",
-        "local_点睛",
-        "local_新时代_冬奥运",
-        "local_wonderland_party",
-        "local_风暴眼",
-        "local_into_the_fire",
-        "local_古蜀回想",
-        "local_be_mine",
-        "local_INTO1",
-        "local_少年的模样",
-        "local_Lover_boy_88",
-        "local_冒险计划",
-        "local_Nana_party",
-        "local_下雨了是我在想你",
-        "local_输入法打可爱按第五",
-        "local_你就不要想起我",
-        "local_fix_me",
-        "local_我们一起闯"
+        "bb80ec85-536a-417c-b4b7-b4f92d08c373",
+        "b97eaf68-ca15-427d-98ba-fe995183a9d0",
+        "1bbefcd4-8c4a-4736-8f69-2ecb97002bc7",
+        "2f3a5438-fb72-441c-9440-76fb66f965fb",
+        "4b17d533-efbb-4c6a-ae1f-8769eb942742",
+        "21554259-30fd-4035-be9e-da118f54df87",
+        "0a9cb715-a981-4a4a-8809-f1f7e50ab0d1",
+        "edc589df-faea-4feb-9d77-736398395a75",
+        "b9dfc04a-2e52-455f-bcdc-45855d029268",
+        "b6b50ce8-a1fd-4262-bbf1-aa7afe7db095",
+        "9adde282-2488-4ee4-bf02-926c2d5434ff",
+        "7d6c0c3d-66ff-490c-9493-5e968d4b99d9",
+        "4c1e7a1d-cd22-415f-b5ae-99b2974b997f",
+        "982389f3-d45a-4b8f-b56f-0e93bd1ef65c",
+        "9be91bbe-6c2a-46c2-a891-0af60915fdac",
+        "9ff19057-4545-436b-9ef1-2760e7cf5c30",
+        "1d53dfac-d6db-4d77-ad41-7a7442b38352",
+        "04dcdb47-90c5-415e-978e-309dc94865f6",
+        "4f66e7df-ccf9-432a-90ca-7d8e7fc1191c",
+        "e11ffde0-dc8c-43db-83a2-8943399e6695",
+        "3e5cd267-695a-44b9-9e0c-6eca7bccba5f",
+        "9d479bde-efb4-4fce-88a1-8efae80d4cd5",
+        "235eb5b8-f870-47b0-aaa3-035e66daacd8",
+        "58ef8577-7fd3-4565-9331-5a86a5734492"
       ],
       "sampleOriginalArtists": [
         "INTO1",
         "INTO1刘宇",
-        "刘宇",
         "INTO1 Piano",
-        "创造营2021"
+        "创造营2021",
+        "CHUANG2021 ver"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/77051020ad6d1cb9ac358c8d872de84f/1000x1000-000000-80-0-0.jpg",
@@ -162,23 +164,23 @@
       "displayName": "华晨宇",
       "songCount": 17,
       "songIds": [
-        "local_人之爱",
-        "local_晨光里有你",
-        "local_不重逢",
-        "local_温暖的房子",
-        "local_怪诞心理学",
-        "local_忒修斯的船",
-        "local_向阳而生日出版",
-        "local_永不熄灭的火焰",
-        "local_好想爱这个世界啊",
-        "local_普通到不普通的人生",
-        "local_风之海",
-        "local_向阳而生",
-        "local_名场面",
-        "local_小镇里的花",
-        "local_走_一起去看日出吧",
-        "local_花落时相遇",
-        "local_好想我回来啊"
+        "f48abc07-5cab-4e3f-96a1-a96e55b227dd",
+        "0afae8ea-d7d9-4578-ab8f-91376d41e605",
+        "1f6acc29-ec16-4752-a19c-bca2d697391d",
+        "05dbc6c4-0436-485d-a6f4-3f1173ebc196",
+        "0e4a3e30-613e-417b-9c7b-e92ad5f5e66b",
+        "b0eeb038-c7dc-4137-99c8-7e89af18423b",
+        "8c907756-d994-4e83-a95c-7ce806fbed5c",
+        "cbcbb766-9f37-4bb7-b09f-98962a50bb5d",
+        "9de19427-ef4f-474f-88f2-650e0e830854",
+        "2f700678-4bd7-4e7e-99af-936255d9d057",
+        "c969c325-e7bb-433a-8e72-8a1a258b3405",
+        "d1908f98-54d4-46c2-89b6-c8eed1e82175",
+        "7547dcf2-b7b3-41db-84fa-6291069c1def",
+        "646fe5a8-ab1f-484c-b67e-199956c49290",
+        "1df6373d-1b45-4f2f-8752-e825e22e0327",
+        "12047a14-0a88-4a00-99bf-3b86dd92e146",
+        "e1e44baf-9301-4772-b361-afe39acd6137"
       ],
       "sampleOriginalArtists": [
         "华晨宇",
@@ -194,26 +196,60 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "i-dle",
-      "displayName": "I-DLE",
+      "canonicalArtistId": "jay-chou",
+      "displayName": "周杰伦",
       "songCount": 13,
       "songIds": [
-        "local_Mono",
-        "local_Girlfriend",
-        "local_her",
-        "local_Klaxon",
-        "local_could_it_be",
-        "local_Fate",
-        "local_super_lady",
-        "local_queen_card",
-        "local_Allergy",
-        "local_nxde",
-        "local_drive",
-        "local_tomboy",
-        "local_pop_star"
+        "fe408033-38a7-4adc-ac6b-65f2284b73aa",
+        "3e00992c-1f2c-4c6b-be3f-175b2a6d4c9f",
+        "3a9eab4b-aa23-468b-ac45-4edd994a8380",
+        "7bff9639-979b-4d0e-a1a4-da75bb979bc6",
+        "d0c8fab4-1f9f-4c72-91a9-d57b7bd26c6f",
+        "bbf6cafa-51ef-478d-9d2b-4a0227c5e44a",
+        "629d2061-595f-4a04-ac71-7ae223f36c90",
+        "e1824d6b-2ea9-4167-8a9e-48e67ec19146",
+        "74b59f8d-cb73-42cd-b1b7-4a80afdaf4dc",
+        "86584a5a-8178-4730-baa9-05d34e6086a1",
+        "44c7a41c-2927-4d68-bc59-094402726dc7",
+        "2e94ad6c-a665-422c-a8e5-2b8c4bee297f",
+        "892a0aa9-593c-4577-80f7-aa6f9da1a57c"
       ],
       "sampleOriginalArtists": [
-        "I-DLE"
+        "周杰伦",
+        "周杰伦、F4、五月天",
+        "周杰倫 紅顏如霜",
+        "周杰倫 還在流浪",
+        "周杰倫"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/4b60277efe2dff28823aac761d390406/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "i-dle",
+      "displayName": "I-DLE",
+      "songCount": 12,
+      "songIds": [
+        "c3cd6a64-aefe-405e-a0d2-2af9cdc5e230",
+        "83754ace-4d6e-4a43-ba7c-ca17393250b9",
+        "69ea7269-7c9c-49c9-b7e2-0c4bc50d2d6c",
+        "533967c4-bb07-40c5-b7a3-cf2ee70b2fbd",
+        "cb1d17b0-cc92-48a2-a73f-27e75859a9e8",
+        "79323e53-9ae3-4be9-aa7a-d04ffd804a07",
+        "20202774-efab-48f6-9bf3-9a0b85c8fe1c",
+        "d8d03970-9e42-4231-982d-4b8de6646bd5",
+        "18b888d6-6738-42bb-ae73-16ac2ef1254e",
+        "4e7919bf-98f7-403e-87ea-3a7cf20eca2c",
+        "4d1fe713-1b55-4ada-a5b3-9f05963a6f51",
+        "35ad35d0-618f-47b2-987d-adfa03379f99"
+      ],
+      "sampleOriginalArtists": [
+        "I-DLE",
+        "Minnie",
+        "宋雨琦",
+        "赵美延"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/0b381aacaf9b4c4c1b60664431c815bf/1000x1000-000000-80-0-0.jpg",
@@ -226,18 +262,18 @@
       "displayName": "ZEROBASEONE",
       "songCount": 12,
       "songIds": [
-        "local_runing_to_future",
-        "local_iconik",
-        "local_Blue_zerobaseone",
-        "local_doctor_doctor",
-        "local_good_so_bad",
-        "local_sweat",
-        "local_yura_yura",
-        "local_crush",
-        "local_in_bloom",
-        "local_say_my_name",
-        "local_over_me",
-        "local_Here_I_am"
+        "9c17e6d3-2f9f-4212-bb5e-6b135cf9904e",
+        "e6693aa7-8388-472f-bb1c-4129444c239f",
+        "76521b98-c46b-4a23-96e2-69c80ab32007",
+        "dd71c282-815c-44d6-b2a1-7471b28b7525",
+        "da08d496-7d6a-4c9d-9a2c-b0e13050881f",
+        "78c30a6b-e933-413d-8008-b2c7000763aa",
+        "2a10645f-3723-4ab2-bb47-f0c849bd07db",
+        "6521f98a-bbcb-4619-b22e-27d902803080",
+        "8dfcdfde-9552-4a21-9a90-f9bb1677380a",
+        "7306e125-50c3-43e8-8947-7024919ee1df",
+        "3c545913-61e7-411b-8816-60f1989ba4ee",
+        "41ffc9ff-3265-4eb8-a9d5-69410fd47683"
       ],
       "sampleOriginalArtists": [
         "ZEROBASEONE",
@@ -245,7 +281,37 @@
         "BOYS PLANET"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/90c4e4db0b9551c31b06d73e3d189f23/1000x1000-000000-80-0-0.jpg",
+      "artistImageUrl": "https://kprofiles.com/wp-content/uploads/2023/07/ZB1-1-640x800.jpg",
+      "artistImageSource": "kprofiles_zb1_group_photo_9",
+      "artistImageConfidence": 1,
+      "artistImageKind": "group_photo"
+    },
+    {
+      "canonicalArtistId": "blackpink",
+      "displayName": "BLACKPINK",
+      "songCount": 11,
+      "songIds": [
+        "ebe8cda2-9458-4213-a5aa-5a9f4b0cf627",
+        "9d5fcc5c-c0bc-47af-b115-9b643cab71cb",
+        "25349319-a16a-4628-900f-db645bfcc630",
+        "a9788e02-79aa-4494-b9fa-d2024f76e1e8",
+        "e17a0211-1411-4406-aadb-5d9235a268d0",
+        "2b5ff63f-3692-4e0a-89dc-762296de7420",
+        "924cd02e-632c-4ab1-91de-5ffac222183c",
+        "82636f89-4af0-4902-a027-22917623e1d8",
+        "67ec905b-8113-49c8-8b16-5e8b88a72a19",
+        "303d2077-9535-4c64-ab07-c6ae4e24757a",
+        "e8592b68-a4b5-460a-8fc0-405878db1943"
+      ],
+      "sampleOriginalArtists": [
+        "BLACKPINK",
+        "ROS",
+        "JENNIE",
+        "Rosé和Bruno Mars",
+        "ZICO"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/89675729453893a91be35bde691050ff/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
@@ -255,17 +321,17 @@
       "displayName": "IVE",
       "songCount": 11,
       "songIds": [
-        "local_BLACKHOLE",
-        "local_bang_bang",
-        "local_XOXZ",
-        "local_REBEL_HEART",
-        "local_baddie",
-        "local_off_the_record",
-        "local_Either_way",
-        "local_after_LIKE",
-        "local_love_dive",
-        "local_eleven",
-        "local_heya"
+        "41cc0b49-1138-4847-ba0b-308444aac9a5",
+        "7670f971-b6e2-4c5b-a40f-ec95343ad017",
+        "09abd3b0-9697-40d0-a067-5b9af561217c",
+        "bafb57e9-03ca-4b13-a721-80202efa5a67",
+        "88ec7bdd-a8d2-46e9-aad4-cc5bf8af33a4",
+        "adf4b1ba-ddfc-4e61-8c62-e6bfe8b4e80b",
+        "e01b5138-9b35-46a3-b78f-ab46b8390028",
+        "8fe0929a-208d-4ff5-aae3-320ed3585754",
+        "eac2972d-bea5-4b7b-a06f-b0b2c9cab90d",
+        "bea9cd8a-7415-4b66-9230-ece373fc30a6",
+        "29c875bf-4e04-4370-9103-6b68ecf18184"
       ],
       "sampleOriginalArtists": [
         "IVE",
@@ -282,83 +348,25 @@
       "displayName": "SEVENTEEN",
       "songCount": 11,
       "songIds": [
-        "local_candy_svt",
-        "local_love_money_fame",
-        "local_青春赞歌",
-        "local_maestro",
-        "local_相遇的意义",
-        "local_fallin_flower",
-        "local_god_of_music",
-        "local_FML",
-        "local_super",
-        "local_DON_QUIXOTE",
-        "local_Darl_ing"
+        "82675a8e-52a9-40f8-b2f5-14dbc0075bf1",
+        "a3d9e540-b744-4a0f-824d-e8be99ed4116",
+        "8a09edfe-5fee-46fc-8435-6343529e3722",
+        "9906ef22-84db-43df-9134-ac0f7f05d873",
+        "ac483a64-6eed-415a-9f1d-846c63a27246",
+        "42acf3d5-afd2-466d-a287-3c10176b3064",
+        "eff22f90-59de-4d4a-a9ae-cd9c4d42ad4d",
+        "1c0367c5-0c96-4b69-8307-bf4b3166ee3b",
+        "fbb93d1f-ea1b-4ca2-8dbf-9396fed418d5",
+        "feb08d71-cc33-4785-83f1-4a8aaee3e59d",
+        "bf639fbd-eb05-409d-9851-1f71a6d551ca"
       ],
       "sampleOriginalArtists": [
         "SEVENTEEN"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/6e358a63b8d449f701a742d45adef635/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search_seventeen_alt",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "jay-chou",
-      "displayName": "周杰伦",
-      "songCount": 11,
-      "songIds": [
-        "local_那天下雨了",
-        "local_太阳之子",
-        "local_即兴曲",
-        "local_Six_Degrees",
-        "local_圣诞星",
-        "local_上海一九四三",
-        "local_红颜如霜",
-        "local_还在流浪",
-        "local_最伟大的作品",
-        "local_回到过去",
-        "local_晴天"
-      ],
-      "sampleOriginalArtists": [
-        "周杰伦",
-        "周杰倫 紅顏如霜",
-        "周杰倫 還在流浪",
-        "周杰倫"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/4b60277efe2dff28823aac761d390406/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "kep1er",
-      "displayName": "Kep1er",
-      "songCount": 10,
-      "songIds": [
-        "local_shooting_star",
-        "local_wadada",
-        "local_another_dream",
-        "local_shine",
-        "local_u_me_love",
-        "local_Utopia",
-        "local_snake",
-        "local_shoot",
-        "local_姻缘",
-        "local_O_O_O"
-      ],
-      "sampleOriginalArtists": [
-        "Kep1er",
-        "Girls Planet 999 COMPLETION MISSION",
-        "U Me LOVE",
-        "Utopia",
-        "Snake"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Kep1er_Nov%2724_%28cropped%29.png/330px-Kep1er_Nov%2724_%28cropped%29.png",
-      "artistImageSource": "wikipedia_en_commons_group_photo",
-      "artistImageConfidence": 0.95,
+      "artistImageUrl": "https://image-cdn-ak.spotifycdn.com/image/ab676161000051748da3a229445fd3cd896cdd5c",
+      "artistImageSource": "spotify_open_artist_7nqOGRxlXj7N2JYbgNEjYH",
+      "artistImageConfidence": 1,
       "artistImageKind": "group_photo"
     },
     {
@@ -366,16 +374,16 @@
       "displayName": "蔡徐坤",
       "songCount": 10,
       "songIds": [
-        "local_colder",
-        "local_what_a_day",
-        "local_jasmine",
-        "local_deadman",
-        "local_remedy",
-        "local_afterglow",
-        "local_spotlight",
-        "local_hug_me",
-        "local_ei_ei",
-        "local_只因你太美"
+        "d05b2ce6-2e8c-45db-9390-29ab132443a6",
+        "0cc77ecb-774b-45af-9db1-9d4b8e074db1",
+        "cfee2b4d-bde0-417f-b2b2-f9ffe5a9ece8",
+        "61271ee6-988f-4197-a8be-8ba7f15e4f59",
+        "2ed2c094-4fb9-4dce-bc6f-4c67a475041c",
+        "3e95e3b0-b8bf-4607-a067-3735ac745db9",
+        "78980be5-a826-492d-8bc7-6fd73d1895b9",
+        "d33c127e-4097-4736-a751-a28ee99ae785",
+        "43714094-bf5e-4a13-8ecd-d704281b2a4f",
+        "c3efe105-fb55-400a-a2ec-43355fac1bec"
       ],
       "sampleOriginalArtists": [
         "蔡徐坤",
@@ -392,18 +400,17 @@
       "displayName": "aespa",
       "songCount": 8,
       "songIds": [
-        "local_rich_man",
-        "local_whiplash",
-        "local_girls",
-        "local_drama",
-        "local_life_s_too_short",
-        "local_Illusion",
-        "local_dreams_come_true",
-        "local_Lucid_Dream"
+        "090e3738-dd58-454c-9635-668d318fce37",
+        "49238853-7d7f-4a77-aaa4-df8896b4d64b",
+        "6e72b65b-8a35-4805-8805-201b03512e3e",
+        "b3d441eb-5057-4ee4-8484-43dbf23ca62d",
+        "7076048a-7c80-4944-be01-44b2a93ffc1e",
+        "2b3a5c51-00ac-465f-8796-b53e9791b0d4",
+        "e6ae75af-1078-4a97-9b45-100b1b5dee38",
+        "643296bd-f624-48e6-ad43-8e11dc556975"
       ],
       "sampleOriginalArtists": [
-        "aespa",
-        "Dreams Come True"
+        "aespa"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/e16c3049f89ed842cabd0662012c2d33/1000x1000-000000-80-0-0.jpg",
@@ -412,97 +419,97 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "snh48",
-      "displayName": "SNH48",
+      "canonicalArtistId": "league-of-legends",
+      "displayName": "英雄联盟",
       "songCount": 8,
       "songIds": [
-        "local_时间的歌",
-        "local_春夏秋冬",
-        "local_人鱼",
-        "local_魔女的诗篇",
-        "local_don_t_touch",
-        "local_公主披风",
-        "local_爱恨的泪",
-        "local_夜蝶"
+        "81a942ef-87cc-4055-847f-5de47fdd643a",
+        "ad55d05d-c0cb-46fc-89b8-5f779540874d",
+        "d35113ab-6300-4c00-95ca-d3b9d39dbcf2",
+        "37fb02fc-d042-4ccc-b936-b19647e4f77b",
+        "725e0fea-983b-459f-b027-104aaf0bacb7",
+        "d324bbe5-249c-454b-a968-c671bcbbf555",
+        "23d11aeb-5b5f-40f6-9cde-47153ce906f9",
+        "07752a89-cdaf-4f19-86db-9daf1818f797"
       ],
       "sampleOriginalArtists": [
-        "SNH48",
-        "Don",
-        "《公主披风》钢琴版"
+        "G.E.M. Anthem",
+        "丨 :",
+        "Linkin Park Anthem",
+        "NewJeans Worlds 2023 Anthem - League of Legends",
+        "Lil Nas X"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "kep1er",
+      "displayName": "Kep1er",
+      "songCount": 7,
+      "songIds": [
+        "d29b5027-338c-40fb-a175-4506ad6e1bdc",
+        "b0d045c2-3cc6-47ac-b388-0bff505ebf8e",
+        "474f3a18-551f-417c-8d2c-7e5f4e256358",
+        "bca4dd1b-8dcd-44ba-9b49-e0523faa3b90",
+        "f7c0b456-a3f6-4aad-a4b1-2959125df35a",
+        "431f875a-297b-4112-8a88-cd0add9729ec",
+        "41749815-e856-41a6-9044-33ae6de9ceb9"
+      ],
+      "sampleOriginalArtists": [
+        "Kep1er",
+        "Girls Planet 999 COMPLETION MISSION",
+        "Kep1er（Girls' Planet 999）",
+        "Girls Planet 999 Theme Song O.O.O"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/d6a21a3e15605ac3f7e67972c0f9419e/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
+      "artistImageUrl": "https://image-cdn-fa.spotifycdn.com/image/ab676161000051746099e814dcde84de16931134",
+      "artistImageSource": "spotify_open_artist_5R7AMwDeroq6Ls0COQYpS4",
+      "artistImageConfidence": 1,
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "blackpink",
-      "displayName": "BLACKPINK",
+      "canonicalArtistId": "kpop-demon-hunters",
+      "displayName": "KPop Demon Hunters",
       "songCount": 7,
       "songIds": [
-        "local_Go",
-        "local_jump",
-        "local_the_happiest_girl",
-        "local_shut_down",
-        "local_pink_venom",
-        "local_ready_for_love",
-        "local_Lalisa"
+        "77624ba5-cd3e-4517-b19d-137e88f7e157",
+        "3861adc7-d72f-4fff-bf42-fa916a0da16e",
+        "edc30440-3284-405d-8b0c-1afc04a45a74",
+        "00124fd2-ddf1-4890-9be7-6d1321e89f1b",
+        "367655b7-a15e-4f7d-a329-e8272c1b03d8",
+        "ae7fdf08-9fc0-44f7-b401-8fb1127f096d",
+        "5cf31c63-ce5c-45ca-871b-9b5a6864d8e6"
       ],
       "sampleOriginalArtists": [
-        "BLACKPINK",
-        "BLACKPINK X PUBG MOBILE",
-        "LALISA"
+        "KPOP Demon Hunters HUNTR/X",
+        "HUNTR/X",
+        "KPOP Demon Hunters Saja Boys"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/89675729453893a91be35bde691050ff/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "yan-hao-xiang",
-      "displayName": "严浩翔",
-      "songCount": 7,
-      "songIds": [
-        "local_茫",
-        "local_耻辱柱",
-        "local_the_beast",
-        "local_no_complaints",
-        "local_若想念飞行",
-        "local_Y",
-        "local_尾号6208"
-      ],
-      "sampleOriginalArtists": [
-        "时代少年团 严浩翔&贺峻霖",
-        "时代少年团 严浩翔",
-        "时代少年团 马嘉祺&严浩翔",
-        "严浩翔",
-        "《尾号6208》钢琴版 时代少年团严浩翔"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ac6c68e837b5f36486d1042c700061ec/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "lay-zhang",
       "displayName": "张艺兴",
       "songCount": 7,
       "songIds": [
-        "local_为你揭晓",
-        "local_Psychic",
-        "local_D_N_A_cypher",
-        "local_酒",
-        "local_dawn_to_dusk",
-        "local_悟",
-        "local_飞天"
+        "8941fa87-784a-4b5d-9508-8715773465dd",
+        "c25dfd45-9a48-4fbe-a85d-538c31d2670c",
+        "948fd9d5-0756-4436-a322-0dd396678e66",
+        "6c24a7d7-79b5-4062-bf85-0ae376c02c16",
+        "28e9d70a-8523-4a09-adb9-391fb1358135",
+        "143ca9ba-131f-4329-b4e4-576beabba0bd",
+        "65a849c3-af28-4dbf-b62b-411c7395432a"
       ],
       "sampleOriginalArtists": [
         "张艺兴、林俊杰",
-        "张艺兴",
-        "24 张艺兴Ｘ24"
+        "张艺兴"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Zhang_Yixing_at_press_conference_of_The_Founding_of_an_Army.jpg/330px-Zhang_Yixing_at_press_conference_of_The_Founding_of_an_Army.jpg",
@@ -511,17 +518,40 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "wang-yuan",
+      "displayName": "王源",
+      "songCount": 7,
+      "songIds": [
+        "e1568b4a-a018-4088-9e65-f587878c8e8f",
+        "bb512253-c9ff-45ba-84d2-d82923b74785",
+        "ebcd555d-6b1e-42e9-a0e6-a469a54b92d2",
+        "fb98ee50-b410-4097-b452-689926c948b4",
+        "ee191538-8ffd-4e2d-8f8e-b727b867ce35",
+        "63d8693a-a0cf-42bd-a42c-1f8c273ec207",
+        "5072dc19-ad7f-4733-8cda-685e8c71ff4c"
+      ],
+      "sampleOriginalArtists": [
+        "王源",
+        "《疯人公园 》钢琴版 王源"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/f49bd63f1c32e6d154a50181a663ae78/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "joker-xue",
       "displayName": "薛之谦",
       "songCount": 7,
       "songIds": [
-        "local_跃",
-        "local_守村人",
-        "local_AI",
-        "local_崇拜",
-        "local_可",
-        "local_男二号",
-        "local_洛城"
+        "95e3b696-da4e-42d9-b19b-9d9b2f545d2c",
+        "4ab9c4bc-2616-4b55-bbcc-a9c0f995d116",
+        "e568eb36-c602-4a75-8211-23345e4030e7",
+        "8f8397dd-cc6a-43b3-86d0-1b3fea843b11",
+        "2ffffe4d-aba6-427d-9f2c-61cd7e37c11c",
+        "64e179bd-df1d-4e92-8f50-27a3e492522f",
+        "50974793-8983-4e4f-b4b4-27b51b5a2c98"
       ],
       "sampleOriginalArtists": [
         "薛之謙",
@@ -539,12 +569,12 @@
       "displayName": "NewJeans",
       "songCount": 6,
       "songIds": [
-        "local_supernatural",
-        "local_how_sweet",
-        "local_bubble_gum",
-        "local_GODS",
-        "local_super_shy",
-        "local_ditto"
+        "db3d21c9-4535-4c82-a2dd-13dfc4ace317",
+        "ddc5766f-fe99-439e-84ac-a8dff83104ff",
+        "55fdda06-fbd6-4801-8497-82ff0b1933bc",
+        "37fb02fc-d042-4ccc-b936-b19647e4f77b",
+        "03c0ea07-e465-45c0-8b2e-93cc85a3d8eb",
+        "8c27a76b-c55f-4b9e-b98e-f4b6ff71fad2"
       ],
       "sampleOriginalArtists": [
         "NewJeans",
@@ -557,16 +587,60 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "snh48",
+      "displayName": "SNH48",
+      "songCount": 6,
+      "songIds": [
+        "85e2be99-c697-4914-b449-7a40afc7f78c",
+        "b9625b81-d754-4472-8ef8-a7c219000564",
+        "da501fce-e82e-4e86-9ea0-09e28cb4c5e4",
+        "5169e023-284f-4029-b3e6-53007ff8bca4",
+        "f8e04b42-9df4-41bc-b2db-e47d87ca8904",
+        "fc2068c0-42e3-46fd-b655-8c9f5237c669"
+      ],
+      "sampleOriginalArtists": [
+        "SNH48"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/d6a21a3e15605ac3f7e67972c0f9419e/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "group_photo"
+    },
+    {
+      "canonicalArtistId": "song-ya-xuan",
+      "displayName": "宋亚轩",
+      "songCount": 6,
+      "songIds": [
+        "dedb8705-1f96-4cf8-83d6-d9bcee8c9d12",
+        "c0aee841-1835-4418-acc8-56778750d114",
+        "c98e770f-d3f1-4ccf-a203-3fdc48feeef2",
+        "07ecb565-732b-4851-831b-9e0382d30db7",
+        "67b3b15b-648d-41ab-ada6-2f66233fda64",
+        "d2c2067e-2075-4861-93be-9ee6f5db6c95"
+      ],
+      "sampleOriginalArtists": [
+        "时代少年团 宋亚轩",
+        "周深、宋亚轩",
+        "宋亚轩"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/4cef1787336d10b0c1e31c2c04301bf4/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "zhang-bi-chen",
       "displayName": "张碧晨",
       "songCount": 6,
       "songIds": [
-        "local_在故事的最终",
-        "local_在加纳共和国离婚",
-        "local_笼",
-        "local_年轮",
-        "local_镌刻",
-        "local_如故"
+        "5166290a-364a-49b8-8aca-64b9353af293",
+        "3518d40e-2566-44c0-9665-8a554eec81d1",
+        "f448704c-05ee-42e7-a1d1-4db10c9cf09e",
+        "8288845a-d967-4979-bcb5-3a118b683c16",
+        "3ecef0ed-87b5-4b10-8387-a46522c1234b",
+        "9c33396a-f131-4c65-a022-f33be8261f6d"
       ],
       "sampleOriginalArtists": [
         "张碧晨",
@@ -579,44 +653,22 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "wang-yuan",
-      "displayName": "王源",
-      "songCount": 6,
-      "songIds": [
-        "local_多云转晴又转阴",
-        "local_一些悲伤又美好的事",
-        "local_洄",
-        "local_疯人公园",
-        "local_流星也为你落下来了",
-        "local_你的名字是"
-      ],
-      "sampleOriginalArtists": [
-        "王源",
-        "《疯人公园 》钢琴版 王源"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/f49bd63f1c32e6d154a50181a663ae78/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "honor-of-kings",
       "displayName": "王者荣耀",
       "songCount": 6,
       "songIds": [
-        "local_明日坐标",
-        "local_奇迹时刻",
-        "local_荣耀同行",
-        "local_时结",
-        "local_无双的王者",
-        "local_音你心动"
+        "e65424f4-feda-4ec0-92dd-fafb62c93ca5",
+        "bc1c23a3-190c-4904-a0d2-36c129ecafa6",
+        "f405d8d2-a051-4417-8f8e-d63113927794",
+        "b3b7e3e3-4227-464a-9a9f-e025a60043f0",
+        "14066270-8b05-4f5a-a950-75561c799ed0",
+        "e967190e-6542-48a9-9102-286c33534d32"
       ],
       "sampleOriginalArtists": [
-        "林俊杰、王者荣耀",
-        "周深、王者荣耀",
+        "林俊杰",
+        "周深",
         "王者荣耀",
-        "邓紫棋、王者荣耀"
+        "邓紫棋"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7d/Honor_of_Kings_logo.png/500px-Honor_of_Kings_logo.png",
@@ -629,19 +681,18 @@
       "displayName": "邓紫棋",
       "songCount": 6,
       "songIds": [
-        "local_Sacrifice",
-        "local_唯一",
-        "local_面壁者",
-        "local_倒流时间",
-        "local_两个自己",
-        "local_无双的王者"
+        "81a942ef-87cc-4055-847f-5de47fdd643a",
+        "6c3dcc6b-9cc7-4af8-b39b-29f6f5b014db",
+        "cc5d11f7-4fd5-4d9b-b74b-3fb11c2a28a3",
+        "78bc75d0-36e1-4b3d-8e40-2a468b7f183a",
+        "3e94c747-b9da-4c0e-81cc-e28dd6ddff06",
+        "14066270-8b05-4f5a-a950-75561c799ed0"
       ],
       "sampleOriginalArtists": [
         "G.E.M. Anthem",
         "鄧紫棋",
         "鄧紫棋 倒流時間",
-        "两个自己 两个你",
-        "邓紫棋、王者荣耀"
+        "邓紫棋"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/823a00b5eafeaddd60ce40aaefd4394a/1000x1000-000000-80-0-0.jpg",
@@ -654,11 +705,11 @@
       "displayName": "HUNTR/X",
       "songCount": 5,
       "songIds": [
-        "local_what_it_sounds_like",
-        "local_free",
-        "local_How_it_s_done",
-        "local_take_down",
-        "local_golden"
+        "77624ba5-cd3e-4517-b19d-137e88f7e157",
+        "3861adc7-d72f-4fff-bf42-fa916a0da16e",
+        "00124fd2-ddf1-4890-9be7-6d1321e89f1b",
+        "367655b7-a15e-4f7d-a329-e8272c1b03d8",
+        "5cf31c63-ce5c-45ca-871b-9b5a6864d8e6"
       ],
       "sampleOriginalArtists": [
         "KPOP Demon Hunters HUNTR/X",
@@ -675,11 +726,11 @@
       "displayName": "ILLIT",
       "songCount": 5,
       "songIds": [
-        "local_not_cute_anymore",
-        "local_do_the_dance",
-        "local_Cherish",
-        "local_Lucky_Girl_Syndrome",
-        "local_Magnetic"
+        "7e327da0-d6cc-41f8-9677-3e9f7b666c71",
+        "626dc443-7066-40ad-8cc8-d6b8d4d55b79",
+        "32a01b0f-306c-4e92-aa7e-315aaaea6619",
+        "e30348e9-47ab-4de5-a381-89299daefeff",
+        "04ebdf26-714d-4f20-886d-2d50ab37bd41"
       ],
       "sampleOriginalArtists": [
         "ILLIT"
@@ -695,11 +746,11 @@
       "displayName": "刘宇宁",
       "songCount": 5,
       "songIds": [
-        "local_烽月",
-        "local_就在江湖之上",
-        "local_念",
-        "local_意气趁年少",
-        "local_烟火星辰"
+        "6dd5179d-08f9-4ebe-9c16-a6b0eff47c70",
+        "a7bcfaa5-5342-43ec-a719-bc8a2dc39cee",
+        "ccc32ccc-11da-47fa-93a3-eb6de7beebba",
+        "37d19a4c-4acf-46b8-94d2-1283e4ca9064",
+        "bdfbbb77-fd67-4723-b734-0bf35634ac61"
       ],
       "sampleOriginalArtists": [
         "刘宇宁"
@@ -715,11 +766,11 @@
       "displayName": "刘耀文",
       "songCount": 5,
       "songIds": [
-        "local_blue_刘耀文",
-        "local_耀眼的你",
-        "local_falling_you",
-        "local_Got_You",
-        "local_不冬眠"
+        "0fda8d98-f0b6-4d12-a559-d5751531a06f",
+        "5fbc21da-eba5-4458-b95e-e3d38a5980c8",
+        "76ac6f51-d656-4ba7-a5cb-d72026e3b573",
+        "cd48f39a-20f8-4542-a5d5-f0e57e67dea6",
+        "af8458f8-fa23-4634-ad03-675b96409145"
       ],
       "sampleOriginalArtists": [
         "刘耀文",
@@ -732,24 +783,23 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "song-ya-xuan",
-      "displayName": "宋亚轩",
+      "canonicalArtistId": "zhang-jie",
+      "displayName": "张杰",
       "songCount": 5,
       "songIds": [
-        "local_无趣生活指南",
-        "local_spr",
-        "local_体贴",
-        "local_失恋循环",
-        "local_5点23"
+        "702c3e96-a5f4-402c-ba7d-472da7223c29",
+        "bcc413d4-8096-466a-9db1-0eabffde911e",
+        "c6551575-d59e-4943-9b3a-943e196b3c82",
+        "35b7b30f-95d8-4e62-b8e9-79fc4dfc37ec",
+        "a9c2052c-95f0-456f-a41d-564ef681b3cd"
       ],
       "sampleOriginalArtists": [
-        "时代少年团 宋亚轩",
-        "宋亚轩"
+        "张杰"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/4cef1787336d10b0c1e31c2c04301bf4/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/bb221ef5bc874f157b53ec3d7624c23d/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer_official_artist_refresh",
+      "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
     },
     {
@@ -757,15 +807,14 @@
       "displayName": "林俊杰",
       "songCount": 5,
       "songIds": [
-        "local_我对缘分小心翼翼",
-        "local_明日坐标",
-        "local_光阴副本",
-        "local_一定会",
-        "local_曹操"
+        "0bacefb3-f544-424c-87f4-39623370f21a",
+        "e65424f4-feda-4ec0-92dd-fafb62c93ca5",
+        "0ecd6b53-0336-4124-a303-70dc18569001",
+        "9f3cab72-48b5-41e7-be69-d2d72e932046",
+        "aa29cedd-574d-4f78-811e-c2aba46baeff"
       ],
       "sampleOriginalArtists": [
         "林俊杰",
-        "林俊杰、王者荣耀",
         "林俊傑"
       ],
       "reviewStatus": "ok",
@@ -779,10 +828,10 @@
       "displayName": "EXO",
       "songCount": 4,
       "songIds": [
-        "local_butterfly_effect",
-        "local_let_me_in",
-        "local_玻璃鱼缸",
-        "local_the_eve"
+        "93c931d6-96fd-4df3-b866-60ec3d53d347",
+        "5f7506ca-d32e-433e-9abe-9ba2819d76c4",
+        "2931076c-3cb2-48ae-ac54-d494de7e4573",
+        "bdf45d6a-7c17-4d89-b17f-c182ffb99fb0"
       ],
       "sampleOriginalArtists": [
         "EXO"
@@ -798,10 +847,10 @@
       "displayName": "Red Velvet",
       "songCount": 4,
       "songIds": [
-        "local_chill_kill",
-        "local_beautiful_christmas",
-        "local_Birthday",
-        "local_feel_my_rhythm"
+        "8fc51d68-b173-43a2-a453-ad5b5dc8acbb",
+        "a8684632-a7e5-4750-8e36-2ac2c6434925",
+        "f263def3-5dc0-455d-90ff-3511cdc93015",
+        "26a6a678-fa78-4ada-8f3d-175095e561b7"
       ],
       "sampleOriginalArtists": [
         "Red Velvet",
@@ -818,10 +867,10 @@
       "displayName": "THE9",
       "songCount": 4,
       "songIds": [
-        "local_我们啊",
-        "local_yes_ok",
-        "local_Hello",
-        "local_Promise"
+        "59043ea7-b8a4-4c7f-b69b-f0d593132136",
+        "dad6d898-17ea-4de7-a5e2-c70bf15cc5d9",
+        "2fec66ce-eab9-4bc2-9a67-93b7472ca26a",
+        "ccda3db6-775f-4f08-b6f0-c4338587ff76"
       ],
       "sampleOriginalArtists": [
         "THE9"
@@ -837,13 +886,14 @@
       "displayName": "五月天",
       "songCount": 4,
       "songIds": [
-        "local_forever_forever",
-        "local_流星雨",
-        "local_任性",
-        "local_玫瑰少年"
+        "7bff9639-979b-4d0e-a1a4-da75bb979bc6",
+        "1f0058fe-566c-4edc-b9fc-9dc9c54e8266",
+        "6e45b694-c00d-4247-8591-212d378b1ff2",
+        "49fb5265-68e9-4095-b973-bf2b0b51b875"
       ],
       "sampleOriginalArtists": [
-        "《恆星不忘》钢琴版 周杰倫/言承旭/吳建豪/周渝民/阿信",
+        "周杰伦、F4、五月天",
+        "汪苏泷、五月天",
         "五月天"
       ],
       "reviewStatus": "ok",
@@ -853,33 +903,36 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "zhang-jie",
-      "displayName": "张杰",
+      "canonicalArtistId": "love-and-deepspace",
+      "displayName": "恋与深空",
       "songCount": 4,
       "songIds": [
-        "local_经过",
-        "local_云之羽",
-        "local_万物不如你",
-        "local_雪龙吟"
+        "6d89bc3d-065e-4ac0-aa49-66e0f488f706",
+        "971475eb-9206-489f-8026-9e5d8cc10c3a",
+        "2713b2c4-52bc-4fdf-8b65-ee6f5fc1a815",
+        "3c398f9a-4c3c-4a3b-a558-4e59ce17d0d6"
       ],
       "sampleOriginalArtists": [
-        "张杰"
+        "张韶涵",
+        "恋与深空",
+        "《恋与深空》",
+        "莎拉布莱曼"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/bb221ef5bc874f157b53ec3d7624c23d/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_official_artist_refresh",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/1ac580dbf8f36e832f6edea07c58f53b/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer_game_official",
       "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
+      "artistImageKind": "key_art"
     },
     {
       "canonicalArtistId": "paper-bride",
       "displayName": "纸嫁衣",
       "songCount": 4,
       "songIds": [
-        "local_相思莫负",
-        "local_你离开的村落",
-        "local_来生戏",
-        "local_鸳鸯债"
+        "3e325765-9a0b-4a27-be38-0f453132d199",
+        "1bd2a8fb-647c-4023-8bc3-4e2f25c5b6c4",
+        "833e3850-3d35-4656-9f30-b322327d86ba",
+        "cae35032-6061-4397-85d7-264feff74d13"
       ],
       "sampleOriginalArtists": [
         "纸嫁衣"
@@ -895,14 +948,14 @@
       "displayName": "肖战",
       "songCount": 4,
       "songIds": [
-        "local_我们",
-        "local_最幸运的幸运",
-        "local_余生请多指教",
-        "local_无羁"
+        "18e3c627-57fd-48db-ac18-ca906d25521c",
+        "ac7ea93d-f51f-448e-93d1-3136544c3a67",
+        "08d4ba85-3267-46c6-8ff2-47e43ea5135f",
+        "671d8dce-5f47-4d69-8891-5b3763d10d43"
       ],
       "sampleOriginalArtists": [
         "肖战",
-        "杨紫、肖战",
+        "杨紫",
         "王一博、肖战"
       ],
       "reviewStatus": "ok",
@@ -916,10 +969,10 @@
       "displayName": "防弹少年团",
       "songCount": 4,
       "songIds": [
-        "local_swim",
-        "local_Dynamite",
-        "local_yet_to_come",
-        "local_my_universe"
+        "7e942d65-1090-4dae-bc11-5f9b00daee96",
+        "8266220f-24b6-4cdb-b87c-1db9d0231b9b",
+        "03a46fde-e0b4-4f54-af16-218e250cbef9",
+        "5e9d515d-ae99-45b5-999e-29d979b7be7d"
       ],
       "sampleOriginalArtists": [
         "BTS",
@@ -936,10 +989,10 @@
       "displayName": "黑神话：悟空",
       "songCount": 4,
       "songIds": [
-        "local_勿听",
-        "local_云宫迅音",
-        "local_黑神话悟空主题曲",
-        "local_敢问路在何方"
+        "fed44338-f2cc-40c0-931d-a00f9d4ded39",
+        "c95c8f9f-6f60-45ee-b5a6-780e8e6d40f0",
+        "174ab5ad-8755-4ea7-8080-11cdd69325f9",
+        "d1de2e29-aa46-4322-9c41-51651a4b9d47"
       ],
       "sampleOriginalArtists": [
         "Black Myth Wukong Piano Collection",
@@ -948,9 +1001,9 @@
         "Black Myth Wukong"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/4eb33e21ee7bc50439584c1973ab1ece/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
+      "artistImageUrl": "https://cdn.akamai.steamstatic.com/steam/apps/2358720/header.jpg",
+      "artistImageSource": "steam_store_capsule",
+      "artistImageConfidence": 1,
       "artistImageKind": "project_logo"
     },
     {
@@ -958,9 +1011,9 @@
       "displayName": "BABYMONSTER",
       "songCount": 3,
       "songIds": [
-        "local_love_in_my_heart",
-        "local_forever",
-        "local_sheesh"
+        "f50da250-da24-4d2d-b7a6-a4da400455b4",
+        "6baf6ddf-4659-4729-8cef-92c622d79909",
+        "5926d86d-f67a-4410-a181-613fffd9deb5"
       ],
       "sampleOriginalArtists": [
         "BABYMONSTER -",
@@ -977,9 +1030,9 @@
       "displayName": "LE SSERAFIM",
       "songCount": 3,
       "songIds": [
-        "local_HOT",
-        "local_swan_song",
-        "local_perfect_night"
+        "1d684a19-251b-42f2-abce-d3d5175855a3",
+        "e369150d-9f62-4a2e-aa73-732c0e08e871",
+        "b674035c-4587-403b-9606-5ab162182cce"
       ],
       "sampleOriginalArtists": [
         "LE SSERAFIM",
@@ -996,12 +1049,12 @@
       "displayName": "TF家族三代",
       "songCount": 3,
       "songIds": [
-        "local_等你的回答",
-        "local_旅行",
-        "local_笨小孩的道歉信"
+        "a65b34dc-f392-4ede-9014-eaae0ad1dc39",
+        "3f3fdc5c-fc58-43c6-a0e4-f4fef7f5dc23",
+        "51e657eb-23fc-4997-a69a-3a369035e503"
       ],
       "sampleOriginalArtists": [
-        "家族三代",
+        "TF家族三代",
         "TF家族三代（苏新皓、左航）"
       ],
       "reviewStatus": "ok",
@@ -1011,32 +1064,32 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "twice",
-      "displayName": "TWICE",
+      "canonicalArtistId": "yan-hao-xiang",
+      "displayName": "严浩翔",
       "songCount": 3,
       "songIds": [
-        "local_talk_that_talk",
-        "local_candy_twice",
-        "local_the_feels"
+        "404fe557-a26e-45a6-9eef-1af0ecee8135",
+        "c85b3af5-4862-4164-86f2-54adf531ebf7",
+        "251189dd-16e0-40d8-bbd8-d74cddc5931c"
       ],
       "sampleOriginalArtists": [
-        "TWICE",
-        "The Feels"
+        "时代少年团 严浩翔",
+        "严浩翔"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/1f4acadade675899b7f775ae4ac67faa/1000x1000-000000-80-0-0.jpg",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ac6c68e837b5f36486d1042c700061ec/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
-      "artistImageKind": "group_photo"
+      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "liu-yu-xin",
       "displayName": "刘雨昕",
       "songCount": 3,
       "songIds": [
-        "local_练习曲",
-        "local_U_I",
-        "local_of_course"
+        "83df545d-7cb2-4fd7-af9a-a16ecb243a84",
+        "a7bef91d-e0d7-4f08-8b43-3c200a2feb5c",
+        "3d785ab4-546e-4a63-8fdd-c36eb056c693"
       ],
       "sampleOriginalArtists": [
         "刘雨昕"
@@ -1052,14 +1105,14 @@
       "displayName": "崩坏：星穹铁道",
       "songCount": 3,
       "songIds": [
-        "local_希望有羽毛和翅膀",
-        "local_不眠之夜",
-        "local_水龙吟"
+        "2338d6c4-aa3e-4ad8-8687-12b83130f73e",
+        "bcc413d4-8096-466a-9db1-0eabffde911e",
+        "2e6af5b7-22d3-414d-a93e-b7f03a69e9d6"
       ],
       "sampleOriginalArtists": [
-        ": 崩坏:星轨铁道",
-        "Honkai Star Rail Penacony",
-        "HOYO-MiX"
+        "知更鸟（Chevy）",
+        "张杰",
+        "Kiryo"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7f/Honkai_Star_Rail_%28logo%29.png/330px-Honkai_Star_Rail_%28logo%29.png",
@@ -1072,9 +1125,9 @@
       "displayName": "张真源",
       "songCount": 3,
       "songIds": [
-        "local_镜花水月",
-        "local_蝴蝶",
-        "local_抬起头啊"
+        "b5c3e2ee-59b2-4a98-a853-80a81711525c",
+        "3ea8f077-8246-4b4d-b34a-1b986f7a8105",
+        "17c46460-20e2-4bbf-9c38-150830191197"
       ],
       "sampleOriginalArtists": [
         "时代少年团 张真源",
@@ -1087,37 +1140,17 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "love-and-deepspace",
-      "displayName": "恋与深空",
-      "songCount": 3,
-      "songIds": [
-        "local_春天对花所做的事",
-        "local_时空引力",
-        "local_恋与深空主题曲"
-      ],
-      "sampleOriginalArtists": [
-        "恋与深空",
-        "《恋与深空》",
-        "莎拉·布莱曼"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/1ac580dbf8f36e832f6edea07c58f53b/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_game_official",
-      "artistImageConfidence": 1,
-      "artistImageKind": "key_art"
-    },
-    {
       "canonicalArtistId": "silence-wang",
       "displayName": "汪苏泷",
       "songCount": 3,
       "songIds": [
-        "local_问你一个人类梦寐以求的深奥问题",
-        "local_像晴天像雨天任性",
-        "local_像晴天像雨天"
+        "31848ee2-0748-494f-b2d1-45ac823c0114",
+        "1f0058fe-566c-4edc-b9fc-9dc9c54e8266",
+        "71fb9f87-adc8-4237-bc84-28ef86ccafbe"
       ],
       "sampleOriginalArtists": [
         "汪苏泷",
-        "汪蘇瀧 五月天"
+        "汪苏泷、五月天"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Silence_Wang_01.jpg/330px-Silence_Wang_01.jpg",
@@ -1130,9 +1163,9 @@
       "displayName": "王一博",
       "songCount": 3,
       "songIds": [
-        "local_我在",
-        "local_廿",
-        "local_无羁"
+        "66dce886-6a8e-4bd2-aef9-41ec056b65c5",
+        "be033328-9404-4165-9a33-783e51681c4b",
+        "671d8dce-5f47-4d69-8891-5b3763d10d43"
       ],
       "sampleOriginalArtists": [
         "王一博",
@@ -1149,9 +1182,9 @@
       "displayName": "王心凌",
       "songCount": 3,
       "songIds": [
-        "local_凝眸",
-        "local_爱你",
-        "local_彩虹的微笑"
+        "ad2b80b9-7a0a-471d-84fe-12c9399db741",
+        "e93a8cee-c335-4329-9356-5aab3ba6c41a",
+        "086901af-2958-41c2-97b5-b03628242062"
       ],
       "sampleOriginalArtists": [
         "王心凌、张远",
@@ -1169,9 +1202,9 @@
       "displayName": "王菲",
       "songCount": 3,
       "songIds": [
-        "local_你我经历的一刻",
-        "local_如愿",
-        "local_世界赠与我的"
+        "4a40fb96-febb-4a4d-8c61-bb0bd2d00464",
+        "f07da784-0ba5-4e3f-961a-5f9c25b1c4db",
+        "395759b7-9e2f-4f3f-a4e7-ff9eeee68110"
       ],
       "sampleOriginalArtists": [
         "王菲"
@@ -1187,9 +1220,9 @@
       "displayName": "贺峻霖",
       "songCount": 3,
       "songIds": [
-        "local_silence",
-        "local_谧境",
-        "local_eyes_for_you"
+        "6f2595b0-0495-48db-8664-65c6e91f1686",
+        "1608c42b-ce9a-4874-a838-242ee6dd045f",
+        "f5f68b4f-430a-467a-8296-63d2c1c5ce08"
       ],
       "sampleOriginalArtists": [
         "时代少年团 贺峻霖"
@@ -1205,9 +1238,9 @@
       "displayName": "鞠婧祎",
       "songCount": 3,
       "songIds": [
-        "local_念思雨",
-        "local_莫离",
-        "local_青山城下白素贞"
+        "830e1399-f273-48da-bd6c-7047978e213a",
+        "936785f9-5944-47a1-a118-ca123f993e02",
+        "420bd361-671d-4403-88e4-f7aa82812591"
       ],
       "sampleOriginalArtists": [
         "鞠婧祎"
@@ -1223,8 +1256,8 @@
       "displayName": "ALLDAY PROJECT",
       "songCount": 2,
       "songIds": [
-        "local_one_more_time",
-        "local_famous"
+        "b07da0a7-1f8a-43f9-9e92-682a482db9a6",
+        "f284a546-ca8b-4615-b93d-65539fc4493e"
       ],
       "sampleOriginalArtists": [
         "ALLDAY PROJECT"
@@ -1240,8 +1273,8 @@
       "displayName": "Alpha Drive One",
       "songCount": 2,
       "songIds": [
-        "local_chains",
-        "local_Hola_solar"
+        "19ae14eb-01aa-4862-b092-231d2fb6a688",
+        "efffdde4-503d-4724-afd5-d491e081198a"
       ],
       "sampleOriginalArtists": [
         "BOYS ll PLANET",
@@ -1254,12 +1287,30 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "f4",
+      "displayName": "F4",
+      "songCount": 2,
+      "songIds": [
+        "7bff9639-979b-4d0e-a1a4-da75bb979bc6",
+        "9fbd68d6-4aa0-4461-97c8-d1ec48288e2a"
+      ],
+      "sampleOriginalArtists": [
+        "周杰伦、F4、五月天",
+        "F4"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/5/5c/Meteor_Garden_DVD_cover.jpg",
+      "artistImageSource": "wikipedia_en_meteor_garden_dvd_cover_ip",
+      "artistImageConfidence": 0.85,
+      "artistImageKind": "key_art"
+    },
+    {
       "canonicalArtistId": "iu",
       "displayName": "IU",
       "songCount": 2,
       "songIds": [
-        "local_Love_wins_all",
-        "local_strawberry_moon"
+        "194f5007-caa3-4265-99e2-b92bad6d05ef",
+        "737fb584-7a75-443f-95e7-9530961cfb75"
       ],
       "sampleOriginalArtists": [
         "IU"
@@ -1275,8 +1326,8 @@
       "displayName": "JENNIE",
       "songCount": 2,
       "songIds": [
-        "local_Mantra",
-        "local_SPOT"
+        "a9788e02-79aa-4494-b9fa-d2024f76e1e8",
+        "2b5ff63f-3692-4e0a-89dc-762296de7420"
       ],
       "sampleOriginalArtists": [
         "JENNIE",
@@ -1289,29 +1340,29 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/kiiikiii",
+      "canonicalArtistId": "kiiikiii",
       "displayName": "KiiiKiii",
       "songCount": 2,
       "songIds": [
-        "local_dancing_alone",
-        "local_i_do_me"
+        "7087d95a-e7dc-498b-b70a-580fdfdb935e",
+        "66c8d624-fa20-45b6-84e2-8dbae7a0b5e8"
       ],
       "sampleOriginalArtists": [
         "KiiiKiii"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/KiiiKiii_251025.jpg/330px-KiiiKiii_251025.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
+      "artistImageUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174d02890f9fe5c400be1d4e846",
+      "artistImageSource": "spotify_open_artist_63sat2XSMKdwKfqspmYQKP",
+      "artistImageConfidence": 1,
       "artistImageKind": "group_photo"
     },
     {
       "canonicalArtistId": "rose",
-      "displayName": "ROSÉ",
+      "displayName": "Rosé",
       "songCount": 2,
       "songIds": [
-        "local_messy",
-        "local_APT"
+        "25349319-a16a-4628-900f-db645bfcc630",
+        "e17a0211-1411-4406-aadb-5d9235a268d0"
       ],
       "sampleOriginalArtists": [
         "ROS",
@@ -1328,8 +1379,8 @@
       "displayName": "Saja Boys",
       "songCount": 2,
       "songIds": [
-        "local_your_idol",
-        "local_soda_pop"
+        "edc30440-3284-405d-8b0c-1afc04a45a74",
+        "ae7fdf08-9fc0-44f7-b401-8fb1127f096d"
       ],
       "sampleOriginalArtists": [
         "KPOP Demon Hunters Saja Boys"
@@ -1345,8 +1396,8 @@
       "displayName": "Shakira",
       "songCount": 2,
       "songIds": [
-        "local_try_everything",
-        "local_zoo"
+        "5a5b9c6d-e16e-4e53-99ce-a9ba800d2405",
+        "d860817a-d373-48ac-b9fc-e7bcd33c28e3"
       ],
       "sampleOriginalArtists": [
         "Shakira"
@@ -1362,8 +1413,8 @@
       "displayName": "Taylor Swift",
       "songCount": 2,
       "songIds": [
-        "local_love_story",
-        "local_willow"
+        "69e55699-ad95-4bd6-b079-8d57e52f2f63",
+        "6b5ffdc4-c4de-4ebb-bfcb-f881cb8a3db6"
       ],
       "sampleOriginalArtists": [
         "Taylor Swift"
@@ -1379,8 +1430,8 @@
       "displayName": "TFBOYS",
       "songCount": 2,
       "songIds": [
-        "local_剩下的盛夏",
-        "local_明天见"
+        "259bf237-7c92-4fcf-a551-113a63e3736a",
+        "7ed90024-c65c-45c6-83a6-b500dc5e560a"
       ],
       "sampleOriginalArtists": [
         "TFBOYS"
@@ -1392,12 +1443,29 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "twice",
+      "displayName": "TWICE",
+      "songCount": 2,
+      "songIds": [
+        "b9594ac0-7a64-408f-9cce-5f737dcc5880",
+        "43ca5aef-1ac6-4b19-a6c6-ca880b7a90c8"
+      ],
+      "sampleOriginalArtists": [
+        "TWICE"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/1f4acadade675899b7f775ae4ac67faa/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "group_photo"
+    },
+    {
       "canonicalArtistId": "ding-yu-xi",
       "displayName": "丁禹兮",
       "songCount": 2,
       "songIds": [
-        "local_消散对白",
-        "local_你之于我"
+        "53513452-c6e4-40c0-a38a-81e9533d5885",
+        "e10e3681-3584-40e2-a399-334c66d6f87b"
       ],
       "sampleOriginalArtists": [
         "丁禹兮"
@@ -1409,30 +1477,12 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "henry-lau",
-      "displayName": "刘宪华",
-      "songCount": 2,
-      "songIds": [
-        "local_radio",
-        "local_HOME"
-      ],
-      "sampleOriginalArtists": [
-        "헨리 刘宪华",
-        "王源"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/%ED%97%A8%EB%A6%AC%28Henry%29%2CAmerican_Eagale_FanSign_%28cropped%29.jpg/330px-%ED%97%A8%EB%A6%AC%28Henry%29%2CAmerican_Eagale_FanSign_%28cropped%29.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "shan-yi-chun",
       "displayName": "单依纯",
       "songCount": 2,
       "songIds": [
-        "local_珠玉",
-        "local_续写"
+        "b2fbbe2f-f9b0-4dad-8dc4-cc6a5b15dfbf",
+        "78cf5aad-85ed-46f5-b996-ec114ef59505"
       ],
       "sampleOriginalArtists": [
         "单依纯"
@@ -1444,12 +1494,30 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "genshin-impact",
+      "displayName": "原神",
+      "songCount": 2,
+      "songIds": [
+        "702c3e96-a5f4-402c-ba7d-472da7223c29",
+        "a2d2678d-c56d-4032-96e3-810279c25a50"
+      ],
+      "sampleOriginalArtists": [
+        "张杰",
+        "原神"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Genshin_Impact_logo.svg/500px-Genshin_Impact_logo.svg.png",
+      "artistImageSource": "wikipedia_en_pageimage",
+      "artistImageConfidence": 1,
+      "artistImageKind": "project_logo"
+    },
+    {
       "canonicalArtistId": "joey-yung",
       "displayName": "容祖儿",
       "songCount": 2,
       "songIds": [
-        "local_白色岛屿",
-        "local_小小"
+        "3a675548-d1d7-436a-ae31-ef7740ceb35b",
+        "141e9312-ea24-49d2-b1d4-1db9175d8a43"
       ],
       "sampleOriginalArtists": [
         "容祖儿"
@@ -1465,8 +1533,8 @@
       "displayName": "希林娜依·高",
       "songCount": 2,
       "songIds": [
-        "local_寂静之忆",
-        "local_陷入爱情"
+        "20a8a098-a3c1-4277-99dc-90bdaa7b7a87",
+        "51bffb5f-d1f1-4d15-b489-ea86cb5e9eba"
       ],
       "sampleOriginalArtists": [
         "希林娜依·高"
@@ -1482,8 +1550,8 @@
       "displayName": "张靓颖",
       "songCount": 2,
       "songIds": [
-        "local_可",
-        "local_不惜时光"
+        "2ffffe4d-aba6-427d-9f2c-61cd7e37c11c",
+        "f09e6d8f-750c-4439-9fcc-258fb37e5ece"
       ],
       "sampleOriginalArtists": [
         "张靓颖、薛之谦",
@@ -1500,8 +1568,8 @@
       "displayName": "张韶涵",
       "songCount": 2,
       "songIds": [
-        "local_于深空见证的",
-        "local_一路生花"
+        "6d89bc3d-065e-4ac0-aa49-66e0f488f706",
+        "b775148c-cd2b-48e9-b9cb-b5d131b7c500"
       ],
       "sampleOriginalArtists": [
         "张韶涵",
@@ -1514,12 +1582,30 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "li-rong-hao",
+      "displayName": "李荣浩",
+      "songCount": 2,
+      "songIds": [
+        "8dff81e0-c054-4b81-889c-9e8d30f47e19",
+        "3874d6d7-78e4-4c06-9781-7f35dc50ec77"
+      ],
+      "sampleOriginalArtists": [
+        "李荣浩",
+        "李榮浩"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ba5b2a429adae83c4aac2747f7c9ef36/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "luo-tianyi",
       "displayName": "洛天依",
       "songCount": 2,
       "songIds": [
-        "local_time_to_shine",
-        "local_勾指起誓"
+        "6a2cde0f-9be8-40be-8b88-28f0ca9477d0",
+        "623cca70-e5e7-45f7-ab6d-f81c94c69e86"
       ],
       "sampleOriginalArtists": [
         "洛天依 钢琴版 北京冬奥会应援歌曲",
@@ -1536,8 +1622,8 @@
       "displayName": "王力宏",
       "songCount": 2,
       "songIds": [
-        "local_爱错",
-        "local_天地龙鳞"
+        "75765dfe-ef94-4c7d-b8e9-2e1651f7d607",
+        "45a9ef2d-b821-4094-83b2-6e87011a322d"
       ],
       "sampleOriginalArtists": [
         "王力宏"
@@ -1553,8 +1639,8 @@
       "displayName": "米津玄师",
       "songCount": 2,
       "songIds": [
-        "local_lemon",
-        "local_M八七"
+        "d750e056-fe15-4ddb-93c2-078252009382",
+        "30303455-98f2-4821-931c-b015cb465070"
       ],
       "sampleOriginalArtists": [
         "米津玄師",
@@ -1567,30 +1653,12 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "hu-meng-zhou",
-      "displayName": "胡梦周",
-      "songCount": 2,
-      "songIds": [
-        "local_调查中",
-        "local_溯"
-      ],
-      "sampleOriginalArtists": [
-        "周深、胡梦周",
-        "胡梦周"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/3c581ef43680337482691bfe4db20e21/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_official_artist_refresh",
-      "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "faye-zhan",
       "displayName": "詹雯婷",
       "songCount": 2,
       "songIds": [
-        "local_唯爱",
-        "local_决爱"
+        "27dbbca6-bb10-4e2c-a6b9-23a3293f3bdc",
+        "907ad18d-ba7f-43cc-a30f-c53bb880424c"
       ],
       "sampleOriginalArtists": [
         "詹雯婷",
@@ -1607,8 +1675,8 @@
       "displayName": "陈奕迅",
       "songCount": 2,
       "songIds": [
-        "local_这样很好",
-        "local_孤勇者"
+        "ad55d05d-c0cb-46fc-89b8-5f779540874d",
+        "d324bbe5-249c-454b-a968-c671bcbbf555"
       ],
       "sampleOriginalArtists": [
         "丨 :",
@@ -1625,8 +1693,8 @@
       "displayName": "陈雪燃",
       "songCount": 2,
       "songIds": [
-        "local_敬太平",
-        "local_moonlight_dance"
+        "1222789d-a167-443b-a102-3dc10101a179",
+        "d46261c5-ec04-493c-916c-eb295d34dfa6"
       ],
       "sampleOriginalArtists": [
         "陈雪燃"
@@ -1638,30 +1706,12 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "ma-jia-qi",
-      "displayName": "马嘉祺",
-      "songCount": 2,
-      "songIds": [
-        "local_蜉蝣",
-        "local_偷"
-      ],
-      "sampleOriginalArtists": [
-        "马嘉祺",
-        "时代少年团马嘉祺"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/54d744f584cd4e2867f69722021f9dfa/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "lu-han",
       "displayName": "鹿晗",
       "songCount": 2,
       "songIds": [
-        "local_1_1",
-        "local_兜风"
+        "a96aa6e2-d437-4c15-a3d7-4e22ae9928c2",
+        "5f524048-b89a-4452-815d-3f5ccb32507b"
       ],
       "sampleOriginalArtists": [
         "鹿晗"
@@ -1673,43 +1723,43 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/fairy-tail-op-妖精的尾巴-フェアリーテイル-boa-보아",
-      "displayName": "- Fairy Tail OP 妖精的尾巴 フェアリーテイル - BoA 보아",
-      "songCount": 1,
-      "songIds": [
-        "local_masayume_chasing"
-      ],
-      "sampleOriginalArtists": [
-        "妖精的尾巴 フェアリーテイル 보아"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/180417_%EB%B3%B4%EC%95%84_03_%28cropped%29_02.png/330px-180417_%EB%B3%B4%EC%95%84_03_%28cropped%29_02.png",
-      "artistImageSource": "wikipedia_en_commons_bo_a",
-      "artistImageConfidence": 0.9,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "review/local-meichuxi-no-vocal",
+      "canonicalArtistId": "review/c7d2dad3-492b-4f11-ba23-bc491694b16b",
       "displayName": "“本来应该从从容容游刃有余”",
       "songCount": 1,
       "songIds": [
-        "local_没出息"
+        "c7d2dad3-492b-4f11-ba23-bc491694b16b"
       ],
       "sampleOriginalArtists": [
         "“本来应该从从容容游刃有余”"
       ],
-      "reviewStatus": "unknown",
+      "reviewStatus": "needsReview",
       "artistImageUrl": null,
       "artistImageSource": null,
       "artistImageConfidence": null,
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "review/local-xinbaodao-no-vocal",
+      "canonicalArtistId": "review/ef014da6-c1ad-46fc-906c-78104e773194",
+      "displayName": "(无原唱)",
+      "songCount": 1,
+      "songIds": [
+        "ef014da6-c1ad-46fc-906c-78104e773194"
+      ],
+      "sampleOriginalArtists": [
+        "（无原唱）"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/meme-no-vocal",
       "displayName": "（无原唱）",
       "songCount": 1,
       "songIds": [
-        "local_新宝岛"
+        "86934514-6ca8-41c2-bee0-e2a600d906de"
       ],
       "sampleOriginalArtists": [
         "（无原唱）"
@@ -1721,11 +1771,43 @@
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "review/ultraman-trigger-belief-light",
-      "displayName": "《特利迦奥特曼》信念之光",
+      "canonicalArtistId": "review/411b81bf-d132-4c44-85ec-365e9df66674",
+      "displayName": "《下雨了是我在想你》钢琴版",
       "songCount": 1,
       "songIds": [
-        "local_信念之光"
+        "411b81bf-d132-4c44-85ec-365e9df66674"
+      ],
+      "sampleOriginalArtists": [
+        "《下雨了是我在想你》钢琴版"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/7bd22530-54dd-401d-9166-a5e577a611af",
+      "displayName": "《公主披风》钢琴版",
+      "songCount": 1,
+      "songIds": [
+        "7bd22530-54dd-401d-9166-a5e577a611af"
+      ],
+      "sampleOriginalArtists": [
+        "《公主披风》钢琴版"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/32a43b23-acc5-4e2b-a2e7-74680ca45063",
+      "displayName": "《特利迦奥特曼》",
+      "songCount": 1,
+      "songIds": [
+        "32a43b23-acc5-4e2b-a2e7-74680ca45063"
       ],
       "sampleOriginalArtists": [
         "《特利迦奥特曼》"
@@ -1737,27 +1819,11 @@
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "0713-nan-tuan",
-      "displayName": "0713男团",
-      "songCount": 1,
-      "songIds": [
-        "local_像你这样的朋友"
-      ],
-      "sampleOriginalArtists": [
-        "陈楚生、王栎鑫、王铮亮、陆虎、苏醒 、张远"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/zh/5/58/Go_for_Happiness_002.jpg",
-      "artistImageSource": "wikipedia_zh_tv_promo",
-      "artistImageConfidence": 0.9,
-      "artistImageKind": "group_photo"
-    },
-    {
       "canonicalArtistId": "a-soul",
       "displayName": "A-SOUL",
       "songCount": 1,
       "songIds": [
-        "local_除夕"
+        "9496a907-676e-4f4c-b2ec-0e22702df487"
       ],
       "sampleOriginalArtists": [
         "A-SOUL"
@@ -1773,7 +1839,7 @@
       "displayName": "Adele",
       "songCount": 1,
       "songIds": [
-        "local_eyes_on_me"
+        "06cfa86f-5323-41ee-ae97-7e7f33e45382"
       ],
       "sampleOriginalArtists": [
         "Adele"
@@ -1789,7 +1855,7 @@
       "displayName": "Ailee",
       "songCount": 1,
       "songIds": [
-        "local_heaven"
+        "fe605811-0882-4f7a-b7b2-f0f1061f56ee"
       ],
       "sampleOriginalArtists": [
         "Ailee"
@@ -1805,7 +1871,7 @@
       "displayName": "Alan Walker",
       "songCount": 1,
       "songIds": [
-        "local_Fade"
+        "b91d55b2-a50f-4914-8521-cc3dc3eaffa8"
       ],
       "sampleOriginalArtists": [
         "Alan Walker"
@@ -1817,30 +1883,30 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/asmrz",
-      "displayName": "ASMRZ",
+      "canonicalArtistId": "review/bb229f9a-fdf9-4adb-a188-5bb82c559f84",
+      "displayName": "ASMRZ TANAKA",
       "songCount": 1,
       "songIds": [
-        "local_晚安大小姐"
+        "bb229f9a-fdf9-4adb-a188-5bb82c559f84"
       ],
       "sampleOriginalArtists": [
         "ASMRZ TANAKA, NEEDMORECASH"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/b07a93deb5ecd88ac92a42063b05430b/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "aurora",
       "displayName": "AURORA",
       "songCount": 1,
       "songIds": [
-        "local_cure_for_me"
+        "a610c041-c488-4593-99d7-7b28a9feb72c"
       ],
       "sampleOriginalArtists": [
-        "Cure For Me"
+        "AURORA"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/AURORA%2C_Ravnedalen_Live_festival%2C_Kristiansand%2C_Norway_%2853867200364%29_%28cropped%29.jpg/330px-AURORA%2C_Ravnedalen_Live_festival%2C_Kristiansand%2C_Norway_%2853867200364%29_%28cropped%29.jpg",
@@ -1853,7 +1919,7 @@
       "displayName": "BIGBANG",
       "songCount": 1,
       "songIds": [
-        "local_still_life"
+        "04db7895-ac53-40c8-8da0-b71d877169d6"
       ],
       "sampleOriginalArtists": [
         "BIGBANG"
@@ -1865,27 +1931,11 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/bilibili-2021毕业歌",
-      "displayName": "Bilibili 2021毕业歌",
-      "songCount": 1,
-      "songIds": [
-        "local_你眼里的光"
-      ],
-      "sampleOriginalArtists": [
-        "老番茄"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/3/3e/Bilibili_screenshot.png/330px-Bilibili_screenshot.png",
-      "artistImageSource": "wikipedia_en_infobox_product_shot",
-      "artistImageConfidence": 0.75,
-      "artistImageKind": "project_logo"
-    },
-    {
       "canonicalArtistId": "billie-eilish",
       "displayName": "Billie Eilish",
       "songCount": 1,
       "songIds": [
-        "local_birds_of_a_feather"
+        "ed69b5e7-da37-4c63-9462-92249f6121e9"
       ],
       "sampleOriginalArtists": [
         "Billie Eilish"
@@ -1897,32 +1947,32 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/blossoms-shanghai",
+      "canonicalArtistId": "review/b97ea22e-699e-4d37-9a74-cdf6aa25509a",
       "displayName": "Blossoms Shanghai",
       "songCount": 1,
       "songIds": [
-        "local_繁花片头曲"
+        "b97ea22e-699e-4d37-9a74-cdf6aa25509a"
       ],
       "sampleOriginalArtists": [
         "Blossoms Shanghai"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/zh/7/71/Blossoms_Shanghai.jpeg",
-      "artistImageSource": "wikipedia_zh_tv_poster",
-      "artistImageConfidence": 0.9,
-      "artistImageKind": "key_art"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
-      "canonicalArtistId": "review/f4-thailand-who-am-i-ost",
-      "displayName": "BRIGHT、WIN METAWIN、Dew Jirawat、Nani Hirunkit",
+      "canonicalArtistId": "review/45504b38-6f7b-49ce-85a3-e29aaaa90ed5",
+      "displayName": "BRIGHT",
       "songCount": 1,
       "songIds": [
-        "local_who_am_i"
+        "45504b38-6f7b-49ce-85a3-e29aaaa90ed5"
       ],
       "sampleOriginalArtists": [
         "BRIGHT、WIN METAWIN、Dew Jirawat、Nani Hirunkit"
       ],
-      "reviewStatus": "ok",
+      "reviewStatus": "needsReview",
       "artistImageUrl": null,
       "artistImageSource": null,
       "artistImageConfidence": null,
@@ -1933,7 +1983,7 @@
       "displayName": "BY2",
       "songCount": 1,
       "songIds": [
-        "local_爱丫爱丫"
+        "c5289465-99aa-4f64-bb16-a8b0ae810911"
       ],
       "sampleOriginalArtists": [
         "BY2"
@@ -1945,11 +1995,27 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "review/7d35ab9c-7080-4c51-81ea-0a1575386510",
+      "displayName": "Catallena",
+      "songCount": 1,
+      "songIds": [
+        "7d35ab9c-7080-4c51-81ea-0a1575386510"
+      ],
+      "sampleOriginalArtists": [
+        "Catallena"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "christina-perri",
       "displayName": "Christina Perri",
       "songCount": 1,
       "songIds": [
-        "local_a_thousand_years"
+        "c15dbc24-f8f6-4603-ac25-e3f2e1c5d255"
       ],
       "sampleOriginalArtists": [
         "Christina Perri"
@@ -1965,10 +2031,10 @@
       "displayName": "CMJ",
       "songCount": 1,
       "songIds": [
-        "local_所念皆星河"
+        "0e0d6e30-ec63-400b-8556-e8d0ef3389ff"
       ],
       "sampleOriginalArtists": [
-        "《所念皆星河》 钢琴 所念皆星河，星河皆是你"
+        "CMJ"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/2abb35f2939b873b1df9f677c6f1a1f2/1000x1000-000000-80-0-0.jpg",
@@ -1977,27 +2043,59 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/cortis",
+      "canonicalArtistId": "review/ead8baed-a389-4342-901e-896ac244a46c",
       "displayName": "CORTIS",
       "songCount": 1,
       "songIds": [
-        "local_GO"
+        "ead8baed-a389-4342-901e-896ac244a46c"
       ],
       "sampleOriginalArtists": [
         "CORTIS"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/CORTIS_Dior_PhotoCall_1.jpg/330px-CORTIS_Dior_PhotoCall_1.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.9,
-      "artistImageKind": "group_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/40b6fac8-146b-4f8f-9b86-264f713f1a87",
+      "displayName": "Deadpool",
+      "songCount": 1,
+      "songIds": [
+        "40b6fac8-146b-4f8f-9b86-264f713f1a87"
+      ],
+      "sampleOriginalArtists": [
+        "Deadpool & Wolverine Opening"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/efb1af44-d6ce-4e71-b21d-66c52c8c7976",
+      "displayName": "Don",
+      "songCount": 1,
+      "songIds": [
+        "efb1af44-d6ce-4e71-b21d-66c52c8c7976"
+      ],
+      "sampleOriginalArtists": [
+        "Don"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "from-youtube/ed-sheeran-pokémon",
       "displayName": "Ed Sheeran & Pokémon",
       "songCount": 1,
       "songIds": [
-        "local_celestial"
+        "39d94c4c-7421-4886-a39c-bb582de2de3d"
       ],
       "sampleOriginalArtists": [
         "Ed Sheeran"
@@ -2009,19 +2107,35 @@
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "from-youtube/hearts2hearts",
+      "canonicalArtistId": "review/d8afcd63-3cd3-406a-909b-149b0d1219df",
+      "displayName": "Goblin",
+      "songCount": 1,
+      "songIds": [
+        "d8afcd63-3cd3-406a-909b-149b0d1219df"
+      ],
+      "sampleOriginalArtists": [
+        "Goblin"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "hearts2hearts",
       "displayName": "Hearts2Hearts",
       "songCount": 1,
       "songIds": [
-        "local_style"
+        "312afe3d-ee3c-4a6c-829a-85b05d9a1c9a"
       ],
       "sampleOriginalArtists": [
         "Hearts2Hearts"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/H2H_HMA26.jpg/330px-H2H_HMA26.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
+      "artistImageUrl": "https://image-cdn-ak.spotifycdn.com/image/ab67616100005174250c7f7b1d34d7410d9fb982",
+      "artistImageSource": "spotify_open_artist_1ZLU77nRzQIaP23mVSYpCQ",
+      "artistImageConfidence": 1,
       "artistImageKind": "group_photo"
     },
     {
@@ -2029,7 +2143,7 @@
       "displayName": "HoneyWorks",
       "songCount": 1,
       "songIds": [
-        "local_这么可爱真是抱歉"
+        "0042715d-23ef-4234-86a4-efa660d97f15"
       ],
       "sampleOriginalArtists": [
         "HoneyWorks / CV：早見沙織"
@@ -2045,7 +2159,7 @@
       "displayName": "ITZY",
       "songCount": 1,
       "songIds": [
-        "local_imaginary_friend"
+        "208f3ab7-b8d9-4595-842c-bd95fc2e2ba2"
       ],
       "sampleOriginalArtists": [
         "ITZY"
@@ -2057,59 +2171,27 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "jeon-somi",
-      "displayName": "JEON SOMI",
+      "canonicalArtistId": "review/07752a89-cdaf-4f19-86db-9daf1818f797",
+      "displayName": "K",
       "songCount": 1,
       "songIds": [
-        "local_xoxo"
+        "07752a89-cdaf-4f19-86db-9daf1818f797"
       ],
       "sampleOriginalArtists": [
-        "XOXO"
+        "K/DA"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/20240911_Jeon_Somi_%EC%A0%84%EC%86%8C%EB%AF%B8_02.jpg/330px-20240911_Jeon_Somi_%EC%A0%84%EC%86%8C%EB%AF%B8_02.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "lbi",
-      "displayName": "LBI利比",
-      "songCount": 1,
-      "songIds": [
-        "local_跳楼机"
-      ],
-      "sampleOriginalArtists": [
-        "利比"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/2a07c5b7b63e79198918cc75ad765bd0/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "from-youtube/lil-nas-x",
-      "displayName": "Lil Nas X",
-      "songCount": 1,
-      "songIds": [
-        "local_STAR_WALKIN"
-      ],
-      "sampleOriginalArtists": [
-        "Lil Nas X - STAR WALKIN"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Lil_Nas_X_Talks_About_Gaining_His_Father%27s_Acceptance%2C_Growing_Up_in_Atlanta%2C_%26_FINDING_HIMSELF_7-32_screenshot_%28headshot%29.jpg/330px-Lil_Nas_X_Talks_About_Gaining_His_Father%27s_Acceptance%2C_Growing_Up_in_Atlanta%2C_%26_FINDING_HIMSELF_7-32_screenshot_%28headshot%29.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.9,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "linkin-park",
       "displayName": "Linkin Park",
       "songCount": 1,
       "songIds": [
-        "local_heavy_is_the_crown"
+        "d35113ab-6300-4c00-95ca-d3b9d39dbcf2"
       ],
       "sampleOriginalArtists": [
         "Linkin Park Anthem"
@@ -2121,27 +2203,43 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/lulleaux-kid-princess",
-      "displayName": "Lulleaux & Kid Princess",
+      "canonicalArtistId": "lisa",
+      "displayName": "Lisa",
       "songCount": 1,
       "songIds": [
-        "local_empty_love"
+        "e8592b68-a4b5-460a-8fc0-405878db1943"
       ],
       "sampleOriginalArtists": [
-        "Empty Love"
+        "LALISA"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/2742f405853e48d18f26e69b6424aca8/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_collab_primary",
-      "artistImageConfidence": 0.95,
+      "artistImageUrl": "https://image-cdn-ak.spotifycdn.com/image/ab676161000051745cd3b3af8b72e32be78571ec",
+      "artistImageSource": "spotify_open_artist_5L1lO4eRHmJ7a0Q6csE5cT",
+      "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "lulleaux",
+      "displayName": "Lulleaux",
+      "songCount": 1,
+      "songIds": [
+        "7b63d2ca-88da-4272-ae25-24657b44d343"
+      ],
+      "sampleOriginalArtists": [
+        "Lulleaux"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "m-taku",
       "displayName": "m-taku",
       "songCount": 1,
       "songIds": [
-        "local_komorebi"
+        "73fe7635-1fd7-49e0-8afa-84177e496c55"
       ],
       "sampleOriginalArtists": [
         "m-taku"
@@ -2157,7 +2255,7 @@
       "displayName": "Metro Boomin",
       "songCount": 1,
       "songIds": [
-        "local_calling"
+        "f6959061-8d9d-4561-b35d-ab32b94aaef6"
       ],
       "sampleOriginalArtists": [
         "Metro Boomin"
@@ -2173,7 +2271,7 @@
       "displayName": "Ne-Yo",
       "songCount": 1,
       "songIds": [
-        "local_so_sick"
+        "c74c5ce5-e7b6-4ada-bcea-8fbd2bcd4a3c"
       ],
       "sampleOriginalArtists": [
         "Ne-Yo"
@@ -2185,75 +2283,11 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "nsync",
-      "displayName": "NSYNC",
-      "songCount": 1,
-      "songIds": [
-        "local_bye_bye_bye"
-      ],
-      "sampleOriginalArtists": [
-        "Deadpool & Wolverine Opening"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/NSYNC.jpg/330px-NSYNC.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "orange-caramel",
-      "displayName": "Orange Caramel",
-      "songCount": 1,
-      "songIds": [
-        "local_Catallena"
-      ],
-      "sampleOriginalArtists": [
-        "Catallena"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/150331_%EC%98%A4%EB%A0%8C%EC%A7%80%EC%BA%AC%EB%9D%BC%EB%A9%9C_%EA%B3%A0%EB%A0%A4%EB%8C%80_%EB%AF%BC%EC%A3%BC%EA%B4%91%EC%9E%A5_%EA%B0%84%EC%8B%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8.jpg/330px-150331_%EC%98%A4%EB%A0%8C%EC%A7%80%EC%BA%AC%EB%9D%BC%EB%A9%9C_%EA%B3%A0%EB%A0%A4%EB%8C%80_%EB%AF%BC%EC%A3%BC%EA%B4%91%EC%9E%A5_%EA%B0%84%EC%8B%9D%EC%9D%B4%EB%B2%A4%ED%8A%B8.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "punch-kr",
-      "displayName": "PUNCH",
-      "songCount": 1,
-      "songIds": [
-        "local_stay_with_me"
-      ],
-      "sampleOriginalArtists": [
-        "Goblin"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Punchjeju-2018.png/330px-Punchjeju-2018.png",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 0.95,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "pvris",
-      "displayName": "PVRIS",
-      "songCount": 1,
-      "songIds": [
-        "local_Burn_it_all_down"
-      ],
-      "sampleOriginalArtists": [
-        "PVRIS"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/1c90e135a4c10be64e1b41b4838d7ee1/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "radwimps",
       "displayName": "RADWIMPS",
       "songCount": 1,
       "songIds": [
-        "local_mitsuha_theme"
+        "dcb4462e-1ddb-4c71-b496-0dbe680acbcb"
       ],
       "sampleOriginalArtists": [
         "RADWIMPS"
@@ -2269,7 +2303,7 @@
       "displayName": "Simon and Garfunkel",
       "songCount": 1,
       "songIds": [
-        "local_Bridge_over_troubled_water"
+        "2da10db4-2c2c-4238-b88a-bda9231acc35"
       ],
       "sampleOriginalArtists": [
         "Simon and Garfunkel"
@@ -2281,11 +2315,27 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "review/35c058dd-2a71-48e4-8503-a28afe9a9ee2",
+      "displayName": "Snake",
+      "songCount": 1,
+      "songIds": [
+        "35c058dd-2a71-48e4-8503-a28afe9a9ee2"
+      ],
+      "sampleOriginalArtists": [
+        "Snake"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "sunmi",
       "displayName": "Sunmi",
       "songCount": 1,
       "songIds": [
-        "local_you_can_t_sit_with_us"
+        "d54e84c5-14e5-4a39-83d7-b3bbe0efcc22"
       ],
       "sampleOriginalArtists": [
         "Sunmi - You Can"
@@ -2301,7 +2351,7 @@
       "displayName": "Super Junior",
       "songCount": 1,
       "songIds": [
-        "local_callin"
+        "bab91656-6ce8-462f-8318-69b32bebbb13"
       ],
       "sampleOriginalArtists": [
         "SUPER JUNIOR"
@@ -2313,11 +2363,27 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "review/1069c7d9-cedc-426b-8953-2d73995a28c4",
+      "displayName": "The Feels",
+      "songCount": 1,
+      "songIds": [
+        "1069c7d9-cedc-426b-8953-2d73995a28c4"
+      ],
+      "sampleOriginalArtists": [
+        "The Feels"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "triples",
       "displayName": "tripleS",
       "songCount": 1,
       "songIds": [
-        "local_girls_never_die"
+        "426d9ab5-e4ad-49e6-b51c-11baa5044924"
       ],
       "sampleOriginalArtists": [
         "tripleS"
@@ -2333,7 +2399,7 @@
       "displayName": "TWS",
       "songCount": 1,
       "songIds": [
-        "local_Plot_twist"
+        "817194ef-c60e-49c6-a3dd-9b95d696a5df"
       ],
       "sampleOriginalArtists": [
         "TWS"
@@ -2345,14 +2411,46 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "review/local_normal_no_more",
+      "canonicalArtistId": "review/cc2670d8-0df3-407e-80ec-083017d126b2",
       "displayName": "TYSM",
       "songCount": 1,
       "songIds": [
-        "local_normal_no_more"
+        "cc2670d8-0df3-407e-80ec-083017d126b2"
       ],
       "sampleOriginalArtists": [
         "TYSM"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/9d397fc6-e3ec-49c0-b3c3-b6839998ee32",
+      "displayName": "U Me LOVE",
+      "songCount": 1,
+      "songIds": [
+        "9d397fc6-e3ec-49c0-b3c3-b6839998ee32"
+      ],
+      "sampleOriginalArtists": [
+        "U Me LOVE"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/6a9dc018-9abf-4555-af04-3984965ef024",
+      "displayName": "Utopia",
+      "songCount": 1,
+      "songIds": [
+        "6a9dc018-9abf-4555-af04-3984965ef024"
+      ],
+      "sampleOriginalArtists": [
+        "Utopia"
       ],
       "reviewStatus": "needsReview",
       "artistImageUrl": null,
@@ -2365,7 +2463,7 @@
       "displayName": "When The Phone Rings",
       "songCount": 1,
       "songIds": [
-        "local_see_the_light"
+        "07420e55-53a0-419d-bfe2-3f094b6f1df4"
       ],
       "sampleOriginalArtists": [
         "《现在拨打的电话》OST"
@@ -2377,27 +2475,27 @@
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "zico",
-      "displayName": "ZICO",
+      "canonicalArtistId": "review/e7f8ad3d-45eb-430f-bafb-450bb7b79b66",
+      "displayName": "XOXO",
       "songCount": 1,
       "songIds": [
-        "local_SPOT"
+        "e7f8ad3d-45eb-430f-bafb-450bb7b79b66"
       ],
       "sampleOriginalArtists": [
-        "ZICO"
+        "XOXO"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/ZICO_Damiani_May_2024.jpg/330px-ZICO_Damiani_May_2024.jpg",
-      "artistImageSource": "wikipedia_en_commons",
-      "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "yi-zhi-liu-lian",
       "displayName": "一支榴莲",
       "songCount": 1,
       "songIds": [
-        "local_人间"
+        "33a1c196-cf40-4b0e-bf5f-27d937c8e741"
       ],
       "sampleOriginalArtists": [
         "一支榴莲"
@@ -2413,7 +2511,7 @@
       "displayName": "一笑江湖",
       "songCount": 1,
       "songIds": [
-        "local_科目三"
+        "2c51de86-caaa-44e7-b476-6774dade2c4d"
       ],
       "sampleOriginalArtists": [
         "一笑江湖"
@@ -2429,7 +2527,7 @@
       "displayName": "丁程鑫",
       "songCount": 1,
       "songIds": [
-        "local_芥"
+        "b0f76914-113f-4a13-baa3-78e7fe0b72cb"
       ],
       "sampleOriginalArtists": [
         "丁程鑫"
@@ -2445,7 +2543,7 @@
       "displayName": "中岛美嘉",
       "songCount": 1,
       "songIds": [
-        "local_曾经我也想过一了百了"
+        "b2e508b8-e675-41e4-a4af-1c2a20546de7"
       ],
       "sampleOriginalArtists": [
         "中島美嘉"
@@ -2457,59 +2555,75 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/尹露浠",
+      "canonicalArtistId": "review/27d8d1ed-caf9-4767-8c6c-47cbae8f29d2",
       "displayName": "尹露浠",
       "songCount": 1,
       "songIds": [
-        "local_我想我会"
+        "27d8d1ed-caf9-4767-8c6c-47cbae8f29d2"
       ],
       "sampleOriginalArtists": [
         "尹露浠"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ca96c0af0cb360fd27e11b92243c6f1e/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "review/chengfeng-theme-no-vocal",
-      "displayName": "乘风破浪的姐姐",
-      "songCount": 1,
-      "songIds": [
-        "local_乘风"
-      ],
-      "sampleOriginalArtists": [
-        "乘风破浪的姐姐"
-      ],
-      "reviewStatus": "ok",
+      "reviewStatus": "needsReview",
       "artistImageUrl": null,
       "artistImageSource": null,
       "artistImageConfidence": null,
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "from-youtube/于冬然",
+      "canonicalArtistId": "qiao-jun-cheng",
+      "displayName": "乔浚丞",
+      "songCount": 1,
+      "songIds": [
+        "ba93e3f1-d1e1-4a71-867d-8a43c1fb11ec"
+      ],
+      "sampleOriginalArtists": [
+        "王宇宙 、乔浚丞"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/a7537c62c5071ab7093837c109264056/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "review/092bf007-2724-461b-8e83-6908c829117c",
+      "displayName": "乘风破浪的姐姐",
+      "songCount": 1,
+      "songIds": [
+        "092bf007-2724-461b-8e83-6908c829117c"
+      ],
+      "sampleOriginalArtists": [
+        "乘风破浪的姐姐"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/e88eb18b-7339-4d38-b18b-66ce924a860b",
       "displayName": "于冬然",
       "songCount": 1,
       "songIds": [
-        "local_其实都没有"
+        "e88eb18b-7339-4d38-b18b-66ce924a860b"
       ],
       "sampleOriginalArtists": [
         "于冬然"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/576479c6ab08f930f76126efb635c4e5/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "jing-long-jing-dier",
       "displayName": "井胧、井迪儿",
       "songCount": 1,
       "songIds": [
-        "local_彼岸"
+        "9163b659-432f-4a0c-8e11-4897b0bf6bc1"
       ],
       "sampleOriginalArtists": [
         "井胧、井迪儿"
@@ -2525,7 +2639,7 @@
       "displayName": "仓木麻衣",
       "songCount": 1,
       "songIds": [
-        "local_time_after_time"
+        "df94bbe8-b97a-4adb-9053-bd3abda8920e"
       ],
       "sampleOriginalArtists": [
         "Mai Kuraki"
@@ -2541,7 +2655,7 @@
       "displayName": "任嘉伦",
       "songCount": 1,
       "songIds": [
-        "local_如一"
+        "bf30bf34-dcaa-4065-bd7e-602ee497ecf6"
       ],
       "sampleOriginalArtists": [
         "任嘉伦"
@@ -2557,7 +2671,7 @@
       "displayName": "伍佰",
       "songCount": 1,
       "songIds": [
-        "local_泪桥"
+        "f6455e6c-a0a4-49b3-9937-b37e53d6bf7a"
       ],
       "sampleOriginalArtists": [
         "伍佰"
@@ -2573,7 +2687,7 @@
       "displayName": "倖田來未",
       "songCount": 1,
       "songIds": [
-        "local_jump_to_the_breeze"
+        "612918db-ea45-43f7-b096-c0f85276019a"
       ],
       "sampleOriginalArtists": [
         "碧蓝航线六周年主题曲 倖田來未 小室哲哉"
@@ -2585,16 +2699,16 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/光与夜之恋",
+      "canonicalArtistId": "review/3d02b493-4bcf-43d8-8449-ed9553f3c3b7",
       "displayName": "光与夜之恋",
       "songCount": 1,
       "songIds": [
-        "local_约定之初"
+        "3d02b493-4bcf-43d8-8449-ed9553f3c3b7"
       ],
       "sampleOriginalArtists": [
         "光与夜之恋"
       ],
-      "reviewStatus": "ok",
+      "reviewStatus": "needsReview",
       "artistImageUrl": null,
       "artistImageSource": null,
       "artistImageConfidence": null,
@@ -2605,7 +2719,7 @@
       "displayName": "凤凰传奇",
       "songCount": 1,
       "songIds": [
-        "local_奢香夫人"
+        "8b6189de-30ea-4abe-a724-4009b039b09f"
       ],
       "sampleOriginalArtists": [
         "凤凰传奇"
@@ -2621,7 +2735,7 @@
       "displayName": "凯瑟喵",
       "songCount": 1,
       "songIds": [
-        "local_撒野"
+        "9313cdb0-46c2-460b-a0f2-1d8940526f20"
       ],
       "sampleOriginalArtists": [
         "凯瑟喵"
@@ -2637,7 +2751,7 @@
       "displayName": "刀郎",
       "songCount": 1,
       "songIds": [
-        "local_罗刹海市"
+        "211b1882-a039-4d2d-8109-289c56dd693d"
       ],
       "sampleOriginalArtists": [
         "刀郎"
@@ -2649,27 +2763,107 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/刀酱",
+      "canonicalArtistId": "review/f2e91b7b-90d9-4b19-96d9-54c8c44efbfb",
       "displayName": "刀酱",
       "songCount": 1,
       "songIds": [
-        "local_5_20am"
+        "f2e91b7b-90d9-4b19-96d9-54c8c44efbfb"
       ],
       "sampleOriginalArtists": [
         "刀酱"
       ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/84c99cee-9f1c-441c-9f44-8be238998558",
+      "displayName": "刘宇",
+      "songCount": 1,
+      "songIds": [
+        "84c99cee-9f1c-441c-9f44-8be238998558"
+      ],
+      "sampleOriginalArtists": [
+        "刘宇"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "henry-lau",
+      "displayName": "刘宪华",
+      "songCount": 1,
+      "songIds": [
+        "b19f01c4-11c0-4cc5-9121-7cc56f929137"
+      ],
+      "sampleOriginalArtists": [
+        "헨리 刘宪华"
+      ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/643ad130ddc66cd580dce05b51b11568/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/%ED%97%A8%EB%A6%AC%28Henry%29%2CAmerican_Eagale_FanSign_%28cropped%29.jpg/330px-%ED%97%A8%EB%A6%AC%28Henry%29%2CAmerican_Eagale_FanSign_%28cropped%29.jpg",
+      "artistImageSource": "wikipedia_en_commons",
+      "artistImageConfidence": 0.95,
       "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "review/360f0d07-e116-4cb4-87be-4c384ad7f3c2",
+      "displayName": "创造营",
+      "songCount": 1,
+      "songIds": [
+        "360f0d07-e116-4cb4-87be-4c384ad7f3c2"
+      ],
+      "sampleOriginalArtists": [
+        "创造营"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "lil-nas-x",
+      "displayName": "利尔·纳斯·X",
+      "songCount": 1,
+      "songIds": [
+        "725e0fea-983b-459f-b027-104aaf0bacb7"
+      ],
+      "sampleOriginalArtists": [
+        "Lil Nas X"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://image-cdn-ak.spotifycdn.com/image/ab676161000051743758a33e782b46bd7f174e1d",
+      "artistImageSource": "spotify_open_artist_7jVv8c5Fj3E9VhNjxT4snq",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "review/7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
+      "displayName": "利比",
+      "songCount": 1,
+      "songIds": [
+        "7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c"
+      ],
+      "sampleOriginalArtists": [
+        "利比"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "lu-yuan-yi",
       "displayName": "卢宛仪",
       "songCount": 1,
       "songIds": [
-        "local_you_are_the_sun_in_my_life"
+        "56ebe7e3-9254-4929-8407-2f079040d902"
       ],
       "sampleOriginalArtists": [
         "卢宛仪"
@@ -2681,43 +2875,27 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "genshin-impact",
-      "displayName": "原神",
-      "songCount": 1,
-      "songIds": [
-        "local_轻涟"
-      ],
-      "sampleOriginalArtists": [
-        "原神"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Genshin_Impact_logo.svg/500px-Genshin_Impact_logo.svg.png",
-      "artistImageSource": "wikipedia_en_pageimage",
-      "artistImageConfidence": 1,
-      "artistImageKind": "project_logo"
-    },
-    {
-      "canonicalArtistId": "from-youtube/吉星出租",
+      "canonicalArtistId": "review/4c8b1682-c84d-41b8-b76a-9419804b011f",
       "displayName": "吉星出租",
       "songCount": 1,
       "songIds": [
-        "local_暮色回响"
+        "4c8b1682-c84d-41b8-b76a-9419804b011f"
       ],
       "sampleOriginalArtists": [
         "吉星出租"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/eae1ddd3d12cde3c7b146f1b29f82269/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
-      "canonicalArtistId": "review/local_你不属于我",
+      "canonicalArtistId": "review/cec1fd1f-1b25-420d-9f3c-7acf017c3c10",
       "displayName": "周兴哲",
       "songCount": 1,
       "songIds": [
-        "local_你不属于我"
+        "cec1fd1f-1b25-420d-9f3c-7acf017c3c10"
       ],
       "sampleOriginalArtists": [
         "周兴哲"
@@ -2733,7 +2911,7 @@
       "displayName": "唐汉霄",
       "songCount": 1,
       "songIds": [
-        "local_就是哪吒"
+        "ef6c891d-e040-4332-b443-4c82f93ff316"
       ],
       "sampleOriginalArtists": [
         "唐汉霄"
@@ -2749,7 +2927,7 @@
       "displayName": "坂本龙一",
       "songCount": 1,
       "songIds": [
-        "local_Merry_Christmas_Mr_Lawrence"
+        "8df1d94d-9b09-4cb7-9828-0f935b3adbed"
       ],
       "sampleOriginalArtists": [
         "坂本龙一"
@@ -2765,7 +2943,7 @@
       "displayName": "大泫",
       "songCount": 1,
       "songIds": [
-        "local_静悄悄"
+        "b54c084b-0ed4-4ed5-bb89-a977cb72a3e3"
       ],
       "sampleOriginalArtists": [
         "陈泫孝"
@@ -2781,7 +2959,7 @@
       "displayName": "太一",
       "songCount": 1,
       "songIds": [
-        "local_账号已注销"
+        "090db042-ca4a-4eb1-849f-67bc77a7aa91"
       ],
       "sampleOriginalArtists": [
         "太一"
@@ -2793,11 +2971,27 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "review/0bbfd15a-c5c1-4933-a1fc-907b5eb36b02",
+      "displayName": "妖精的尾巴 フェアリーテイル 보아",
+      "songCount": 1,
+      "songIds": [
+        "0bbfd15a-c5c1-4933-a1fc-907b5eb36b02"
+      ],
+      "sampleOriginalArtists": [
+        "妖精的尾巴 フェアリーテイル 보아"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "bella-yao",
       "displayName": "姚贝娜",
       "songCount": 1,
       "songIds": [
-        "local_菩萨蛮"
+        "10d1bb54-46e4-4748-bbaa-84e8a6eb0eab"
       ],
       "sampleOriginalArtists": [
         "姚贝娜"
@@ -2813,7 +3007,7 @@
       "displayName": "孙燕姿",
       "songCount": 1,
       "songIds": [
-        "local_遇见"
+        "9c2f23c7-c5ce-43ee-9858-4aa413845492"
       ],
       "sampleOriginalArtists": [
         "孙燕姿"
@@ -2829,7 +3023,7 @@
       "displayName": "小野来了",
       "songCount": 1,
       "songIds": [
-        "local_童话镇"
+        "b46e62c6-1169-4753-b804-40b469e797f0"
       ],
       "sampleOriginalArtists": [
         "小野来了"
@@ -2845,10 +3039,10 @@
       "displayName": "少女时代",
       "songCount": 1,
       "songIds": [
-        "local_Forever_1"
+        "017c2213-b863-4523-b810-78b2b7b8f9dd"
       ],
       "sampleOriginalArtists": [
-        "Girls"
+        "Girls' Generation"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/220728_GG_poleposition_266_%2853595169645%29.jpg/330px-220728_GG_poleposition_266_%2853595169645%29.jpg",
@@ -2857,27 +3051,27 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/就是南方凯",
+      "canonicalArtistId": "review/c9df6d31-2bed-416b-947a-483b4953876e",
       "displayName": "就是南方凯",
       "songCount": 1,
       "songIds": [
-        "local_离别开出花"
+        "c9df6d31-2bed-416b-947a-483b4953876e"
       ],
       "sampleOriginalArtists": [
         "就是南方凯"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/7bb3c5570eac5e83c4dc686f5e0e51ce/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "bruno-mars",
       "displayName": "布鲁诺·马尔斯",
       "songCount": 1,
       "songIds": [
-        "local_APT"
+        "e17a0211-1411-4406-aadb-5d9235a268d0"
       ],
       "sampleOriginalArtists": [
         "Rosé和Bruno Mars"
@@ -2893,7 +3087,7 @@
       "displayName": "张妙格",
       "songCount": 1,
       "songIds": [
-        "local_我期待的不是雪"
+        "0de69065-4f09-4ec7-959d-931a0ff1339f"
       ],
       "sampleOriginalArtists": [
         "张妙格"
@@ -2905,11 +3099,27 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "zhang-yuan",
+      "displayName": "张远",
+      "songCount": 1,
+      "songIds": [
+        "3fbd6a2d-8ca8-404f-adb0-c82428761206"
+      ],
+      "sampleOriginalArtists": [
+        "陈楚生、王栎鑫、王铮亮、陆虎、苏醒 、张远"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/d49268a866c72341f07d4881a9d29db0/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "xu-liang",
       "displayName": "徐良",
       "songCount": 1,
       "songIds": [
-        "local_坏女孩"
+        "8a733347-bad6-4495-89af-7ded7c707fcf"
       ],
       "sampleOriginalArtists": [
         "徐良"
@@ -2925,7 +3135,7 @@
       "displayName": "戴佩妮",
       "songCount": 1,
       "songIds": [
-        "local_打火机"
+        "32a9ea35-d110-4938-8ace-c7cd1361f2b5"
       ],
       "sampleOriginalArtists": [
         "Penny"
@@ -2941,7 +3151,7 @@
       "displayName": "承桓",
       "songCount": 1,
       "songIds": [
-        "local_我会等"
+        "e7596de6-e168-461a-a2eb-237bbe60ac18"
       ],
       "sampleOriginalArtists": [
         "承桓"
@@ -2957,7 +3167,7 @@
       "displayName": "指田郁也",
       "songCount": 1,
       "songIds": [
-        "local_幻化成花"
+        "79148365-0b83-43fe-90f0-cbc76b4bde1c"
       ],
       "sampleOriginalArtists": [
         "指田郁也"
@@ -2973,7 +3183,7 @@
       "displayName": "斗地主（游戏）",
       "songCount": 1,
       "songIds": [
-        "local_斗地主"
+        "f32015b8-c2da-4d14-b341-9b93482f2d1e"
       ],
       "sampleOriginalArtists": [
         "（无原唱）"
@@ -2989,7 +3199,7 @@
       "displayName": "方大同",
       "songCount": 1,
       "songIds": [
-        "local_才二十三"
+        "965125b3-199d-4985-8e63-e11cb34743a8"
       ],
       "sampleOriginalArtists": [
         "方大同"
@@ -3001,11 +3211,43 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "review/a0d34493-6740-433c-80d8-2cac5309f8fd",
+      "displayName": "时代少年团严浩翔",
+      "songCount": 1,
+      "songIds": [
+        "a0d34493-6740-433c-80d8-2cac5309f8fd"
+      ],
+      "sampleOriginalArtists": [
+        "《尾号6208》钢琴版 时代少年团严浩翔"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "review/a0529193-31b2-4648-9ea1-f4de20389ca5",
+      "displayName": "时代少年团马嘉祺",
+      "songCount": 1,
+      "songIds": [
+        "a0529193-31b2-4648-9ea1-f4de20389ca5"
+      ],
+      "sampleOriginalArtists": [
+        "时代少年团马嘉祺"
+      ],
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "yi-yang-qian-xi",
       "displayName": "易烊千玺",
       "songCount": 1,
       "songIds": [
-        "local_雪花"
+        "53e2face-08f0-4ac4-9ab1-b117595a0410"
       ],
       "sampleOriginalArtists": [
         "易烊千玺"
@@ -3021,7 +3263,7 @@
       "displayName": "权志龙",
       "songCount": 1,
       "songIds": [
-        "local_home_sweet_home"
+        "b5ec6383-637e-429f-a9b3-f2721408ceac"
       ],
       "sampleOriginalArtists": [
         "G-DRAGON"
@@ -3037,7 +3279,7 @@
       "displayName": "李健",
       "songCount": 1,
       "songIds": [
-        "local_人间共鸣"
+        "baa9ccf6-b212-47f2-a7ca-edec1fe8041c"
       ],
       "sampleOriginalArtists": [
         "李健"
@@ -3053,7 +3295,7 @@
       "displayName": "李玖哲",
       "songCount": 1,
       "songIds": [
-        "local_夏天"
+        "de994bc2-3811-4057-af2d-7a2fd60529f3"
       ],
       "sampleOriginalArtists": [
         "李玖哲"
@@ -3069,7 +3311,7 @@
       "displayName": "李玟",
       "songCount": 1,
       "songIds": [
-        "local_想你的365天"
+        "d235c8ce-c52b-4fba-bf62-d518eb3ea3d1"
       ],
       "sampleOriginalArtists": [
         "李玟 主题曲"
@@ -3081,30 +3323,30 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "li-rong-hao",
-      "displayName": "李荣浩",
+      "canonicalArtistId": "review/yang-kun",
+      "displayName": "杨坤",
       "songCount": 1,
       "songIds": [
-        "local_乌梅子酱"
+        "3518d40e-2566-44c0-9665-8a554eec81d1"
       ],
       "sampleOriginalArtists": [
-        "李榮浩"
+        "张碧晨、杨坤"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ba5b2a429adae83c4aac2747f7c9ef36/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "yang-zi",
       "displayName": "杨紫",
       "songCount": 1,
       "songIds": [
-        "local_余生请多指教"
+        "08d4ba85-3267-46c6-8ff2-47e43ea5135f"
       ],
       "sampleOriginalArtists": [
-        "杨紫、肖战"
+        "杨紫"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Yang_Zi_at_Ryo_band_promotion%2C_Wuhan_of_China%2C_12_April_2019.jpg/330px-Yang_Zi_at_Ryo_band_promotion%2C_Wuhan_of_China%2C_12_April_2019.jpg",
@@ -3117,7 +3359,7 @@
       "displayName": "林晨阳",
       "songCount": 1,
       "songIds": [
-        "local_当我奔向你"
+        "a8208678-2676-4d63-b8ea-1e23f0dd3275"
       ],
       "sampleOriginalArtists": [
         "林晨阳"
@@ -3133,7 +3375,7 @@
       "displayName": "柳爽",
       "songCount": 1,
       "songIds": [
-        "local_漠河舞厅"
+        "1a9e1728-842d-49d3-9ce7-2aa75886171b"
       ],
       "sampleOriginalArtists": [
         "柳爽"
@@ -3149,7 +3391,7 @@
       "displayName": "梓渝",
       "songCount": 1,
       "songIds": [
-        "local_肆意生花"
+        "07bb6857-3896-41d9-a792-54a79419cd3a"
       ],
       "sampleOriginalArtists": [
         "梓渝"
@@ -3165,7 +3407,7 @@
       "displayName": "武星、任胤蓬(用户指定",
       "songCount": 1,
       "songIds": [
-        "local_我的舞台"
+        "80a9ee60-7629-4d95-bba3-ba79e0f96321"
       ],
       "sampleOriginalArtists": [
         "武星、任胤蓬"
@@ -3177,27 +3419,11 @@
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "mao-buyi",
-      "displayName": "毛不易",
-      "songCount": 1,
-      "songIds": [
-        "local_岁月里的花"
-      ],
-      "sampleOriginalArtists": [
-        "莫文蔚 、毛不易"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/adaee900f29748757b4c6cb5f9d41998/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_search",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "hiroyuki-sawano",
       "displayName": "泽野弘之",
       "songCount": 1,
       "songIds": [
-        "local_call_of_silence"
+        "7b59d700-1d08-4d02-a5ff-456892ce2200"
       ],
       "sampleOriginalArtists": [
         "泽野弘之"
@@ -3213,7 +3439,7 @@
       "displayName": "海来阿木",
       "songCount": 1,
       "songIds": [
-        "local_不如见一面"
+        "fd36e64d-a4fe-4872-9c0f-822b435df129"
       ],
       "sampleOriginalArtists": [
         "海来阿木 2024央视春晚歌曲"
@@ -3229,7 +3455,7 @@
       "displayName": "王俊凯",
       "songCount": 1,
       "songIds": [
-        "local_无人乐园"
+        "be6c1047-902e-4a28-b8cd-f490e51ddb87"
       ],
       "sampleOriginalArtists": [
         "王俊凯"
@@ -3245,7 +3471,7 @@
       "displayName": "王嘉尔",
       "songCount": 1,
       "songIds": [
-        "local_Blow"
+        "dbd78eef-c6aa-45fb-bdcc-5104bf2bcfde"
       ],
       "sampleOriginalArtists": [
         "Jackson Wang"
@@ -3257,27 +3483,11 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/王宇宙leto-乔浚丞",
-      "displayName": "王宇宙Leto、乔浚丞",
-      "songCount": 1,
-      "songIds": [
-        "local_若月亮没来"
-      ],
-      "sampleOriginalArtists": [
-        "王宇宙 、乔浚丞"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/d869f600e25a5b6b6782273ea232b89d/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_wang_yuzhou_leto",
-      "artistImageConfidence": 0.88,
-      "artistImageKind": "artist_photo"
-    },
-    {
       "canonicalArtistId": "wang-yan-wei",
       "displayName": "王艳薇",
       "songCount": 1,
       "songIds": [
-        "local_离开我的依赖"
+        "37ff9513-d857-4b91-ae3c-c469b06d7566"
       ],
       "sampleOriginalArtists": [
         "王艷薇"
@@ -3293,7 +3503,7 @@
       "displayName": "王赫野",
       "songCount": 1,
       "songIds": [
-        "local_灯火万家"
+        "87d9b6a9-b207-4594-999d-34cd2d593d91"
       ],
       "sampleOriginalArtists": [
         "王赫野"
@@ -3305,11 +3515,27 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "chevy-robin",
+      "displayName": "知更鸟（Chevy）",
+      "songCount": 1,
+      "songIds": [
+        "2338d6c4-aa3e-4ad8-8687-12b83130f73e"
+      ],
+      "sampleOriginalArtists": [
+        "知更鸟（Chevy）"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://image-cdn-fa.spotifycdn.com/image/ab6761610000517463d26df92617aee38fea0f6d",
+      "artistImageSource": "spotify_open_artist_0lhcAgqzhRZuhHTXJsilSc",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "bonbon-girls-303",
       "displayName": "硬糖少女303",
       "songCount": 1,
       "songIds": [
-        "local_秋天前"
+        "69e0f88c-f242-4bfa-a727-64ca0bf7934d"
       ],
       "sampleOriginalArtists": [
         "BonBon Girls 303"
@@ -3325,7 +3551,7 @@
       "displayName": "程响",
       "songCount": 1,
       "songIds": [
-        "local_四季予你"
+        "a51f8791-e2bd-4003-9e7f-05963fcd995b"
       ],
       "sampleOriginalArtists": [
         "程响"
@@ -3341,7 +3567,7 @@
       "displayName": "等什么君",
       "songCount": 1,
       "songIds": [
-        "local_踏雪"
+        "d06e2806-0d21-4714-884a-3f44458fce05"
       ],
       "sampleOriginalArtists": [
         "等什么君"
@@ -3357,7 +3583,7 @@
       "displayName": "缝纫机乐队",
       "songCount": 1,
       "songIds": [
-        "local_都选c"
+        "1a27434f-e8bb-4725-9a13-21736165f28c"
       ],
       "sampleOriginalArtists": [
         "缝纫机乐队"
@@ -3369,14 +3595,14 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "review/local-hakimi-meme",
-      "displayName": "网络梗曲（待确认）",
+      "canonicalArtistId": "review/3ea8049f-202a-40ef-a5cc-9cb9bbeed147",
+      "displayName": "老番茄",
       "songCount": 1,
       "songIds": [
-        "local_哈基米"
+        "3ea8049f-202a-40ef-a5cc-9cb9bbeed147"
       ],
       "sampleOriginalArtists": [
-        "钢琴也要哈基米哈基米哈基米"
+        "老番茄"
       ],
       "reviewStatus": "needsReview",
       "artistImageUrl": null,
@@ -3389,7 +3615,7 @@
       "displayName": "胡彦斌",
       "songCount": 1,
       "songIds": [
-        "local_有梦好甜蜜"
+        "6963e9b5-69fc-4fb4-80f2-5849c7014004"
       ],
       "sampleOriginalArtists": [
         "胡彦斌"
@@ -3401,11 +3627,27 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "hu-meng-zhou",
+      "displayName": "胡梦周",
+      "songCount": 1,
+      "songIds": [
+        "3de1d9dc-3392-4838-b888-8b87a3580114"
+      ],
+      "sampleOriginalArtists": [
+        "胡梦周"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/3c581ef43680337482691bfe4db20e21/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer_official_artist_refresh",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "su-xing-jie",
       "displayName": "苏星婕",
       "songCount": 1,
       "songIds": [
-        "local_听悲伤的情歌"
+        "0270ad68-23c0-4212-9ee4-f8009bf78b30"
       ],
       "sampleOriginalArtists": [
         "苏星婕"
@@ -3417,11 +3659,43 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "sarah-brightman",
+      "displayName": "莎拉布莱曼",
+      "songCount": 1,
+      "songIds": [
+        "3c398f9a-4c3c-4a3b-a558-4e59ce17d0d6"
+      ],
+      "sampleOriginalArtists": [
+        "莎拉布莱曼"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://image-cdn-ak.spotifycdn.com/image/ab67616100005174a0bcf0e980853b55d4b2f392",
+      "artistImageSource": "spotify_open_artist_7Ead768rc4ShGxnqtqccU5",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "karen-mok",
+      "displayName": "莫文蔚",
+      "songCount": 1,
+      "songIds": [
+        "f570d452-7a97-4330-bb4e-79ce91e64f39"
+      ],
+      "sampleOriginalArtists": [
+        "莫文蔚 、毛不易"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/bf33cd64edae5df3a62ef97a71f55ad2/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "feifei-princess",
       "displayName": "菲菲公主",
       "songCount": 1,
       "songIds": [
-        "local_第57次取消发送"
+        "a2953862-c806-4036-a16a-2f550a000402"
       ],
       "sampleOriginalArtists": [
         "菲菲公主"
@@ -3437,7 +3711,7 @@
       "displayName": "葛东琪",
       "songCount": 1,
       "songIds": [
-        "local_悬溺"
+        "efdafe40-9b48-4252-9ba3-6ead745a3164"
       ],
       "sampleOriginalArtists": [
         "葛东琪"
@@ -3453,7 +3727,7 @@
       "displayName": "蔡健雅",
       "songCount": 1,
       "songIds": [
-        "local_letting_go"
+        "7df701be-40ed-42de-99b8-5442172c7680"
       ],
       "sampleOriginalArtists": [
         "蔡健雅"
@@ -3469,7 +3743,7 @@
       "displayName": "蔡詩蕓",
       "songCount": 1,
       "songIds": [
-        "local_雨过后的风景"
+        "541c7569-ff84-42a2-ae9b-4412fac70aeb"
       ],
       "sampleOriginalArtists": [
         "蔡詩蕓"
@@ -3485,7 +3759,7 @@
       "displayName": "薛凯琪",
       "songCount": 1,
       "songIds": [
-        "local_梦中人"
+        "2ead2628-620b-4069-a62f-18e709080806"
       ],
       "sampleOriginalArtists": [
         "薛凯琪 & 刘恋"
@@ -3501,7 +3775,7 @@
       "displayName": "赵露思",
       "songCount": 1,
       "songIds": [
-        "local_Black_Veil_Bride"
+        "9268df98-aa83-4ef3-b62a-5afe7f4d3820"
       ],
       "sampleOriginalArtists": [
         "趙露思"
@@ -3517,7 +3791,7 @@
       "displayName": "那艺娜",
       "songCount": 1,
       "songIds": [
-        "local_爱如火"
+        "4854ffe8-8032-4a62-8638-07d01f7da574"
       ],
       "sampleOriginalArtists": [
         "那艺娜"
@@ -3529,27 +3803,27 @@
       "artistImageKind": "artist_photo"
     },
     {
-      "canonicalArtistId": "from-youtube/郑业成",
+      "canonicalArtistId": "review/c4df38f9-aab5-419c-83ce-1911f1a99165",
       "displayName": "郑业成",
       "songCount": 1,
       "songIds": [
-        "local_擦肩"
+        "c4df38f9-aab5-419c-83ce-1911f1a99165"
       ],
       "sampleOriginalArtists": [
         "郑业成"
       ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/17ecec04b46b4aab7ab06e707cff868a/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_yecheng_zheng",
-      "artistImageConfidence": 0.92,
-      "artistImageKind": "artist_photo"
+      "reviewStatus": "needsReview",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "zheng-yi-nong",
       "displayName": "郑宜农",
       "songCount": 1,
       "songIds": [
-        "local_新造的人"
+        "01cd7a08-cccf-4f77-b0d0-f651a032880a"
       ],
       "sampleOriginalArtists": [
         "鄭宜農"
@@ -3565,7 +3839,7 @@
       "displayName": "郑直",
       "songCount": 1,
       "songIds": [
-        "local_值此今生"
+        "23d5d0bd-5b98-4067-b7d0-d2b069afc11f"
       ],
       "sampleOriginalArtists": [
         "郑直"
@@ -3581,7 +3855,7 @@
       "displayName": "郭顶",
       "songCount": 1,
       "songIds": [
-        "local_凄美地"
+        "ad5eb6d5-d136-46c1-8685-c71984ac11f4"
       ],
       "sampleOriginalArtists": [
         "郭顶"
@@ -3597,10 +3871,10 @@
       "displayName": "都智文",
       "songCount": 1,
       "songIds": [
-        "local_全世界在你身后"
+        "9211fc81-8922-4953-94ee-52d71a1c55e0"
       ],
       "sampleOriginalArtists": [
-        "全世界在你身后 钢琴"
+        "都智文"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/970243a04e36a3a44f4bedb136ff33ba/1000x1000-000000-80-0-0.jpg",
@@ -3613,10 +3887,10 @@
       "displayName": "阿云嘎",
       "songCount": 1,
       "songIds": [
-        "local_Regression"
+        "e94fb8e7-bfd2-4058-b97e-c5fa287e2214"
       ],
       "sampleOriginalArtists": [
-        "Regression"
+        "阿云嘎"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Ayanga_Tiffany_20230413.jpg/330px-Ayanga_Tiffany_20230413.jpg",
@@ -3629,7 +3903,7 @@
       "displayName": "阿肆",
       "songCount": 1,
       "songIds": [
-        "local_热爱105度的你"
+        "04dfe11e-71fb-4e47-8b49-61902cbfc4c1"
       ],
       "sampleOriginalArtists": [
         "阿肆"
@@ -3645,7 +3919,7 @@
       "displayName": "陈粒",
       "songCount": 1,
       "songIds": [
-        "local_小半"
+        "53cfd37d-53a2-4d8b-a46d-5050cf94f627"
       ],
       "sampleOriginalArtists": [
         "陳粒"
@@ -3661,7 +3935,7 @@
       "displayName": "章昊",
       "songCount": 1,
       "songIds": [
-        "local_coming_for_you"
+        "3dd891aa-b301-4474-8a6b-6b5a1ac1fe27"
       ],
       "sampleOriginalArtists": [
         "章昊"
@@ -3673,11 +3947,27 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "ma-jia-qi",
+      "displayName": "马嘉祺",
+      "songCount": 1,
+      "songIds": [
+        "9356caf0-10b4-4273-a702-2466be079055"
+      ],
+      "sampleOriginalArtists": [
+        "马嘉祺"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/54d744f584cd4e2867f69722021f9dfa/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "takahiro",
       "displayName": "高桥优",
       "songCount": 1,
       "songIds": [
-        "local_起风了"
+        "54a45fa0-b625-44aa-8678-b85a63872ce8"
       ],
       "sampleOriginalArtists": [
         "高桥优"
@@ -3693,7 +3983,7 @@
       "displayName": "魏晨、魏大勋、白敬亭",
       "songCount": 1,
       "songIds": [
-        "local_上春山"
+        "41ea6b7b-b401-46e4-9423-2e77c4775652"
       ],
       "sampleOriginalArtists": [
         "魏晨、魏大勋、白敬亭"
@@ -3707,37 +3997,325 @@
   ],
   "needsReview": [
     {
-      "trackId": "local_信念之光",
-      "displayTitle": "信念之光",
-      "originalArtist": "《特利迦奥特曼》",
-      "canonicalArtistId": "review/ultraman-trigger-belief-light",
+      "trackId": "ead8baed-a389-4342-901e-896ac244a46c",
+      "displayTitle": "GO!",
+      "originalArtist": "CORTIS",
+      "canonicalArtistId": "review/ead8baed-a389-4342-901e-896ac244a46c",
       "notes": [
-        "ultraman_ost_no_mao_huafeng_artist_card"
+        "non_artist_pattern"
       ]
     },
     {
-      "trackId": "local_哈基米",
-      "displayTitle": "哈基米",
-      "originalArtist": "钢琴也要哈基米哈基米哈基米",
-      "canonicalArtistId": "review/local-hakimi-meme",
-      "notes": [
-        "no_singer_meme_cover_use_tags_not_artist"
-      ]
-    },
-    {
-      "trackId": "local_normal_no_more",
-      "displayTitle": "Normal No More",
-      "originalArtist": "TYSM",
-      "canonicalArtistId": "review/local_normal_no_more",
+      "trackId": "c7d2dad3-492b-4f11-ba23-bc491694b16b",
+      "displayTitle": "没出息",
+      "originalArtist": "“本来应该从从容容游刃有余”",
+      "canonicalArtistId": "review/c7d2dad3-492b-4f11-ba23-bc491694b16b",
       "notes": [
         "dictionary_miss"
       ]
     },
     {
-      "trackId": "local_你不属于我",
+      "trackId": "7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
+      "displayTitle": "跳楼机",
+      "originalArtist": "利比",
+      "canonicalArtistId": "review/7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "40b6fac8-146b-4f8f-9b86-264f713f1a87",
+      "displayTitle": "Bye bye bye",
+      "originalArtist": "Deadpool & Wolverine Opening",
+      "canonicalArtistId": "review/40b6fac8-146b-4f8f-9b86-264f713f1a87",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "4c8b1682-c84d-41b8-b76a-9419804b011f",
+      "displayTitle": "暮色回响",
+      "originalArtist": "吉星出租",
+      "canonicalArtistId": "review/4c8b1682-c84d-41b8-b76a-9419804b011f",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "bb229f9a-fdf9-4adb-a188-5bb82c559f84",
+      "displayTitle": "晚安大小姐",
+      "originalArtist": "ASMRZ TANAKA, NEEDMORECASH",
+      "canonicalArtistId": "review/bb229f9a-fdf9-4adb-a188-5bb82c559f84",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "f2e91b7b-90d9-4b19-96d9-54c8c44efbfb",
+      "displayTitle": "5:20AM",
+      "originalArtist": "刀酱",
+      "canonicalArtistId": "review/f2e91b7b-90d9-4b19-96d9-54c8c44efbfb",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "c9df6d31-2bed-416b-947a-483b4953876e",
+      "displayTitle": "离别开出花",
+      "originalArtist": "就是南方凯",
+      "canonicalArtistId": "review/c9df6d31-2bed-416b-947a-483b4953876e",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "b97ea22e-699e-4d37-9a74-cdf6aa25509a",
+      "displayTitle": "繁花片头曲",
+      "originalArtist": "Blossoms Shanghai",
+      "canonicalArtistId": "review/b97ea22e-699e-4d37-9a74-cdf6aa25509a",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "e88eb18b-7339-4d38-b18b-66ce924a860b",
+      "displayTitle": "其实都没有",
+      "originalArtist": "于冬然",
+      "canonicalArtistId": "review/e88eb18b-7339-4d38-b18b-66ce924a860b",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "27d8d1ed-caf9-4767-8c6c-47cbae8f29d2",
+      "displayTitle": "我想我会",
+      "originalArtist": "尹露浠",
+      "canonicalArtistId": "review/27d8d1ed-caf9-4767-8c6c-47cbae8f29d2",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "a0529193-31b2-4648-9ea1-f4de20389ca5",
+      "displayTitle": "偷",
+      "originalArtist": "时代少年团马嘉祺",
+      "canonicalArtistId": "review/a0529193-31b2-4648-9ea1-f4de20389ca5",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "092bf007-2724-461b-8e83-6908c829117c",
+      "displayTitle": "乘风",
+      "originalArtist": "乘风破浪的姐姐",
+      "canonicalArtistId": "review/092bf007-2724-461b-8e83-6908c829117c",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "c4df38f9-aab5-419c-83ce-1911f1a99165",
+      "displayTitle": "擦肩",
+      "originalArtist": "郑业成",
+      "canonicalArtistId": "review/c4df38f9-aab5-419c-83ce-1911f1a99165",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "45504b38-6f7b-49ce-85a3-e29aaaa90ed5",
+      "displayTitle": "Who am i",
+      "originalArtist": "BRIGHT、WIN METAWIN、Dew Jirawat、Nani Hirunkit",
+      "canonicalArtistId": "review/45504b38-6f7b-49ce-85a3-e29aaaa90ed5",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "84c99cee-9f1c-441c-9f44-8be238998558",
+      "displayTitle": "柳叶刀",
+      "originalArtist": "刘宇",
+      "canonicalArtistId": "review/84c99cee-9f1c-441c-9f44-8be238998558",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "32a43b23-acc5-4e2b-a2e7-74680ca45063",
+      "displayTitle": "信念之光",
+      "originalArtist": "《特利迦奥特曼》",
+      "canonicalArtistId": "review/32a43b23-acc5-4e2b-a2e7-74680ca45063",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "d8afcd63-3cd3-406a-909b-149b0d1219df",
+      "displayTitle": "Stay with me",
+      "originalArtist": "Goblin",
+      "canonicalArtistId": "review/d8afcd63-3cd3-406a-909b-149b0d1219df",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "e7f8ad3d-45eb-430f-bafb-450bb7b79b66",
+      "displayTitle": "Xoxo",
+      "originalArtist": "XOXO",
+      "canonicalArtistId": "review/e7f8ad3d-45eb-430f-bafb-450bb7b79b66",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "9d397fc6-e3ec-49c0-b3c3-b6839998ee32",
+      "displayTitle": "You+Me=Love",
+      "originalArtist": "U Me LOVE",
+      "canonicalArtistId": "review/9d397fc6-e3ec-49c0-b3c3-b6839998ee32",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "6a9dc018-9abf-4555-af04-3984965ef024",
+      "displayTitle": "Utopia",
+      "originalArtist": "Utopia",
+      "canonicalArtistId": "review/6a9dc018-9abf-4555-af04-3984965ef024",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "35c058dd-2a71-48e4-8503-a28afe9a9ee2",
+      "displayTitle": "Snake",
+      "originalArtist": "Snake",
+      "canonicalArtistId": "review/35c058dd-2a71-48e4-8503-a28afe9a9ee2",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "1069c7d9-cedc-426b-8953-2d73995a28c4",
+      "displayTitle": "The feels",
+      "originalArtist": "The Feels",
+      "canonicalArtistId": "review/1069c7d9-cedc-426b-8953-2d73995a28c4",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "ef014da6-c1ad-46fc-906c-78104e773194",
+      "displayTitle": "新宝岛",
+      "originalArtist": "（无原唱）",
+      "canonicalArtistId": "review/ef014da6-c1ad-46fc-906c-78104e773194",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "a0d34493-6740-433c-80d8-2cac5309f8fd",
+      "displayTitle": "尾号6208",
+      "originalArtist": "《尾号6208》钢琴版 时代少年团严浩翔",
+      "canonicalArtistId": "review/a0d34493-6740-433c-80d8-2cac5309f8fd",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "07752a89-cdaf-4f19-86db-9daf1818f797",
+      "displayTitle": "POP/STARS",
+      "originalArtist": "K/DA",
+      "canonicalArtistId": "review/07752a89-cdaf-4f19-86db-9daf1818f797",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "0bbfd15a-c5c1-4933-a1fc-907b5eb36b02",
+      "displayTitle": "Masayume chasing",
+      "originalArtist": "妖精的尾巴 フェアリーテイル 보아",
+      "canonicalArtistId": "review/0bbfd15a-c5c1-4933-a1fc-907b5eb36b02",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "3d02b493-4bcf-43d8-8449-ed9553f3c3b7",
+      "displayTitle": "约定之初",
+      "originalArtist": "光与夜之恋",
+      "canonicalArtistId": "review/3d02b493-4bcf-43d8-8449-ed9553f3c3b7",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "7d35ab9c-7080-4c51-81ea-0a1575386510",
+      "displayTitle": "Catallena",
+      "originalArtist": "Catallena",
+      "canonicalArtistId": "review/7d35ab9c-7080-4c51-81ea-0a1575386510",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "3ea8049f-202a-40ef-a5cc-9cb9bbeed147",
+      "displayTitle": "你眼里的光",
+      "originalArtist": "老番茄",
+      "canonicalArtistId": "review/3ea8049f-202a-40ef-a5cc-9cb9bbeed147",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "efb1af44-d6ce-4e71-b21d-66c52c8c7976",
+      "displayTitle": "Don't touch",
+      "originalArtist": "Don",
+      "canonicalArtistId": "review/efb1af44-d6ce-4e71-b21d-66c52c8c7976",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "7bd22530-54dd-401d-9166-a5e577a611af",
+      "displayTitle": "公主披风",
+      "originalArtist": "《公主披风》钢琴版",
+      "canonicalArtistId": "review/7bd22530-54dd-401d-9166-a5e577a611af",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "360f0d07-e116-4cb4-87be-4c384ad7f3c2",
+      "displayTitle": "Nana party",
+      "originalArtist": "创造营",
+      "canonicalArtistId": "review/360f0d07-e116-4cb4-87be-4c384ad7f3c2",
+      "notes": [
+        "non_artist_pattern"
+      ]
+    },
+    {
+      "trackId": "411b81bf-d132-4c44-85ec-365e9df66674",
+      "displayTitle": "下雨了是我在想你",
+      "originalArtist": "《下雨了是我在想你》钢琴版",
+      "canonicalArtistId": "review/411b81bf-d132-4c44-85ec-365e9df66674",
+      "notes": [
+        "artist_matches_title"
+      ]
+    },
+    {
+      "trackId": "cc2670d8-0df3-407e-80ec-083017d126b2",
+      "displayTitle": "Normal No More",
+      "originalArtist": "TYSM",
+      "canonicalArtistId": "review/cc2670d8-0df3-407e-80ec-083017d126b2",
+      "notes": [
+        "dictionary_miss"
+      ]
+    },
+    {
+      "trackId": "cec1fd1f-1b25-420d-9f3c-7acf017c3c10",
       "displayTitle": "你不属于我",
       "originalArtist": "周兴哲",
-      "canonicalArtistId": "review/local_你不属于我",
+      "canonicalArtistId": "review/cec1fd1f-1b25-420d-9f3c-7acf017c3c10",
       "notes": [
         "dictionary_miss"
       ]

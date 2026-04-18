@@ -139,6 +139,7 @@ function parseArgs() {
     deleteSongId: '',
     deleteSongSlug: '',
     bucket: (process.env.SUPABASE_SONGS_BUCKET?.trim() || defaultSongsBucket),
+    onlySlugs: [] as string[],
   };
 
   for (let index = 0; index < args.length; index++) {
@@ -155,6 +156,12 @@ function parseArgs() {
       index += 1;
     } else if (current === '--bucket' && next) {
       options.bucket = next.trim();
+      index += 1;
+    } else if (current === '--only-slugs' && next) {
+      options.onlySlugs = next
+        .split(/[,，]/)
+        .map(s => s.trim())
+        .filter(Boolean);
       index += 1;
     } else if (current === '--apply') {
       options.dryRun = false;
@@ -545,6 +552,10 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
   }
 
   let candidateFolders = folders;
+  if (options.onlySlugs.length > 0) {
+    const want = new Set(options.onlySlugs);
+    candidateFolders = folders.filter(folder => want.has(folder.slug));
+  }
   if (options.skipExisting) {
     const { client: supabase } = buildSupabaseClient();
     const existingSlugs = await loadExistingSongSlugs(supabase);

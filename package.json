@@ -36,6 +36,7 @@
     "sync:cip-from-overrides": "node scripts/sync-cip-links-from-overrides.mjs",
     "generate:official-metadata": "tsx scripts/generate-local-import-official-metadata.ts",
     "build:manifest": "tsx scripts/build-songs-manifest.ts",
+    "build:manifest:metadata": "MANIFEST_METADATA_ONLY=1 tsx scripts/build-songs-manifest.ts",
     "export:youtube-channel-cache": "tsx scripts/export-youtube-channel-cache.ts",
     "sync:bilibili-video-overrides": "tsx scripts/sync-bilibili-video-overrides.ts",
     "sync:bilibili-video-overrides:per-track": "BILIBILI_MODE=per-track BILIBILI_MAX_TRACKS=350 BILIBILI_PER_TRACK_SLEEP_MS=3500 tsx scripts/sync-bilibili-video-overrides.ts",
@@ -66,7 +67,7 @@
     "cover:pilot:batch28:sync": "npm run cover:pilot:batch28 && npm run build:manifest",
     "cover:pilot:batch28:release": "npm run cover:pilot:batch28 && npm run build:manifest && npm run build",
     "export:missing-sheet-tsv": "node scripts/export-missing-sheet-tsv.mjs",
-    "prebuild": "npm run build:manifest"
+    "prebuild": "MANIFEST_METADATA_ONLY=1 npm run build:manifest"
   },
   "dependencies": {
     "@authing/guard": "^5.3.9",

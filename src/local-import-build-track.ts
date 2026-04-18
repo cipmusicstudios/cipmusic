@@ -9,6 +9,7 @@ import {
   INTENTIONAL_NO_SHEET_SLUGS,
 } from './local-import-metadata-auto';
 import { formatDurationLabel } from './duration-utils';
+import { applyCatalogOverridesToTrack } from './data/catalog-overrides';
 
 export { formatDurationLabel } from './duration-utils';
 
@@ -135,5 +136,5 @@ export const buildLocalImportTrack = (seed: (typeof LOCAL_IMPORT_SEEDS)[number])
     },
   };
 
-  return track;
+  return applyCatalogOverridesToTrack(track);
 };
