@@ -116,7 +116,7 @@ function slugToId(slug: string) {
   return `local_${normalized || 'track'}`;
 }
 
-function toAsciiSafeStorageSlug(source: string) {
+function toAsciiSafeBaseSlug(source: string) {
   const normalized = source
     .normalize('NFKD')
     .toLowerCase()
@@ -128,6 +128,74 @@ function toAsciiSafeStorageSlug(source: string) {
 
   const hash = createHash('sha1').update(source).digest('hex').slice(0, 10);
   return `track-${hash}`;
+}
+
+/**
+ * Storage slug = "<base>-<artist>"，例如：
+ *   ("Go",  "BLACKPINK") -> "go-blackpink"
+ *   ("GO!", "CORTIS")    -> "go-cortis"
+ *
+ * 这样不同 artist 的同名/近似名歌（如 BLACKPINK 的 "Go" 与 CORTIS 的 "GO!"）
+ * 会落到不同的 storage path，避免上传时静默互相覆盖。
+ *
+ * 不传 artist 时退化为 base only（仅在 dry-run 之类拿不到 artist 的早期阶段使用，
+ * 真正写库前会在 runMigrationMode 里用 resolveFinalStorageSlug 重算一次）。
+ */
+function toAsciiSafeStorageSlug(source: string, artistName?: string | null) {
+  const base = toAsciiSafeBaseSlug(source);
+  const artistPart = artistName ? toAsciiSafeBaseSlug(artistName) : '';
+  if (!artistPart) return base;
+  if (base.endsWith(`-${artistPart}`) || base === artistPart) return base;
+  return `${base}-${artistPart}`;
+}
+
+/** 从 "songs/<slug>/audio.mp3" 抽出 "<slug>" — 用于保持已有行的存储路径不被改写。 */
+function extractStorageSlugFromAudioPath(audioPath: string | null | undefined) {
+  if (typeof audioPath !== 'string') return '';
+  const match = audioPath.match(/^songs\/([^/]+)\//);
+  return match ? match[1] : '';
+}
+
+/**
+ * 决定本次写库 / 上传要用的最终 storage slug：
+ *   1) 数据库已有 row 且其 audio_path 已写好 → 沿用，避免把老歌挪到新格式（会断旧链接）。
+ *   2) 否则用 artist-aware 版（base + '-' + artist）。
+ */
+function resolveFinalStorageSlug(
+  folder: LocalSongFolder,
+  resolvedArtist: string,
+  existingRow?: ExistingSongRow,
+): string {
+  const existingSlug = extractStorageSlugFromAudioPath(existingRow?.audio_path);
+  if (existingSlug) return existingSlug;
+  return toAsciiSafeStorageSlug(folder.slug, resolvedArtist);
+}
+
+/**
+ * 写库 / 上传前的 collision guard：
+ * 如果计算出的 storage slug 对应的 audio_path 已经被另一首歌（不同 slug）占用，
+ * 直接抛错，避免静默覆盖（这就是 Go vs GO! 这次撞库的根因）。
+ */
+async function assertStorageSlugFree(
+  supabase: ReturnType<typeof createClient>,
+  storageSlug: string,
+  songSlug: string,
+) {
+  const audioPath = `songs/${storageSlug}/audio.mp3`;
+  const { data, error } = await supabase
+    .from('songs')
+    .select('id,slug,title,artist,audio_path')
+    .eq('audio_path', audioPath)
+    .neq('slug', songSlug);
+  if (error) throw error;
+  if (data && data.length > 0) {
+    const occupied = data[0] as { slug?: string | null; title?: string | null; artist?: string | null };
+    throw new Error(
+      `[migrate] storage path collision: '${audioPath}' already used by song slug='${occupied.slug}' ` +
+        `(${occupied.title} / ${occupied.artist}). Refusing to overwrite. ` +
+        `Disambiguate the local folder name (e.g. include artist), or repoint the existing row first.`,
+    );
+  }
 }
 
 function parseArgs() {
@@ -348,6 +416,7 @@ function pickPreferredString(...values: Array<string | null | undefined>) {
 
 function buildMigrationRow(
   folder: LocalSongFolder,
+  storageSlug: string,
   durationLabel: string,
   supabaseUrl: string,
   bucket: string,
@@ -357,9 +426,9 @@ function buildMigrationRow(
   const resolvedTitle = pickPreferredString(existingRow?.title, track.title, inferTitleFromSlug(folder.slug));
   const resolvedArtist =
     pickPreferredString(existingRow?.artist, track.artist, track.sourceArtist, resolvedTitle) || resolvedTitle;
-  const audioPath = toStoragePath(folder.storageSlug, folder.files.audio ?? '');
-  const midiPath = folder.files.midi ? toStoragePath(folder.storageSlug, folder.files.midi) : null;
-  const xmlPath = folder.files.musicxml ? toStoragePath(folder.storageSlug, folder.files.musicxml) : null;
+  const audioPath = toStoragePath(storageSlug, folder.files.audio ?? '');
+  const midiPath = folder.files.midi ? toStoragePath(storageSlug, folder.files.midi) : null;
+  const xmlPath = folder.files.musicxml ? toStoragePath(storageSlug, folder.files.musicxml) : null;
   const practiceEnabled = Boolean(audioPath && midiPath && xmlPath);
   const primaryCategory = pickPreferredString(existingRow?.primary_category, track.category, 'Originals') || 'Originals';
   const secondaryCategory = Array.isArray(track.tags)
@@ -368,7 +437,7 @@ function buildMigrationRow(
   const existingSecondaryCategory = Array.isArray(existingRow?.secondary_category)
     ? existingRow.secondary_category.filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
     : [];
-  const audioUrl = toPublicStorageUrl(supabaseUrl, bucket, audioPath || `songs/${folder.storageSlug}/audio.mp3`);
+  const audioUrl = toPublicStorageUrl(supabaseUrl, bucket, audioPath || `songs/${storageSlug}/audio.mp3`);
   const midiUrl = toPublicStorageUrl(supabaseUrl, bucket, midiPath);
   const musicxmlUrl = toPublicStorageUrl(supabaseUrl, bucket, xmlPath);
 
@@ -378,17 +447,18 @@ function buildMigrationRow(
     artist: resolvedArtist,
     primary_category: primaryCategory,
     secondary_category: existingSecondaryCategory.length > 0 ? existingSecondaryCategory : secondaryCategory,
-    audio_path: audioPath || `songs/${folder.storageSlug}/audio.mp3`,
+    audio_path:
+      pickPreferredString(existingRow?.audio_path, audioPath, `songs/${storageSlug}/audio.mp3`),
     audio_url:
       pickPreferredString(
         existingRow?.audio_url,
         audioUrl,
-        `${supabaseUrl.replace(/\/+$/g, '')}/storage/v1/object/public/${bucket}/songs/${folder.storageSlug}/audio.mp3`,
+        `${supabaseUrl.replace(/\/+$/g, '')}/storage/v1/object/public/${bucket}/songs/${storageSlug}/audio.mp3`,
       ),
-    midi_path: midiPath,
-    midi_url: pickPreferredString(existingRow?.midi_url, midiUrl),
-    xml_path: xmlPath,
-    musicxml_url: pickPreferredString(existingRow?.musicxml_url, musicxmlUrl),
+    midi_path: pickPreferredString(existingRow?.midi_path, midiPath) || null,
+    midi_url: pickPreferredString(existingRow?.midi_url, midiUrl) || null,
+    xml_path: pickPreferredString(existingRow?.xml_path, xmlPath) || null,
+    musicxml_url: pickPreferredString(existingRow?.musicxml_url, musicxmlUrl) || null,
     cover_url: pickPreferredString(existingRow?.cover_url, track.coverUrl, track.sourceCoverUrl),
     youtube_url: pickPreferredString(existingRow?.youtube_url, track.youtubeUrl),
     sheet_url: pickPreferredString(existingRow?.sheet_url, track.sheetUrl),
@@ -573,13 +643,28 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
     );
 
     for (const folder of selectedFolders) {
+      const existingRow = existingSongsBySlug.get(folder.slug);
+
+      // 先解析 artist，再算 storage slug —— 这样 BLACKPINK Go 与 CORTIS GO!
+      // 不会被压成同一个 "songs/go/audio.mp3"。
+      const draftTrack = buildLocalImportTrack(folder.seed);
+      const resolvedArtistForSlug = pickPreferredString(
+        existingRow?.artist,
+        draftTrack.artist,
+        draftTrack.sourceArtist,
+      );
+      const storageSlug = resolveFinalStorageSlug(folder, resolvedArtistForSlug, existingRow);
+
+      // 撞库 guard：另一首歌已经占用了同一个 audio_path → 抛错而不是静默覆盖。
+      await assertStorageSlugFree(supabase, storageSlug, folder.slug);
+
       const audioLocalPath = path.join(folder.dirPath, folder.files.audio as string);
       const midiLocalPath = folder.files.midi ? path.join(folder.dirPath, folder.files.midi) : null;
       const xmlLocalPath = folder.files.musicxml ? path.join(folder.dirPath, folder.files.musicxml) : null;
 
-      const audioRemotePath = `songs/${folder.storageSlug}/audio.mp3`;
-      const midiRemotePath = `songs/${folder.storageSlug}/performance.mid`;
-      const xmlRemotePath = `songs/${folder.storageSlug}/score.musicxml`;
+      const audioRemotePath = `songs/${storageSlug}/audio.mp3`;
+      const midiRemotePath = `songs/${storageSlug}/performance.mid`;
+      const xmlRemotePath = `songs/${storageSlug}/score.musicxml`;
 
       await uploadFile(supabase, bucket, audioLocalPath, audioRemotePath, inferContentType(folder.files.audio as string), dryRun);
       if (midiLocalPath && folder.files.midi) {
@@ -592,10 +677,11 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
       const { durationLabel } = await readDurationLabel(audioLocalPath);
       const row = buildMigrationRow(
         folder,
+        storageSlug,
         durationLabel,
         resolvedSupabaseUrl,
         bucket,
-        existingSongsBySlug.get(folder.slug),
+        existingRow,
       );
       await ensureArtistRowExists(supabase, row.artist, dryRun);
       const upsertResult = await supabase
@@ -614,12 +700,16 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
   for (const folder of selectedFolders) {
     const audioLocalPath = path.join(folder.dirPath, folder.files.audio as string);
     const { durationLabel } = await readDurationLabel(audioLocalPath);
-    const row = buildMigrationRow(folder, durationLabel, supabaseUrl, bucket);
+    // dry-run：拿不到 existingRow，仍走 artist-aware 算法预览未来 storage path。
+    const draftTrack = buildLocalImportTrack(folder.seed);
+    const resolvedArtistForSlug = pickPreferredString(draftTrack.artist, draftTrack.sourceArtist);
+    const storageSlug = toAsciiSafeStorageSlug(folder.slug, resolvedArtistForSlug);
+    const row = buildMigrationRow(folder, storageSlug, durationLabel, supabaseUrl, bucket);
     console.log(
       JSON.stringify(
         {
           slug: row.slug,
-          storage_slug: folder.storageSlug,
+          storage_slug: storageSlug,
           title: row.title,
           artist: row.artist,
           primary_category: row.primary_category,
