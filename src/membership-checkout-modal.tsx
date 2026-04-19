@@ -211,6 +211,15 @@ function ZpayBillingCard({
             return;
           }
           setZpayBusy(days);
+          /**
+           * 调试：付款前打印「实际下单使用的 userId」。这条 log 与 Settings 页面右上
+           * 显示的邮箱、Supabase Auth 真实 user.id 三者必须一致，否则订单会绑定错。
+           */
+          console.log('[zpay-checkout] outbound', {
+            membershipDays: days,
+            userIdToOrder: userId,
+            url: typeof window !== 'undefined' ? window.location.href : null,
+          });
           const result = await createZpayOrderCheckout(days, userId);
           setZpayBusy(null);
           if (result.ok === true) {

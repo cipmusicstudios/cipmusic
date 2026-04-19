@@ -110,6 +110,25 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   const userId = userIdFromRequestBody(body);
   const missingEnv = collectMissingEnv();
 
+  /**
+   * 调试日志：明确打印「客户端发来的 user_id 原值」与「校验后实际入库用的 user_id」。
+   * 用于排查「订单 user_id 与浏览器登录用户不一致」类问题。
+   * 同时打印 Authorization header 是否存在，便于后续要求前端带 Supabase JWT 时核对。
+   */
+  console.log('[create-zpay-order] received', {
+    userIdRaw:
+      typeof body.userId === 'string'
+        ? body.userId
+        : typeof body.authingUserId === 'string'
+          ? body.authingUserId
+          : null,
+    userIdParsed: userId,
+    membershipDays,
+    hasAuthHeader: Boolean(
+      event.headers?.authorization || event.headers?.Authorization,
+    ),
+  });
+
   const baseDebug = (partial: Partial<CreateZpayOrderDebug> = {}): CreateZpayOrderDebug =>
     debugSnapshot({
       membershipDays: typeof membershipDays === 'number' ? membershipDays : null,
@@ -163,6 +182,13 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
       debug: baseDebug(),
     });
   }
+
+  console.log('[create-zpay-order] inserting order', {
+    out_trade_no,
+    user_id: userId,
+    membership_days: membershipDays,
+    amount_cny: tier.money,
+  });
 
   const {error: insertErr} = await supabase.from('membership_orders').insert({
     out_trade_no,
