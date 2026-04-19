@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'motion/react';
 import {X} from 'lucide-react';
-import {STRIPE_CHECKOUT_MONTHLY_URL, STRIPE_CHECKOUT_YEARLY_URL, isCheckoutUrlReady, openMembershipCheckoutUrl} from './checkout-links';
+import {getStripeCheckoutUrls, isCheckoutUrlReady, openMembershipCheckoutUrl} from './checkout-links';
 import {createZpayOrderCheckout, type CreateZpayOrderResult} from './lib/zpay-order';
 
 export type UpgradeBillingCardCopy = {
@@ -83,7 +83,7 @@ function tryOpenStripe(
     console.warn('[AuraSounds] Stripe URL not ready:', url);
     return;
   }
-  openMembershipCheckoutUrl(url);
+  openMembershipCheckoutUrl(url, {clientReferenceId: userId});
   onClose();
 }
 
@@ -275,6 +275,7 @@ export function MembershipCheckoutModal({
   const [zpayBusy, setZpayBusy] = useState<null | 30 | 365>(null);
   const [zpayError, setZpayError] = useState<string | null>(null);
   const [zpayCheckout, setZpayCheckout] = useState<ZpayCheckoutPayload | null>(null);
+  const [stripeUrls, setStripeUrls] = useState<{monthly: string; yearly: string}>({monthly: '', yearly: ''});
 
   useEffect(() => {
     if (open && copy.mode === 'zh-cn') {
@@ -284,6 +285,18 @@ export function MembershipCheckoutModal({
       setZpayCheckout(null);
     }
   }, [open, copy]);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setStripeUrls({monthly: '', yearly: ''});
+    void getStripeCheckoutUrls().then(urls => {
+      if (!cancelled) setStripeUrls(urls);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   const handleClose = () => {
     onClose();
@@ -384,7 +397,7 @@ export function MembershipCheckoutModal({
                   <>
                     <BillingChoiceCard
                       card={copy.monthly}
-                      stripeUrl={STRIPE_CHECKOUT_MONTHLY_URL}
+                      stripeUrl={stripeUrls.monthly}
                       onClose={handleClose}
                       linkNotReadyHint={copy.linkNotReadyHint}
                       userId={userId}
@@ -392,7 +405,7 @@ export function MembershipCheckoutModal({
                     />
                     <BillingChoiceCard
                       card={copy.yearly}
-                      stripeUrl={STRIPE_CHECKOUT_YEARLY_URL}
+                      stripeUrl={stripeUrls.yearly}
                       onClose={handleClose}
                       linkNotReadyHint={copy.linkNotReadyHint}
                       userId={userId}
@@ -408,7 +421,7 @@ export function MembershipCheckoutModal({
                   <>
                     <BillingChoiceCard
                       card={copy.step2Intl.monthly}
-                      stripeUrl={STRIPE_CHECKOUT_MONTHLY_URL}
+                      stripeUrl={stripeUrls.monthly}
                       onClose={handleClose}
                       linkNotReadyHint={copy.linkNotReadyHint}
                       userId={userId}
@@ -416,7 +429,7 @@ export function MembershipCheckoutModal({
                     />
                     <BillingChoiceCard
                       card={copy.step2Intl.yearly}
-                      stripeUrl={STRIPE_CHECKOUT_YEARLY_URL}
+                      stripeUrl={stripeUrls.yearly}
                       onClose={handleClose}
                       linkNotReadyHint={copy.linkNotReadyHint}
                       userId={userId}
