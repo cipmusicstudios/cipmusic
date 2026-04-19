@@ -72,6 +72,7 @@
   "dependencies": {
     "@authing/guard": "^5.3.9",
     "@google/genai": "^1.29.0",
+    "@netlify/functions": "^5.2.0",
     "@supabase/supabase-js": "^2.100.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tonejs/midi": "^2.0.28",
@@ -88,13 +89,13 @@
     "react-window": "^1.8.11",
     "smplr": "^0.20.0",
     "standardized-audio-context": "^25.3.77",
+    "stripe": "^22.0.2",
     "tone": "^15.1.22",
     "transliteration": "^2.6.1",
     "vite": "^6.2.0",
     "web-audio-engine": "^0.13.4"
   },
   "devDependencies": {
-    "@netlify/functions": "^5.2.0",
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "@types/react-window": "^1.8.8",
