@@ -156,9 +156,11 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     return textResponse(400, 'fail');
   }
 
-  const userIdStr = String(
-    (order as {user_id?: string; authing_user_id?: string}).user_id ?? order.authing_user_id ?? '',
-  );
+  /**
+   * 订单端只读 user_id：create-zpay-order 早已只写 user_id；线上 user_membership
+   * schema 已经把旧 authing_user_id 列删除/迁移完成，再回退老字段会触发 42703。
+   */
+  const userIdStr = String((order as {user_id?: string}).user_id ?? '');
   if (!userIdStr || !isUuidString(userIdStr)) {
     console.error('[zpay-notify] missing or invalid user_id on order', {
       out_trade_no,
@@ -207,21 +209,17 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     return textResponse(409, 'fail');
   }
 
-  let {data: existing, error: exErr} = await supabase
+  /**
+   * 仅按 user_id 查现有会员行：旧 authing_user_id 列已从 public.user_membership
+   * 移除（migration 完成后），再去 .eq('authing_user_id', ...) 会让 PostgREST
+   * 直接报 42703 column does not exist，导致整个 notify 处理失败。新用户首次开通
+   * 时 existing 为 null，由下面的 upsert 走 INSERT 分支创建首行；老用户走 UPDATE。
+   */
+  const {data: existing, error: exErr} = await supabase
     .from('user_membership')
     .select('premium_until')
     .eq('user_id', userIdStr)
     .maybeSingle();
-
-  if (!exErr && !existing) {
-    const leg = await supabase
-      .from('user_membership')
-      .select('premium_until')
-      .eq('authing_user_id', userIdStr)
-      .maybeSingle();
-    existing = leg.data;
-    exErr = leg.error;
-  }
 
   if (exErr) {
     console.error('[zpay-notify] read membership', exErr);
