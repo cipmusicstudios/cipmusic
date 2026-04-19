@@ -281,6 +281,9 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   if (mapiResult.ok) {
     console.log('[create-zpay-order] mapi success', {
       out_trade_no,
+      gateway: mapiGateway,
+      httpStatus: mapiResult.httpStatus,
+      contentType: mapiResult.contentType,
       hasPayurl: Boolean(mapiResult.payurl),
       hasQrcode: Boolean(mapiResult.qrcode),
       hasImg: Boolean(mapiResult.img),
@@ -298,15 +301,22 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
 
   console.warn('[create-zpay-order] mapi unavailable, fallback to submit.php', {
     out_trade_no,
+    gateway: mapiGateway,
     reason: mapiResult.reason,
+    httpStatus: mapiResult.httpStatus ?? null,
+    contentType: mapiResult.contentType ?? null,
+    bodySnippet: mapiResult.bodySnippet ?? null,
     code: mapiResult.code ?? null,
     msg: mapiResult.msg ?? null,
+    sentParamKeys: mapiResult.sentParamKeys ?? null,
   });
   return json(200, {payUrl: submitUrl, source: 'submit'});
 };
 
 type MapiSuccess = {
   ok: true;
+  httpStatus: number;
+  contentType: string | null;
   payurl?: string;
   qrcode?: string;
   img?: string;
@@ -315,13 +325,24 @@ type MapiSuccess = {
 type MapiFailure = {
   ok: false;
   reason: 'http_error' | 'invalid_json' | 'business_failure' | 'network_error';
+  httpStatus?: number;
+  contentType?: string | null;
+  /** 截断到 500 字符的原始 body，便于排查 ZPay 的真正报错文案 */
+  bodySnippet?: string;
   code?: number | string;
   msg?: string;
+  /** 实际发出去的字段 key 集合（不含 sign 明文），用于核对参数完整性 */
+  sentParamKeys?: string[];
 };
 
 /**
  * POST 表单到 ZPay mapi.php。任何异常都吞下并返回 ok:false，让上层走 submit.php 兜底，
  * 不会因为 API 接口未开通就让整笔下单失败。
+ *
+ * 调试日志原则：
+ *  - 永远打印 httpStatus / content-type / body 前 500 字符
+ *  - 不打印 sign 明文，只打印参数 key 列表
+ *  - 严格区分 4 类失败：网络 / 非 200 / 非 JSON / JSON 但 code !== 1
  */
 async function tryMapiCreateOrder(
   gateway: string,
@@ -332,6 +353,16 @@ async function tryMapiCreateOrder(
     if (v == null || v === '') continue;
     form.set(k, v);
   }
+  const sentParamKeys = Array.from(form.keys()).sort();
+
+  console.log('[create-zpay-order] mapi request', {
+    gateway,
+    paramKeys: sentParamKeys,
+    /** 把签名是否被加进表单标出来，但不打 sign 明文 */
+    hasSign: form.has('sign'),
+    bodyLength: form.toString().length,
+  });
+
   let res: Response;
   try {
     res = await fetch(gateway, {
@@ -343,13 +374,34 @@ async function tryMapiCreateOrder(
       body: form.toString(),
     });
   } catch (e) {
-    console.warn('[create-zpay-order] mapi fetch error', e);
-    return {ok: false, reason: 'network_error'};
+    const errMsg = e instanceof Error ? e.message : String(e);
+    console.warn('[create-zpay-order] mapi network error', {gateway, error: errMsg});
+    return {ok: false, reason: 'network_error', sentParamKeys, msg: errMsg};
   }
-  if (!res.ok) {
-    return {ok: false, reason: 'http_error', code: res.status};
-  }
+
+  const contentType = res.headers.get('content-type');
   const text = await res.text().catch(() => '');
+  const bodySnippet = text.slice(0, 500);
+
+  console.log('[create-zpay-order] mapi raw response', {
+    gateway,
+    httpStatus: res.status,
+    contentType,
+    bodyLength: text.length,
+    bodySnippet,
+  });
+
+  if (!res.ok) {
+    return {
+      ok: false,
+      reason: 'http_error',
+      httpStatus: res.status,
+      contentType,
+      bodySnippet,
+      sentParamKeys,
+    };
+  }
+
   let parsed: {
     code?: number | string;
     msg?: string;
@@ -361,16 +413,33 @@ async function tryMapiCreateOrder(
   try {
     parsed = JSON.parse(text) as typeof parsed;
   } catch {
-    console.warn('[create-zpay-order] mapi non-json response', {snippet: text.slice(0, 160)});
-    return {ok: false, reason: 'invalid_json'};
+    return {
+      ok: false,
+      reason: 'invalid_json',
+      httpStatus: res.status,
+      contentType,
+      bodySnippet,
+      sentParamKeys,
+    };
   }
   /** ZPay 协议：code === 1（数字或字符串）代表下单成功 */
   const codeOk = parsed.code === 1 || parsed.code === '1';
   if (!codeOk) {
-    return {ok: false, reason: 'business_failure', code: parsed.code, msg: parsed.msg};
+    return {
+      ok: false,
+      reason: 'business_failure',
+      httpStatus: res.status,
+      contentType,
+      bodySnippet,
+      sentParamKeys,
+      code: parsed.code,
+      msg: parsed.msg,
+    };
   }
   return {
     ok: true,
+    httpStatus: res.status,
+    contentType,
     payurl: typeof parsed.payurl === 'string' ? parsed.payurl : undefined,
     qrcode: typeof parsed.qrcode === 'string' ? parsed.qrcode : undefined,
     img: typeof parsed.img === 'string' ? parsed.img : undefined,
