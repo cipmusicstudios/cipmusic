@@ -8,6 +8,15 @@
   to = "/index.html"
   status = 200
 
+# SPA fallback：直接打开 /settings、/music、/focus 等前端路由时回落到 index.html。
+# Netlify 处理优先级：静态文件（dist/assets、*.json、*.html、ambience/、salamander/ 等）
+# 与 /.netlify/functions/* 保留路径都先于 [[redirects]] 命中，所以这条 catch-all
+# 不会拦截已有静态资源，也不会误重写 ZPay / Stripe / read-membership 等函数路径。
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
