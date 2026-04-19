@@ -63,6 +63,20 @@ function latestLinePeriodEnd(invoice: Stripe.Invoice): string | null {
   return isoFromUnixSeconds(Math.max(...ends));
 }
 
+/**
+ * Stripe API ≥ 2025-04-30 ("basil" / "dahlia") removed the top-level `Invoice.subscription`
+ * and moved it under `invoice.parent.subscription_details.subscription`.
+ * 不抓回订阅 id，`fetchSubscription` 就拿不到 status，`subscriptionMembershipStatus` 会
+ * fallback 成 `stripe_subscription_unknown`，导致已激活订阅被误写成 unknown。
+ */
+function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const legacy = (invoice as unknown as {subscription?: string | Stripe.Subscription | null}).subscription;
+  const fromLegacy = stringId(legacy ?? null);
+  if (fromLegacy) return fromLegacy;
+  const parentSub = invoice.parent?.subscription_details?.subscription ?? null;
+  return stringId(parentSub);
+}
+
 function subscriptionMembershipStatus(
   subscriptionStatus: string | null | undefined,
   eventType: Stripe.Event.Type,
@@ -245,7 +259,7 @@ async function handleCheckoutCompleted(stripe: Stripe, session: Stripe.Checkout.
 
 async function handleInvoicePaid(stripe: Stripe, invoice: Stripe.Invoice): Promise<void> {
   const customerId = stringId(invoice.customer);
-  const subscriptionId = stringId(invoice.subscription);
+  const subscriptionId = invoiceSubscriptionId(invoice);
   const membership = await findMembershipByStripeRefs({customerId, subscriptionId});
   if (!membership?.user_id) {
     console.warn('[stripe-webhook] invoice.paid could not map membership', {
@@ -279,7 +293,7 @@ async function handleInvoicePaid(stripe: Stripe, invoice: Stripe.Invoice): Promi
 
 async function handleInvoiceFailed(stripe: Stripe, invoice: Stripe.Invoice): Promise<void> {
   const customerId = stringId(invoice.customer);
-  const subscriptionId = stringId(invoice.subscription);
+  const subscriptionId = invoiceSubscriptionId(invoice);
   const membership = await findMembershipByStripeRefs({customerId, subscriptionId});
   if (!membership?.user_id) {
     console.warn('[stripe-webhook] invoice.payment_failed could not map membership', {
