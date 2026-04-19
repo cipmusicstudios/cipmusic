@@ -404,6 +404,17 @@ export default function App() {
       const hash = window.location.hash.replace(/^#/, '');
       if (hash === 'glass-ui') return 'uiPreview';
       if (hash === 'settings-preview') return 'settings';
+      /**
+       * ZPay 支付回跳：ZPAY_RETURN_URL 配为 https://cipmusic.com/?zpay_return=1。
+       * 不走前端路由 /settings，避免 SPA 路径未渲染问题；在首屏初始化阶段就把
+       * activeView 切到 settings，并由下方 effect 触发会员状态刷新 + 清 URL query。
+       */
+      try {
+        const qs = new URLSearchParams(window.location.search);
+        if (qs.get('zpay_return') === '1') return 'settings';
+      } catch {
+        /** URLSearchParams 极端环境失败时静默回落到 home。 */
+      }
     }
     return 'home';
   });
@@ -718,6 +729,33 @@ export default function App() {
   const [remoteMembershipLoading, setRemoteMembershipLoading] = useState(false);
   const [membershipFetchIssue, setMembershipFetchIssue] = useState<MembershipFetchIssue>('none');
   const [remoteMembershipRetryToken, setRemoteMembershipRetryToken] = useState(0);
+
+  /**
+   * ZPay 回跳后：仅挂载一次。
+   *  1. 触发一次 read-membership 强制刷新（即使刚才那次 useEffect 已经跑过，retry token 会再跑一次）
+   *  2. 把 ?zpay_return=1 从地址栏抹掉，避免刷新或分享时反复触发
+   * 注意：这里不依赖支付逻辑、不写库、不动 ZPay notify 链路。
+   */
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let isReturn = false;
+    try {
+      isReturn = new URLSearchParams(window.location.search).get('zpay_return') === '1';
+    } catch {
+      isReturn = false;
+    }
+    if (!isReturn) return;
+    setActiveView('settings');
+    setRemoteMembershipRetryToken(n => n + 1);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('zpay_return');
+      const cleaned = url.pathname + (url.searchParams.toString() ? `?${url.searchParams.toString()}` : '') + url.hash;
+      window.history.replaceState({}, '', cleaned);
+    } catch {
+      /** 旧浏览器不支持 URL/replaceState 时保持原 URL，无副作用。 */
+    }
+  }, []);
 
   const isRemotePremiumActive = useMemo(
     () => remotePremiumEntitled(remoteMembership),
