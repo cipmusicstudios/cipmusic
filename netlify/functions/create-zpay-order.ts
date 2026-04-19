@@ -402,17 +402,8 @@ async function tryMapiCreateOrder(
     };
   }
 
-  let parsed: {
-    code?: number | string;
-    msg?: string;
-    payurl?: string;
-    qrcode?: string;
-    img?: string;
-    trade_no?: string;
-  };
-  try {
-    parsed = JSON.parse(text) as typeof parsed;
-  } catch {
+  const parsed = robustParseMapiBody(text);
+  if (!parsed) {
     return {
       ok: false,
       reason: 'invalid_json',
@@ -422,6 +413,17 @@ async function tryMapiCreateOrder(
       sentParamKeys,
     };
   }
+
+  console.log('[create-zpay-order] mapi parsed', {
+    code: parsed.code ?? null,
+    msg: parsed.msg ?? null,
+    hasPayurl: typeof parsed.payurl === 'string' && parsed.payurl.length > 0,
+    hasQrcode: typeof parsed.qrcode === 'string' && parsed.qrcode.length > 0,
+    hasImg: typeof parsed.img === 'string' && parsed.img.length > 0,
+    /** 帮助识别接口偶发字段名变化（如 qrcode_url / pay_url 等大小写差异） */
+    keys: Object.keys(parsed).sort(),
+  });
+
   /** ZPay 协议：code === 1（数字或字符串）代表下单成功 */
   const codeOk = parsed.code === 1 || parsed.code === '1';
   if (!codeOk) {
@@ -445,4 +447,61 @@ async function tryMapiCreateOrder(
     img: typeof parsed.img === 'string' ? parsed.img : undefined,
     trade_no: typeof parsed.trade_no === 'string' ? parsed.trade_no : undefined,
   };
+}
+
+type MapiParsedBody = {
+  code?: number | string;
+  msg?: string;
+  payurl?: string;
+  qrcode?: string;
+  img?: string;
+  trade_no?: string;
+  [k: string]: unknown;
+};
+
+/**
+ * 兼容多种 ZPay mapi.php 实际响应格式：
+ *  1. 正常 JSON 对象：`{"code":1,"msg":"success",...}`
+ *  2. 双重编码字符串：body 解出来是字符串，需要再 JSON.parse 一次（实测线上情形）
+ *  3. 前后包了 BOM / 空白 / `<pre>...</pre>` / JSONP 回调外壳
+ *
+ * 解析失败统一返 null，由调用方上报 `invalid_json`。
+ */
+function robustParseMapiBody(text: string): MapiParsedBody | null {
+  if (typeof text !== 'string' || text.length === 0) return null;
+  /** 去 BOM + 两侧空白 */
+  let raw = text.replace(/^\uFEFF/, '').trim();
+  if (!raw) return null;
+
+  /** 兼容 jsonpCallback({...}) 这种外壳 */
+  const jsonp = /^[A-Za-z_$][\w$]*\((.*)\)\s*;?\s*$/s.exec(raw);
+  if (jsonp && jsonp[1]) raw = jsonp[1].trim();
+
+  /** 兼容 <pre>{...}</pre>（PHP 调试默认输出）等 HTML 包装 */
+  const htmlWrap = /<(?:pre|code)>([\s\S]*?)<\/(?:pre|code)>/i.exec(raw);
+  if (htmlWrap && htmlWrap[1]) raw = htmlWrap[1].trim();
+
+  /** 第一次解析；最多再做两次 unwrap，应对双重 / 三重编码 */
+  let cur: unknown;
+  try {
+    cur = JSON.parse(raw);
+  } catch {
+    /** 兜底：从 body 里截出第一个 {...} 试一次，应对前缀杂质 */
+    const m = /\{[\s\S]*\}/.exec(raw);
+    if (!m) return null;
+    try {
+      cur = JSON.parse(m[0]);
+    } catch {
+      return null;
+    }
+  }
+  for (let i = 0; i < 2 && typeof cur === 'string'; i += 1) {
+    try {
+      cur = JSON.parse(cur);
+    } catch {
+      return null;
+    }
+  }
+  if (cur == null || typeof cur !== 'object' || Array.isArray(cur)) return null;
+  return cur as MapiParsedBody;
 }
