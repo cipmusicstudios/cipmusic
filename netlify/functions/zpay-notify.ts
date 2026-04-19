@@ -17,6 +17,22 @@ function parseFormBody(event: HandlerEvent): Record<string, string> {
   return Object.fromEntries(new URLSearchParams(decoded));
 }
 
+/**
+ * ZPay 部分通道回调走 GET（query string）而非 POST form-urlencoded，
+ * 这里统一抽取所有参与签名的字段；GET / POST 后续走同一套验签 + 订单认领。
+ * 仅取 ZPay 文档约定的字段集合，避免未知 query 参数干扰排序后签名重算。
+ */
+function parseQueryParams(event: HandlerEvent): Record<string, string> {
+  const out: Record<string, string> = {};
+  const src = (event.queryStringParameters || {}) as Record<string, string | undefined>;
+  const fields = ['pid', 'trade_no', 'out_trade_no', 'money', 'trade_status', 'name', 'param', 'sign', 'sign_type'];
+  for (const k of fields) {
+    const v = src[k];
+    if (typeof v === 'string' && v.length > 0) out[k] = v;
+  }
+  return out;
+}
+
 function moneyMatches(orderAmount: string, notifyMoney: string): boolean {
   const a = Number(orderAmount);
   const b = Number(notifyMoney);
@@ -38,7 +54,8 @@ function safeNotifySnapshot(params: Record<string, string>): Record<string, stri
 }
 
 export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
-  if (event.httpMethod !== 'POST') {
+  const method = event.httpMethod;
+  if (method !== 'POST' && method !== 'GET') {
     return textResponse(405, 'fail');
   }
 
@@ -48,10 +65,11 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     return textResponse(500, 'fail');
   }
 
-  const params = parseFormBody(event);
+  const params = method === 'GET' ? parseQueryParams(event) : parseFormBody(event);
   const signValid = verifyZpayNotify(params, key);
 
   console.log('[zpay-notify] received', {
+    method,
     out_trade_no: params.out_trade_no ?? null,
     trade_no: params.trade_no ?? null,
     money: params.money ?? null,
