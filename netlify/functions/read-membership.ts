@@ -42,6 +42,12 @@ function successBody(row: {
   membership_status: string | null;
   payment_provider: string | null;
   last_payment_at: string | null;
+  auto_renew: boolean | null;
+  current_period_end: string | null;
+  stripe_subscription_status: string | null;
+  cancel_at_period_end: boolean | null;
+  last_payment_status: string | null;
+  payment_failure_at: string | null;
 } | null) {
   return {
     ok: true as const,
@@ -49,6 +55,12 @@ function successBody(row: {
     membershipStatus: row?.membership_status ?? null,
     paymentProvider: row?.payment_provider ?? null,
     lastPaymentAt: row?.last_payment_at ?? null,
+    autoRenew: row?.auto_renew ?? null,
+    currentPeriodEnd: row?.current_period_end ?? null,
+    stripeSubscriptionStatus: row?.stripe_subscription_status ?? null,
+    cancelAtPeriodEnd: row?.cancel_at_period_end ?? null,
+    lastPaymentStatus: row?.last_payment_status ?? null,
+    paymentFailureAt: row?.payment_failure_at ?? null,
   };
 }
 
@@ -136,7 +148,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
 
   const byUserId = await supabase
     .from(TABLE)
-    .select('premium_until, membership_status, payment_provider, last_payment_at')
+    .select('*')
     .eq('user_id', userId)
     .limit(1)
     .maybeSingle();
@@ -153,7 +165,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
         errorMessage: byUserId.error.message,
         supabaseErrorCode: byUserId.error.code != null ? String(byUserId.error.code) : null,
       }),
-      'Confirm public.user_membership exists and columns match supabase/membership-zpay-schema.sql.',
+      'Confirm public.user_membership exists and columns match supabase/membership-zpay-schema.sql plus supabase/membership-stripe-schema.sql.',
     );
   }
 

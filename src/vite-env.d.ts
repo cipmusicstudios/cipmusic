@@ -30,6 +30,10 @@ interface ImportMetaEnv {
   readonly VITE_ZPAY_CREATE_ORDER_URL?: string;
   /** 覆盖会员读取 Function URL（默认 `/.netlify/functions/read-membership`） */
   readonly VITE_READ_MEMBERSHIP_URL?: string;
+  /** Stripe 月付 Payment Link / Checkout Link（Test 或 Live 由 Netlify 环境决定） */
+  readonly VITE_STRIPE_CHECKOUT_MONTHLY_URL?: string;
+  /** Stripe 年付 Payment Link / Checkout Link（Test 或 Live 由 Netlify 环境决定） */
+  readonly VITE_STRIPE_CHECKOUT_YEARLY_URL?: string;
 }
 
 interface ImportMeta {
