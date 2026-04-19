@@ -846,6 +846,14 @@ export default function App() {
   const [ambienceToast, setAmbienceToast] = useState<string | null>(null);
   const ambienceAudioRefs = React.useRef<Record<AmbientKey, HTMLAudioElement>>({} as Record<AmbientKey, HTMLAudioElement>);
   const ambienceFadeFrames = React.useRef<Partial<Record<AmbientKey, number>>>({});
+  /**
+   * 每个环境音轨的「世代号」。每次 start / stop / 切换都会自增；in-flight 的 play()
+   * promise 在 resolve / reject 时会和当前 gen 比对，如果已被新动作覆盖，就静默忽略，
+   * 避免把「被自己中断」的 play() 误报为「播放失败」。
+   */
+  const ambienceGenRef = React.useRef<Partial<Record<AmbientKey, number>>>({});
+  /** 仅用于诊断日志：每个 HTMLAudioElement 创建时分配一个短 id，方便排查实例泄漏。 */
+  const ambienceInstanceIdRef = React.useRef<Partial<Record<AmbientKey, string>>>({});
   const toastTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showAmbienceToast = (msg: string) => {
@@ -862,6 +870,15 @@ export default function App() {
     }
   };
 
+  const bumpAmbienceGen = (id: AmbientKey): number => {
+    const next = (ambienceGenRef.current[id] ?? 0) + 1;
+    ambienceGenRef.current[id] = next;
+    return next;
+  };
+
+  const activeAmbienceInstanceCount = () =>
+    Object.values(ambienceAudioRefs.current).filter(a => a && !a.paused).length;
+
   const ensureAmbientAudio = (id: AmbientKey) => {
     if (!ambienceAudioRefs.current[id]) {
       const audio = new Audio(AMBIENCE_AUDIO_URLS[id]);
@@ -870,6 +887,13 @@ export default function App() {
       audio.crossOrigin = 'anonymous';
       audio.load();
       ambienceAudioRefs.current[id] = audio;
+      const instId = `${id}-${Math.random().toString(36).slice(2, 8)}`;
+      ambienceInstanceIdRef.current[id] = instId;
+      console.log('[ambience] create instance', {
+        id,
+        instId,
+        totalInstances: Object.keys(ambienceAudioRefs.current).length,
+      });
     }
     return ambienceAudioRefs.current[id];
   };
@@ -906,16 +930,63 @@ export default function App() {
     const targetVolume = getAmbientTargetVolume(id);
     cancelAmbienceFade(id);
     audio.loop = true;
+
+    /** 抢占世代号；本次 play() 的所有副作用都受这个 gen 校验保护。 */
+    const gen = bumpAmbienceGen(id);
+    const instId = ambienceInstanceIdRef.current[id] ?? id;
+    console.log('[ambience] start', {
+      id,
+      instId,
+      gen,
+      paused: audio.paused,
+      readyState: audio.readyState,
+      activeInstances: activeAmbienceInstanceCount(),
+    });
+
     if (audio.paused) {
       audio.volume = 0.0001;
       try {
         await audio.play();
       } catch (error) {
-        console.error(`Failed to play ambience ${id}`, error);
-        showAmbienceToast(currentLang === 'English' ? 'Ambient audio failed to start' : currentLang === '繁體中文' ? '環境音效播放失敗' : '环境音效播放失败');
-        setActiveAmbiences(prev => prev.filter(activeId => activeId !== id));
+        const isDom = error instanceof DOMException;
+        const name = isDom ? error.name : (error as {name?: string})?.name ?? 'Error';
+        const message =
+          (error as {message?: string})?.message ?? (typeof error === 'string' ? error : 'unknown');
+        /**
+         * AbortError / NotAllowedError(Auto-play 偶发) 多半是「play 被新切换 / pause /
+         * currentTime 写入打断」的预期情形——不弹错误 toast，避免误报为「播放失败」。
+         * 同时如果 gen 已被覆盖，说明用户已切走，不论什么错都静默。
+         */
+        const isInterrupted = isDom && (name === 'AbortError' || /interrupted/i.test(message));
+        const stale = ambienceGenRef.current[id] !== gen;
+        console.warn('[ambience] play rejected', {
+          id,
+          instId,
+          gen,
+          currentGen: ambienceGenRef.current[id] ?? null,
+          name,
+          message,
+          isInterrupted,
+          stale,
+        });
+        if (!isInterrupted && !stale) {
+          showAmbienceToast(
+            currentLang === 'English'
+              ? 'Ambient audio failed to start'
+              : currentLang === '繁體中文'
+                ? '環境音效播放失敗'
+                : '环境音效播放失败',
+          );
+          setActiveAmbiences(prev => prev.filter(activeId => activeId !== id));
+        }
         return;
       }
+    }
+
+    /** play() resolve 后还要再确认一次没有被新动作覆盖；否则不要去改 volume。 */
+    if (ambienceGenRef.current[id] !== gen) {
+      console.log('[ambience] start superseded after play resolve, skip ramp', {id, instId, gen});
+      return;
     }
     rampAmbientVolume(id, targetVolume, AMBIENCE_FADE_IN_MS);
   };
@@ -924,14 +995,40 @@ export default function App() {
     const audio = ambienceAudioRefs.current[id];
     if (!audio) return;
     cancelAmbienceFade(id);
+    /** 让任何 in-flight 的 play() promise resolve / reject 时被识别为 stale。 */
+    const gen = bumpAmbienceGen(id);
+    const instId = ambienceInstanceIdRef.current[id] ?? id;
+    console.log('[ambience] stop', {
+      id,
+      instId,
+      gen,
+      paused: audio.paused,
+      readyState: audio.readyState,
+      activeInstances: activeAmbienceInstanceCount(),
+    });
+
     if (audio.paused) {
-      if (resetToStart) audio.currentTime = 0;
+      /**
+       * 关键修复：play() 可能仍 in-flight（此时 audio.paused 仍然是 true）。
+       * **不要**在这里写 audio.currentTime——Safari / 部分 Chrome 在 play() 解析前
+       * 修改 currentTime 会让 play() promise 抛 AbortError，被上层误报为播放失败。
+       * 真正的归零交给 fade-out 完成回调（那时 play() 必然已 resolve）或下次 start。
+       */
       return;
     }
     rampAmbientVolume(id, 0, AMBIENCE_FADE_OUT_MS, () => {
-      audio.pause();
-      if (resetToStart) audio.currentTime = 0;
-      audio.volume = getAmbientTargetVolume(id);
+      /** fade 期间用户可能又把这张点回来了；如已被新 start 抢占就别再 pause 了。 */
+      if (ambienceGenRef.current[id] !== gen) {
+        console.log('[ambience] stop fade superseded, skip pause', {id, instId, gen});
+        return;
+      }
+      try {
+        audio.pause();
+        if (resetToStart) audio.currentTime = 0;
+        audio.volume = getAmbientTargetVolume(id);
+      } catch (e) {
+        console.warn('[ambience] stop teardown threw', {id, instId, error: e});
+      }
     });
   };
 
