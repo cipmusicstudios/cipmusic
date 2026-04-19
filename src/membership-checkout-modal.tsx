@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'motion/react';
 import {X} from 'lucide-react';
+import QRCode from 'qrcode';
 import {getStripeCheckoutUrls, isCheckoutUrlReady, openMembershipCheckoutUrl} from './checkout-links';
 import {createZpayOrderCheckout, type CreateZpayOrderResult} from './lib/zpay-order';
 
@@ -169,6 +170,92 @@ export type ZpayCheckoutPayload = {
   qrUrl?: string;
   qrImageUrl?: string;
 };
+
+/**
+ * 弹窗内统一渲染 ZPay 二维码区域，三层优先级：
+ *  1. qrImageUrl：服务端已经渲染好的 PNG（mapi.php img 字段），直接 <img>
+ *  2. qrUrl：原始二维码内容（如 weixin://wxpay/bizpayurl?pr=xxx），本地用 qrcode 库渲染
+ *  3. 都没有：不再嵌任何中转页 iframe；展示一段提示，让用户点下方「在新窗口打开支付」
+ *
+ * 第 3 层只会在 ZPay 商户未开 API 支付（mapi 失败 → submit.php 兜底）时出现。
+ */
+function ZpayQrPanel({
+  payload,
+  iframeHint,
+}: {
+  payload: ZpayCheckoutPayload;
+  iframeHint: string;
+}) {
+  const [localQrDataUrl, setLocalQrDataUrl] = useState<string | null>(null);
+  const [localQrError, setLocalQrError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLocalQrDataUrl(null);
+    setLocalQrError(null);
+    /** 仅在没有现成 PNG 但有原始二维码字符串时，才本地渲染。 */
+    if (payload.qrImageUrl) return;
+    if (!payload.qrUrl) return;
+    let cancelled = false;
+    void QRCode.toDataURL(payload.qrUrl, {
+      errorCorrectionLevel: 'M',
+      margin: 1,
+      width: 320,
+      color: {dark: '#1f1a16', light: '#ffffff'},
+    })
+      .then(dataUrl => {
+        if (!cancelled) setLocalQrDataUrl(dataUrl);
+      })
+      .catch(err => {
+        console.warn('[zpay-qr] local render failed', err);
+        if (!cancelled) setLocalQrError(err instanceof Error ? err.message : String(err));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [payload.qrImageUrl, payload.qrUrl]);
+
+  if (payload.qrImageUrl) {
+    return (
+      <div className="flex flex-col items-center gap-3 p-4">
+        <img
+          src={payload.qrImageUrl}
+          alt=""
+          className="max-h-[min(52vh,360px)] w-auto max-w-full object-contain"
+        />
+      </div>
+    );
+  }
+  if (payload.qrUrl) {
+    if (localQrDataUrl) {
+      return (
+        <div className="flex flex-col items-center gap-3 p-4">
+          <img
+            src={localQrDataUrl}
+            alt=""
+            className="max-h-[min(52vh,360px)] w-auto max-w-full object-contain"
+          />
+        </div>
+      );
+    }
+    if (localQrError) {
+      return (
+        <div className="flex h-full min-h-[180px] flex-col items-center justify-center gap-2 px-5 py-6 text-center">
+          <p className="text-[12px] leading-snug text-[var(--color-mist-text)]/64">{iframeHint}</p>
+        </div>
+      );
+    }
+    return (
+      <div className="flex h-full min-h-[180px] items-center justify-center px-5 py-6">
+        <span className="text-[12px] text-[var(--color-mist-text)]/52">…</span>
+      </div>
+    );
+  }
+  return (
+    <div className="flex h-full min-h-[180px] flex-col items-center justify-center gap-2 px-5 py-6 text-center">
+      <p className="text-[12px] leading-snug text-[var(--color-mist-text)]/64">{iframeHint}</p>
+    </div>
+  );
+}
 
 function ZpayBillingCard({
   card,
@@ -521,29 +608,11 @@ export function MembershipCheckoutModal({
               </div>
 
               <div className="mt-3 min-h-[200px] w-full flex-1 overflow-hidden rounded-xl border border-[rgba(90,72,52,0.1)] bg-white/90">
-                {zpayCheckout.qrImageUrl ? (
-                  <div className="flex flex-col items-center gap-3 p-4">
-                    <img
-                      src={zpayCheckout.qrImageUrl}
-                      alt=""
-                      className="max-h-[min(52vh,360px)] w-auto max-w-full object-contain"
-                    />
-                  </div>
-                ) : zpayCheckout.qrUrl ? (
-                  <div className="flex flex-col items-center gap-3 p-4">
-                    <img src={zpayCheckout.qrUrl} alt="" className="max-h-[min(52vh,360px)] w-auto max-w-full object-contain" />
-                  </div>
-                ) : (
-                  <iframe
-                    title={zpayCopy.title}
-                    src={zpayCheckout.payUrl}
-                    className="h-[min(52vh,380px)] w-full border-0 bg-white"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
-                )}
+                <ZpayQrPanel
+                  payload={zpayCheckout}
+                  iframeHint={zpayCopy.iframeHint}
+                />
               </div>
-
-              <p className="mt-2 text-[11px] leading-snug text-[var(--color-mist-text)]/48">{zpayCopy.iframeHint}</p>
 
               <button
                 type="button"

@@ -212,6 +212,10 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     });
   }
 
+  /**
+   * 与 submit.php / mapi.php 共用的签名集合。两边规则完全一致：
+   * 按 key 字典序排序后 `k=v&...` + 商户 KEY 做 MD5 lowercase。
+   */
   const signParams: Record<string, string> = {
     pid: pid!,
     type: 'wxpay',
@@ -224,14 +228,12 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     sign_type: 'MD5',
   };
 
-  let payUrl: string;
+  let sign: string;
   try {
-    const sign = signZpayParams(signParams, key!);
-    const payParams = {...signParams, sign};
-    payUrl = buildPayUrl(gateway, payParams);
+    sign = signZpayParams(signParams, key!);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error('[create-zpay-order] pay URL build failed', e);
+    console.error('[create-zpay-order] sign failed', e);
     return json(500, {
       error: 'PAY_URL_BUILD_FAILED',
       message: msg,
@@ -244,6 +246,134 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
       }),
     });
   }
+  const payParams = {...signParams, sign};
 
-  return json(200, {payUrl});
+  /**
+   * 优先走 mapi.php（API 接口支付）：服务端 POST，拿 JSON `{code, payurl, qrcode, img}`，
+   * 这样前端就能在弹窗里直接渲染二维码，不必嵌 submit.php 中转页。
+   *
+   * 任何分支失败（商户未开 API、网络错误、code !== 1）都自动回落到 submit.php 的旧
+   * 行为（返回拼接好的 payUrl 让前端去新窗口打开），保持现有支付能力不被改坏。
+   */
+  const mapiGateway = (process.env.ZPAY_API_GATEWAY || 'https://zpayz.cn/mapi.php').trim();
+  const mapiResult = await tryMapiCreateOrder(mapiGateway, payParams);
+
+  /** submit.php 拼接 URL，作为兜底 / 备用「在新窗口打开支付」 */
+  let submitUrl: string;
+  try {
+    submitUrl = buildPayUrl(gateway, payParams);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[create-zpay-order] submit URL build failed', e);
+    return json(500, {
+      error: 'PAY_URL_BUILD_FAILED',
+      message: msg,
+      debug: baseDebug({
+        supabaseInsertAttempted: true,
+        supabaseInsertOk: true,
+        supabaseInsertError: null,
+        zpaySignGenerated: true,
+        payUrlGenerated: false,
+      }),
+    });
+  }
+
+  if (mapiResult.ok) {
+    console.log('[create-zpay-order] mapi success', {
+      out_trade_no,
+      hasPayurl: Boolean(mapiResult.payurl),
+      hasQrcode: Boolean(mapiResult.qrcode),
+      hasImg: Boolean(mapiResult.img),
+      tradeNo: mapiResult.trade_no || null,
+      source: 'mapi',
+    });
+    /** mapi 没返 payurl 时，用 submit.php 兜底，保证前端「在新窗口打开支付」永远可用 */
+    return json(200, {
+      payUrl: mapiResult.payurl || submitUrl,
+      qrUrl: mapiResult.qrcode || undefined,
+      qrImageUrl: mapiResult.img || undefined,
+      source: 'mapi',
+    });
+  }
+
+  console.warn('[create-zpay-order] mapi unavailable, fallback to submit.php', {
+    out_trade_no,
+    reason: mapiResult.reason,
+    code: mapiResult.code ?? null,
+    msg: mapiResult.msg ?? null,
+  });
+  return json(200, {payUrl: submitUrl, source: 'submit'});
 };
+
+type MapiSuccess = {
+  ok: true;
+  payurl?: string;
+  qrcode?: string;
+  img?: string;
+  trade_no?: string;
+};
+type MapiFailure = {
+  ok: false;
+  reason: 'http_error' | 'invalid_json' | 'business_failure' | 'network_error';
+  code?: number | string;
+  msg?: string;
+};
+
+/**
+ * POST 表单到 ZPay mapi.php。任何异常都吞下并返回 ok:false，让上层走 submit.php 兜底，
+ * 不会因为 API 接口未开通就让整笔下单失败。
+ */
+async function tryMapiCreateOrder(
+  gateway: string,
+  signedParams: Record<string, string>,
+): Promise<MapiSuccess | MapiFailure> {
+  const form = new URLSearchParams();
+  for (const [k, v] of Object.entries(signedParams)) {
+    if (v == null || v === '') continue;
+    form.set(k, v);
+  }
+  let res: Response;
+  try {
+    res = await fetch(gateway, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        'Accept': 'application/json,text/plain,*/*',
+      },
+      body: form.toString(),
+    });
+  } catch (e) {
+    console.warn('[create-zpay-order] mapi fetch error', e);
+    return {ok: false, reason: 'network_error'};
+  }
+  if (!res.ok) {
+    return {ok: false, reason: 'http_error', code: res.status};
+  }
+  const text = await res.text().catch(() => '');
+  let parsed: {
+    code?: number | string;
+    msg?: string;
+    payurl?: string;
+    qrcode?: string;
+    img?: string;
+    trade_no?: string;
+  };
+  try {
+    parsed = JSON.parse(text) as typeof parsed;
+  } catch {
+    console.warn('[create-zpay-order] mapi non-json response', {snippet: text.slice(0, 160)});
+    return {ok: false, reason: 'invalid_json'};
+  }
+  /** ZPay 协议：code === 1（数字或字符串）代表下单成功 */
+  const codeOk = parsed.code === 1 || parsed.code === '1';
+  if (!codeOk) {
+    return {ok: false, reason: 'business_failure', code: parsed.code, msg: parsed.msg};
+  }
+  return {
+    ok: true,
+    payurl: typeof parsed.payurl === 'string' ? parsed.payurl : undefined,
+    qrcode: typeof parsed.qrcode === 'string' ? parsed.qrcode : undefined,
+    img: typeof parsed.img === 'string' ? parsed.img : undefined,
+    trade_no: typeof parsed.trade_no === 'string' ? parsed.trade_no : undefined,
+  };
+}

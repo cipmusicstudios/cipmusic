@@ -20,7 +20,16 @@ export type CreateZpayOrderDebug = {
 };
 
 export type CreateZpayOrderResult =
-  | {ok: true; payUrl: string; qrUrl?: string; qrImageUrl?: string}
+  | {
+      ok: true;
+      payUrl: string;
+      /** 原始二维码字符串（如 `weixin://wxpay/bizpayurl?pr=xxx`）；前端可本地渲染 */
+      qrUrl?: string;
+      /** ZPay 已经渲染好的二维码图片 URL（PNG），可直接 <img> */
+      qrImageUrl?: string;
+      /** 'mapi' = API 支付（含 qrcode/img）；'submit' = 旧 submit.php 兜底（仅 payUrl） */
+      source?: 'mapi' | 'submit';
+    }
   | {
       ok: false;
       error: string;
@@ -67,6 +76,7 @@ export async function createZpayOrderCheckout(
     qrImageUrl?: string;
     qrcode?: string;
     qrcode_url?: string;
+    source?: 'mapi' | 'submit';
     error?: string;
     message?: string;
     hint?: string;
@@ -133,18 +143,33 @@ export async function createZpayOrderCheckout(
     };
   }
 
-  const rawQrCandidates = [data.qrImageUrl, data.qr_image_url, data.qrcode_url, data.qrcode];
+  /**
+   * qrImageUrl：必须是可直接 <img> 加载的资源（http(s) 或 data:image/）；
+   * qrcode_url 历史上也是图片 URL，所以一并归到 image 类候选。
+   */
   let qrImageUrl: string | undefined;
-  for (const u of rawQrCandidates) {
-    if (typeof u !== 'string' || !u.trim()) continue;
+  for (const u of [data.qrImageUrl, data.qr_image_url, data.qrcode_url]) {
+    if (typeof u !== 'string') continue;
     const t = u.trim();
+    if (!t) continue;
     if (t.startsWith('data:image/') || /^https?:\/\//i.test(t)) {
       qrImageUrl = t;
       break;
     }
   }
-  const qrUrl =
-    typeof data.qrUrl === 'string' && /^https?:\/\//i.test(data.qrUrl.trim()) ? data.qrUrl.trim() : undefined;
+  /**
+   * qrUrl：原始二维码内容（如 `weixin://wxpay/bizpayurl?pr=xxx`），不限制协议；
+   * 前端会用 qrcode 库本地渲染成图。优先用服务端显式 qrUrl，其次取 mapi 的 qrcode。
+   */
+  let qrUrl: string | undefined;
+  for (const u of [data.qrUrl, data.qrcode]) {
+    if (typeof u !== 'string') continue;
+    const t = u.trim();
+    if (t) {
+      qrUrl = t;
+      break;
+    }
+  }
 
-  return {ok: true, payUrl: data.payUrl, qrUrl, qrImageUrl};
+  return {ok: true, payUrl: data.payUrl, qrUrl, qrImageUrl, source: data.source};
 }
