@@ -18,16 +18,15 @@ function parseFormBody(event: HandlerEvent): Record<string, string> {
 }
 
 /**
- * ZPay 部分通道回调走 GET（query string）而非 POST form-urlencoded，
- * 这里统一抽取所有参与签名的字段；GET / POST 后续走同一套验签 + 订单认领。
- * 仅取 ZPay 文档约定的字段集合，避免未知 query 参数干扰排序后签名重算。
+ * ZPay 部分通道回调走 GET（query string）而非 POST form-urlencoded。
+ * 把所有非空 query 参数原样取下来，与 POST `parseFormBody` 行为对齐；
+ * 剔 sign / sign_type 与空值这件事**只**交给 `buildZpaySignBaseString` 做，
+ * 避免 notify 端再用白名单导致漏字段（曾因白名单遗漏 `type` 导致 GET 验签恒 false）。
  */
 function parseQueryParams(event: HandlerEvent): Record<string, string> {
   const out: Record<string, string> = {};
   const src = (event.queryStringParameters || {}) as Record<string, string | undefined>;
-  const fields = ['pid', 'trade_no', 'out_trade_no', 'money', 'trade_status', 'name', 'param', 'sign', 'sign_type'];
-  for (const k of fields) {
-    const v = src[k];
+  for (const [k, v] of Object.entries(src)) {
     if (typeof v === 'string' && v.length > 0) out[k] = v;
   }
   return out;
@@ -75,12 +74,22 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     money: params.money ?? null,
     trade_status: params.trade_status ?? null,
     name: params.name ?? null,
+    type: params.type ?? null,
     signValid,
-    paramKeys: Object.keys(safeNotifySnapshot(params)).sort(),
+    /** 完整 query key 列表（含 sign / sign_type 名字本身，便于核对 ZPay 是否漏发）。sign 明文值不入日志。 */
+    allParamKeys: Object.keys(params).sort(),
+    /** 实际进入 MD5 base 串的字段集合（剔除 sign / sign_type 与空值后）。 */
+    signedParamKeys: Object.keys(safeNotifySnapshot(params)).sort(),
   });
 
   if (!signValid) {
-    console.warn('[zpay-notify] bad sign', {out_trade_no: params.out_trade_no ?? null});
+    console.warn('[zpay-notify] bad sign', {
+      method,
+      out_trade_no: params.out_trade_no ?? null,
+      paramKeys: Object.keys(safeNotifySnapshot(params)).sort(),
+      hasType: 'type' in params,
+      typeValue: params.type ?? null,
+    });
     return textResponse(400, 'fail');
   }
 
