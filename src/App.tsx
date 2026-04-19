@@ -693,13 +693,18 @@ export default function App() {
   const [practiceMidiOutputMuted, setPracticeMidiOutputMuted] = useState(false);
   const isLocalPreview = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.hostname.startsWith('192.168.');
   const showDevTierPreview = import.meta.env.DEV || isLocalPreview;
-  // DEV: pass ?premium=1 in URL to test premium behaviour without a real auth system
+  /**
+   * DEV-only：URL `?premium=1` 用于本地/开发预览跳过登录直接体验 Premium。
+   * **必须** 用 `showDevTierPreview` 锁死在 dev / localhost / 192.168.* 环境，
+   * 否则一旦在生产域名上链接里残留 `?premium=1`，会绕过 remotePremiumEntitled 的
+   * 过期/取消判定，让已退订账号永远显示 Premium。
+   */
   const [isPremium, setIsPremium] = useState(() =>
-    new URLSearchParams(window.location.search).get('premium') === '1'
+    showDevTierPreview && new URLSearchParams(window.location.search).get('premium') === '1'
   );
   const [devAccountTier, setDevAccountTier] = useState<'guest' | 'basic' | 'premium' | null>(null);
   const [showGuestFeaturePrompt, setShowGuestFeaturePrompt] = useState(false);
-  const accountTier = devAccountTier ?? (isPremium ? 'premium' : 'basic');
+  const accountTier = devAccountTier ?? (showDevTierPreview && isPremium ? 'premium' : 'basic');
   /** Dev「访客」模式，或未登录 Supabase（logout 后必须走此分支，避免假 Basic 账号 UI） */
   const isGuest = accountTier === 'guest' || !session?.user;
 
@@ -767,12 +772,12 @@ export default function App() {
   }, [membershipUserId, remoteMembershipRetryToken]);
 
   /**
-   * 全站 Premium 能力门控单一来源：远程会员有效 || Dev 显式 Premium || URL ?premium=1（便于本地试）
-   * Dev 下 basic/guest 强制非 Premium，便于对照测试。
+   * 全站 Premium 能力门控单一来源：远程会员有效 || Dev 显式 Premium || (Dev) URL ?premium=1
+   * 生产环境**只**认 `isRemotePremiumActive`，避免 `?premium=1` 把已过期/取消的账号留在 Premium。
    */
   const resolvedPremiumAccess = useMemo(() => {
     if (showDevTierPreview && devAccountTier === 'premium') return true;
-    if (isPremium) return true;
+    if (showDevTierPreview && isPremium) return true;
     if (isGuest) return false;
     return isRemotePremiumActive;
   }, [showDevTierPreview, devAccountTier, isPremium, isGuest, isRemotePremiumActive]);
