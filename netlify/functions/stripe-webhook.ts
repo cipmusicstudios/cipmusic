@@ -178,12 +178,33 @@ function userIdFromCheckoutSession(session: Stripe.Checkout.Session): string | n
   return null;
 }
 
+/**
+ * Stripe API ≥ 2025-04-30 ("basil" / "dahlia") moved `current_period_end` off `Subscription`
+ * onto each `SubscriptionItem`. Older API versions still expose it on the subscription.
+ * 这里两处都看，避免新 SDK 默认 API 版本下取不到值，导致 user_membership.premium_until 一直为 NULL。
+ */
+function subscriptionPeriodEndUnix(subscription: Stripe.Subscription | null): number | null {
+  if (!subscription) return null;
+  const subAny = subscription as unknown as {current_period_end?: number | null};
+  if (typeof subAny.current_period_end === 'number' && subAny.current_period_end > 0) {
+    return subAny.current_period_end;
+  }
+  const items = subscription.items?.data ?? [];
+  let max: number | null = null;
+  for (const item of items) {
+    const itemAny = item as unknown as {current_period_end?: number | null};
+    const value = typeof itemAny.current_period_end === 'number' ? itemAny.current_period_end : null;
+    if (value != null && value > 0 && (max == null || value > max)) max = value;
+  }
+  return max;
+}
+
 function currentPeriodEndIso(
   subscription: Stripe.Subscription | null,
   invoice?: Stripe.Invoice | null,
 ): string | null {
   return (
-    isoFromUnixSeconds(subscription?.current_period_end ?? null) ||
+    isoFromUnixSeconds(subscriptionPeriodEndUnix(subscription)) ||
     (invoice ? latestLinePeriodEnd(invoice) : null) ||
     null
   );
