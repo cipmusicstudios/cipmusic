@@ -2,7 +2,11 @@ import type {Handler} from '@netlify/functions';
 
 /**
  * Stripe Payment Link URLs for the membership modal — read at request time from Netlify env,
- * so updating dashboard values does not require a new frontend bundle.
+ * so updating dashboard values does not require a new frontend bundle (unlike `import.meta.env.VITE_*`).
+ *
+ * Supports either name:
+ * - STRIPE_CHECKOUT_MONTHLY_URL / STRIPE_CHECKOUT_YEARLY_URL (preferred)
+ * - VITE_STRIPE_CHECKOUT_MONTHLY_URL / VITE_STRIPE_CHECKOUT_YEARLY_URL (same values as build-time)
  */
 export const handler: Handler = async () => {
   const monthly =
