@@ -21,15 +21,20 @@ input.supabase-auth-input {
 
 html {
   /**
-   * 兜底背景必须比场景视频更暗，且不能是浅色。
-   * 原因：html 永久 `overflow-y: scroll` 会占 ~15px 滚动条沟槽；
-   * `position: fixed; inset: 0` 的背景层填的是 ICB（documentElement.clientWidth），
-   * 不包含滚动条沟槽。无论 wrapper / video 怎么写，沟槽那一条都会露出 html 的
-   * 背景色。早期用 `#c5beb5` greige，于是 4 个场景右侧都看到一条窄"白边"。
-   * 改成近黑色后，就算极端情况下还有 1px 露出，也跟场景的暗部融为一体。
+   * 兜底背景恢复为 greige，与 Practice Mode / 非沉浸面板的浅色氛围一致，
+   * 不再人为染黑来掩盖滚动条沟槽问题。
+   *
+   * 关键：**不再强制 `overflow-y: scroll`**。
+   *   之前的 `overflow-y: scroll` 会永久占据 ~15px 滚动条沟槽，而
+   *   `position: fixed; inset: 0` 的背景层填的是 ICB（不含沟槽），
+   *   于是右侧一定会露出一条 html 背景色的窄缝。根治方式就是恢复
+   *   默认滚动行为——仅在页面真实溢出时才出现滚动条，此时滚动条
+   *   本身就是最右侧的元素，没有任何沟槽可供兜底色漏出。
+   *
+   *   备选：若将来确实需要稳定布局可改 `scrollbar-gutter: stable`；
+   *   但那会重新引入常驻沟槽，与本次修复目标冲突，故这里不启用。
    */
-  background-color: #0a0a0a;
-  overflow-y: scroll;
+  background-color: #c5beb5;
   --player-bar-h: 5.25rem;
   /* 底栏悬浮卡片 + 下边距，供练习面板等 fixed 层对齐 */
   --player-bar-stack-h: calc(var(--player-bar-h) + 0.95rem);
@@ -614,17 +619,6 @@ body {
   background-color: transparent;
   color: var(--color-mist-text);
   font-family: var(--font-sans);
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-/**
- * #root 也透明：避免它意外画一层浅色，叠加到滚动条沟槽里再次形成"白边"。
- * 真实的视觉背景由 BackgroundLayer 的 fixed video/img 提供，
- * html 的近黑色仅作为兜底。
- */
-#root {
-  background-color: transparent;
   min-height: 100vh;
   min-height: 100dvh;
 }
