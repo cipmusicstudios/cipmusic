@@ -331,11 +331,20 @@ const BackgroundLayer = memo(function BackgroundLayer({
     }
   }, [videoReady, scene.type]);
 
+  /**
+   * 背景层尺寸：必须用 inset:0 + width/height:100% 贴合视口，不用 100vw/100vh。
+   * 原因：
+   *   1. index.css 设置了 `html { overflow-y: scroll }` 永久显示纵向滚动条；
+   *      `100vw` 会把滚动条宽度算进去，导致背景元素比可视区宽 ~15px。
+   *   2. wrapper 用了 `contain: paint`，会把内部 fixed 子元素（video / img）
+   *      的容纳块从「初始视口」改为「wrapper 的内容盒」。如果内层再用 100vw
+   *      就会出现一边贴边、一边露出 wrapper 背景的错位（首页右侧那条空白条）。
+   *   3. wrapper 自身 `position: fixed; inset: 0` 已经精确等于可视视口；
+   *      内层 width/height: 100% 直接贴合 wrapper，不再受滚动条 / vw 计算影响。
+   */
   const wrapperStyle: React.CSSProperties = {
     position: 'fixed',
     inset: 0,
-    width: '100vw',
-    height: '100vh',
     zIndex: 0,
     pointerEvents: 'none',
     isolation: 'isolate',
@@ -343,10 +352,10 @@ const BackgroundLayer = memo(function BackgroundLayer({
   };
 
   const mediaStyle: React.CSSProperties = {
-    position: 'fixed',
+    position: 'absolute',
     inset: 0,
-    width: '100vw',
-    height: '100vh',
+    width: '100%',
+    height: '100%',
     objectFit: 'cover',
     zIndex: 0,
     pointerEvents: 'none',
