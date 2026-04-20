@@ -20,7 +20,15 @@ input.supabase-auth-input {
 }
 
 html {
-  background-color: #c5beb5; /* Deeper greige fallback */
+  /**
+   * 兜底背景必须比场景视频更暗，且不能是浅色。
+   * 原因：html 永久 `overflow-y: scroll` 会占 ~15px 滚动条沟槽；
+   * `position: fixed; inset: 0` 的背景层填的是 ICB（documentElement.clientWidth），
+   * 不包含滚动条沟槽。无论 wrapper / video 怎么写，沟槽那一条都会露出 html 的
+   * 背景色。早期用 `#c5beb5` greige，于是 4 个场景右侧都看到一条窄"白边"。
+   * 改成近黑色后，就算极端情况下还有 1px 露出，也跟场景的暗部融为一体。
+   */
+  background-color: #0a0a0a;
   overflow-y: scroll;
   --player-bar-h: 5.25rem;
   /* 底栏悬浮卡片 + 下边距，供练习面板等 fixed 层对齐 */
@@ -606,6 +614,17 @@ body {
   background-color: transparent;
   color: var(--color-mist-text);
   font-family: var(--font-sans);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/**
+ * #root 也透明：避免它意外画一层浅色，叠加到滚动条沟槽里再次形成"白边"。
+ * 真实的视觉背景由 BackgroundLayer 的 fixed video/img 提供，
+ * html 的近黑色仅作为兜底。
+ */
+#root {
+  background-color: transparent;
   min-height: 100vh;
   min-height: 100dvh;
 }

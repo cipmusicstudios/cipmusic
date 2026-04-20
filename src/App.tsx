@@ -332,42 +332,94 @@ const BackgroundLayer = memo(function BackgroundLayer({
   }, [videoReady, scene.type]);
 
   /**
-   * 背景层尺寸：必须用 inset:0 + width/height:100% 贴合视口，不用 100vw/100vh。
-   * 原因：
-   *   1. index.css 设置了 `html { overflow-y: scroll }` 永久显示纵向滚动条；
-   *      `100vw` 会把滚动条宽度算进去，导致背景元素比可视区宽 ~15px。
-   *   2. wrapper 用了 `contain: paint`，会把内部 fixed 子元素（video / img）
-   *      的容纳块从「初始视口」改为「wrapper 的内容盒」。如果内层再用 100vw
-   *      就会出现一边贴边、一边露出 wrapper 背景的错位（首页右侧那条空白条）。
-   *   3. wrapper 自身 `position: fixed; inset: 0` 已经精确等于可视视口；
-   *      内层 width/height: 100% 直接贴合 wrapper，不再受滚动条 / vw 计算影响。
+   * 背景层布局策略（修右侧白边最终版）：
+   *
+   *   wrapper:  position: fixed; top/left/right/bottom: 0; width/height: auto;
+   *             margin/padding: 0; overflow: hidden; 不要 contain。
+   *             —— 等价于贴满 ICB（documentElement.clientWidth × clientHeight），
+   *             不依赖 100vw / 100vh，避免被滚动条沟槽算多。
+   *
+   *   media (img/video):
+   *             position: absolute; top: 50%; left: 50%;
+   *             min-width: 100%; min-height: 100%; width/height: auto;
+   *             transform: translate(-50%, -50%); object-fit: cover;
+   *             —— 中心定位 + min-width/min-height cover：即便 wrapper 实际宽度
+   *             因为子像素 / DPR / 浏览器 round-down 比预期少 1~2px，
+   *             min-width:100% 也会把 media 拉到至少 wrapper 宽度，再由 transform
+   *             居中切出，不会单边露缝。
+   *
+   *   去掉 contain: paint：
+   *             contain: paint 会把内部 fixed 元素的容纳块改写成 wrapper 自己；
+   *             虽然这次内层是 absolute 不再依赖 fixed 行为，但保留 contain 仍有
+   *             潜在 layout 开销，并且历史上是 BUG 来源之一，干脆移除。
+   *
+   *   兜底：index.css 已把 html 背景改成 #0a0a0a，
+   *         所以即便滚动条沟槽那一条像素未被 wrapper 覆盖，也只会显示近黑色，
+   *         不会再出现浅色"白边"。
    */
   const wrapperStyle: React.CSSProperties = {
     position: 'fixed',
-    inset: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: 'auto',
+    height: 'auto',
+    margin: 0,
+    padding: 0,
+    overflow: 'hidden',
     zIndex: 0,
     pointerEvents: 'none',
     isolation: 'isolate',
-    contain: 'paint',
+    backgroundColor: '#0a0a0a',
   };
 
   const mediaStyle: React.CSSProperties = {
     position: 'absolute',
-    inset: 0,
-    width: '100%',
-    height: '100%',
+    top: '50%',
+    left: '50%',
+    minWidth: '100%',
+    minHeight: '100%',
+    width: 'auto',
+    height: 'auto',
+    transform: 'translate(-50%, -50%) translateZ(0)',
     objectFit: 'cover',
     zIndex: 0,
     pointerEvents: 'none',
-    transform: 'translateZ(0)',
     backfaceVisibility: 'hidden',
     willChange: 'opacity, transform',
   };
 
+  /**
+   * 一次性诊断：mount 后下一帧打印当前真实尺寸。
+   * - window.innerWidth: 包含滚动条
+   * - documentElement.clientWidth: 不含滚动条 (== ICB 宽)
+   * - wrapper.getBoundingClientRect().width: wrapper 实际渲染宽
+   * - video/img.getBoundingClientRect().width: media 实际渲染宽
+   * 任何一行如果不等于 clientWidth，就是那一层多/少了像素。
+   */
+  const wrapperRef = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const id = window.requestAnimationFrame(() => {
+      const w = wrapperRef.current;
+      const media = w?.querySelector('video, img') as HTMLElement | null;
+      // eslint-disable-next-line no-console
+      console.debug('[BackgroundLayer]', {
+        scene: scene.name,
+        innerWidth: window.innerWidth,
+        clientWidth: document.documentElement.clientWidth,
+        wrapperWidth: w?.getBoundingClientRect().width,
+        mediaWidth: media?.getBoundingClientRect().width,
+      });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [scene.name, scene.url]);
+
   const canUseVideo = scene.type === 'video' && !lightweight && !videoError;
 
   return (
-    <div style={wrapperStyle}>
+    <div ref={wrapperRef} style={wrapperStyle}>
       {showImg && (
         <img
           src={scene.thumbnail || scene.url}
