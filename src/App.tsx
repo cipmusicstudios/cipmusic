@@ -1307,7 +1307,17 @@ export default function App() {
 
   return (
     <div
-      className="isolate min-h-[100dvh] flex flex-col items-center relative text-[var(--color-mist-text)]"
+      /**
+       * 根容器固定为视口高度且禁用自身滚动：
+       *   - h-[100dvh]：而不是 min-h-[100dvh]。min-h 在 Music/Focus 这类长内容里会
+       *     被 children 撑高，触发 html 滚动条出现 → documentElement.clientWidth 收缩
+       *     ~15px → fixed inset:0 的 BackgroundLayer 也跟着收 → 右侧露出 html 兜底色。
+       *   - overflow-hidden：保险锁，确保任何 children 都不会触发页面级滚动。
+       *   下面的 <main> 才是真正的滚动容器（内部 overflow-y-auto），
+       *   这样无论 Home/Music/Focus/Settings 哪个 view，html/body 都不会出现滚动条，
+       *   BackgroundLayer 永远基于完整的 window.innerWidth，不再有右侧 15px 缝。
+       */
+      className="isolate h-[100dvh] overflow-hidden flex flex-col items-center relative text-[var(--color-mist-text)]"
       onClick={handleBackdropClick}
     >
       {/* Portrait Mode Blocker */}
@@ -1339,11 +1349,24 @@ export default function App() {
           />
 
           <main
-            className={`flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 z-10 relative transition-all duration-300 ease-out ${
-              immersiveMode ? 'pointer-events-none opacity-0 translate-y-1' : ''
-            }`}
+            /**
+             * <main> 现在是真正的滚动容器：
+             *   - flex-1 + min-h-0：在 flex 父容器（h-[100dvh]）下正确收缩到剩余空间，
+             *     不再被自身内容撑出父容器；min-h-0 是 flex item 能 overflow 的关键。
+             *   - w-full + overflow-y-auto + overflow-x-hidden：
+             *     纵向必要时显示滚动条，且滚动条贴在视口最右沿（因为 main 是全宽，
+             *     不再 max-w-6xl 居中）；横向永远不滚。
+             *   - max-w-6xl mx-auto 和 padding 移到内层 <div>，保持原视觉布局不变。
+             *   - immersiveMode 的过渡效果作用在内容层而非滚动容器层，避免滚动条误闪。
+             */
+            className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden z-10 relative"
             onClick={e => e.stopPropagation()}
             aria-hidden={immersiveMode}
+          >
+          <div
+            className={`w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 transition-all duration-300 ease-out ${
+              immersiveMode ? 'pointer-events-none opacity-0 translate-y-1' : ''
+            }`}
           >
             {activeView === 'home' && (
               <HomeTab
@@ -1454,6 +1477,7 @@ export default function App() {
                 </div>
               )}
             </AnimatePresence>
+          </div>
           </main>
 
           <AnimatePresence>
