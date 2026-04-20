@@ -890,8 +890,18 @@ export const MusicTab = memo(function MusicTab({
           primary,
           currentLang,
         );
-        const region = rowForName?.nationality || infos?.[0]?.nationality || 'other';
-        const typ = rowForName?.type || infos?.[0]?.type || 'unknown';
+        /**
+         * 桶卡片的 type/region 必须以「桶 id 自己的字典条目」为准。
+         * 否则当 workProjectKey 把一首歌挂到项目桶（如 league-of-legends），
+         * 但该歌主唱是真人（如 PVRIS），rowForName 会 miss，回退到 infos[0]
+         * 就会把项目卡误打成 group/en，停留在「个人/欧美」桶里；同理
+         * KPop Demon Hunters 之前被 huntr-x（kr/group）压成 韩国/组合 桶。
+         * 字典命中时直接用字典 type/nationality；查不到再退化到 normalizedArtistsInfo。
+         */
+        const dictRowForBucket = ARTIST_DICTIONARY[dictionaryCanonicalId(cid)];
+        const region =
+          dictRowForBucket?.nationality || rowForName?.nationality || infos?.[0]?.nationality || 'other';
+        const typ = dictRowForBucket?.type || rowForName?.type || infos?.[0]?.type || 'unknown';
         if (!map.has(cid)) {
           map.set(cid, {
             id: cid,
