@@ -80,7 +80,7 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'le-sserafim': { id: 'le-sserafim', names: { zhHans: 'LE SSERAFIM', en: 'LE SSERAFIM' }, type: 'group', nationality: 'kr' },
   'tws': { id: 'tws', names: { zhHans: 'TWS', en: 'TWS' }, type: 'group', nationality: 'kr' },
   'zerobaseone': { id: 'zerobaseone', names: { zhHans: 'ZEROBASEONE', en: 'ZEROBASEONE' }, type: 'group', nationality: 'kr' },
-  'boys-planet': { id: 'boys-planet', names: { zhHans: 'BOYS PLANET', en: 'BOYS PLANET' }, type: 'project', nationality: 'kr' },
+  'boys-planet': { id: 'boys-planet', names: { zhHans: 'BOYS PLANET', en: 'BOYS PLANET' }, type: 'project', nationality: 'other' },
   'g-dragon': { id: 'g-dragon', names: { zhHans: '权志龙', zhHant: '權志龍', en: 'G-DRAGON' }, type: 'solo', nationality: 'kr' },
   'babymonster': { id: 'babymonster', names: { zhHans: 'BABYMONSTER', en: 'BABYMONSTER' }, type: 'group', nationality: 'kr' },
   'jennie': { id: 'jennie', names: { zhHans: 'JENNIE', en: 'JENNIE' }, type: 'solo', nationality: 'kr' },
@@ -100,30 +100,31 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'ding-yu-xi': { id: 'ding-yu-xi', names: { zhHans: '丁禹兮', en: 'Ding Yuxi' }, type: 'solo', nationality: 'zh' },
   'qiao-jun-cheng': { id: 'qiao-jun-cheng', names: { zhHans: '乔浚丞', en: 'Qiao Juncheng' }, type: 'solo', nationality: 'zh' },
 
-  // Game / Projects
-  'love-and-deepspace': { id: 'love-and-deepspace', names: { zhHans: '恋与深空', zhHant: '戀與深空', en: 'Love and Deepspace' }, type: 'project', nationality: 'zh' },
-  'black-myth-wukong': { id: 'black-myth-wukong', names: { zhHans: '黑神话：悟空', en: 'Black Myth: Wukong' }, type: 'project', nationality: 'zh' },
+  // Game / Projects / IP — 统一归到「其他/Other」桶（type='project' 永远 nationality='other'，
+  // 与歌手/组合的国家分类彻底分开；详见 PROJECT-IP nationality rule）
+  'love-and-deepspace': { id: 'love-and-deepspace', names: { zhHans: '恋与深空', zhHant: '戀與深空', en: 'Love and Deepspace' }, type: 'project', nationality: 'other' },
+  'black-myth-wukong': { id: 'black-myth-wukong', names: { zhHans: '黑神话：悟空', en: 'Black Myth: Wukong' }, type: 'project', nationality: 'other' },
   'fairy-town': { id: 'fairy-town', names: { zhHans: '妖精之乡', en: 'Fairy Town' }, type: 'project', nationality: 'other' },
-  'genshin-impact': { id: 'genshin-impact', names: { zhHans: '原神', en: 'Genshin Impact' }, type: 'project', nationality: 'zh' },
+  'genshin-impact': { id: 'genshin-impact', names: { zhHans: '原神', en: 'Genshin Impact' }, type: 'project', nationality: 'other' },
   'honkai-star-rail': {
     id: 'honkai-star-rail',
     names: { zhHans: '崩坏：星穹铁道', en: 'Honkai: Star Rail' },
     type: 'project',
-    nationality: 'zh',
+    nationality: 'other',
   },
-  'honkai-impact-3': { id: 'honkai-impact-3', names: { zhHans: '崩坏3', en: 'Honkai Impact 3rd' }, type: 'project', nationality: 'zh' },
-  'honor-of-kings': { id: 'honor-of-kings', names: { zhHans: '王者荣耀', en: 'Honor of Kings' }, type: 'project', nationality: 'zh' },
+  'honkai-impact-3': { id: 'honkai-impact-3', names: { zhHans: '崩坏3', en: 'Honkai Impact 3rd' }, type: 'project', nationality: 'other' },
+  'honor-of-kings': { id: 'honor-of-kings', names: { zhHans: '王者荣耀', en: 'Honor of Kings' }, type: 'project', nationality: 'other' },
   'league-of-legends': {
     id: 'league-of-legends',
     names: { zhHans: '英雄联盟', zhHant: '英雄聯盟', en: 'League of Legends' },
     type: 'project',
-    nationality: 'en',
+    nationality: 'other',
   },
   'kpop-demon-hunters': {
     id: 'kpop-demon-hunters',
     names: { zhHans: 'KPop Demon Hunters', zhHant: 'KPop Demon Hunters', en: 'KPop Demon Hunters' },
     type: 'project',
-    nationality: 'en',
+    nationality: 'other',
   },
   /** 《崩坏：星穹铁道》知更鸟 / Chevy 演唱版本 */
   'chevy-robin': {
@@ -151,7 +152,7 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
     type: 'solo',
     nationality: 'en',
   },
-  'paper-bride': { id: 'paper-bride', names: { zhHans: '纸嫁衣', en: 'Paper Bride' }, type: 'project', nationality: 'zh' },
+  'paper-bride': { id: 'paper-bride', names: { zhHans: '纸嫁衣', en: 'Paper Bride' }, type: 'project', nationality: 'other' },
   'nsync': { id: 'nsync', names: { zhHans: 'NSYNC', en: 'NSYNC' }, type: 'group', nationality: 'en' },
   'alpha-drive-one': {
     id: 'alpha-drive-one',
@@ -350,14 +351,14 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
     id: 'yixiao-jianghu',
     names: { zhHans: '一笑江湖', en: 'Yi Xiao Jiang Hu' },
     type: 'project',
-    nationality: 'zh',
+    nationality: 'other',
   },
   /** 《斗地主》抒情版等 — 无传统「原唱」 */
   'dou-dizhu-game': {
     id: 'dou-dizhu-game',
     names: { zhHans: '斗地主（游戏）', en: 'Dou Dizhu' },
     type: 'project',
-    nationality: 'zh',
+    nationality: 'other',
   },
 };
 

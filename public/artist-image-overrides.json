@@ -14,6 +14,13 @@
     "locked": true,
     "kind": "project_logo"
   },
+  "league-of-legends": {
+    "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174e80d1ffb81aa6503ad41c574",
+    "source": "spotify_artist_47mIJdHORyRerp4os813jD",
+    "confidence": 1,
+    "locked": true,
+    "kind": "project_logo"
+  },
   "black-myth-wukong": {
     "url": "https://cdn.akamai.steamstatic.com/steam/apps/2358720/header.jpg",
     "source": "steam_store_capsule",
