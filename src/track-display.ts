@@ -164,5 +164,15 @@ export const getDisplayTrackArtist = (track: Track, currentLang = 'English') => 
   return shouldHideArtistLine(raw) ? '' : raw;
 };
 
-export const hasPracticeAssets = (track: Track) =>
-  Boolean(track.audioUrl && track.midiUrl && track.musicxmlUrl);
+/**
+ * Phase 1 之后，Supabase-origin 曲目的 `midiUrl` / `musicxmlUrl` 会在前端
+ * 永远是 `undefined`（真实 URL 改由 broker 签发）。因此不能再用 URL 是否存在
+ * 来判断 Practice 能否用，必须以 `practiceEnabled` / `metadata.assets.hasPracticeAssets`
+ * 为主，仅对 legacy local-imports 保留 URL 兜底。
+ */
+export const hasPracticeAssets = (track: Track) => {
+  if (track.practiceEnabled === true) return true;
+  if (track.metadata?.assets?.hasPracticeAssets === true) return true;
+  if (track.practiceEnabled === false) return false;
+  return Boolean(track.audioUrl && track.midiUrl && track.musicxmlUrl);
+};

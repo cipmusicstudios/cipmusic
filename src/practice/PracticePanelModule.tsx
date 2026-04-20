@@ -25,6 +25,10 @@ import {
   getPlaybackTimelineSnapshot,
   subscribePlaybackTimeline,
 } from '../playback-timeline-store';
+import {
+  resolvePracticeAssetForTrack,
+  type PracticeAssetResolveResult,
+} from '../lib/practice-asset-url';
 function getTempoAtAudioTimeForHeader(header: PracticeMidiHeaderLite | null, timeSecs: number) {
   if (!header?.tempos?.length) return null;
   let activeTempo = header.tempos[0];
@@ -1054,13 +1058,32 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
   // Load MIDI Notes and Time Map — with single-track MusicXML hand derivation
   React.useEffect(() => {
-    if (!currentTrack.midiUrl) return;
+    const practiceOn = currentTrack.practiceEnabled ?? Boolean(currentTrack.midiUrl || currentTrack.musicxmlUrl);
+    if (!practiceOn) return;
     let cancelled = false;
     let idleHandle: number | undefined;
 
     const loadMidi = async () => {
       try {
-        const res = await fetch(currentTrack.midiUrl);
+        /**
+         * Phase 1 止血：MIDI 真实 URL 不再从 manifest/DB 直取，改由 broker 签发 signed URL。
+         * 已登录的 premium 用户才会拿到 URL；否则把失败原因记录到 loadError，不打整页。
+         */
+        const midiResolve: PracticeAssetResolveResult = await resolvePracticeAssetForTrack(
+          currentTrack.id,
+          'midi',
+          currentTrack.midiUrl,
+        );
+        if (cancelled) return;
+        if (midiResolve.ok !== true) {
+          const failReason = midiResolve.reason;
+          const failMessage = midiResolve.message;
+          console.warn('[practice] midi resolve failed', failReason, failMessage);
+          setLoadError(failMessage || `Practice asset unavailable (${failReason}).`);
+          setIsLoading(false);
+          return;
+        }
+        const res = await fetch(midiResolve.url);
         const buf = await res.arrayBuffer();
         if (cancelled) return;
 
@@ -1084,23 +1107,35 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         let handMode: 'dual-track' | 'musicxml-derived' | 'both-only' = 'dual-track';
         let xmlQueues: Map<number, ('left' | 'right')[]> | null = null;
 
-        if (isSingleTrack && currentTrack.musicxmlUrl) {
+        if (isSingleTrack) {
           try {
-            const xmlRes = await fetch(currentTrack.musicxmlUrl);
-            const xmlText = await xmlRes.text();
+            /**
+             * 手位推导用的 MusicXML 也走 broker；拿不到（未登录 / 非会员 / 无 XML）就
+             * 降级为 `both-only` 手型，避免整首谱无法练习。
+             */
+            const xmlResolve: PracticeAssetResolveResult = await resolvePracticeAssetForTrack(
+              currentTrack.id,
+              'musicxml',
+              currentTrack.musicxmlUrl,
+            );
             if (cancelled) return;
-            const result = parseMusicXmlHandAssignment(xmlText);
-            if (result && result.leftCount > 0 && result.rightCount > 0) {
-              xmlQueues = result.pitchHandQueues;
-              handMode = 'musicxml-derived';
-            } else {
+            if (!xmlResolve.ok) {
               handMode = 'both-only';
+            } else {
+              const xmlRes = await fetch(xmlResolve.url);
+              const xmlText = await xmlRes.text();
+              if (cancelled) return;
+              const result = parseMusicXmlHandAssignment(xmlText);
+              if (result && result.leftCount > 0 && result.rightCount > 0) {
+                xmlQueues = result.pitchHandQueues;
+                handMode = 'musicxml-derived';
+              } else {
+                handMode = 'both-only';
+              }
             }
           } catch {
             handMode = 'both-only';
           }
-        } else if (isSingleTrack) {
-          handMode = 'both-only';
         }
 
         if (cancelled) return;
@@ -1186,7 +1221,11 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         }
       }
     };
-  }, [currentTrack.midiUrl, currentTrack.musicxmlUrl]);
+    /**
+     * 真实 URL 现在是 broker 动态解出来的，manifest/DB 上不再有永久 URL 会变。
+     * 切歌统一用 `currentTrack.id` 触发重建；practiceEnabled 变化（如会员态变更后切歌）也要重载。
+     */
+  }, [currentTrack.id, currentTrack.practiceEnabled]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -1656,7 +1695,8 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
   React.useEffect(() => {
     if (!containerRef.current) return;
 
-    if (!currentTrack.musicxmlUrl) {
+    const practiceOn = currentTrack.practiceEnabled ?? Boolean(currentTrack.musicxmlUrl);
+    if (!practiceOn) {
       setLoadError("No MusicXML available for this track.");
       setIsLoading(false);
       return;
@@ -1701,19 +1741,39 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         cursorsOptions: [{ type: 0, color: "transparent", alpha: 0, follow: false }]
       } as any);
 
-      osmd.load(currentTrack.musicxmlUrl).then(() => {
+      /**
+       * OSMD 不能直接读 broker URL 的相对路径，但它支持接受任意 URL；因此先走 broker
+       * 拿 signed URL 再 load。失败时把 reason 映射为 loadError，UI 保持不崩。
+       */
+      void (async () => {
+        const resolved: PracticeAssetResolveResult = await resolvePracticeAssetForTrack(
+          currentTrack.id,
+          'musicxml',
+          currentTrack.musicxmlUrl,
+        );
         if (cancelled) return;
-        window.requestAnimationFrame(() => {
+        if (resolved.ok !== true) {
+          const failReason = resolved.reason;
+          const failMessage = resolved.message;
+          console.warn('[practice] musicxml resolve failed', failReason, failMessage);
+          setLoadError(failMessage || `Practice asset unavailable (${failReason}).`);
+          setIsLoading(false);
+          return;
+        }
+        osmd.load(resolved.url).then(() => {
           if (cancelled) return;
-          osmd.render();
-          if (!osmdReady) setOsmdReady(true);
+          window.requestAnimationFrame(() => {
+            if (cancelled) return;
+            osmd.render();
+            if (!osmdReady) setOsmdReady(true);
+          });
+        }).catch((err) => {
+          if (cancelled) return;
+          console.error("OSMD Load Error", err);
+          setLoadError(err.message || "Failed to parse or load sheet music.");
+          setIsLoading(false);
         });
-      }).catch((err) => {
-        if (cancelled) return;
-        console.error("OSMD Load Error", err);
-        setLoadError(err.message || "Failed to parse or load sheet music.");
-        setIsLoading(false);
-      });
+      })();
     });
     });
 
@@ -1727,7 +1787,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       lastRedLineFrameRef.current = { display: '', transform: '', width: '', height: '' };
       lastScrollFrameRef.current = { clipPath: '', transform: '' };
     };
-  }, [currentTrack.musicxmlUrl]);
+  }, [currentTrack.id, currentTrack.practiceEnabled]);
 
   React.useEffect(() => {
     if (!osmdReady || !osmdRef.current || !midiHeader || !midiNotes.length) return;

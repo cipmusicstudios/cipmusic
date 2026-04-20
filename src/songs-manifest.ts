@@ -734,8 +734,20 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
     categoryKeys,
     coverUrl: locked.coverUrl,
     mp3Url: rel(locked.audioUrl),
-    midiUrl: locked.midiUrl ? rel(locked.midiUrl) : null,
-    musicXmlUrl: locked.musicxmlUrl ? rel(locked.musicxmlUrl) : null,
+    /**
+     * Phase 1 止血：远端（Supabase 公桶）付费 MIDI / MusicXML 永远不写进 manifest。
+     * 前端通过 `/.netlify/functions/practice-asset-url` 拿短时 signed URL。
+     * 仍保留 local-import seed 下的 `/local-imports/*` 静态路径（Netlify 静态资源，
+     * 本期不在收紧范围内）；是否启用 Practice 依赖 `hasPracticeMode` 布尔。
+     */
+    midiUrl:
+      locked.midiUrl && locked.importSource !== 'remote'
+        ? rel(locked.midiUrl)
+        : null,
+    musicXmlUrl:
+      locked.musicxmlUrl && locked.importSource !== 'remote'
+        ? rel(locked.musicxmlUrl)
+        : null,
     duration: locked.duration,
     durationSeconds: durationSeconds ?? null,
     hasPracticeMode: Boolean(locked.practiceEnabled),

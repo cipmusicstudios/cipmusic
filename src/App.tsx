@@ -163,9 +163,14 @@ export const SCENES: Scene[] = [
 ];
 
 /** Remote `songs` columns used in UI (avoid `select('*')` payload). Full rows load after idle. */
-/** 与当前 Supabase 表结构一致（远端若无 bilibili_url 列则勿选，否则会 42703） */
+/**
+ * 与当前 Supabase 表结构一致（远端若无 bilibili_url 列则勿选，否则会 42703）。
+ * Phase 1 止血：`midi_url` / `musicxml_url` 不再由 anon 客户端直接查询，真实 URL
+ * 改由 `/.netlify/functions/practice-asset-url` broker 按需签发；前端只通过
+ * `has_practice_mode` 布尔判断 Practice 按钮是否可点。
+ */
 const SUPABASE_REMOTE_SONG_COLUMNS =
-  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,musicxml_url,midi_url,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
+  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,has_practice_mode,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
 
 const SUPABASE_SONGS_BUCKET = (import.meta.env.VITE_SUPABASE_SONGS_BUCKET as string | undefined)?.trim() || 'songs';
 
@@ -179,10 +184,17 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
   const audioUrl = resolve(song.audio_url);
   const coverUrl = resolve(song.cover_url) || '';
   const sourceCoverUrl = resolve(song.source_cover_url) || undefined;
-  const midiUrl = resolve(song.midi_url);
-  const musicxmlUrl = resolve(song.musicxml_url);
   const duration = (song.duration as string) || '00:00';
-  const hasPracticeAssetsRow = Boolean(song.audio_url && song.midi_url && song.musicxml_url);
+  /**
+   * Phase 1 止血：不再从 DB 读 midi_url / musicxml_url。Practice 按钮可见性完全取决于
+   * 服务端 `has_practice_mode` 布尔；真实 URL 由 practice-asset-url broker 签发。
+   *
+   * 不再绑定 `audio_url`：DB 约束上 has_practice_mode=true 的行已保证 audio/midi/xml 齐全
+   * （见 scripts/audit-practice-dirty-rows.ts 的 Q2a/Q2b 结果=0）。同时 Phase 3 会把
+   * audio_url 也从 anon select 里拿掉、改为 signed broker 签发，那时若继续绑定
+   * `Boolean(song.audio_url)`，会导致所有 Practice 按钮一夜之间消失。
+   */
+  const hasPracticeAssetsRow = song.has_practice_mode === true;
 
   return {
     id: song.id as string,
@@ -193,8 +205,8 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
     duration,
     audioUrl,
     coverUrl,
-    musicxmlUrl,
-    midiUrl,
+    musicxmlUrl: undefined,
+    midiUrl: undefined,
     practiceEnabled: hasPracticeAssetsRow,
     youtubeUrl: song.youtube_url as string,
     bilibiliUrl: (song.bilibili_url as string | undefined) ?? '',
@@ -229,8 +241,8 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
       },
       assets: {
         audioUrl,
-        midiUrl,
-        musicxmlUrl,
+        midiUrl: undefined,
+        musicxmlUrl: undefined,
         hasPracticeAssets: hasPracticeAssetsRow,
         practiceEnabled: hasPracticeAssetsRow,
         durationLabel: duration,
