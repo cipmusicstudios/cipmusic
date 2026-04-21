@@ -35,6 +35,7 @@ import {
   type RemoteMembershipFetchFailureReason,
   type RemoteUserMembership,
 } from './lib/membership-remote';
+import {resolveSceneAssetUrl, type PremiumSceneId} from './lib/scene-asset-url';
 import { SettingsAccountLibraryBlock } from './settings-account-library';
 import { UiGlassPreviewTab } from './UiGlassPreviewTab';
 import { supabaseUserDisplayName, useSupabaseAuth } from './auth/supabase-auth-provider';
@@ -145,21 +146,28 @@ const defaultTrack: Track = {
 };
 
 const BG_FALLBACK_IMAGE_URL = "https://i.imgur.com/o9yXFgS.png";
-export type Scene = {
-  id: string;
+export type SceneId = 'tideHaven' | 'rainlightHall' | 'forestCafe' | 'celestialDome';
+
+export type SceneDefinition = {
+  id: SceneId;
   name: string;
   tag: string;
   type: 'image' | 'video';
-  url: string;
   thumbnail: string;
   premiumOnly?: boolean;
+  publicUrl?: string;
+  brokered?: boolean;
 };
 
-export const SCENES: Scene[] = [
-  { id: 'tideHaven', name: 'Tidal Oasis', tag: 'cafe', type: 'video', url: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/pianocafe.mp4', thumbnail: BG_FALLBACK_IMAGE_URL, premiumOnly: false },
-  { id: 'rainlightHall', name: 'Rainlight Oasis', tag: 'rain', type: 'video', url: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/rainhall.mp4', thumbnail: 'https://i.imgur.com/iq2hWwS.jpeg', premiumOnly: false },
-  { id: 'forestCafe', name: 'Forest Oasis', tag: 'forest', type: 'video', url: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/forest.mp4', thumbnail: 'https://i.imgur.com/GGg2cSI.jpeg', premiumOnly: true },
-  { id: 'celestialDome', name: 'Celestial Oasis', tag: 'night', type: 'video', url: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/starry.mp4', thumbnail: 'https://i.imgur.com/E5TWs8E.jpeg', premiumOnly: true },
+export type Scene = SceneDefinition & {
+  url: string;
+};
+
+export const SCENES: SceneDefinition[] = [
+  { id: 'tideHaven', name: 'Tidal Oasis', tag: 'cafe', type: 'video', publicUrl: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/pianocafe.mp4', thumbnail: BG_FALLBACK_IMAGE_URL, premiumOnly: false },
+  { id: 'rainlightHall', name: 'Rainlight Oasis', tag: 'rain', type: 'video', publicUrl: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/rainhall.mp4', thumbnail: 'https://i.imgur.com/iq2hWwS.jpeg', premiumOnly: false },
+  { id: 'forestCafe', name: 'Forest Oasis', tag: 'forest', type: 'video', thumbnail: 'https://i.imgur.com/GGg2cSI.jpeg', premiumOnly: true, brokered: true },
+  { id: 'celestialDome', name: 'Celestial Oasis', tag: 'night', type: 'video', thumbnail: 'https://i.imgur.com/E5TWs8E.jpeg', premiumOnly: true, brokered: true },
 ];
 
 /** Remote `songs` columns used in UI (avoid `select('*')` payload). Full rows load after idle. */
@@ -698,7 +706,9 @@ export default function App() {
     };
   }, []);
 
-  const [activeSceneId, setActiveSceneId] = useState<string>('tideHaven');
+  const [activeSceneId, setActiveSceneId] = useState<SceneId>('tideHaven');
+  const [resolvedSceneUrls, setResolvedSceneUrls] = useState<Partial<Record<PremiumSceneId, string>>>({});
+  const [sceneLoadingId, setSceneLoadingId] = useState<SceneId | null>(null);
   const [showPracticePanel, setShowPracticePanel] = useState(false);
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [practiceMidiOutputVolume, setPracticeMidiOutputVolume] = useState(0.7);
@@ -1104,9 +1114,56 @@ export default function App() {
     setShowPracticePanel(false);
   }, [activeView]);
 
-  const activeScene = SCENES.find(s => s.id === activeSceneId) || SCENES[0];
+  const activeSceneBase = SCENES.find(s => s.id === activeSceneId) || SCENES[0];
+  const activeScene = useMemo<Scene>(() => {
+    const brokeredUrl =
+      activeSceneBase.id === 'forestCafe' || activeSceneBase.id === 'celestialDome'
+        ? resolvedSceneUrls[activeSceneBase.id as PremiumSceneId]
+        : undefined;
+    return {
+      ...activeSceneBase,
+      url: brokeredUrl || activeSceneBase.publicUrl || activeSceneBase.thumbnail,
+    };
+  }, [activeSceneBase, resolvedSceneUrls]);
   const lightweightPracticeMode = showPracticePanel;
   const practiceIsolatedMode = showPracticePanel;
+
+  const handleSceneSelect = useCallback(
+    async (sceneId: SceneId) => {
+      const nextScene = SCENES.find(scene => scene.id === sceneId);
+      if (!nextScene) return;
+      if (nextScene.premiumOnly && !resolvedPremiumAccess) {
+        showAmbienceToast(t.home.upgradeUnlock);
+        return;
+      }
+      if (!nextScene.brokered) {
+        setActiveSceneId(sceneId);
+        return;
+      }
+
+      setSceneLoadingId(sceneId);
+      const premiumSceneId = sceneId as PremiumSceneId;
+      const result = await resolveSceneAssetUrl(premiumSceneId);
+      setSceneLoadingId(current => (current === sceneId ? null : current));
+      if (result.ok !== true) {
+        if (result.reason === 'premium_required') {
+          showAmbienceToast(t.home.upgradeUnlock);
+        } else if (result.reason === 'no_session' || result.reason === 'unauthenticated') {
+          showAmbienceToast('Please sign in to load this scene.');
+        } else {
+          showAmbienceToast(result.message || 'Unable to load this scene right now.');
+        }
+        return;
+      }
+
+      setResolvedSceneUrls(prev => {
+        if (prev[premiumSceneId] === result.url) return prev;
+        return {...prev, [premiumSceneId]: result.url};
+      });
+      setActiveSceneId(sceneId);
+    },
+    [resolvedPremiumAccess, showAmbienceToast, t.home.upgradeUnlock],
+  );
 
   useEffect(() => {
     if (!showPracticePanel) return;
@@ -1220,7 +1277,8 @@ export default function App() {
                 isPlaying={isPlaying}
                 setIsPlaying={setIsPlaying}
                 activeSceneId={activeSceneId}
-                setActiveSceneId={setActiveSceneId}
+                onSelectScene={handleSceneSelect}
+                sceneLoadingId={sceneLoadingId}
                 setActiveView={setActiveView}
                 activeAmbiences={activeAmbiences}
                 setActiveAmbiences={setActiveAmbiences}
@@ -2729,7 +2787,8 @@ const FocusTab = memo(function FocusTab({
   isPlaying,
   setIsPlaying,
   activeSceneId,
-  setActiveSceneId,
+  onSelectScene,
+  sceneLoadingId,
   setActiveView,
   activeAmbiences,
   setActiveAmbiences,
@@ -2745,8 +2804,9 @@ const FocusTab = memo(function FocusTab({
   currentTrack: Track,
   isPlaying: boolean,
   setIsPlaying: (v: boolean) => void,
-  activeSceneId: string,
-  setActiveSceneId: (id: string) => void,
+  activeSceneId: SceneId,
+  onSelectScene: (id: SceneId) => void,
+  sceneLoadingId: SceneId | null,
   setActiveView: (v: View) => void,
   activeAmbiences: AmbientKey[],
   setActiveAmbiences: React.Dispatch<React.SetStateAction<AmbientKey[]>>,
@@ -3015,6 +3075,7 @@ const FocusTab = memo(function FocusTab({
             {SCENES.map(scene => {
               const locked = scene.premiumOnly && !isPremium;
               const isActive = activeSceneId === scene.id;
+              const isLoading = sceneLoadingId === scene.id;
               return (
                 <div
                   key={scene.id}
@@ -3023,7 +3084,7 @@ const FocusTab = memo(function FocusTab({
                       showAmbienceToast(t.home.upgradeUnlock);
                       return;
                     }
-                    setActiveSceneId(scene.id);
+                    void onSelectScene(scene.id);
                   }}
                   className={`relative w-56 h-32 rounded-2xl overflow-hidden shrink-0 cursor-pointer group transition-all duration-300 ${isActive
                     ? 'shadow-[0_0_0_2px_rgba(255,255,255,0.5),0_8px_24px_rgba(0,0,0,0.35)] -translate-y-1.5 scale-[1.02]'
@@ -3047,6 +3108,11 @@ const FocusTab = memo(function FocusTab({
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-mist-text)]/60 via-transparent to-transparent"></div>
+                  {isLoading && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20 backdrop-blur-[1px]">
+                      <div className="h-7 w-7 rounded-full border-2 border-white/35 border-t-white animate-spin" />
+                    </div>
+                  )}
                   <div className="absolute bottom-3 left-3 flex flex-col">
                     <span className="text-white text-sm font-medium">{t.themes[scene.id as keyof typeof t.themes]}</span>
                     <span className="text-[10px] text-white/80 bg-white/20 px-2 py-0.5 rounded-full w-fit mt-1 glass-utility border border-white/20">{t.tags[scene.tag as keyof typeof t.tags]}</span>

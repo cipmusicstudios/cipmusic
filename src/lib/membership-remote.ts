@@ -1,8 +1,25 @@
+import {supabase} from './supabase';
+
 const DEFAULT_READ_URL = '/.netlify/functions/read-membership';
 
 function readEndpoint(): string {
   const fromEnv = import.meta.env.VITE_READ_MEMBERSHIP_URL as string | undefined;
   return (fromEnv && fromEnv.trim()) || DEFAULT_READ_URL;
+}
+
+/**
+ * 取当前 Supabase 会话的 access token；无登录或未配置均返回 null。
+ * Phase: user state hardening — `read-membership` 后端只信任 Authorization header，
+ * 前端必须把已登录会话的 JWT 一并带上。
+ */
+async function getAccessToken(): Promise<string | null> {
+  try {
+    const {data} = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return typeof token === 'string' && token.trim() ? token : null;
+  } catch {
+    return null;
+  }
 }
 
 export type RemoteUserMembership = {
@@ -91,12 +108,22 @@ function readFailureFromBody(parsed: unknown, httpStatus: number): RemoteMembers
   };
 }
 
-/** userId：Supabase Auth UUID。 */
+/**
+ * userId：Supabase Auth UUID。
+ *
+ * 注意：服务端 `read-membership` 已改为只按 Authorization header 里的 JWT 查询，
+ * body 里的 `userId` 只作兼容占位不再参与鉴权。保留入参以避免前端调用点改动。
+ */
 export async function fetchRemoteUserMembership(userId: string): Promise<RemoteMembershipFetchResult> {
   try {
+    const accessToken = await getAccessToken();
+    const headers: Record<string, string> = {'Content-Type': 'application/json'};
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
     const res = await fetch(readEndpoint(), {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers,
       body: JSON.stringify({userId}),
     });
 
