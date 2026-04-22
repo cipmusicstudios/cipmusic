@@ -295,6 +295,9 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'jeon-somi': { id: 'jeon-somi', names: { zhHans: 'JEON SOMI', en: 'Jeon Somi' }, type: 'solo', nationality: 'kr' },
   'zico': { id: 'zico', names: { zhHans: 'ZICO', en: 'ZICO' }, type: 'solo', nationality: 'kr' },
 
+  /** 《STAY》by The Kid LAROI & Justin Bieber — 仅归档 Justin Bieber 艺人桶；The Kid LAROI 不单独建桶（按用户指示）。 */
+  'justin-bieber': { id: 'justin-bieber', names: { zhHans: 'Justin Bieber', zhHant: 'Justin Bieber', en: 'Justin Bieber' }, type: 'solo', nationality: 'en' },
+
   // Extra Western
   'adele': { id: 'adele', names: { zhHans: 'Adele', en: 'Adele' }, type: 'solo', nationality: 'en' },
   'billie-eilish': { id: 'billie-eilish', names: { zhHans: 'Billie Eilish', en: 'Billie Eilish' }, type: 'solo', nationality: 'en' },

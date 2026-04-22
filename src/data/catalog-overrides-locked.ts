@@ -236,6 +236,13 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
       en: "Lay Zhang"
     }
   },
+  Fade: {
+    title: "Faded",
+    displayTitle: "Faded",
+    titles: {
+      en: "Faded"
+    }
+  },
   "dreams come true": {
     artist: "aespa",
     artists: {
@@ -455,6 +462,10 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     workProjectKey: "kpop-demon-hunters"
   },
   "heavy is the crown": {
+    categoryTags: [
+      "欧美流行",
+      "游戏"
+    ],
     workProjectKey: "league-of-legends"
   },
   Hello: {
@@ -845,6 +856,33 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ],
     workProjectKey: "league-of-legends"
   },
+  stay: {
+    title: "STAY",
+    displayTitle: "STAY (with Justin Bieber)",
+    titles: {
+      zhHans: "STAY (with Justin Bieber)",
+      zhHant: "STAY (with Justin Bieber)",
+      en: "STAY (with Justin Bieber)"
+    },
+    artist: "The Kid LAROI、Justin Bieber",
+    artists: {
+      zhHans: "The Kid LAROI、Justin Bieber",
+      zhHant: "The Kid LAROI、Justin Bieber",
+      en: "The Kid LAROI, Justin Bieber"
+    },
+    category: "欧美流行",
+    categoryTags: [
+      "欧美流行"
+    ],
+    coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273b4d59e6fa7e5e7cbc57ac33a",
+    links: {
+      youtube: "https://www.youtube.com/watch?v=F-ewK_t7Jpo",
+      video: "https://www.youtube.com/watch?v=F-ewK_t7Jpo",
+      bilibili: "https://www.bilibili.com/video/BV1zGdCBbEqW/",
+      sheet: "https://www.mymusic5.com/cipmusic/376593"
+    },
+    matchedVideoTitle: "The Kid LAROI, Justin Bieber - STAY (Official Video)"
+  },
   "stay with me": {
     categoryTags: [
       "韩流流行",
@@ -1044,6 +1082,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     matchedVideoTitle: "【钢琴】时代少年团刘耀文《不冬眠》钢琴完整版（附谱）"
   },
   "不眠之夜": {
+    titles: {
+      en: "WHITE NIGHT"
+    },
     artist: "张杰",
     artists: {
       zhHans: "张杰",
@@ -1098,6 +1139,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ]
   },
   "于深空见证的": {
+    titles: {
+      en: "Witnessed By Deepspace"
+    },
     artist: "张韶涵",
     artists: {
       zhHans: "张韶涵",
@@ -1113,6 +1157,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
   "云宫迅音": {
     title: "云宫迅音",
     displayTitle: "云宫迅音",
+    titles: {
+      en: "Celestial Symphony"
+    },
     artist: "黑神话：悟空",
     artists: {
       zhHans: "黑神话：悟空",
@@ -1689,6 +1736,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     matchedVideoTitle: "唐漢霄 SeanTang 《哪吒之魔童闹海》（NeZha 2）哪吒角色曲《就是哪吒》钢琴版 Piano Cover | Piano by CIP Music"
   },
   "希望有羽毛和翅膀": {
+    titles: {
+      en: "Hope is the thing with feathers"
+    },
     coverUrl: "https://i.scdn.co/image/ab67616d0000b273cc68eea0db7110e3b8cca14e",
     artist: "知更鸟（Chevy）",
     artists: {
@@ -1703,6 +1753,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ]
   },
   "幻化成花": {
+    titles: {
+      en: "Hana ni Nare"
+    },
     artist: "指田郁也",
     artists: {
       zhHans: "指田郁也",
@@ -1786,6 +1839,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     }
   },
   "恋与深空主题曲": {
+    titles: {
+      en: "Love and Deep Space Theme Song"
+    },
     artist: "莎拉布莱曼",
     artists: {
       zhHans: "莎拉布莱曼",
@@ -1793,8 +1849,7 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
       en: "Sarah Brightman"
     },
     categoryTags: [
-      "游戏",
-      "欧美流行"
+      "游戏"
     ],
     workProjectKey: "love-and-deepspace",
     links: {
@@ -1937,7 +1992,11 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     },
     matchedVideoTitle: "《我的舞台》武星、任胤蓬（用户指定 Bilibili 片源）"
   },
-  "才二十三": {},
+  "才二十三": {
+    titles: {
+      en: "Twenty three"
+    }
+  },
   "抬起头啊": {
     title: "抬起头来",
     displayTitle: "抬起头来",
@@ -1996,7 +2055,12 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
       en: "Kaiser"
     }
   },
-  "敢问路在何方": {},
+  "敢问路在何方": {
+    categoryTags: [
+      "华语流行",
+      "游戏"
+    ]
+  },
   "斗地主": {
     artist: "",
     artists: {
@@ -2009,6 +2073,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ]
   },
   "新宝岛": {
+    titles: {
+      en: "ShinTakarajima"
+    },
     artist: "",
     artists: {
       zhHans: "",
@@ -2091,6 +2158,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
   "时空引力": {
     title: "时空引力",
     displayTitle: "时空引力",
+    titles: {
+      en: "Gravity of Spacetime"
+    },
     artist: "《恋与深空》",
     artists: {
       zhHans: "恋与深空",
@@ -2136,6 +2206,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     matchedVideoTitle: "TFBOYS十周年新歌《明天见》 Piano Cover | Piano by CIP Music"
   },
   "明日坐标": {
+    titles: {
+      en: "Atlas of Tomorrow"
+    },
     artist: "林俊杰",
     artists: {
       zhHans: "林俊杰",
@@ -2163,6 +2236,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ]
   },
   "春天对花所做的事": {
+    titles: {
+      en: "Spring and Flowers"
+    },
     artist: "恋与深空",
     artists: {
       zhHans: "恋与深空",
@@ -2570,6 +2646,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ]
   },
   "经过": {
+    titles: {
+      en: "Passing By"
+    },
     artist: "张杰",
     artists: {
       zhHans: "张杰",
@@ -2721,6 +2800,9 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     matchedVideoTitle: "周杰倫 Jay Chou ’還在流浪 Still Wandering‘ 鋼琴版 Piano Cover | Piano by CIP Music"
   },
   "这么可爱真是抱歉": {
+    titles: {
+      en: "Kawaikute Gomen"
+    },
     coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2735ab8edf3cacc736fd4a62c63",
     links: {
       youtube: "https://www.youtube.com/watch?v=xAOin7atTRE",
@@ -2730,7 +2812,43 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     matchedVideoTitle: "HoneyWorks /（CV：早見沙織）\"可愛くてごめん\"《这么可爱真是抱歉》Piano Cover | Piano by CIP Music"
   },
   "这样很好": {
+    titles: {
+      en: "Isha's Song"
+    },
     workProjectKey: "league-of-legends"
+  },
+  "曾经我也想过一了百了": {
+    titles: {
+      en: "Boku Ga Shinou To Omottanowa"
+    }
+  },
+  "勿听": {
+    titles: {
+      en: "Listen Not"
+    },
+    categoryTags: [
+      "华语流行",
+      "游戏"
+    ]
+  },
+  "轻涟": {
+    titles: {
+      en: "La vaguelette"
+    },
+    categoryTags: [
+      "华语流行",
+      "游戏"
+    ]
+  },
+  "雨过后的风景": {
+    titles: {
+      en: "The Scenery After the Rain"
+    }
+  },
+  "黑神话悟空主题曲": {
+    titles: {
+      en: "Black Myth: Wukong Theme Song"
+    }
   },
   "都选c": {
     title: "都选C",

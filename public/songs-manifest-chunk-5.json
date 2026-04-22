@@ -85,10 +85,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/41779",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "陷入爱情",
-        "en": "Xian Ru Ai Qing"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "希林娜依·高",
         "zhHant": "希林娜依·高",
@@ -134,10 +131,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/41720",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "烟火星辰",
-        "en": "Yan Huo Xing Chen"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "刘宇宁",
         "zhHant": "劉宇寧",
@@ -187,10 +181,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/41681",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "无羁",
-        "en": "Wu Ji"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "王一博、肖战",
         "en": "Wang Yibo, Xiao Zhan"
@@ -233,9 +224,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "A Thousand Years"
-      },
       "artists": {
         "zhHans": "Christina Perri",
         "zhHant": "Christina Perri",
@@ -280,10 +268,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "所念皆星河",
-        "en": "Suo Nian Jie Xing He"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "CMJ",
         "zhHant": "CMJ",
@@ -327,9 +312,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/44193",
       "linkStatus": "linked",
-      "titles": {
-        "en": "O O O"
-      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
@@ -377,8 +359,7 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "青城山下白素贞",
-        "zhHant": "青城山下白素貞",
-        "en": "青城山下白素贞"
+        "zhHant": "青城山下白素貞"
       },
       "artists": {
         "zhHans": "鞠婧祎",
@@ -423,9 +404,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/34373",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Into The Fire"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -469,10 +448,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/72076",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "四季予你",
-        "en": "Si Ji Yu Ni"
-      },
       "artists": {
         "zhHans": "程响",
         "zhHant": "程響",
@@ -516,10 +491,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "起风了",
-        "en": "Qi Feng Liao"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "高桥优",
         "zhHant": "高橋優",
@@ -563,9 +535,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "Yes Ok"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "THE9",
         "zhHant": "THE9",
@@ -609,10 +579,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/40354",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "约定之初",
-        "en": "Yue Ding Zhi Chu"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "光与夜之恋",
         "en": "Light and Night"
@@ -655,10 +622,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/39608",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "练习曲",
-        "en": "Lian Xi Qu"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "刘雨昕",
         "zhHant": "刘雨昕",
@@ -704,8 +668,8 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "U&I",
-        "en": "U&I",
-        "zhHant": "U&I"
+        "zhHant": "U&I",
+        "en": "U&I"
       },
       "artists": {
         "zhHans": "刘雨昕",
@@ -750,9 +714,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/113591",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Ei Ei"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -796,9 +758,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "Catallena"
-      },
       "youtubeSortIndex": 601,
       "youtubePublishedAt": "2021-06-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1624104000000,
@@ -837,9 +796,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/39516",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Of Course"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "刘雨昕",
         "zhHant": "刘雨昕",
@@ -885,8 +842,8 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "热爱105°C的你",
-        "en": "热爱105°C的你",
-        "zhHant": "熱愛105°C的你"
+        "zhHant": "熱愛105°C的你",
+        "en": "热爱105°C的你"
       },
       "artists": {
         "zhHans": "阿肆",
@@ -931,10 +888,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/40357",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "你眼里的光",
-        "en": "Ni Yan Li De Guang"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "老番茄",
         "en": "Lao Fanqie"
@@ -1025,10 +979,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/37813",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "时间的歌",
-        "en": "Shi Jian De Ge"
-      },
       "artists": {
         "zhHans": "SNH48",
         "zhHant": "SNH48",
@@ -1072,10 +1022,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/72076",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "春夏秋冬",
-        "en": "Chun Xia Qiu Dong"
-      },
       "artists": {
         "zhHans": "SNH48",
         "zhHant": "SNH48",
@@ -1119,10 +1065,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/38249",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "人鱼",
-        "en": "Ren Yu"
-      },
       "artists": {
         "zhHans": "SNH48",
         "zhHant": "SNH48",
@@ -1166,10 +1108,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/37810",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "古蜀回想",
-        "en": "Gu Shu Hui Xiang"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1213,10 +1152,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/36715",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "魔女的诗篇",
-        "en": "Mo Nu De Shi Pian"
-      },
       "artists": {
         "zhHans": "SNH48",
         "zhHant": "SNH48",
@@ -1260,9 +1195,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/91900",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Don'T Touch"
-      },
       "youtubeSortIndex": 612,
       "youtubePublishedAt": "2021-05-25T12:00:00.000Z",
       "listSortPublishedAtMs": 1621944000000,
@@ -1301,10 +1233,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/35951",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "公主披风",
-        "en": "Gong Zhu Pi Feng"
-      },
       "youtubeSortIndex": 613,
       "youtubePublishedAt": "2021-05-22T12:00:00.000Z",
       "listSortPublishedAtMs": 1621684800000,
@@ -1343,10 +1271,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/36261",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "爱恨的泪",
-        "en": "Ai Hen De Lei"
-      },
       "artists": {
         "zhHans": "SNH48",
         "zhHant": "SNH48",
@@ -1390,10 +1314,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/36117",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "音你心动",
-        "en": "Yin Ni Xin Dong"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "王者荣耀",
         "zhHant": "王者荣耀",
@@ -1438,10 +1359,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/35698",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "夜蝶",
-        "en": "Ye Die"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "SNH48",
         "zhHant": "SNH48",
@@ -1485,9 +1403,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/35617",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Promise"
-      },
       "artists": {
         "zhHans": "THE9",
         "zhHant": "THE9",
@@ -1531,9 +1446,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/35171",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Be Mine"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1577,10 +1490,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/36318",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "溯",
-        "en": "Su"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "胡梦周",
         "zhHant": "胡梦周",
@@ -1624,9 +1534,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/65445",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Into1"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1670,10 +1578,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/34946",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "少年的模样",
-        "en": "Shao Nian De Mo Yang"
-      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1717,9 +1621,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/34081",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Lover Boy 88"
-      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1763,9 +1664,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/35385",
       "linkStatus": "linked",
-      "titles": {
-        "en": "So Sick"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "Ne-Yo",
         "zhHant": "Ne-Yo",
@@ -1809,10 +1708,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/34947",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "冒险计划",
-        "en": "Mou Xian Ji Hua"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1856,9 +1752,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33971",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Nana Party"
-      },
       "youtubeSortIndex": 627,
       "youtubePublishedAt": "2021-04-14T12:00:00.000Z",
       "listSortPublishedAtMs": 1618401600000,
@@ -1897,10 +1790,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33754",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "下雨了是我在想你",
-        "en": "Xia Yu Liao Shi Wo Zai Xiang Ni"
-      },
       "youtubeSortIndex": 628,
       "youtubePublishedAt": "2021-04-12T12:00:00.000Z",
       "listSortPublishedAtMs": 1618228800000,
@@ -1939,10 +1828,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33753",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "输入法打可爱按第五",
-        "en": "Shu Ru Fa Da Ke Ai An Di Wu"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -1988,10 +1874,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/186578",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "有梦好甜蜜",
-        "en": "You Meng Hao Tian Mi"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "胡彦斌",
         "zhHant": "胡彥斌",
@@ -2035,10 +1918,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/34021",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "你就不要想起我",
-        "en": "Ni Jiu Bu Yao Xiang Qi Wo"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -2082,9 +1962,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33761",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Fix me"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -2128,9 +2006,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "Love Story"
-      },
       "artists": {
         "zhHans": "Taylor Swift",
         "zhHant": "Taylor Swift",
@@ -2176,8 +2051,8 @@
       "linkStatus": "missingSheet",
       "titles": {
         "zhHans": "Willow",
-        "en": "Willow",
-        "zhHant": "Willow"
+        "zhHant": "Willow",
+        "en": "Willow"
       },
       "artists": {
         "zhHans": "Taylor Swift",
@@ -2222,10 +2097,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33758",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "我们一起闯",
-        "en": "Wo Men Yi Qi Chuang"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -2269,10 +2141,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "回到过去",
-        "en": "Hui Dao Guo Qu"
-      },
       "artists": {
         "zhHans": "周杰伦",
         "zhHant": "周杰倫",
@@ -2316,10 +2184,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/267679",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "晴天",
-        "en": "Qing Tian"
-      },
       "artists": {
         "zhHans": "周杰伦",
         "zhHant": "周杰倫",
@@ -2363,10 +2227,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "曹操",
-        "en": "Cao Cao"
-      },
       "artists": {
         "zhHans": "林俊杰",
         "zhHant": "林俊傑",
@@ -2410,10 +2270,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/72076",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "小小",
-        "en": "Xiao Xiao"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "容祖儿",
         "zhHant": "容祖兒",
@@ -2456,10 +2313,7 @@
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1a14y1A721/",
       "sheetUrl": "https://mymusic5.com/cipmusic/375227",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "不冬眠",
-        "en": "Bu Dong Mian"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "刘耀文",
         "zhHant": "劉耀文",
@@ -2501,9 +2355,7 @@
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1A14y1777Z/",
       "sheetUrl": "https://mymusic5.com/cipmusic/341127",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Normal No More"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "TYSM",
         "en": "TYSM"
@@ -2544,10 +2396,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "未闻花名",
-        "en": "Wei Wen Hua Ming"
-      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
@@ -2589,10 +2437,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/72076",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "账号已注销",
-        "en": "Zhang Hao Yi Zhu Xiao"
-      },
       "artists": {
         "zhHans": "太一",
         "zhHant": "太一",
@@ -2635,9 +2479,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "Cure For Me"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "AURORA",
         "zhHant": "AURORA",
@@ -2725,9 +2567,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingVideo",
-      "titles": {
-        "en": "HEYA"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -2769,10 +2609,7 @@
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1Ax4y1M7fM/",
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "只因你太美",
-        "en": "Zhi Yin Ni Tai Mei"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -2814,10 +2651,7 @@
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV13K4y1n7nm/",
       "sheetUrl": "https://www.mymusic5.com/cipmusic/158001",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "我的舞台",
-        "en": "我的舞台"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "武星、任胤蓬",
         "zhHant": "武星、任胤蓬",
@@ -2859,10 +2693,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/120423",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "明天见",
-        "en": "明天见"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "TFBOYS",
         "zhHant": "TFBOYS",
@@ -2907,10 +2738,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "哈基米",
-        "en": "Ha Ji Mi"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "",
         "zhHant": "",
@@ -2952,9 +2780,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/68721",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Empty Love"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "Lulleaux",
         "zhHant": "Lulleaux",
@@ -2962,6 +2788,52 @@
       },
       "listSortPublishedAtMs": 400034674237,
       "listSortPublishedAt": "1982-09-05T00:44:34.237Z",
+      "listSortSource": "fallback_no_youtube_order"
+    },
+    {
+      "id": "be004160-2a57-430c-8169-7d8dbb915fec",
+      "title": "STAY",
+      "displayTitle": "STAY (with Justin Bieber)",
+      "originalArtist": "The Kid LAROI、Justin Bieber",
+      "canonicalArtistId": "justin-bieber",
+      "canonicalArtistDisplayName": "The Kid LAROI、Justin Bieber",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "track_stay_laroi_bieber_bucket_under_bieber_only"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273b4d59e6fa7e5e7cbc57ac33a",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/stay/audio.mp3",
+      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/stay/performance.mid",
+      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/stay/score.musicxml",
+      "duration": "02:18",
+      "durationSeconds": 138,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "stay",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=F-ewK_t7Jpo",
+      "youtubeVideoTitle": "The Kid LAROI, Justin Bieber - STAY (Official Video)",
+      "youtubeVideoId": "F-ewK_t7Jpo",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1zGdCBbEqW/",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/376593",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "STAY (with Justin Bieber)",
+        "en": "STAY (with Justin Bieber)",
+        "zhHant": "STAY (with Justin Bieber)"
+      },
+      "artists": {
+        "zhHans": "The Kid LAROI、Justin Bieber",
+        "zhHant": "The Kid LAROI、Justin Bieber",
+        "en": "The Kid LAROI, Justin Bieber"
+      },
+      "listSortPublishedAtMs": 400016721343,
+      "listSortPublishedAt": "1982-09-04T19:45:21.343Z",
       "listSortSource": "fallback_no_youtube_order"
     },
     {
@@ -2993,10 +2865,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/72076",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "彩虹的微笑",
-        "en": "Cai Hong De Wei Xiao"
-      },
       "artists": {
         "zhHans": "王心凌",
         "zhHant": "王心凌",
@@ -3038,10 +2906,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingVideo",
-      "titles": {
-        "zhHans": "在意",
-        "en": "Zai Yi"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
@@ -3083,10 +2948,7 @@
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV14A41117BD/",
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "zhHans": "爱如火",
-        "en": "爱如火"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "那艺娜",
         "zhHant": "那艺娜",
@@ -3128,10 +2990,7 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "你不属于我",
-        "en": "Ni Bu Shu Yu Wo"
-      },
+      "titles": {},
       "artists": {
         "zhHans": "周兴哲",
         "zhHant": "周興哲",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-04-18T20:28:27.228Z",
+  "generatedAt": "2026-04-22T07:28:47.863Z",
   "artists": [
     {
       "canonicalArtistId": "zhou-shen",
@@ -440,10 +440,10 @@
         "Lil Nas X"
       ],
       "reviewStatus": "needsReview",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
+      "artistImageUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174e80d1ffb81aa6503ad41c574",
+      "artistImageSource": "spotify_artist_47mIJdHORyRerp4os813jD",
+      "artistImageConfidence": 1,
+      "artistImageKind": "project_logo"
     },
     {
       "canonicalArtistId": "kep1er",
@@ -489,10 +489,10 @@
         "KPOP Demon Hunters Saja Boys"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
+      "artistImageUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2736c1334650ced0e28f0b2e13f",
+      "artistImageSource": "spotify_artist_7mW7Tv7NvywKKXqafZo0Lc_oembed_b273",
+      "artistImageConfidence": 1,
+      "artistImageKind": "project_logo"
     },
     {
       "canonicalArtistId": "lay-zhang",
@@ -2186,6 +2186,22 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
+    },
+    {
+      "canonicalArtistId": "justin-bieber",
+      "displayName": "Justin Bieber",
+      "songCount": 1,
+      "songIds": [
+        "be004160-2a57-430c-8169-7d8dbb915fec"
+      ],
+      "sampleOriginalArtists": [
+        "The Kid LAROI、Justin Bieber"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/fe097f693cebf1f882e3da79e99e3bf9/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "review/07752a89-cdaf-4f19-86db-9daf1818f797",

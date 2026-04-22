@@ -173,6 +173,17 @@ export const TRACK_CANONICAL_BY_ID: Record<string, TrackCanonicalFix> = {
     artistReviewStatus: 'ok',
     note: 'apt_rosé_bruno_mars_collab',
   },
+  /**
+   * 《STAY》 by The Kid LAROI & Justin Bieber — 仅归档到 Justin Bieber 艺人桶；
+   * The Kid LAROI 不单独建桶（按用户指示）。列表展示仍保留双署名。
+   * trackId 为 Supabase 表中的 UUID（slug=stay）。
+   */
+  'be004160-2a57-430c-8169-7d8dbb915fec': {
+    canonicalId: 'justin-bieber',
+    displayNameOverride: 'The Kid LAROI、Justin Bieber',
+    artistReviewStatus: 'ok',
+    note: 'track_stay_laroi_bieber_bucket_under_bieber_only',
+  },
   local_斗地主: { canonicalId: 'dou-dizhu-game', note: 'track_dou_dizhu_game_no_vocalist' },
   local_冒险计划: { canonicalId: 'into1', note: 'track_maoxian_jihua_into1' },
   local_白话文: {
