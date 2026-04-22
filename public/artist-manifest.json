@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-04-22T07:28:47.863Z",
+  "generatedAt": "2026-04-22T18:20:02.165Z",
   "artists": [
     {
       "canonicalArtistId": "zhou-shen",
@@ -2198,8 +2198,8 @@
         "The Kid LAROI、Justin Bieber"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/fe097f693cebf1f882e3da79e99e3bf9/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/da/Justin_Bieber_in_2015.jpg",
+      "artistImageSource": "wikipedia_en_commons_portrait_2015",
       "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
     },
@@ -2262,10 +2262,10 @@
         "Lulleaux"
       ],
       "reviewStatus": "ok",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
+      "artistImageUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174e4dbbe71b7100ebe5496d412",
+      "artistImageSource": "spotify_artist_6bA8L82JXU9CQa2nyUnLDh_oembed",
+      "artistImageConfidence": 1,
+      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "m-taku",

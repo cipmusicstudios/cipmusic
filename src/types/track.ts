@@ -101,7 +101,14 @@ export type TrackMetadata = {
     listSortPublishedAtMs?: number | null;
     /** ISO 8601 aligned with listSortPublishedAtMs (for display/debug; not always a true release date). */
     listSortPublishedAt?: string | null;
-    listSortSource?: 'youtube_published' | 'youtube_channel_index' | 'fallback_no_youtube_order' | 'catalog_override';
+    listSortSource?:
+      | 'youtube_published'
+      | 'youtube_channel_index'
+      | 'fallback_no_youtube_order'
+      | 'catalog_override'
+      | 'new_import_created_at';
+    /** ISO 8601 from Supabase `songs.created_at` — used to float newly added songs to the top of Newest. */
+    supabaseCreatedAt?: string | null | undefined;
   };
 };
 

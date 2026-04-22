@@ -133,7 +133,7 @@ const extractEnglishTitleFromVideoTitle = (title: string | undefined, anchors: s
   return undefined;
 };
 
-const buildRomanizedFallbackTitle = (title: string) => {
+export const buildRomanizedFallbackTitle = (title: string) => {
   const romanized = transliterate(title)
     .replace(/[^A-Za-z0-9\s'-]+/g, ' ')
     .replace(/\s+/g, ' ')
@@ -401,7 +401,21 @@ export const buildLocalImportAutoDisplay = (
     titles: {
       zhHans: override?.titles?.zhHans || preferredLocalChineseTitle,
       ...override?.titles,
-      en: override?.titles?.en || effectiveDisplayTitle || autoEnglishTitle,
+      /**
+       * English UI title preference:
+       *   1. explicit `override.titles.en` (official English)
+       *   2. `effectiveDisplayTitle` — but only if it has no Han chars (i.e. it
+       *      is already an English/romanized title like "Faded")
+       *   3. `autoEnglishTitle` — pinyin / romanization fallback (never Chinese)
+       * Previously `effectiveDisplayTitle` was used unconditionally, which let
+       * Chinese display titles (e.g. "人之爱", "灯火万家") leak into the English UI.
+       */
+      en:
+        override?.titles?.en ||
+        (effectiveDisplayTitle && !/[\p{Script=Han}]/u.test(effectiveDisplayTitle)
+          ? effectiveDisplayTitle
+          : undefined) ||
+        autoEnglishTitle,
     },
     artist: preferredArtist,
     artists: {

@@ -13,6 +13,7 @@ import {
   getMergedCatalogOverride,
 } from './data/catalog-overrides';
 import { ARTIST_DICTIONARY } from './local-import-artist-normalization';
+import { buildRomanizedFallbackTitle } from './local-import-metadata-auto';
 import { inferBrowseClassificationForUnknownArtist } from './artist-browse-classify';
 import { workProjectAugmentedArtistBucketIds } from './artist-browse-filter';
 import { parseDurationMmSsToSeconds } from './duration-utils';
@@ -176,7 +177,14 @@ export type SongManifestEntry = {
    */
   listSortPublishedAtMs?: number | null;
   listSortPublishedAt?: string | null;
-  listSortSource?: 'youtube_published' | 'youtube_channel_index' | 'fallback_no_youtube_order' | 'catalog_override';
+  listSortSource?:
+    | 'youtube_published'
+    | 'youtube_channel_index'
+    | 'fallback_no_youtube_order'
+    | 'catalog_override'
+    | 'new_import_created_at';
+  /** ISO 8601 Supabase `songs.created_at`; used to pin newly imported songs on top of Newest. */
+  supabaseCreatedAt?: string | null;
   /**
    * 作品级来源（电影/游戏/剧集等），稳定 slug；可与推断逻辑并存，显式优先。
    */
@@ -186,6 +194,21 @@ export type SongManifestEntry = {
 /** ~2011 anchor: only-`youtubeSortIndex` rows sort below real upload timestamps but newer index = larger ms. */
 const LIST_SORT_CHANNEL_INDEX_BASE_MS = 1_300_000_000_000;
 const LIST_SORT_FALLBACK_BASE_MS = 400_000_000_000;
+
+/**
+ * Base epoch for "newly imported" songs' sort key. Much larger than any real
+ * YouTube upload timestamp (≈1.7e12) and larger than legacy `catalog_override`
+ * pins (≈4e12) so any song with Supabase `created_at` ≥ cutoff floats to the
+ * very top of Newest, ordered by creation time.
+ */
+const NEW_IMPORT_SORT_BASE_MS = 5_000_000_000_000;
+/**
+ * 归档日 — any song whose Supabase `created_at` is after this instant is
+ * treated as "a newly added song" and gets pinned to the top of Newest.
+ * Songs imported before this cutoff keep their existing YouTube-based order so
+ * we don't reshuffle the whole catalog for old imports.
+ */
+const NEW_IMPORT_CUTOFF_MS = Date.parse('2026-04-22T00:00:00Z');
 
 function stableIdJitterMs(id: string): number {
   let h = 0;
@@ -204,6 +227,19 @@ export function assignManifestListSort(entry: SongManifestEntry): SongManifestEn
     Number.isFinite(entry.listSortPublishedAtMs)
   ) {
     return entry;
+  }
+  /** Pin every song imported after the cutoff to the top of Newest via Supabase `created_at`. */
+  const createdAtMs = entry.supabaseCreatedAt
+    ? Date.parse(String(entry.supabaseCreatedAt))
+    : NaN;
+  if (Number.isFinite(createdAtMs) && createdAtMs >= NEW_IMPORT_CUTOFF_MS) {
+    const ms = NEW_IMPORT_SORT_BASE_MS + (createdAtMs - NEW_IMPORT_CUTOFF_MS);
+    return {
+      ...entry,
+      listSortPublishedAtMs: ms,
+      listSortPublishedAt: new Date(ms).toISOString(),
+      listSortSource: 'new_import_created_at',
+    };
   }
   const ytMs = entry.youtubePublishedAt ? Date.parse(String(entry.youtubePublishedAt)) : NaN;
   if (Number.isFinite(ytMs)) {
@@ -245,6 +281,28 @@ export function applyCatalogListSortToManifestEntry(entry: SongManifestEntry): S
     listSortPublishedAt: new Date(ms).toISOString(),
     listSortSource: 'catalog_override',
   };
+}
+
+/**
+ * Final safety net for the English UI title: if the manifest would serialize
+ * `titles.en` containing Han characters (either because an override left it as
+ * Chinese, or the romanization pipeline never ran), replace it with a
+ * pinyin/romanized fallback derived from the display title. Never emits
+ * Chinese in `titles.en`.
+ */
+function sanitizeTitlesForEnglishUI<T extends { zhHans?: string; zhHant?: string; en?: string } | undefined>(
+  titles: T,
+  fallbackZh: string,
+): T {
+  if (!titles) return titles;
+  const hasHanEn = !!titles.en && /[\p{Script=Han}]/u.test(titles.en);
+  if (titles.en && !hasHanEn) return titles;
+  const zhSource = titles.zhHans || titles.zhHant || fallbackZh || '';
+  if (!zhSource) return titles;
+  if (!/[\p{Script=Han}]/u.test(zhSource) && titles.en) return titles;
+  const rom = buildRomanizedFallbackTitle(zhSource);
+  if (!rom) return titles;
+  return { ...titles, en: rom } as T;
 }
 
 /** Default song list: newest (largest listSortPublishedAtMs) first. */
@@ -747,7 +805,7 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
     bilibiliVideoUrl: biliUrl,
     sheetUrl: sheetLink,
     linkStatus,
-    titles: locked.metadata.display.titles,
+    titles: sanitizeTitlesForEnglishUI(locked.metadata.display.titles, locked.title),
     artists:
       artistsFromDictionaryIfSoloOk(
         resolution.canonicalArtistId,
@@ -764,6 +822,9 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
       inferWorkProjectKeyFromText(
         [originalArtist, displayTitle, ytTitle].filter(Boolean).join(' '),
       ),
+    supabaseCreatedAt:
+      (locked.metadata.enrichment as { supabaseCreatedAt?: string | null } | undefined)
+        ?.supabaseCreatedAt ?? null,
   };
 }
 

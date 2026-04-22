@@ -1,8 +1,15 @@
 {
   "_comment": "Manual artist images (canonicalArtistId). Applied on top of artist-images-cache.json in build-songs-manifest. locked=true skips automatic Deezer fetch for that id. Prefer official/Wikipedia logos for game/IP buckets when no reliable portrait exists.",
   "justin-bieber": {
-    "url": "https://cdn-images.dzcdn.net/images/artist/fe097f693cebf1f882e3da79e99e3bf9/1000x1000-000000-80-0-0.jpg",
-    "source": "deezer",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/d/da/Justin_Bieber_in_2015.jpg",
+    "source": "wikipedia_en_commons_portrait_2015",
+    "confidence": 1,
+    "locked": true,
+    "imageKind": "artist_photo"
+  },
+  "lulleaux": {
+    "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616100005174e4dbbe71b7100ebe5496d412",
+    "source": "spotify_artist_6bA8L82JXU9CQa2nyUnLDh_oembed",
     "confidence": 1,
     "locked": true,
     "imageKind": "artist_photo"

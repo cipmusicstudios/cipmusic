@@ -4,6 +4,56 @@
   "chunkIndex": 4,
   "tracks": [
     {
+      "id": "1e546a03-aefb-4456-9219-4ecc05560c3a",
+      "title": "星鱼",
+      "displayTitle": "星鱼",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000004Ud7NJ1OfW1d.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-291a752643/audio.mp3",
+      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-291a752643/performance.mid",
+      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-291a752643/score.musicxml",
+      "duration": "04:18",
+      "durationSeconds": 258,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "星鱼",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=cS1F6UmUtZI",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "cS1F6UmUtZI",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/57918",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "星鱼",
+        "en": "Xing Yu"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:42:44.056306+00:00",
+      "youtubeSortIndex": 442,
+      "youtubePublishedAt": "2022-02-08T12:00:00.000Z",
+      "listSortPublishedAtMs": 1644321600000,
+      "listSortPublishedAt": "2022-02-08T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "a9c2052c-95f0-456f-a41d-564ef681b3cd",
       "title": "雪龙吟",
       "displayTitle": "雪龙吟",
@@ -35,11 +85,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/56978",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "雪龙吟",
+        "en": "Xue Long Yin"
+      },
       "artists": {
         "zhHans": "张杰",
         "zhHant": "张杰",
         "en": "Jason Zhang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:48:01.792605+00:00",
       "youtubeSortIndex": 444,
       "youtubePublishedAt": "2022-02-06T12:00:00.000Z",
       "listSortPublishedAtMs": 1644148800000,
@@ -78,11 +133,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "Time To Shine"
+      },
       "artists": {
         "zhHans": "洛天依",
         "zhHant": "洛天依",
         "en": "Luo Tianyi"
       },
+      "supabaseCreatedAt": "2026-04-14T02:33:25.203096+00:00",
       "youtubeSortIndex": 446,
       "youtubePublishedAt": "2022-02-04T12:00:00.000Z",
       "listSortPublishedAtMs": 1643976000000,
@@ -121,12 +180,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/149693",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "相遇",
+        "en": "Xiang Yu"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:44:53.493973+00:00",
       "youtubeSortIndex": 447,
       "youtubePublishedAt": "2022-02-03T12:00:00.000Z",
       "listSortPublishedAtMs": 1643889600000,
@@ -165,12 +228,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/56289",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "除夕",
+        "en": "Chu Xi"
+      },
       "artists": {
         "zhHans": "A-SOUL",
         "zhHant": "A-SOUL",
         "en": "A-SOUL"
       },
+      "supabaseCreatedAt": "2026-04-14T02:47:52.682759+00:00",
       "youtubeSortIndex": 449,
       "youtubePublishedAt": "2022-02-01T12:00:00.000Z",
       "listSortPublishedAtMs": 1643716800000,
@@ -211,12 +278,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/56111",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Regression"
+      },
       "artists": {
         "zhHans": "阿云嘎",
         "zhHant": "阿云嘎",
         "en": "Ayanga"
       },
+      "supabaseCreatedAt": "2026-04-14T02:31:40.117321+00:00",
       "youtubeSortIndex": 459,
       "youtubePublishedAt": "2022-01-22T12:00:00.000Z",
       "listSortPublishedAtMs": 1642852800000,
@@ -255,13 +325,17 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/158001",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "鸳鸯债",
+        "en": "Yuan Yang Zhai"
+      },
       "artists": {
         "zhHans": "纸嫁衣",
         "zhHant": "纸嫁衣",
         "en": "Paper Bride"
       },
       "workProjectKey": "paper-bride",
+      "supabaseCreatedAt": "2026-04-14T02:48:39.389574+00:00",
       "youtubeSortIndex": 460,
       "youtubePublishedAt": "2022-01-21T12:00:00.000Z",
       "listSortPublishedAtMs": 1642766400000,
@@ -300,11 +374,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/69070",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Wadada"
+      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
         "en": "Kep1er"
       },
+      "supabaseCreatedAt": "2026-04-14T02:33:43.749992+00:00",
       "youtubeSortIndex": 462,
       "youtubePublishedAt": "2022-01-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1642593600000,
@@ -345,11 +423,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/55348",
       "linkStatus": "linked",
+      "titles": {
+        "en": "My Only"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:30:32.077377+00:00",
       "youtubeSortIndex": 463,
       "youtubePublishedAt": "2022-01-18T12:00:00.000Z",
       "listSortPublishedAtMs": 1642507200000,
@@ -388,12 +470,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/60133",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "好好生活就是美好生活",
+        "en": "Hao Hao Sheng Huo Jiu Shi Mei Hao Sheng Huo"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:21.240479+00:00",
       "youtubeSortIndex": 468,
       "youtubePublishedAt": "2022-01-13T12:00:00.000Z",
       "listSortPublishedAtMs": 1642075200000,
@@ -432,11 +518,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/64890",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Eleven"
+      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
         "en": "IVE"
       },
+      "supabaseCreatedAt": "2026-04-14T02:25:43.447348+00:00",
       "youtubeSortIndex": 473,
       "youtubePublishedAt": "2022-01-08T12:00:00.000Z",
       "listSortPublishedAtMs": 1641643200000,
@@ -475,11 +565,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/53974",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "洛城",
+        "en": "Luo Cheng"
+      },
       "artists": {
         "zhHans": "薛之谦",
         "zhHant": "薛之謙",
         "en": "Joker Xue"
       },
+      "supabaseCreatedAt": "2026-04-14T02:43:50.116644+00:00",
       "youtubeSortIndex": 474,
       "youtubePublishedAt": "2022-01-07T12:00:00.000Z",
       "listSortPublishedAtMs": 1641556800000,
@@ -520,12 +615,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/280721",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "悟",
+        "en": "Wu"
+      },
       "artists": {
         "zhHans": "张艺兴",
         "zhHant": "張藝興",
         "en": "Lay Zhang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:41:00.033109+00:00",
       "youtubeSortIndex": 475,
       "youtubePublishedAt": "2022-01-05T12:00:00.000Z",
       "listSortPublishedAtMs": 1641384000000,
@@ -564,12 +663,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/54089",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "明早老地方出发",
+        "en": "Ming Zao Lao Di Fang Chu Fa"
+      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
         "en": "INTO1"
       },
+      "supabaseCreatedAt": "2026-04-14T02:42:40.470681+00:00",
       "youtubeSortIndex": 476,
       "youtubePublishedAt": "2022-01-02T12:00:00.000Z",
       "listSortPublishedAtMs": 1641124800000,
@@ -608,11 +711,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/53975",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "廿",
+        "en": "Nian"
+      },
       "artists": {
         "zhHans": "王一博",
         "zhHant": "王一博",
         "en": "Wang Yibo"
       },
+      "supabaseCreatedAt": "2026-04-14T02:40:34.444888+00:00",
       "youtubeSortIndex": 477,
       "youtubePublishedAt": "2022-01-01T12:00:00.000Z",
       "listSortPublishedAtMs": 1641038400000,
@@ -651,11 +759,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "zhHans": "倒流时间",
+        "en": "Dao Liu Shi Jian"
+      },
       "artists": {
         "zhHans": "邓紫棋",
         "zhHant": "鄧紫棋",
         "en": "G.E.M."
       },
+      "supabaseCreatedAt": "2026-04-14T02:36:29.949458+00:00",
       "youtubeSortIndex": 479,
       "youtubePublishedAt": "2021-12-29T12:00:00.000Z",
       "listSortPublishedAtMs": 1640779200000,
@@ -694,12 +807,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/53286",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "有你",
+        "en": "You Ni"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:43:06.967523+00:00",
       "youtubeSortIndex": 481,
       "youtubePublishedAt": "2021-12-26T12:00:00.000Z",
       "listSortPublishedAtMs": 1640520000000,
@@ -738,11 +855,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/53150",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "风吹沙成海",
+        "en": "Feng Chui Sha Cheng Hai"
+      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
         "en": "INTO1"
       },
+      "supabaseCreatedAt": "2026-04-14T02:48:21.249155+00:00",
       "youtubeSortIndex": 482,
       "youtubePublishedAt": "2021-12-25T12:00:00.000Z",
       "listSortPublishedAtMs": 1640433600000,
@@ -781,12 +903,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/54960",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Dreams Come True"
+      },
       "artists": {
         "zhHans": "aespa",
         "zhHant": "aespa",
         "en": "aespa"
       },
+      "supabaseCreatedAt": "2026-04-14T02:25:29.384065+00:00",
       "youtubeSortIndex": 484,
       "youtubePublishedAt": "2021-12-22T12:00:00.000Z",
       "listSortPublishedAtMs": 1640174400000,
@@ -825,11 +950,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/53038",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "小镇里的花",
+        "en": "Xiao Zhen Li De Hua"
+      },
       "artists": {
         "zhHans": "华晨宇",
         "zhHant": "華晨宇",
         "en": "Hua Chenyu"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:57.109887+00:00",
       "youtubeSortIndex": 485,
       "youtubePublishedAt": "2021-12-21T12:00:00.000Z",
       "listSortPublishedAtMs": 1640088000000,
@@ -868,11 +998,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/34373",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "点睛",
+        "en": "Dian Jing"
+      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
         "en": "INTO1"
       },
+      "supabaseCreatedAt": "2026-04-14T02:44:16.15556+00:00",
       "youtubeSortIndex": 486,
       "youtubePublishedAt": "2021-12-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1639915200000,
@@ -911,12 +1046,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/215625",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "我们啊",
+        "en": "Wo Men A"
+      },
       "artists": {
         "zhHans": "THE9",
         "zhHant": "THE9",
         "en": "THE9"
       },
+      "supabaseCreatedAt": "2026-04-14T02:41:14.868302+00:00",
       "youtubeSortIndex": 488,
       "youtubePublishedAt": "2021-12-17T12:00:00.000Z",
       "listSortPublishedAtMs": 1639742400000,
@@ -957,11 +1096,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/136037",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "值此今生",
+        "en": "Zhi Ci Jin Sheng"
+      },
       "artists": {
         "zhHans": "郑直",
         "zhHant": "鄭直",
         "en": "Zheng Zhi"
       },
+      "supabaseCreatedAt": "2026-04-14T02:36:36.071335+00:00",
       "youtubeSortIndex": 489,
       "youtubePublishedAt": "2021-12-16T12:00:00.000Z",
       "listSortPublishedAtMs": 1639656000000,
@@ -1000,12 +1144,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/59975",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Y"
+      },
       "artists": {
         "zhHans": "严浩翔",
         "zhHant": "嚴浩翔",
         "en": "Yan Haoxiang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:34:02.871482+00:00",
       "youtubeSortIndex": 490,
       "youtubePublishedAt": "2021-12-15T12:00:00.000Z",
       "listSortPublishedAtMs": 1639569600000,
@@ -1044,12 +1191,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/60280",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "花西子",
+        "en": "Hua Xi Zi"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:46:03.891512+00:00",
       "youtubeSortIndex": 491,
       "youtubePublishedAt": "2021-12-12T12:00:00.000Z",
       "listSortPublishedAtMs": 1639310400000,
@@ -1088,11 +1239,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "zhHans": "男儿歌",
+        "en": "Nan Er Ge"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:44:45.961843+00:00",
       "youtubeSortIndex": 492,
       "youtubePublishedAt": "2021-12-11T12:00:00.000Z",
       "listSortPublishedAtMs": 1639224000000,
@@ -1133,11 +1289,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/52176",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "借给我一盒火柴",
+        "en": "Jie Gei Wo Yi He Huo Chai"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:36:31.943917+00:00",
       "youtubeSortIndex": 493,
       "youtubePublishedAt": "2021-12-10T12:00:00.000Z",
       "listSortPublishedAtMs": 1639137600000,
@@ -1178,12 +1339,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/246207",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "念",
+        "en": "Nian"
+      },
       "artists": {
         "zhHans": "刘宇宁",
         "zhHant": "劉宇寧",
         "en": "Liu Yuning"
       },
+      "supabaseCreatedAt": "2026-04-14T02:40:45.522237+00:00",
       "youtubeSortIndex": 494,
       "youtubePublishedAt": "2021-12-09T12:00:00.000Z",
       "listSortPublishedAtMs": 1639051200000,
@@ -1222,12 +1387,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/51665",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "走，一起去看日出吧",
+        "en": "Zou Yi Qi Qu Kan Ri Chu Ba"
+      },
       "artists": {
         "zhHans": "华晨宇",
         "zhHant": "華晨宇",
         "en": "Hua Chenyu"
       },
+      "supabaseCreatedAt": "2026-04-14T02:46:44.349638+00:00",
       "youtubeSortIndex": 496,
       "youtubePublishedAt": "2021-12-07T12:00:00.000Z",
       "listSortPublishedAtMs": 1638878400000,
@@ -1266,11 +1435,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/50965",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "花落时相遇",
+        "en": "Hua Luo Shi Xiang Yu"
+      },
       "artists": {
         "zhHans": "华晨宇",
         "zhHant": "華晨宇",
         "en": "Hua Chenyu"
       },
+      "supabaseCreatedAt": "2026-04-14T02:45:59.455068+00:00",
       "youtubeSortIndex": 497,
       "youtubePublishedAt": "2021-12-06T12:00:00.000Z",
       "listSortPublishedAtMs": 1638792000000,
@@ -1309,12 +1483,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/50486",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "好想我回来啊",
+        "en": "Hao Xiang Wo Hui Lai A"
+      },
       "artists": {
         "zhHans": "华晨宇",
         "zhHant": "華晨宇",
         "en": "Hua Chenyu"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:25.72027+00:00",
       "youtubeSortIndex": 498,
       "youtubePublishedAt": "2021-12-05T12:00:00.000Z",
       "listSortPublishedAtMs": 1638705600000,
@@ -1353,12 +1531,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {},
+      "titles": {
+        "zhHans": "两个自己",
+        "en": "Liang Ge Zi Ji"
+      },
       "artists": {
         "zhHans": "邓紫棋",
         "zhHant": "鄧紫棋",
         "en": "G.E.M."
       },
+      "supabaseCreatedAt": "2026-04-14T02:35:11.068803+00:00",
       "youtubeSortIndex": 499,
       "youtubePublishedAt": "2021-12-04T12:00:00.000Z",
       "listSortPublishedAtMs": 1638619200000,
@@ -1399,12 +1581,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {},
+      "titles": {
+        "zhHans": "寂静之忆",
+        "en": "Ji Jing Zhi Yi"
+      },
       "artists": {
         "zhHans": "希林娜依·高",
         "zhHant": "希林娜依·高",
         "en": "Curley Gao"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:49.393617+00:00",
       "youtubeSortIndex": 501,
       "youtubePublishedAt": "2021-12-01T12:00:00.000Z",
       "listSortPublishedAtMs": 1638360000000,
@@ -1443,11 +1629,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/50006",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "一定会",
+        "en": "Yi Ding Hui"
+      },
       "artists": {
         "zhHans": "林俊杰",
         "zhHant": "林俊傑",
         "en": "JJ Lin"
       },
+      "supabaseCreatedAt": "2026-04-14T02:34:23.804307+00:00",
       "youtubeSortIndex": 502,
       "youtubePublishedAt": "2021-11-29T12:00:00.000Z",
       "listSortPublishedAtMs": 1638187200000,
@@ -1488,12 +1679,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "天地龙鳞",
+        "en": "Tian Di Long Lin"
+      },
       "artists": {
         "zhHans": "王力宏",
         "zhHant": "王力宏",
         "en": "Leehom Wang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:05.659556+00:00",
       "youtubeSortIndex": 503,
       "youtubePublishedAt": "2021-11-28T12:00:00.000Z",
       "listSortPublishedAtMs": 1638100800000,
@@ -1533,12 +1728,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {},
+      "titles": {
+        "zhHans": "斗地主",
+        "en": "Dou Di Zhu"
+      },
       "artists": {
         "zhHans": "",
         "zhHant": "",
         "en": ""
       },
+      "supabaseCreatedAt": "2026-04-14T02:42:01.546407+00:00",
       "youtubeSortIndex": 504,
       "youtubePublishedAt": "2021-11-27T12:00:00.000Z",
       "listSortPublishedAtMs": 1638014400000,
@@ -1577,11 +1776,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/49627",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "醉",
+        "en": "Zui"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:47:37.473233+00:00",
       "youtubeSortIndex": 508,
       "youtubePublishedAt": "2021-11-21T12:00:00.000Z",
       "listSortPublishedAtMs": 1637496000000,
@@ -1620,12 +1824,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "漠河舞厅",
+        "en": "Mo He Wu Ting"
+      },
       "artists": {
         "zhHans": "柳爽",
         "zhHant": "柳爽",
         "en": "Liu Shuang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:44:10.280563+00:00",
       "youtubeSortIndex": 509,
       "youtubePublishedAt": "2021-11-20T12:00:00.000Z",
       "listSortPublishedAtMs": 1637409600000,
@@ -1666,12 +1874,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/298484",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "菩萨蛮",
+        "en": "Pu Sa Man"
+      },
       "artists": {
         "zhHans": "姚贝娜",
         "zhHant": "姚貝娜",
         "en": "Bella Yao"
       },
+      "supabaseCreatedAt": "2026-04-14T02:46:23.07409+00:00",
       "youtubeSortIndex": 510,
       "youtubePublishedAt": "2021-11-18T12:00:00.000Z",
       "listSortPublishedAtMs": 1637236800000,
@@ -1712,12 +1924,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/136037",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "镌刻",
+        "en": "Juan Ke"
+      },
       "artists": {
         "zhHans": "张碧晨",
         "zhHant": "張碧晨",
         "en": "Zhang Bichen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:47:43.46762+00:00",
       "youtubeSortIndex": 513,
       "youtubePublishedAt": "2021-11-12T12:00:00.000Z",
       "listSortPublishedAtMs": 1636718400000,
@@ -1756,12 +1972,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/49395",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "哪吒",
+        "en": "Na Zha"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:38:33.413377+00:00",
       "youtubeSortIndex": 514,
       "youtubePublishedAt": "2021-11-11T12:00:00.000Z",
       "listSortPublishedAtMs": 1636632000000,
@@ -1802,12 +2022,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/136037",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "以无旁骛之吻",
+        "en": "Yi Wu Pang Wu Zhi Wen"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:35:53.148353+00:00",
       "youtubeSortIndex": 515,
       "youtubePublishedAt": "2021-11-10T12:00:00.000Z",
       "listSortPublishedAtMs": 1636545600000,
@@ -1848,13 +2072,17 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/49160",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "孤勇者",
+        "en": "Gu Yong Zhe"
+      },
       "artists": {
         "zhHans": "陈奕迅",
         "zhHant": "陳奕迅",
         "en": "Eason Chan"
       },
       "workProjectKey": "league-of-legends",
+      "supabaseCreatedAt": "2026-04-14T02:39:43.257744+00:00",
       "youtubeSortIndex": 516,
       "youtubePublishedAt": "2021-11-09T12:00:00.000Z",
       "listSortPublishedAtMs": 1636459200000,
@@ -1895,8 +2123,11 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/359491",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Stay With Me"
+      },
       "artists": {},
+      "supabaseCreatedAt": "2026-04-14T02:32:41.966877+00:00",
       "youtubeSortIndex": 517,
       "youtubePublishedAt": "2021-11-08T12:00:00.000Z",
       "listSortPublishedAtMs": 1636372800000,
@@ -1935,12 +2166,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/49061",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "光亮",
+        "en": "Guang Liang"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:36:55.862126+00:00",
       "youtubeSortIndex": 518,
       "youtubePublishedAt": "2021-11-07T12:00:00.000Z",
       "listSortPublishedAtMs": 1636286400000,
@@ -1981,12 +2216,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "念思雨",
+        "en": "Nian Si Yu"
+      },
       "artists": {
         "zhHans": "鞠婧祎",
         "zhHant": "鞠婧祎",
         "en": "Ju Jingyi"
       },
+      "supabaseCreatedAt": "2026-04-14T02:40:49.004176+00:00",
       "youtubeSortIndex": 522,
       "youtubePublishedAt": "2021-11-02T12:00:00.000Z",
       "listSortPublishedAtMs": 1635854400000,
@@ -2025,6 +2264,10 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "XOXO"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:33:58.954056+00:00",
       "youtubeSortIndex": 524,
       "youtubePublishedAt": "2021-10-31T12:00:00.000Z",
       "listSortPublishedAtMs": 1635681600000,
@@ -2063,13 +2306,17 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/45412",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "荣耀同行",
+        "en": "Rong Yao Tong Xing"
+      },
       "artists": {
         "zhHans": "王者荣耀",
         "zhHant": "王者荣耀",
         "en": "Honor of Kings"
       },
       "workProjectKey": "honor-of-kings",
+      "supabaseCreatedAt": "2026-04-14T02:46:16.630647+00:00",
       "youtubeSortIndex": 525,
       "youtubePublishedAt": "2021-10-30T12:00:00.000Z",
       "listSortPublishedAtMs": 1635595200000,
@@ -2110,12 +2357,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "莫离",
+        "en": "Mo Chi"
+      },
       "artists": {
         "zhHans": "鞠婧祎",
         "zhHant": "鞠婧祎",
         "en": "Ju Jingyi"
       },
+      "supabaseCreatedAt": "2026-04-14T02:46:20.717187+00:00",
       "youtubeSortIndex": 526,
       "youtubePublishedAt": "2021-10-28T12:00:00.000Z",
       "listSortPublishedAtMs": 1635422400000,
@@ -2154,12 +2405,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/246207",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Another Dream"
+      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
         "en": "Kep1er"
       },
+      "supabaseCreatedAt": "2026-04-13T19:55:28.998337+00:00",
       "youtubeSortIndex": 528,
       "youtubePublishedAt": "2021-10-24T12:00:00.000Z",
       "listSortPublishedAtMs": 1635076800000,
@@ -2199,12 +2453,15 @@
       "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1yQ4y1i7U5/",
       "sheetUrl": "https://mymusic5.com/cipmusic/348048",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Shine"
+      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
         "en": "Kep1er"
       },
+      "supabaseCreatedAt": "2026-04-14T02:32:00.016225+00:00",
       "youtubeSortIndex": 529,
       "youtubePublishedAt": "2021-10-23T12:00:00.000Z",
       "listSortPublishedAtMs": 1634990400000,
@@ -2243,12 +2500,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/205322",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Candy"
+      },
       "artists": {
         "zhHans": "TWICE",
         "zhHant": "TWICE",
         "en": "TWICE"
       },
+      "supabaseCreatedAt": "2026-04-14T02:15:03.261974+00:00",
       "youtubeSortIndex": 530,
       "youtubePublishedAt": "2021-10-22T12:00:00.000Z",
       "listSortPublishedAtMs": 1634904000000,
@@ -2287,11 +2547,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/48725",
       "linkStatus": "linked",
+      "titles": {
+        "en": "strawberry moon"
+      },
       "artists": {
         "zhHans": "IU",
         "zhHant": "IU",
         "en": "IU"
       },
+      "supabaseCreatedAt": "2026-04-14T02:32:50.166302+00:00",
       "youtubeSortIndex": 533,
       "youtubePublishedAt": "2021-10-20T12:00:00.000Z",
       "listSortPublishedAtMs": 1634731200000,
@@ -2330,12 +2594,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {},
+      "titles": {
+        "zhHans": "飞天",
+        "en": "Fei Tian"
+      },
       "artists": {
         "zhHans": "张艺兴",
         "zhHant": "張藝興",
         "en": "Lay Zhang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:48:27.736746+00:00",
       "youtubeSortIndex": 534,
       "youtubePublishedAt": "2021-10-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1634644800000,
@@ -2374,11 +2642,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "zhHans": "一些悲伤又美好的事",
+        "en": "Yi Xie Bei Shang You Mei Hao De Shi"
+      },
       "artists": {
         "zhHans": "王源",
         "zhHant": "王源",
         "en": "Roy Wang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:34:21.821994+00:00",
       "youtubeSortIndex": 535,
       "youtubePublishedAt": "2021-10-17T12:00:00.000Z",
       "listSortPublishedAtMs": 1634472000000,
@@ -2417,12 +2690,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/48794",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Easy On Me"
+      },
       "artists": {
         "zhHans": "Adele",
         "zhHant": "Adele",
         "en": "Adele"
       },
+      "supabaseCreatedAt": "2026-04-14T02:25:52.251042+00:00",
       "youtubeSortIndex": 537,
       "youtubePublishedAt": "2021-10-15T12:00:00.000Z",
       "listSortPublishedAtMs": 1634299200000,
@@ -2467,6 +2743,7 @@
         "en": "You+Me=Love"
       },
       "artists": {},
+      "supabaseCreatedAt": "2026-04-14T02:33:38.794712+00:00",
       "youtubeSortIndex": 538,
       "youtubePublishedAt": "2021-10-12T12:00:00.000Z",
       "listSortPublishedAtMs": 1634040000000,
@@ -2505,6 +2782,10 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/48240",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Utopia"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:33:42.497769+00:00",
       "youtubeSortIndex": 539,
       "youtubePublishedAt": "2021-10-11T12:00:00.000Z",
       "listSortPublishedAtMs": 1633953600000,
@@ -2543,6 +2824,10 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/48161",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Snake"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:32:18.163988+00:00",
       "youtubeSortIndex": 540,
       "youtubePublishedAt": "2021-10-10T12:00:00.000Z",
       "listSortPublishedAtMs": 1633867200000,
@@ -2581,12 +2866,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Shoot"
+      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
         "en": "Kep1er"
       },
+      "supabaseCreatedAt": "2026-04-14T02:32:01.808907+00:00",
       "youtubeSortIndex": 541,
       "youtubePublishedAt": "2021-10-09T12:00:00.000Z",
       "listSortPublishedAtMs": 1633780800000,
@@ -2625,11 +2913,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/47282",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Lucid Dream"
+      },
       "artists": {
         "zhHans": "aespa",
         "zhHant": "aespa",
         "en": "aespa"
       },
+      "supabaseCreatedAt": "2026-04-14T02:29:49.309469+00:00",
       "youtubeSortIndex": 543,
       "youtubePublishedAt": "2021-10-07T12:00:00.000Z",
       "listSortPublishedAtMs": 1633608000000,
@@ -2668,11 +2960,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/47681",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "剩下的盛夏",
+        "en": "Sheng Xia De Sheng Xia"
+      },
       "artists": {
         "zhHans": "TFBOYS",
         "zhHant": "TFBOYS",
         "en": "TFBOYS"
       },
+      "supabaseCreatedAt": "2026-04-14T02:37:39.554592+00:00",
       "youtubeSortIndex": 544,
       "youtubePublishedAt": "2021-10-04T12:00:00.000Z",
       "listSortPublishedAtMs": 1633348800000,
@@ -2711,11 +3008,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/124170",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "夏天",
+        "en": "Xia Tian"
+      },
       "artists": {
         "zhHans": "李玖哲",
         "zhHant": "李玖哲",
         "en": "Nicky Lee"
       },
+      "supabaseCreatedAt": "2026-04-14T02:38:58.696761+00:00",
       "youtubeSortIndex": 545,
       "youtubePublishedAt": "2021-10-03T12:00:00.000Z",
       "listSortPublishedAtMs": 1633262400000,
@@ -2754,6 +3056,10 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "The Feels"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:33:17.886304+00:00",
       "youtubeSortIndex": 546,
       "youtubePublishedAt": "2021-10-01T12:00:00.000Z",
       "listSortPublishedAtMs": 1633089600000,
@@ -2802,6 +3108,7 @@
         "en": "League of Legends"
       },
       "workProjectKey": "league-of-legends",
+      "supabaseCreatedAt": "2026-04-14T02:14:42.477791+00:00",
       "youtubeSortIndex": 547,
       "youtubePublishedAt": "2021-09-29T12:00:00.000Z",
       "listSortPublishedAtMs": 1632916800000,
@@ -2840,11 +3147,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "My Universe"
+      },
       "artists": {
         "zhHans": "防弹少年团",
         "zhHant": "防彈少年團",
         "en": "BTS"
       },
+      "supabaseCreatedAt": "2026-04-14T02:30:33.68344+00:00",
       "youtubeSortIndex": 548,
       "youtubePublishedAt": "2021-09-27T12:00:00.000Z",
       "listSortPublishedAtMs": 1632744000000,
@@ -2884,6 +3195,7 @@
       "sheetUrl": null,
       "linkStatus": "missingSheet",
       "titles": {
+        "zhHans": "新宝岛",
         "en": "ShinTakarajima"
       },
       "artists": {
@@ -2891,6 +3203,7 @@
         "zhHant": "",
         "en": ""
       },
+      "supabaseCreatedAt": "2026-04-14T02:42:02.852707+00:00",
       "youtubeSortIndex": 549,
       "youtubePublishedAt": "2021-09-26T12:00:00.000Z",
       "listSortPublishedAtMs": 1632657600000,
@@ -2929,11 +3242,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "zhHans": "秋天前",
+        "en": "Qiu Tian Qian"
+      },
       "artists": {
         "zhHans": "硬糖少女303",
         "zhHant": "硬糖少女303",
         "en": "BonBon Girls 303"
       },
+      "supabaseCreatedAt": "2026-04-14T02:45:04.852069+00:00",
       "youtubeSortIndex": 550,
       "youtubePublishedAt": "2021-09-25T12:00:00.000Z",
       "listSortPublishedAtMs": 1632571200000,
@@ -2972,11 +3290,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/45699",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Got You"
+      },
       "artists": {
         "zhHans": "刘耀文",
         "zhHant": "劉耀文",
         "en": "Liu Yaowen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:27:50.940448+00:00",
       "youtubeSortIndex": 551,
       "youtubePublishedAt": "2021-09-24T12:00:00.000Z",
       "listSortPublishedAtMs": 1632484800000,
@@ -3015,12 +3337,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "姻缘",
+        "en": "Yin Yuan"
+      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
         "en": "Kep1er"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:38.844745+00:00",
       "youtubeSortIndex": 552,
       "youtubePublishedAt": "2021-09-22T12:00:00.000Z",
       "listSortPublishedAtMs": 1632312000000,
@@ -3069,6 +3395,7 @@
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:40:53.298306+00:00",
       "youtubeSortIndex": 553,
       "youtubePublishedAt": "2021-09-21T12:00:00.000Z",
       "listSortPublishedAtMs": 1632225600000,
@@ -3107,12 +3434,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/47860",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "新时代 冬奥运",
+        "en": "Xin Shi Dai Dong Ao Yun"
+      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
         "en": "INTO1"
       },
+      "supabaseCreatedAt": "2026-04-14T02:42:06.830767+00:00",
       "youtubeSortIndex": 554,
       "youtubePublishedAt": "2021-09-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1632052800000,
@@ -3153,12 +3484,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {},
+      "titles": {
+        "zhHans": "意气趁年少",
+        "en": "Yi Qi Chen Nian Shao"
+      },
       "artists": {
         "zhHans": "刘宇宁",
         "zhHant": "劉宇寧",
         "en": "Liu Yuning"
       },
+      "supabaseCreatedAt": "2026-04-14T02:41:06.434854+00:00",
       "youtubeSortIndex": 555,
       "youtubePublishedAt": "2021-09-18T12:00:00.000Z",
       "listSortPublishedAtMs": 1631966400000,
@@ -3199,13 +3534,17 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/45412",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "时结",
+        "en": "Shi Jie"
+      },
       "artists": {
         "zhHans": "周深",
         "zhHant": "周深",
         "en": "Zhou Shen"
       },
       "workProjectKey": "honor-of-kings",
+      "supabaseCreatedAt": "2026-04-14T02:42:26.78037+00:00",
       "youtubeSortIndex": 556,
       "youtubePublishedAt": "2021-09-17T12:00:00.000Z",
       "listSortPublishedAtMs": 1631880000000,
@@ -3244,11 +3583,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "Radio"
+      },
       "artists": {
         "zhHans": "刘宪华",
         "zhHant": "刘宪华",
         "en": "Henry Lau"
       },
+      "supabaseCreatedAt": "2026-04-14T02:31:31.534868+00:00",
       "youtubeSortIndex": 557,
       "youtubePublishedAt": "2021-09-14T12:00:00.000Z",
       "listSortPublishedAtMs": 1631620800000,
@@ -3290,6 +3633,10 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/45297",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Lalisa"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:29:08.488033+00:00",
       "youtubeSortIndex": 558,
       "youtubePublishedAt": "2021-09-10T12:00:00.000Z",
       "listSortPublishedAtMs": 1631275200000,
@@ -3330,12 +3677,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/45088",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "续写",
+        "en": "Xu Xie"
+      },
       "artists": {
         "zhHans": "单依纯",
         "zhHant": "單依純",
         "en": "Shan Yichun"
       },
+      "supabaseCreatedAt": "2026-04-14T02:45:34.97725+00:00",
       "youtubeSortIndex": 559,
       "youtubePublishedAt": "2021-09-08T12:00:00.000Z",
       "listSortPublishedAtMs": 1631102400000,
@@ -3376,12 +3727,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/44762",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "如故",
+        "en": "Ru Gu"
+      },
       "artists": {
         "zhHans": "张碧晨",
         "zhHant": "張碧晨",
         "en": "Zhang Bichen"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:37.456365+00:00",
       "youtubeSortIndex": 560,
       "youtubePublishedAt": "2021-09-07T12:00:00.000Z",
       "listSortPublishedAtMs": 1631016000000,
@@ -3422,12 +3777,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/44486",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "如一",
+        "en": "Ru Yi"
+      },
       "artists": {
         "zhHans": "任嘉伦",
         "zhHant": "任嘉伦",
         "en": "Allen Ren"
       },
+      "supabaseCreatedAt": "2026-04-14T02:39:31.431781+00:00",
       "youtubeSortIndex": 561,
       "youtubePublishedAt": "2021-09-05T12:00:00.000Z",
       "listSortPublishedAtMs": 1630843200000,
@@ -3466,11 +3825,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/46289",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "人间",
+        "en": "Ren Jian"
+      },
       "artists": {
         "zhHans": "一支榴莲",
         "zhHant": "一支榴莲",
         "en": "Yi Zhi Liulian"
       },
+      "supabaseCreatedAt": "2026-04-14T02:35:39.499011+00:00",
       "youtubeSortIndex": 563,
       "youtubePublishedAt": "2021-08-31T12:00:00.000Z",
       "listSortPublishedAtMs": 1630411200000,
@@ -3509,12 +3873,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {},
+      "titles": {
+        "zhHans": "洄",
+        "en": "Hui"
+      },
       "artists": {
         "zhHans": "王源",
         "zhHant": "王源",
         "en": "Roy Wang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:43:48.021291+00:00",
       "youtubeSortIndex": 564,
       "youtubePublishedAt": "2021-08-29T12:00:00.000Z",
       "listSortPublishedAtMs": 1630238400000,
@@ -3553,11 +3921,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/34373",
       "linkStatus": "linked",
+      "titles": {
+        "en": "Wonderland Party"
+      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
         "en": "INTO1"
       },
+      "supabaseCreatedAt": "2026-04-14T02:33:57.490306+00:00",
       "youtubeSortIndex": 566,
       "youtubePublishedAt": "2021-08-27T12:00:00.000Z",
       "listSortPublishedAtMs": 1630065600000,
@@ -3598,13 +3970,17 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/45412",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "无双的王者",
+        "en": "Wu Shuang De Wang Zhe"
+      },
       "artists": {
         "zhHans": "邓紫棋",
         "zhHant": "鄧紫棋",
         "en": "G.E.M."
       },
       "workProjectKey": "honor-of-kings",
+      "supabaseCreatedAt": "2026-04-14T02:42:13.702599+00:00",
       "youtubeSortIndex": 567,
       "youtubePublishedAt": "2021-08-26T12:00:00.000Z",
       "listSortPublishedAtMs": 1629979200000,
@@ -3643,11 +4019,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/359491",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "疯人公园",
+        "en": "Feng Ren Gong Yuan"
+      },
       "artists": {
         "zhHans": "王源",
         "zhHant": "王源",
         "en": "Roy Wang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:44:47.390239+00:00",
       "youtubeSortIndex": 568,
       "youtubePublishedAt": "2021-08-23T12:00:00.000Z",
       "listSortPublishedAtMs": 1629720000000,
@@ -3686,11 +4067,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "The Eve"
+      },
       "artists": {
         "zhHans": "EXO",
         "zhHant": "EXO",
         "en": "EXO"
       },
+      "supabaseCreatedAt": "2026-04-14T02:33:16.184646+00:00",
       "youtubeSortIndex": 569,
       "youtubePublishedAt": "2021-08-21T12:00:00.000Z",
       "listSortPublishedAtMs": 1629547200000,
@@ -3729,12 +4114,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/43103",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "HOME"
+      },
       "artists": {
         "zhHans": "王源",
         "zhHant": "王源",
         "en": "Roy Wang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:28:14.894852+00:00",
       "youtubeSortIndex": 570,
       "youtubePublishedAt": "2021-08-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1629374400000,
@@ -3773,6 +4161,11 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/42968",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "尾号6208",
+        "en": "Tail Number 6208"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:40:15.898077+00:00",
       "youtubeSortIndex": 571,
       "youtubePublishedAt": "2021-08-18T12:00:00.000Z",
       "listSortPublishedAtMs": 1629288000000,
@@ -3827,6 +4220,7 @@
         "zhHant": "楊紫、肖戰",
         "en": "Yang Zi, Xiao Zhan"
       },
+      "supabaseCreatedAt": "2026-04-14T02:36:00.719048+00:00",
       "youtubeSortIndex": 572,
       "youtubePublishedAt": "2021-08-15T12:00:00.000Z",
       "listSortPublishedAtMs": 1629028800000,
@@ -3865,12 +4259,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/359491",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "勾指起誓",
+        "en": "Gou Zhi Qi Shi"
+      },
       "artists": {
         "zhHans": "洛天依",
         "zhHant": "洛天依",
         "en": "Luo Tianyi"
       },
+      "supabaseCreatedAt": "2026-04-14T02:37:41.033663+00:00",
       "youtubeSortIndex": 573,
       "youtubePublishedAt": "2021-08-14T12:00:00.000Z",
       "listSortPublishedAtMs": 1628942400000,
@@ -3909,11 +4307,15 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
+      "titles": {
+        "en": "You Can't Sit With Us"
+      },
       "artists": {
         "zhHans": "Sunmi",
         "zhHant": "Sunmi",
         "en": "Sunmi"
       },
+      "supabaseCreatedAt": "2026-04-14T02:34:12.062078+00:00",
       "youtubeSortIndex": 574,
       "youtubePublishedAt": "2021-08-13T12:00:00.000Z",
       "listSortPublishedAtMs": 1628856000000,
@@ -3952,11 +4354,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/42594",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "风暴眼",
+        "en": "Feng Bao Yan"
+      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
         "en": "INTO1"
       },
+      "supabaseCreatedAt": "2026-04-14T02:48:25.853727+00:00",
       "youtubeSortIndex": 575,
       "youtubePublishedAt": "2021-08-11T12:00:00.000Z",
       "listSortPublishedAtMs": 1628683200000,
@@ -3995,11 +4402,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/42417",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "傻瓜",
+        "en": "Sha Gua"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:36:44.517401+00:00",
       "youtubeSortIndex": 576,
       "youtubePublishedAt": "2021-08-10T12:00:00.000Z",
       "listSortPublishedAtMs": 1628596800000,
@@ -4051,6 +4463,7 @@
         "en": "K/DA"
       },
       "workProjectKey": "league-of-legends",
+      "supabaseCreatedAt": "2026-04-14T02:31:20.154319+00:00",
       "youtubeSortIndex": 577,
       "youtubePublishedAt": "2021-08-08T12:00:00.000Z",
       "listSortPublishedAtMs": 1628424000000,
@@ -4091,8 +4504,11 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "en": "Masayume Chasing"
+      },
       "artists": {},
+      "supabaseCreatedAt": "2026-04-14T02:30:10.0628+00:00",
       "youtubeSortIndex": 578,
       "youtubePublishedAt": "2021-08-07T12:00:00.000Z",
       "listSortPublishedAtMs": 1628337600000,
@@ -4131,12 +4547,16 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/41954",
       "linkStatus": "linked",
-      "titles": {},
+      "titles": {
+        "zhHans": "朱雀",
+        "en": "Zhu Que"
+      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
         "en": "Teens In Times"
       },
+      "supabaseCreatedAt": "2026-04-14T02:43:19.208848+00:00",
       "youtubeSortIndex": 580,
       "youtubePublishedAt": "2021-08-05T12:00:00.000Z",
       "listSortPublishedAtMs": 1628164800000,
@@ -4175,58 +4595,20 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/45561",
       "linkStatus": "linked",
+      "titles": {
+        "zhHans": "流星也为你落下来了",
+        "en": "Liu Xing Ye Wei Ni Luo Xia Lai Liao"
+      },
       "artists": {
         "zhHans": "王源",
         "zhHant": "王源",
         "en": "Roy Wang"
       },
+      "supabaseCreatedAt": "2026-04-14T02:43:53.800623+00:00",
       "youtubeSortIndex": 581,
       "youtubePublishedAt": "2021-08-03T12:00:00.000Z",
       "listSortPublishedAtMs": 1627992000000,
       "listSortPublishedAt": "2021-08-03T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "40234d49-d2a2-41bc-a2b6-748073123aca",
-      "title": "我喜欢你",
-      "displayTitle": "我喜欢你",
-      "originalArtist": "《我喜欢你》钢琴版 时代少年团",
-      "canonicalArtistId": "tnt",
-      "canonicalArtistDisplayName": "时代少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273495a35ad97bf0c90b613bb03",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-d2014f4004/audio.mp3",
-      "midiUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-d2014f4004/performance.mid",
-      "musicXmlUrl": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-d2014f4004/score.musicxml",
-      "duration": "04:10",
-      "durationSeconds": 250,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "我喜欢你",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=MdlMmI7parI",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "MdlMmI7parI",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/41902",
-      "linkStatus": "linked",
-      "artists": {
-        "zhHans": "时代少年团",
-        "zhHant": "時代少年團",
-        "en": "Teens In Times"
-      },
-      "youtubeSortIndex": 582,
-      "youtubePublishedAt": "2021-08-01T12:00:00.000Z",
-      "listSortPublishedAtMs": 1627819200000,
-      "listSortPublishedAt": "2021-08-01T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

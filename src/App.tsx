@@ -1298,11 +1298,64 @@ export default function App() {
     if (activeView === 'settings') setImmersiveMode(false);
   }, [activeView]);
 
-  // Click-outside-main-panel → go Home
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  /**
+   * Immersive-shell rule: clicking empty background area inside Music / Focus /
+   * Settings (any non-home secondary view) returns to Home.
+   *
+   * Trigger semantics:
+   *  - Walk up from the click target up to (but not including) the handler's
+   *    currentTarget. If we cross anything that looks interactive (button,
+   *    link, input, `role=*`, contenteditable, <audio>/<video>) OR anything
+   *    tagged `data-no-home-click` (cards, player, dialogs opt out), skip.
+   *  - Otherwise the click was on empty padding/gutter of `<main>` or the
+   *    inner wrapper → navigate Home.
+   *
+   * We intentionally avoid a blanket `e.stopPropagation()` on `<main>` — that
+   * breaks this rule as every click inside `<main>` short-circuits the root
+   * handler (regression from commit e7fe0dc).
+   */
+  /**
+   * Card/interactive detection for click-outside-card-returns-home.
+   *
+   * A click is **NOT** a "background click" if, walking up from the target
+   * (up to but excluding `stopAt`), we cross any of:
+   *  - explicit interactive HTML tags (BUTTON/A/INPUT/TEXTAREA/SELECT/LABEL/
+   *    AUDIO/VIDEO/CANVAS)
+   *  - contenteditable or any ARIA `role`
+   *  - `data-no-home-click` opt-out (TopNav, player bar, any card wrapper)
+   *  - a "card-like" element — detected via Tailwind class heuristic
+   *    (`rounded-*` + any of `backdrop-blur` / `bg-white` / `bg-black` /
+   *    `bg-white-5` / `border` / `shadow`). This covers the vast majority of
+   *    glass cards without forcing every card author to tag each one.
+   */
+  const CARD_CLASS_HEURISTIC_RE =
+    /(?:^|\s)rounded(?:-[a-z0-9]+)?\b[^\n"]*\b(?:backdrop-blur|bg-white|bg-black|bg-slate|bg-zinc|bg-neutral|bg-gray|bg-\[|border|shadow)/;
+  const isInteractiveOrOptedOut = (start: Element | null, stopAt: Element): boolean => {
+    let cur: Element | null = start;
+    while (cur && cur !== stopAt) {
+      const tag = cur.tagName;
+      if (tag === 'BUTTON' || tag === 'A' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'LABEL' || tag === 'AUDIO' || tag === 'VIDEO' || tag === 'CANVAS') return true;
+      if (cur instanceof HTMLElement) {
+        if (cur.isContentEditable) return true;
+        if (cur.hasAttribute('role')) return true;
+        if (cur.hasAttribute('data-no-home-click')) return true;
+        if (cur.hasAttribute('data-home-click-guard')) return true;
+        const cls = cur.className;
+        if (typeof cls === 'string' && CARD_CLASS_HEURISTIC_RE.test(cls)) return true;
+      }
+      cur = cur.parentElement;
+    }
+    return false;
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLElement>) => {
     if (activeView === 'home') return;
-    // Only trigger if the click target is the backdrop itself (not a child)
-    if (e.target === e.currentTarget) setActiveView('home');
+    if (e.defaultPrevented) return;
+    if (immersiveMode || showPracticePanel) return;
+    const target = e.target as Element | null;
+    if (!target) return;
+    if (isInteractiveOrOptedOut(target, e.currentTarget)) return;
+    setActiveView('home');
   };
 
   return (
@@ -1350,17 +1403,13 @@ export default function App() {
 
           <main
             /**
-             * <main> 现在是真正的滚动容器：
-             *   - flex-1 + min-h-0：在 flex 父容器（h-[100dvh]）下正确收缩到剩余空间，
-             *     不再被自身内容撑出父容器；min-h-0 是 flex item 能 overflow 的关键。
-             *   - w-full + overflow-y-auto + overflow-x-hidden：
-             *     纵向必要时显示滚动条，且滚动条贴在视口最右沿（因为 main 是全宽，
-             *     不再 max-w-6xl 居中）；横向永远不滚。
-             *   - max-w-6xl mx-auto 和 padding 移到内层 <div>，保持原视觉布局不变。
-             *   - immersiveMode 的过渡效果作用在内容层而非滚动容器层，避免滚动条误闪。
+             * <main> 是真正的滚动容器（见下方 className 注释）。
+             * onClick 不再无脑 stopPropagation —— 那会压掉「点击卡片外区域回 Home」
+             * 的沉浸式规则；现在由 handleBackdropClick 在 target 路径里主动判断，
+             * 只有命中按钮/输入/卡片等「data-no-home-click」标签时才跳过。
              */
             className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden z-10 relative"
-            onClick={e => e.stopPropagation()}
+            onClick={handleBackdropClick}
             aria-hidden={immersiveMode}
           >
           <div
@@ -1686,6 +1735,7 @@ const TopNav = memo(function TopNav({
 
   return (
     <header
+      data-no-home-click="topnav"
       className={`topnav-header fixed top-6 left-0 right-0 z-50 flex justify-center px-0 pointer-events-none transition-all duration-300 ease-out ${
         immersiveMode ? 'opacity-0 -translate-y-[120%]' : ''
       }`}
@@ -2455,7 +2505,7 @@ const BottomPlayer = memo(function BottomPlayer({
   };
 
   return (
-    <footer className="player-bar-dock fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center overflow-visible px-0 pb-2.5 pt-0 md:pb-4 pointer-events-none">
+    <footer data-no-home-click="player" className="player-bar-dock fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center overflow-visible px-0 pb-2.5 pt-0 md:pb-4 pointer-events-none">
       <audio
         ref={audioRef}
         data-role="main-player"

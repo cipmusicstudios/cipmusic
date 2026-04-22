@@ -3052,7 +3052,7 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     titles: {
       zhHans: "热爱105°C的你",
       zhHant: "熱愛105°C的你",
-      en: "热爱105°C的你"
+      en: "Re Ai 105°C De Ni"
     },
     coverUrl: "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2735ad385b1d970cd88397f8eb4"
   },

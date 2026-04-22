@@ -29,6 +29,7 @@ import { createClient } from '@supabase/supabase-js';
 import { parseFile } from 'music-metadata';
 import { LOCAL_IMPORT_SEEDS } from '../src/local-import-seeds.generated.ts';
 import { buildLocalImportTrack } from '../src/local-import-build-track.ts';
+import { buildRomanizedFallbackTitle } from '../src/local-import-metadata-auto.ts';
 import {
   trackToManifestEntry,
   buildArtistManifestFromSongs,
@@ -227,8 +228,31 @@ function mapSupabaseSongRowToTrack(row: SupabaseSongRow, supabaseUrl: string): T
   const slug = pickString(row, 'slug') || id;
   const { bySlug, byZhTitle } = getProductionLocalTitleLookups();
   const fromLocal = bySlug.get(slug) || (title ? byZhTitle.get(title.trim()) : undefined);
-  const titles: DisplayTitles | undefined = fromLocal ? { ...fromLocal } : undefined;
+  let titles: DisplayTitles | undefined = fromLocal ? { ...fromLocal } : undefined;
+  /**
+   * Pinyin/romanization safety net for the English UI. If the display title contains Han
+   * characters and no `titles.en` is present (either because the local-import seed was
+   * removed after Supabase migration, or the Supabase row never had a manual English
+   * title), synthesize a romanized fallback so the English UI never shows raw Chinese.
+   */
+  const hasHan = /[\p{Script=Han}]/u.test(title || '');
+  if (hasHan) {
+    if (!titles) titles = {};
+    if (!titles.zhHans) titles.zhHans = title;
+    /**
+     * Repair Chinese leakage: a few seeds/overrides ended up with
+     * `titles.en === <Chinese>` (e.g. 人之爱, 灯火万家). Treat Han-char en as
+     * missing and regenerate a romanized fallback so the English UI never
+     * displays raw Chinese characters.
+     */
+    const enHasHan = !!titles.en && /[\p{Script=Han}]/u.test(titles.en);
+    if (!titles.en || enHasHan) {
+      const rom = buildRomanizedFallbackTitle(title || '');
+      if (rom) titles.en = rom;
+    }
+  }
 
+  const createdAtIso = pickString(row, 'created_at');
   const sheetFromDb = pickString(row, 'sheet_url') || undefined;
   const noSheet = LOCAL_IMPORT_METADATA_OVERRIDES[slug]?.links?.noSheet === true;
   const sheetUrl = noSheet ? undefined : PRODUCTION_SHEET_URL_BY_SLUG[slug] ?? sheetFromDb;
@@ -298,6 +322,7 @@ function mapSupabaseSongRowToTrack(row: SupabaseSongRow, supabaseUrl: string): T
       },
       enrichment: {
         status: pickString(row, 'metadata_status') === 'approved' ? 'auto' : 'manual',
+        supabaseCreatedAt: createdAtIso,
       },
     },
   };
