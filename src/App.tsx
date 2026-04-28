@@ -835,6 +835,8 @@ export default function App() {
               ? 'read-membership function unavailable in local preview'
               : `[read-membership] endpoint unreachable (status ${result.httpStatus ?? 'network'})`,
           );
+        } else if (result.reason === 'unauthenticated') {
+          /** 未登录 / token 过期：按 basic 体验降级处理，不上报 */
         } else {
           console.warn('[read-membership] request failed', {
             httpStatus: result.httpStatus,

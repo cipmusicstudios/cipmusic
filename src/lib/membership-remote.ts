@@ -1,3 +1,5 @@
+import {supabase} from './supabase';
+
 const DEFAULT_READ_URL = '/.netlify/functions/read-membership';
 
 function readEndpoint(): string {
@@ -19,7 +21,10 @@ export type RemoteUserMembership = {
 };
 
 /** 端点不可达（本地 preview 无 Functions、404、非 JSON 等）与「函数已响应但失败」区分，便于前端降级。 */
-export type RemoteMembershipFetchFailureReason = 'function_unavailable' | 'request_failed';
+export type RemoteMembershipFetchFailureReason =
+  | 'function_unavailable'
+  | 'request_failed'
+  | 'unauthenticated';
 
 export type RemoteMembershipFetchResult =
   | {ok: true; data: RemoteUserMembership | null}
@@ -91,13 +96,31 @@ function readFailureFromBody(parsed: unknown, httpStatus: number): RemoteMembers
   };
 }
 
-/** userId：Supabase Auth UUID。 */
-export async function fetchRemoteUserMembership(userId: string): Promise<RemoteMembershipFetchResult> {
+/**
+ * Phase B3 安全收口：调用 read-membership 必须带 `Authorization: Bearer <supabase access_token>`。
+ * 实际 userId 由后端从 JWT 解析；为保持调用点签名兼容，仍接受 `_userId` 参数但不会发给后端。
+ * 未登录时直接返回 `unauthenticated`，避免无意义的 401 请求。
+ */
+export async function fetchRemoteUserMembership(_userId: string): Promise<RemoteMembershipFetchResult> {
+  let accessToken: string | null = null;
+  try {
+    const {data} = await supabase.auth.getSession();
+    accessToken = data.session?.access_token ?? null;
+  } catch {
+    accessToken = null;
+  }
+  if (!accessToken) {
+    return {ok: false, data: null, reason: 'unauthenticated'};
+  }
+
   try {
     const res = await fetch(readEndpoint(), {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({userId}),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({}),
     });
 
     const text = await res.text();
@@ -117,6 +140,10 @@ export async function fetchRemoteUserMembership(userId: string): Promise<RemoteM
     if (!res.ok) {
       if (res.status === 404 || res.status === 405) {
         return {ok: false, data: null, reason: 'function_unavailable', httpStatus: res.status};
+      }
+      if (res.status === 401) {
+        const failure = readFailureFromBody(parsed, res.status);
+        return failure.ok === false ? {...failure, reason: 'unauthenticated'} : failure;
       }
       return readFailureFromBody(parsed, res.status);
     }

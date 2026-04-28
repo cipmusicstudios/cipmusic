@@ -1,23 +1,23 @@
 import type {Handler, HandlerEvent, HandlerResponse} from '@netlify/functions';
 import {createSupabaseServiceClient} from './_shared/supabase-service';
-import {userIdFromRequestBody} from './_shared/user-id';
 
 const TABLE = 'user_membership';
 
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-/** 安全诊断字段；不含密钥与 userId */
+/** 安全诊断字段；不含密钥、token 与 userId */
 export type ReadMembershipDebug = {
-  userIdPresent: boolean;
+  hasAuthHeader: boolean;
+  authValid: boolean;
   supabaseConfigured: boolean;
   queryAttempted: boolean;
   table: string;
   missingEnv?: string[];
-  queryPath?: 'user_id';
+  errorStage?: string;
   errorMessage?: string | null;
   supabaseErrorCode?: string | null;
 };
@@ -37,30 +37,29 @@ function json(statusCode: number, body: unknown): HandlerResponse {
   };
 }
 
-function successBody(row: {
-  premium_until: string | null;
-  membership_status: string | null;
-  payment_provider: string | null;
-  last_payment_at: string | null;
-  auto_renew: boolean | null;
-  current_period_end: string | null;
-  stripe_subscription_status: string | null;
-  cancel_at_period_end: boolean | null;
-  last_payment_status: string | null;
-  payment_failure_at: string | null;
-} | null) {
+/**
+ * Phase B2 安全收口：仅返回前端 UI 真正需要的字段。
+ * 故意丢弃：paymentProvider / lastPaymentAt / stripeSubscriptionStatus
+ * / lastPaymentStatus / paymentFailureAt 等支付内部状态字段，避免 JWT 鉴权后仍超额泄露。
+ */
+function successBody(
+  userId: string,
+  row:
+    | {
+        premium_until: string | null;
+        membership_status: string | null;
+        auto_renew: boolean | null;
+        current_period_end: string | null;
+      }
+    | null,
+) {
   return {
     ok: true as const,
-    premiumUntil: row?.premium_until ?? null,
+    userId,
     membershipStatus: row?.membership_status ?? null,
-    paymentProvider: row?.payment_provider ?? null,
-    lastPaymentAt: row?.last_payment_at ?? null,
-    autoRenew: row?.auto_renew ?? null,
+    premiumUntil: row?.premium_until ?? null,
     currentPeriodEnd: row?.current_period_end ?? null,
-    stripeSubscriptionStatus: row?.stripe_subscription_status ?? null,
-    cancelAtPeriodEnd: row?.cancel_at_period_end ?? null,
-    lastPaymentStatus: row?.last_payment_status ?? null,
-    paymentFailureAt: row?.payment_failure_at ?? null,
+    autoRenew: row?.auto_renew ?? null,
   };
 }
 
@@ -81,87 +80,123 @@ function fail(
   });
 }
 
+function parseAuthHeader(event: HandlerEvent): string | null {
+  const headers = event.headers ?? {};
+  const raw =
+    headers['authorization'] ||
+    headers['Authorization'] ||
+    (headers as Record<string, string | undefined>)['AUTHORIZATION'];
+  if (!raw || typeof raw !== 'string') return null;
+  const m = /^Bearer\s+(.+)$/i.exec(raw.trim());
+  if (!m) return null;
+  const token = m[1].trim();
+  return token || null;
+}
+
+function logLine(fields: Record<string, unknown>) {
+  const safe: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(fields)) {
+    if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' || v == null) {
+      safe[k] = v;
+    }
+  }
+  console.log('[read-membership]', JSON.stringify(safe));
+}
+
 /**
- * 读取 public.user_membership（service role）。
- * Body: { userId }（Supabase Auth UUID）。仅按 user_id 查询，无行视为未开通 → HTTP 200 + ok:true + 全 null。
+ * Phase B1 安全收口：必须 `Authorization: Bearer <supabase_access_token>`。
+ * `userId` 仅来自 Supabase 校验通过的 JWT，绝不信任 body.userId，杜绝任意 UUID 枚举他人会员状态。
  */
 export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
   if (event.httpMethod === 'OPTIONS') {
     return {statusCode: 204, headers: corsHeaders, body: ''};
   }
-  if (event.httpMethod !== 'POST') {
-    return fail(405, 'METHOD_NOT_ALLOWED', 'POST required', {
-      userIdPresent: false,
-      supabaseConfigured: Boolean(
-        process.env.SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
-      ),
-      queryAttempted: false,
-      table: TABLE,
-      missingEnv: collectMissingSupabaseEnv(),
-    });
-  }
-
-  let body: {userId?: string};
-  try {
-    body = JSON.parse(event.body || '{}');
-  } catch {
-    return fail(400, 'INVALID_JSON', 'Invalid JSON body', {
-      userIdPresent: false,
-      supabaseConfigured: Boolean(
-        process.env.SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
-      ),
-      queryAttempted: false,
-      table: TABLE,
-      missingEnv: collectMissingSupabaseEnv(),
-    });
-  }
-
-  const userId = userIdFromRequestBody({userId: typeof body.userId === 'string' ? body.userId : undefined});
-  const missingEnv = collectMissingSupabaseEnv();
 
   const baseDebug = (partial: Partial<ReadMembershipDebug> = {}): ReadMembershipDebug => ({
-    userIdPresent: userId != null,
-    supabaseConfigured: Boolean(process.env.SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()),
+    hasAuthHeader: false,
+    authValid: false,
+    supabaseConfigured: Boolean(
+      process.env.SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
+    ),
     queryAttempted: false,
     table: TABLE,
-    missingEnv,
+    missingEnv: collectMissingSupabaseEnv(),
     ...partial,
   });
 
-  if (!userId) {
-    return fail(400, 'MISSING_USER', 'userId is required (Supabase Auth UUID)', baseDebug());
+  if (event.httpMethod !== 'POST') {
+    return fail(405, 'METHOD_NOT_ALLOWED', 'POST required', baseDebug({errorStage: 'wrong_method'}));
   }
 
+  const token = parseAuthHeader(event);
+  if (!token) {
+    logLine({stage: 'no_bearer', ok: false});
+    return fail(
+      401,
+      'UNAUTHENTICATED',
+      'Missing Authorization: Bearer <supabase_access_token>',
+      baseDebug({errorStage: 'no_bearer'}),
+    );
+  }
+
+  const missingEnv = collectMissingSupabaseEnv();
   if (missingEnv.length > 0) {
+    logLine({stage: 'env_missing', ok: false});
     return fail(
       503,
       'SERVICE_ENV_INCOMPLETE',
       'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for Netlify Functions (VITE_* is not available server-side).',
-      baseDebug({queryAttempted: false}),
+      baseDebug({hasAuthHeader: true, errorStage: 'env_missing'}),
     );
   }
 
   const supabase = createSupabaseServiceClient();
   if (!supabase) {
-    return fail(503, 'SERVICE_ENV_INCOMPLETE', 'Could not create Supabase service client.', baseDebug());
+    logLine({stage: 'no_service_client', ok: false});
+    return fail(
+      503,
+      'SERVICE_ENV_INCOMPLETE',
+      'Could not create Supabase service client.',
+      baseDebug({hasAuthHeader: true, errorStage: 'no_service_client'}),
+    );
   }
+
+  const userRes = await supabase.auth.getUser(token);
+  if (userRes.error || !userRes.data?.user?.id) {
+    logLine({stage: 'jwt_invalid', ok: false});
+    return fail(
+      401,
+      'INVALID_SESSION',
+      'Supabase access token could not be verified.',
+      baseDebug({
+        hasAuthHeader: true,
+        errorStage: 'jwt_invalid',
+        errorMessage: userRes.error?.message ?? null,
+      }),
+    );
+  }
+
+  const userId = userRes.data.user.id;
 
   const byUserId = await supabase
     .from(TABLE)
-    .select('*')
+    .select('premium_until, membership_status, auto_renew, current_period_end')
     .eq('user_id', userId)
     .limit(1)
     .maybeSingle();
 
   if (byUserId.error) {
     console.error('[read-membership] user_id query', byUserId.error);
+    logLine({stage: 'membership_query_failed', ok: false});
     return fail(
       503,
       'MEMBERSHIP_QUERY_FAILED',
       byUserId.error.message,
       baseDebug({
+        hasAuthHeader: true,
+        authValid: true,
         queryAttempted: true,
-        queryPath: 'user_id',
+        errorStage: 'membership_query_failed',
         errorMessage: byUserId.error.message,
         supabaseErrorCode: byUserId.error.code != null ? String(byUserId.error.code) : null,
       }),
@@ -169,5 +204,10 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     );
   }
 
-  return json(200, successBody(byUserId.data));
+  logLine({
+    stage: 'ok',
+    ok: true,
+    membershipFound: byUserId.data != null,
+  });
+  return json(200, successBody(userId, byUserId.data));
 };
