@@ -171,9 +171,13 @@ export const SCENES: SceneDefinition[] = [
 ];
 
 /** Remote `songs` columns used in UI (avoid `select('*')` payload). Full rows load after idle. */
-/** 与当前 Supabase 表结构一致（远端若无 bilibili_url 列则勿选，否则会 42703） */
+/**
+ * Phase A2 安全收口：anon 前端不再 SELECT `midi_url` / `musicxml_url`，避免任何未登录访客
+ * 通过 PostgREST 直接拿到付费谱面源文件直链。`audio_url` 暂时保留以维持普通播放。
+ * `has_practice_mode` 仅作为 UI 标志位，真正资源 URL 必须经 Practice broker 签发（待 Phase C）。
+ */
 const SUPABASE_REMOTE_SONG_COLUMNS =
-  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,musicxml_url,midi_url,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
+  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,has_practice_mode,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
 
 const SUPABASE_SONGS_BUCKET = (import.meta.env.VITE_SUPABASE_SONGS_BUCKET as string | undefined)?.trim() || 'songs';
 
@@ -187,10 +191,15 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
   const audioUrl = resolve(song.audio_url);
   const coverUrl = resolve(song.cover_url) || '';
   const sourceCoverUrl = resolve(song.source_cover_url) || undefined;
-  const midiUrl = resolve(song.midi_url);
-  const musicxmlUrl = resolve(song.musicxml_url);
+  /**
+   * Phase A2 安全收口：MIDI / MusicXML 不再来自 Supabase anon SELECT。Practice broker (Phase C) 上线之前，
+   * Practice 入口对所有 remote 歌曲一律 disabled。`midiUrl` / `musicxmlUrl` 字段保留为 undefined，
+   * 让 `track-display.ts: hasPracticeAssets()` 自然返回 false，UI 自动隐藏 Practice 按钮。
+   */
+  const midiUrl = undefined;
+  const musicxmlUrl = undefined;
   const duration = (song.duration as string) || '00:00';
-  const hasPracticeAssetsRow = Boolean(song.audio_url && song.midi_url && song.musicxml_url);
+  const hasPracticeAssetsRow = false;
 
   return {
     id: song.id as string,

@@ -581,7 +581,12 @@ export function manifestEntryToTrack(entry: SongManifestEntry): Track {
     (e.tags || []).filter(t => CONTEXT_CATEGORY_TAGS.has(t)),
   );
   const categoryPrimary = primaryCategory || e.tags[0] || 'Originals';
-  const practiceEnabled = e.hasPracticeMode;
+  /**
+   * Phase A3 安全收口：公开 manifest 已被 sanitizer 移除 midiUrl / musicXmlUrl。
+   * Practice broker (Phase C) 上线之前，资源 URL 缺失即 disable Practice 入口；
+   * `hasPracticeMode` 标志依旧保留在 entry 上，未来仅作为白名单依据。
+   */
+  const practiceEnabled = Boolean(e.hasPracticeMode && e.midiUrl && e.musicXmlUrl);
   const durationSeconds =
     typeof e.durationSeconds === 'number' && Number.isFinite(e.durationSeconds) && e.durationSeconds > 0
       ? e.durationSeconds

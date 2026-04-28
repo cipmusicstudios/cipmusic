@@ -475,6 +475,19 @@ async function main() {
     }
   }
 
+  /**
+   * Phase A1 安全收口：MIDI / MusicXML 是付费谱面源文件，绝不能进入公开 manifest。
+   * 直接删除 `midiUrl` / `musicXmlUrl` 字段（连键名都不输出），避免任何字符串扫描扫到 `.mid` / `.musicxml`。
+   * 仍保留 `hasPracticeMode` 标志（来自 DB `songs.has_practice_mode`），让前端 UI 能知道
+   * 哪些歌曲未来在 broker 上线后将开放 Practice Mode。`mp3Url` 本轮暂不收口，避免普通播放断链。
+   */
+  const sanitizeForPublicManifest = (entry: SongManifestEntry): Omit<SongManifestEntry, 'midiUrl' | 'musicXmlUrl'> => {
+    const {midiUrl: _midiUrl, musicXmlUrl: _musicXmlUrl, ...rest} = entry;
+    void _midiUrl;
+    void _musicXmlUrl;
+    return rest;
+  };
+
   const chunkMetas: { path: string; count: number }[] = [];
   let offset = 0;
   let chunkIndex = 0;
@@ -484,7 +497,7 @@ async function main() {
       chunkIndex === 0
         ? Math.min(firstChunkSize, remaining)
         : Math.min(MANIFEST_CHUNK_TARGET, remaining);
-    const slice = entries.slice(offset, offset + size);
+    const slice = entries.slice(offset, offset + size).map(sanitizeForPublicManifest);
     const chunkPath = `songs-manifest-chunk-${chunkIndex}.json`;
     const chunkBody = {
       version: 5,
