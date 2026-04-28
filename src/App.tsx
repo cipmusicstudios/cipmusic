@@ -164,8 +164,8 @@ export type Scene = SceneDefinition & {
 };
 
 export const SCENES: SceneDefinition[] = [
-  { id: 'tideHaven', name: 'Tidal Oasis', tag: 'cafe', type: 'video', publicUrl: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/pianocafe.mp4', thumbnail: BG_FALLBACK_IMAGE_URL, premiumOnly: false },
-  { id: 'rainlightHall', name: 'Rainlight Oasis', tag: 'rain', type: 'video', publicUrl: 'https://pub-9240560f200a43d8a64bb9102acd49e9.r2.dev/rainhall.mp4', thumbnail: 'https://i.imgur.com/iq2hWwS.jpeg', premiumOnly: false },
+  { id: 'tideHaven', name: 'Tidal Oasis', tag: 'cafe', type: 'video', publicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/pianocafe.mp4', thumbnail: BG_FALLBACK_IMAGE_URL, premiumOnly: false },
+  { id: 'rainlightHall', name: 'Rainlight Oasis', tag: 'rain', type: 'video', publicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/rainhall.mp4', thumbnail: 'https://i.imgur.com/iq2hWwS.jpeg', premiumOnly: false },
   { id: 'forestCafe', name: 'Forest Oasis', tag: 'forest', type: 'video', thumbnail: 'https://i.imgur.com/GGg2cSI.jpeg', premiumOnly: true, brokered: true },
   { id: 'celestialDome', name: 'Celestial Oasis', tag: 'night', type: 'video', thumbnail: 'https://i.imgur.com/E5TWs8E.jpeg', premiumOnly: true, brokered: true },
 ];
