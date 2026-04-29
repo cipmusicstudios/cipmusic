@@ -164,5 +164,13 @@ export const getDisplayTrackArtist = (track: Track, currentLang = 'English') => 
   return shouldHideArtistLine(raw) ? '' : raw;
 };
 
+/**
+ * Phase C: Practice 入口判定单一来源 — 优先用 mapper 显式给的 `practiceEnabled`
+ * （Supabase 远端依据 `songs.has_practice_mode`，manifest 依据 `hasPracticeMode`），
+ * 仅当历史 track 未显式给 `practiceEnabled` 时才回退到 URL 存在性检查。
+ * 真正的 MIDI / MusicXML 短链在打开 Practice 时由 `practice-asset-url` broker 现签现取。
+ */
 export const hasPracticeAssets = (track: Track) =>
-  Boolean(track.audioUrl && track.midiUrl && track.musicxmlUrl);
+  Boolean(
+    track.practiceEnabled ?? (track.audioUrl && track.midiUrl && track.musicxmlUrl),
+  );

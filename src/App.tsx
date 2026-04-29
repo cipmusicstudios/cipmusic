@@ -192,14 +192,14 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
   const coverUrl = resolve(song.cover_url) || '';
   const sourceCoverUrl = resolve(song.source_cover_url) || undefined;
   /**
-   * Phase A2 安全收口：MIDI / MusicXML 不再来自 Supabase anon SELECT。Practice broker (Phase C) 上线之前，
-   * Practice 入口对所有 remote 歌曲一律 disabled。`midiUrl` / `musicxmlUrl` 字段保留为 undefined，
-   * 让 `track-display.ts: hasPracticeAssets()` 自然返回 false，UI 自动隐藏 Practice 按钮。
+   * Phase A2 安全收口：MIDI / MusicXML 不再来自 Supabase anon SELECT；保留 undefined。
+   * Phase C 恢复 Practice 入口：基于 DB `has_practice_mode` 标志位重新允许 Practice，
+   * 实际 MIDI / MusicXML URL 由 `practice-asset-url` broker 在打开 Practice 时签发短链。
    */
   const midiUrl = undefined;
   const musicxmlUrl = undefined;
   const duration = (song.duration as string) || '00:00';
-  const hasPracticeAssetsRow = false;
+  const hasPracticeAssetsRow = song.has_practice_mode === true;
 
   return {
     id: song.id as string,

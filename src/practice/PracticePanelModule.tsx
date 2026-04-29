@@ -20,6 +20,10 @@ import { parseMusicXmlHandAssignment, consumeHandLabel } from '../musicxml-hand-
 import { stopPianoLikeVoice } from './piano-like-voice';
 import { premiumUi, premiumUiModal } from '../premium-ui';
 import {
+  resolvePracticeAssetForTrack,
+  type PracticeAssetResolveResult,
+} from '../lib/practice-asset-url';
+import {
   setPlaybackTimelineDuration,
   setPlaybackTimelineTime,
   getPlaybackTimelineSnapshot,
@@ -1054,13 +1058,30 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
   // Load MIDI Notes and Time Map — with single-track MusicXML hand derivation
   React.useEffect(() => {
-    if (!currentTrack.midiUrl) return;
+    if (!currentTrack.id) return;
     let cancelled = false;
     let idleHandle: number | undefined;
 
     const loadMidi = async () => {
       try {
-        const res = await fetch(currentTrack.midiUrl);
+        /**
+         * Phase C: 通过 broker 获取本次 Practice 的 MIDI / MusicXML 短链；
+         * 不再读取 currentTrack.midiUrl / musicxmlUrl 的永久 URL（产品歌曲已为 undefined）。
+         */
+        const resolved: PracticeAssetResolveResult = await resolvePracticeAssetForTrack(currentTrack);
+        if (cancelled) return;
+        if (resolved.ok !== true) {
+          console.warn('[practice] asset resolve failed', {
+            trackId: currentTrack.id,
+            reason: resolved.reason,
+            httpStatus: resolved.httpStatus,
+          });
+          return;
+        }
+        const midiAssetUrl = resolved.midiUrl;
+        const musicXmlAssetUrl = resolved.musicXmlUrl;
+
+        const res = await fetch(midiAssetUrl);
         const buf = await res.arrayBuffer();
         if (cancelled) return;
 
@@ -1084,9 +1105,9 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         let handMode: 'dual-track' | 'musicxml-derived' | 'both-only' = 'dual-track';
         let xmlQueues: Map<number, ('left' | 'right')[]> | null = null;
 
-        if (isSingleTrack && currentTrack.musicxmlUrl) {
+        if (isSingleTrack && musicXmlAssetUrl) {
           try {
-            const xmlRes = await fetch(currentTrack.musicxmlUrl);
+            const xmlRes = await fetch(musicXmlAssetUrl);
             const xmlText = await xmlRes.text();
             if (cancelled) return;
             const result = parseMusicXmlHandAssignment(xmlText);
@@ -1186,7 +1207,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         }
       }
     };
-  }, [currentTrack.midiUrl, currentTrack.musicxmlUrl]);
+  }, [currentTrack]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -1655,12 +1676,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
   // Load MusicXML and Initialize OSMD
   React.useEffect(() => {
     if (!containerRef.current) return;
-
-    if (!currentTrack.musicxmlUrl) {
-      setLoadError("No MusicXML available for this track.");
-      setIsLoading(false);
-      return;
-    }
+    if (!currentTrack.id) return;
 
     setIsLoading(true);
     setLoadError(null);
@@ -1701,19 +1717,39 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
         cursorsOptions: [{ type: 0, color: "transparent", alpha: 0, follow: false }]
       } as any);
 
-      osmd.load(currentTrack.musicxmlUrl).then(() => {
+      /**
+       * Phase C: 从 broker 拿短链后再 load OSMD；不要把永久 musicxml URL 暴露给前端。
+       * broker 失败时显示安全的 unavailable 提示，绝不回退到任何公开 URL。
+       */
+      void (async () => {
+        const resolved = await resolvePracticeAssetForTrack(currentTrack);
         if (cancelled) return;
-        window.requestAnimationFrame(() => {
+        if (resolved.ok !== true) {
+          console.warn('[practice/osmd] asset resolve failed', {
+            trackId: currentTrack.id,
+            reason: resolved.reason,
+            httpStatus: resolved.httpStatus,
+          });
+          setLoadError('Practice assets are temporarily unavailable for this track.');
+          setIsLoading(false);
+          return;
+        }
+        try {
+          await osmd.load(resolved.musicXmlUrl);
           if (cancelled) return;
-          osmd.render();
-          if (!osmdReady) setOsmdReady(true);
-        });
-      }).catch((err) => {
-        if (cancelled) return;
-        console.error("OSMD Load Error", err);
-        setLoadError(err.message || "Failed to parse or load sheet music.");
-        setIsLoading(false);
-      });
+          window.requestAnimationFrame(() => {
+            if (cancelled) return;
+            osmd.render();
+            if (!osmdReady) setOsmdReady(true);
+          });
+        } catch (err) {
+          if (cancelled) return;
+          console.error("OSMD Load Error", err);
+          const message = err instanceof Error ? err.message : 'Failed to parse or load sheet music.';
+          setLoadError(message);
+          setIsLoading(false);
+        }
+      })();
     });
     });
 
@@ -1727,7 +1763,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
       lastRedLineFrameRef.current = { display: '', transform: '', width: '', height: '' };
       lastScrollFrameRef.current = { clipPath: '', transform: '' };
     };
-  }, [currentTrack.musicxmlUrl]);
+  }, [currentTrack]);
 
   React.useEffect(() => {
     if (!osmdReady || !osmdRef.current || !midiHeader || !midiNotes.length) return;

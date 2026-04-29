@@ -582,11 +582,11 @@ export function manifestEntryToTrack(entry: SongManifestEntry): Track {
   );
   const categoryPrimary = primaryCategory || e.tags[0] || 'Originals';
   /**
-   * Phase A3 安全收口：公开 manifest 已被 sanitizer 移除 midiUrl / musicXmlUrl。
-   * Practice broker (Phase C) 上线之前，资源 URL 缺失即 disable Practice 入口；
-   * `hasPracticeMode` 标志依旧保留在 entry 上，未来仅作为白名单依据。
+   * Phase C 恢复 Practice 入口：Phase A1 已把 midiUrl / musicXmlUrl 从公开 manifest 移除，
+   * 这两个字段在运行时永远是 undefined。Practice 是否可用统一基于 `hasPracticeMode` 标志位，
+   * 真正的资源 URL 在打开 Practice 时由 `practice-asset-url` broker 现签现取。
    */
-  const practiceEnabled = Boolean(e.hasPracticeMode && e.midiUrl && e.musicXmlUrl);
+  const practiceEnabled = Boolean(e.hasPracticeMode);
   const durationSeconds =
     typeof e.durationSeconds === 'number' && Number.isFinite(e.durationSeconds) && e.durationSeconds > 0
       ? e.durationSeconds
