@@ -2,10 +2,30 @@ import type {Handler, HandlerEvent, HandlerResponse} from '@netlify/functions';
 import {createSupabaseServiceClient} from './_shared/supabase-service';
 
 const SONGS_TABLE = 'songs';
-const SONGS_BUCKET = (process.env.SUPABASE_SONGS_BUCKET?.trim() || 'songs');
 
-/** 谱面短链有效期（秒）。与 scenes broker 解耦：Practice 资源使用更短的窗口。 */
+/**
+ * 谱面短链有效期（秒）。与 scenes broker 解耦：Practice 资源使用更短的窗口。
+ */
 const SIGNED_URL_TTL_SECONDS = 600;
+
+/**
+ * Phase D Step 0 兼容化：签名 bucket 解析。
+ *
+ * - `SUPABASE_PRACTICE_BUCKET` 显式配置 → 用它（未来 Phase D Step 4 切到 `practice-assets` private bucket 用）
+ * - 否则 fallback 到 `SUPABASE_SONGS_BUCKET`（与历史行为一致）
+ * - 再否则默认 `songs`
+ *
+ * 当前线上不配置 `SUPABASE_PRACTICE_BUCKET`，所以该函数返回 `'songs'`，行为与 Phase C 完全一致。
+ *
+ * 注意：函数式而非常量化，便于本地脚本通过 env 切换 bucket 做端到端测试，无需重启进程。
+ */
+function resolvePracticeBucket(): string {
+  const explicit = process.env.SUPABASE_PRACTICE_BUCKET?.trim();
+  if (explicit) return explicit;
+  const songs = process.env.SUPABASE_SONGS_BUCKET?.trim();
+  if (songs) return songs;
+  return 'songs';
+}
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -75,34 +95,57 @@ function logLine(fields: Record<string, unknown>) {
 }
 
 /**
- * `songs.midi_url` / `songs.musicxml_url` 在 DB 中既可能是绝对 public URL（`/storage/v1/object/public/<bucket>/<path>`），
- * 也可能是 bucket-relative path。这里统一抽出 bucket 内对象 key（不含前导 `/`），用于 `createSignedUrl`。
+ * 把 DB 里存的「绝对 Supabase Storage URL 或 bucket-relative path」统一抽成 object key（不含前导 `/`），
+ * 该 key 与下一步 `supabase.storage.from(<configured-bucket>).createSignedUrl(key, ttl)` 配合使用。
  *
- * 例：
- *   https://x.supabase.co/storage/v1/object/public/songs/songs/stay/performance.mid
- *     → songs/stay/performance.mid
+ * Phase D Step 0：URL → key 的抽取**不再绑定具体 bucket 名**。原因：
+ *  - 历史 DB 中 `midi_url` / `musicxml_url` 永远写成 `/storage/v1/object/public/songs/songs/<slug>/performance.mid`，
+ *    bucket 段固定是 `songs`。
+ *  - 未来 Phase D Step 4 会把签名 bucket 切到 `practice-assets`（private），但 object key 仍保留同样的相对路径
+ *    （Step 2 的复制脚本要求保持 key 不变）。
+ *  - 因此抽 key 时不应锁死 URL 中的 bucket 段；抽出的 `songs/<slug>/performance.mid` 可以在 `songs`
+ *    或 `practice-assets` 任意一个 bucket 中签名（前提是该 bucket 里确实存在该 key）。
+ *
+ * 兼容样本：
+ *   https://x.supabase.co/storage/v1/object/public/songs/songs/stay/performance.mid → songs/stay/performance.mid
+ *   https://x.supabase.co/storage/v1/object/sign/songs/songs/stay/performance.mid?token=...
+ *                                                                                → songs/stay/performance.mid
  *   songs/stay/performance.mid                                                    → 同上
  *   /songs/stay/performance.mid                                                   → 同上
  */
-function bucketRelativeObjectKey(raw: string, bucket: string): string | null {
+function bucketRelativeObjectKey(raw: string): string | null {
   const value = raw.trim();
   if (!value) return null;
   if (/^https?:\/\//i.test(value)) {
-    const publicMarker = `/storage/v1/object/public/${bucket}/`;
-    const signMarker = `/storage/v1/object/sign/${bucket}/`;
-    let idx = value.indexOf(publicMarker);
-    let markerLen = publicMarker.length;
-    if (idx < 0) {
-      idx = value.indexOf(signMarker);
-      markerLen = signMarker.length;
-    }
-    if (idx < 0) return null;
-    const tail = value.slice(idx + markerLen);
-    /** 已带 query（如 ?token=...）时只取 path 部分 */
-    const qIdx = tail.indexOf('?');
-    return qIdx >= 0 ? tail.slice(0, qIdx) : tail;
+    /** `/storage/v1/object/<public|sign>/<anybucket>/<key>` 的统一抽取，bucket 段非贪婪匹配。 */
+    const m = /\/storage\/v1\/object\/(?:public|sign)\/[^/]+\/(.+?)(?:\?|$)/i.exec(value);
+    return m ? m[1] : null;
   }
   return value.replace(/^\/+/, '');
+}
+
+type AssetSource = 'path' | 'url' | 'none';
+
+/**
+ * Phase D Step 0：path 列优先于 url 列。
+ * - DB 中 `midi_path` / `xml_path` 是 bucket-relative 字符串，未来 Phase D 真正迁移时只需更新这两列即可生效。
+ * - 旧的 `midi_url` / `musicxml_url` 仍是绝对 public URL，保留作为 fallback，便于回滚。
+ */
+function pickAssetKey(
+  pathValue: string | null | undefined,
+  urlValue: string | null | undefined,
+): {key: string | null; source: AssetSource} {
+  const pathTrim = typeof pathValue === 'string' ? pathValue.trim() : '';
+  if (pathTrim) {
+    const k = bucketRelativeObjectKey(pathTrim);
+    if (k) return {key: k, source: 'path'};
+  }
+  const urlTrim = typeof urlValue === 'string' ? urlValue.trim() : '';
+  if (urlTrim) {
+    const k = bucketRelativeObjectKey(urlTrim);
+    if (k) return {key: k, source: 'url'};
+  }
+  return {key: null, source: 'none'};
 }
 
 /**
@@ -202,9 +245,14 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   }
   const userId = userRes.data.user.id;
 
+  /**
+   * Phase D Step 0：同时拉 path 列。优先级 `midi_path > midi_url`、`xml_path > musicxml_url`。
+   * `midi_path` / `xml_path` 是历史就有的 bucket-relative 列（见 `migrate-local-songs-to-supabase.ts`），
+   * 当前 DB 已同步写入；本轮无需做数据迁移即可启用 path-first。
+   */
   const songRes = await supabase
     .from(SONGS_TABLE)
-    .select('id, midi_url, musicxml_url, has_practice_mode')
+    .select('id, midi_url, midi_path, musicxml_url, xml_path, has_practice_mode')
     .eq('id', trackId)
     .limit(1)
     .maybeSingle();
@@ -225,7 +273,14 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   }
 
   const row = songRes.data as
-    | {id: string; midi_url: string | null; musicxml_url: string | null; has_practice_mode: boolean | null}
+    | {
+        id: string;
+        midi_url: string | null;
+        midi_path: string | null;
+        musicxml_url: string | null;
+        xml_path: string | null;
+        has_practice_mode: boolean | null;
+      }
     | null;
   if (!row) {
     logLine({stage: 'track_not_found', trackId, userId, ok: false});
@@ -252,13 +307,22 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     );
   }
 
-  const midiKey = row.midi_url ? bucketRelativeObjectKey(row.midi_url, SONGS_BUCKET) : null;
-  const xmlKey = row.musicxml_url ? bucketRelativeObjectKey(row.musicxml_url, SONGS_BUCKET) : null;
-  const hasMidi = Boolean(midiKey);
-  const hasMusicXml = Boolean(xmlKey);
+  const midiPick = pickAssetKey(row.midi_path, row.midi_url);
+  const xmlPick = pickAssetKey(row.xml_path, row.musicxml_url);
+  const hasMidi = Boolean(midiPick.key);
+  const hasMusicXml = Boolean(xmlPick.key);
 
   if (!hasMidi || !hasMusicXml) {
-    logLine({stage: 'assets_missing', trackId, userId, hasMidi, hasMusicXml, ok: false});
+    logLine({
+      stage: 'assets_missing',
+      trackId,
+      userId,
+      hasMidi,
+      hasMusicXml,
+      midiSource: midiPick.source,
+      xmlSource: xmlPick.source,
+      ok: false,
+    });
     return fail(
       422,
       'PRACTICE_ASSETS_MISSING',
@@ -274,14 +338,27 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     );
   }
 
+  /**
+   * Phase D Step 0：bucket 由 env 决定。未配置 `SUPABASE_PRACTICE_BUCKET` 时与 Phase C 完全一致（`songs`）。
+   * Phase D Step 4 会通过 Netlify env 切到 `practice-assets`，此时本函数自动签名新 bucket，无需改代码。
+   */
+  const practiceBucket = resolvePracticeBucket();
   const [midiSign, xmlSign] = await Promise.all([
-    supabase.storage.from(SONGS_BUCKET).createSignedUrl(midiKey as string, SIGNED_URL_TTL_SECONDS),
-    supabase.storage.from(SONGS_BUCKET).createSignedUrl(xmlKey as string, SIGNED_URL_TTL_SECONDS),
+    supabase.storage.from(practiceBucket).createSignedUrl(midiPick.key as string, SIGNED_URL_TTL_SECONDS),
+    supabase.storage.from(practiceBucket).createSignedUrl(xmlPick.key as string, SIGNED_URL_TTL_SECONDS),
   ]);
 
   if (midiSign.error || !midiSign.data?.signedUrl || xmlSign.error || !xmlSign.data?.signedUrl) {
     const errMsg = midiSign.error?.message || xmlSign.error?.message || 'createSignedUrl returned no URL';
-    logLine({stage: 'sign_failed', trackId, userId, ok: false});
+    logLine({
+      stage: 'sign_failed',
+      trackId,
+      userId,
+      bucket: practiceBucket,
+      midiSource: midiPick.source,
+      xmlSource: xmlPick.source,
+      ok: false,
+    });
     return fail(
       500,
       'SIGN_URL_FAILED',
@@ -300,11 +377,17 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
 
   const expiresAt = new Date(Date.now() + SIGNED_URL_TTL_SECONDS * 1000).toISOString();
 
+  /**
+   * 安全日志：只记录 bucket 名 / 来源列名 / 布尔标志，**绝不**记录 path、绝不记录 signed URL。
+   */
   logLine({
     stage: 'ok',
     trackId,
     userId,
     authOk: true,
+    bucket: practiceBucket,
+    midiSource: midiPick.source,
+    xmlSource: xmlPick.source,
     hasMidi,
     hasMusicXml,
     urlsIssued: true,
