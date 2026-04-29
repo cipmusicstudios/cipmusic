@@ -1,37 +1,42 @@
 /**
- * Phase D Step 1/2 准备脚本（默认 dry-run）：
- * - 从 `songs` 表读取 has_practice_mode=true 的曲目
- * - 按与 broker 一致的优先级解析 MIDI / MusicXML key：path 列优先，URL 列 fallback
- * - 校验源对象是否存在
- * - 计算未来复制到 practice-assets（或 env 覆盖 bucket）的目标 key
- * - 输出汇总 + JSON 报告（不改 DB、不复制对象、不删除对象）
+ * Phase D Step 1 / 2 / 2.5 — practice-assets 迁移准备脚本
+ *
+ * 默认 **DRY RUN ONLY**：只读 songs 表 + Storage 探测，生成报告，不复制、不写 DB、不删对象。
+ *
+ * 受控复制（Step 2.5）需要同时满足：
+ *   PRACTICE_MIGRATION_APPLY=1
+ *   PRACTICE_MIGRATION_CONFIRM=copy-practice-assets
+ *
+ * 建议真实复制命令（本仓验证阶段请不要随手执行）：
+ *   PRACTICE_MIGRATION_APPLY=1 PRACTICE_MIGRATION_CONFIRM=copy-practice-assets npm run prepare:practice-assets
  *
  * Usage:
- *   npm run prepare:practice-assets
+ *   npm run prepare:practice-assets                       # dry-run（默认）
  *
  * Optional env:
  *   SUPABASE_URL / VITE_SUPABASE_URL
  *   SUPABASE_SERVICE_ROLE_KEY
  *   SUPABASE_SONGS_BUCKET               (default: songs)
  *   SUPABASE_PRACTICE_BUCKET            (default: practice-assets)
- *   PRACTICE_MIGRATION_PATH_MODE        stable | rotated  (default: stable)
+ *   PRACTICE_MIGRATION_PATH_MODE        stable | rotated  (default: stable; rotated 仅 dry-run 规划用)
  *   PRACTICE_MIGRATION_REPORT_PATH      (default: tmp/practice-assets-migration-report.json)
- *
- * Safety:
- *   - 默认仅 dry-run。
- *   - 本脚本不会复制/删除任何对象，不会写 DB。
+ *   PRACTICE_MIGRATION_OVERWRITE=1      (default: off) — 允许覆盖 target 已存在对象
  */
 import dotenv from 'dotenv';
 import path from 'node:path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import {Buffer} from 'node:buffer';
 import {createClient, type SupabaseClient} from '@supabase/supabase-js';
 
 dotenv.config({path: path.resolve(process.cwd(), '.env')});
 dotenv.config({path: path.resolve(process.cwd(), '.env.local')});
 
+const REQUIRED_COPY_CONFIRM = 'copy-practice-assets';
+
 type PathMode = 'stable' | 'rotated';
-type Status =
+
+type ScanStatus =
   | 'ready'
   | 'ready_target_bucket_missing'
   | 'missing_path'
@@ -39,6 +44,15 @@ type Status =
   | 'target_already_exists'
   | 'probe_error'
   | 'target_probe_error';
+
+type CopyObjectStatus = 'pending' | 'copied' | 'skipped_existing' | 'failed' | 'not_applicable';
+
+type FinalStatus =
+  | ScanStatus
+  | 'copied'
+  | 'skipped_existing'
+  | 'partial_failure'
+  | 'failed';
 
 type SongRow = {
   id: string;
@@ -76,11 +90,25 @@ type ReportItem = {
   xmlSourceProbeError?: string;
   midiTargetProbeError?: string;
   xmlTargetProbeError?: string;
-  status: Status;
+  /** Pre-copy scan status (immutable after scan pass). */
+  scanStatus: ScanStatus;
+  /** Back-compat: previously this was `status`. Now equals `finalStatus` after apply pass. */
+  status: FinalStatus;
+  finalStatus: FinalStatus;
   notes?: string[];
+
+  midiCopyStatus: CopyObjectStatus;
+  xmlCopyStatus: CopyObjectStatus;
+  midiCopyError?: string;
+  xmlCopyError?: string;
 };
 
 type Summary = {
+  dryRun: boolean;
+  applyRequested: boolean;
+  confirmed: boolean;
+  overwriteEnabled: boolean;
+
   totalPracticeTracks: number;
   readyCount: number;
   missingPathCount: number;
@@ -89,17 +117,16 @@ type Summary = {
   wouldCopyObjectCount: number;
   wouldOverwriteCount: number;
   pathMode: PathMode;
-  /** Tracks where at least one MIDI/XML source probe could not be confirmed (after retries). */
+
   probeErrorCount: number;
-  /** Sum of per-object source probe failures (midi+xml), can be > track count. */
   sourceProbeErrorCount: number;
-  /** Sum of per-object target probe failures (midi+xml), can be > track count. */
   targetProbeErrorCount: number;
-  /**
-   * Convenience roll-up: sourceProbeErrorCount + targetProbeErrorCount.
-   * (Some tracks may contribute both.)
-   */
   ambiguousCount: number;
+
+  copiedObjectCount: number;
+  skippedExistingCount: number;
+  copyFailedCount: number;
+  partialFailureCount: number;
 };
 
 type ObjectProbeResult = {
@@ -108,6 +135,8 @@ type ObjectProbeResult = {
   errorMessage?: string;
   attempts: number;
 };
+
+type CopyMethod = 'supabase_storage_copy_api' | 'download_upload_fallback';
 
 function requiredEnv(name: string, value: string | undefined): string {
   const out = value?.trim() || '';
@@ -205,11 +234,7 @@ function formatProbeError(err: unknown): string {
 /**
  * Supabase Storage object existence probe with retries.
  *
- * Primary strategy: `list(dir, { search: file })` (fast for small folders).
- * If list succeeds but finds no exact filename match, do a bounded directory scan fallback
- * (`list` without search, scan first 1000 entries). This avoids rare search false-negatives.
- *
- * Transient API failures (timeouts/5xx/network/rate-limit-ish messages) are NOT treated as missing.
+ * Transient API failures are NOT treated as missing.
  */
 async function probeStorageObject(
   supabase: SupabaseClient,
@@ -240,7 +265,6 @@ async function probeStorageObject(
       if (isProbablyTransientStorageListError(res.error)) {
         continue;
       }
-      /** Non-transient error: treat as probe failure (not "missing"). */
       return {exists: false, status: 'probe_error', errorMessage: lastError, attempts};
     }
 
@@ -253,7 +277,6 @@ async function probeStorageObject(
       return {exists: true, status: 'exists', attempts};
     }
 
-    /** Search returned no exact match — fall back to scanning directory (bounded). */
     const scan = await supabase.storage.from(bucket).list(dir, {
       limit: 1000,
       offset: 0,
@@ -283,6 +306,69 @@ async function probeStorageObject(
     errorMessage: lastError || 'probe_failed_after_retries',
     attempts,
   };
+}
+
+function contentTypeForKey(objectKey: string): string {
+  const lower = objectKey.toLowerCase();
+  if (lower.endsWith('.mid') || lower.endsWith('.midi')) return 'audio/midi';
+  if (lower.endsWith('.musicxml')) return 'application/vnd.recordare.musicxml+xml';
+  if (lower.endsWith('.mxl')) return 'application/zip';
+  if (lower.endsWith('.xml')) return 'application/xml';
+  return 'application/octet-stream';
+}
+
+/**
+ * Cross-bucket copy prefers Supabase Storage server-side copy (`StorageFileApi.copy` → `/object/copy`).
+ * Fallback: download + upload (still service-role authenticated; no signed URLs).
+ */
+async function copyObjectAcrossBuckets(params: {
+  supabase: SupabaseClient;
+  sourceBucket: string;
+  targetBucket: string;
+  sourceKey: string;
+  targetKey: string;
+  overwrite: boolean;
+}): Promise<{ok: true; method: CopyMethod} | {ok: false; method: CopyMethod; message: string}> {
+  const {supabase, sourceBucket, targetBucket, sourceKey, targetKey, overwrite} = params;
+
+  if (overwrite) {
+    /** Best-effort remove — if it fails, upload may still fail; caller will surface error. */
+    await supabase.storage.from(targetBucket).remove([targetKey]);
+  }
+
+  const copyRes = await supabase.storage
+    .from(sourceBucket)
+    .copy(sourceKey, targetKey, {destinationBucket: targetBucket});
+
+  if (!copyRes.error) {
+    return {ok: true, method: 'supabase_storage_copy_api'};
+  }
+
+  const copyErrMsg = formatProbeError(copyRes.error);
+  const dl = await supabase.storage.from(sourceBucket).download(sourceKey);
+  if (dl.error || !dl.data) {
+    return {
+      ok: false,
+      method: 'supabase_storage_copy_api',
+      message: `copy_failed(${copyErrMsg}); download_failed(${formatProbeError(dl.error)})`,
+    };
+  }
+
+  const buf = await dl.data.arrayBuffer();
+  const upsert = overwrite;
+  const up = await supabase.storage.from(targetBucket).upload(targetKey, Buffer.from(buf), {
+    contentType: contentTypeForKey(targetKey),
+    upsert,
+  });
+  if (up.error) {
+    return {
+      ok: false,
+      method: 'download_upload_fallback',
+      message: `copy_failed(${copyErrMsg}); upload_failed(${formatProbeError(up.error)})`,
+    };
+  }
+
+  return {ok: true, method: 'download_upload_fallback'};
 }
 
 async function fetchPracticeRows(supabase: SupabaseClient): Promise<SongRow[]> {
@@ -323,12 +409,52 @@ function printSample(title: string, items: ReportItem[], predicate: (item: Repor
   console.log(`\n${title}: ${sample.length > 0 ? `showing ${sample.length} sample(s)` : 'none'}`);
   for (const item of sample) {
     console.log(
-      `- ${item.id} | slug=${item.slug} | status=${item.status} | midi=${item.sourceMidiKey ?? '-'} | xml=${item.sourceXmlKey ?? '-'}`,
+      `- ${item.id} | slug=${item.slug} | final=${item.finalStatus} | scan=${item.scanStatus} | midi=${item.sourceMidiKey ?? '-'} | xml=${item.sourceXmlKey ?? '-'}`,
     );
   }
 }
 
+function writeReportFile(
+  reportPath: string,
+  body: {
+    generatedAt: string;
+    copyMethodNote: string;
+    sourceBucket: string;
+    sourceBucketExists: boolean;
+    targetBucket: string;
+    targetBucketExists: boolean;
+    pathMode: PathMode;
+    summary: Summary;
+    items: ReportItem[];
+  },
+) {
+  fs.writeFileSync(reportPath, JSON.stringify(body, null, 2), 'utf8');
+}
+
 async function main() {
+  const reportPath = ensureTmpReportPath(
+    process.env.PRACTICE_MIGRATION_REPORT_PATH?.trim() || 'tmp/practice-assets-migration-report.json',
+  );
+
+  const applyRequested = process.env.PRACTICE_MIGRATION_APPLY?.trim() === '1';
+  const confirmRaw = process.env.PRACTICE_MIGRATION_CONFIRM?.trim() || '';
+  const confirmed = confirmRaw === REQUIRED_COPY_CONFIRM;
+  const overwriteEnabled = process.env.PRACTICE_MIGRATION_OVERWRITE?.trim() === '1';
+  const dryRun = !applyRequested || !confirmed;
+
+  if (applyRequested && !confirmed) {
+    console.error('\n[prepare-practice-assets] REFUSED: PRACTICE_MIGRATION_APPLY=1 requires confirmation.');
+    console.error(
+      `[prepare-practice-assets] Set PRACTICE_MIGRATION_CONFIRM=${REQUIRED_COPY_CONFIRM} to enable APPLY mode.`,
+    );
+    console.error('[prepare-practice-assets] No Supabase calls were made. No objects were copied.');
+    console.error(
+      `[prepare-practice-assets] Intentionally NOT writing ${reportPath} (avoid clobbering the last dry-run report).`,
+    );
+    console.error('');
+    process.exit(1);
+  }
+
   const supabaseUrl = requiredEnv(
     'SUPABASE_URL (or VITE_SUPABASE_URL)',
     process.env.SUPABASE_URL?.trim() || process.env.VITE_SUPABASE_URL?.trim(),
@@ -337,16 +463,6 @@ async function main() {
   const sourceBucket = process.env.SUPABASE_SONGS_BUCKET?.trim() || 'songs';
   const targetBucket = process.env.SUPABASE_PRACTICE_BUCKET?.trim() || 'practice-assets';
   const pathMode = resolvePathMode(process.env.PRACTICE_MIGRATION_PATH_MODE);
-  const reportPath = ensureTmpReportPath(
-    process.env.PRACTICE_MIGRATION_REPORT_PATH?.trim() || 'tmp/practice-assets-migration-report.json',
-  );
-  const applyFlag = process.env.PRACTICE_MIGRATION_APPLY?.trim() === '1';
-
-  if (applyFlag) {
-    throw new Error(
-      'PRACTICE_MIGRATION_APPLY=1 is not supported in this phase. This script is dry-run only.',
-    );
-  }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: {persistSession: false},
@@ -365,6 +481,23 @@ async function main() {
     console.error(
       `[prepare-practice-assets] ERROR: target bucket "${targetBucket}" does not exist. Dry-run will continue and report output will still be generated.`,
     );
+  }
+
+  if (dryRun) {
+    console.log('\n[prepare-practice-assets] DRY RUN ONLY');
+    console.log('[prepare-practice-assets] No DB writes. No deletions. No Netlify env changes.');
+    console.log(
+      `[prepare-practice-assets] Real copy requires: PRACTICE_MIGRATION_APPLY=1 PRACTICE_MIGRATION_CONFIRM=${REQUIRED_COPY_CONFIRM} npm run prepare:practice-assets`,
+    );
+    if (overwriteEnabled) {
+      console.log('[prepare-practice-assets] NOTE: PRACTICE_MIGRATION_OVERWRITE=1 is set but ignored in dry-run.');
+    }
+  } else {
+    console.log('\n[prepare-practice-assets] APPLY MODE');
+    console.log(
+      `[prepare-practice-assets] sourceBucket=${sourceBucket} targetBucket=${targetBucket} pathMode=${pathMode} overwriteEnabled=${overwriteEnabled}`,
+    );
+    console.log('[prepare-practice-assets] Will copy eligible Practice tracks only (scanStatus=ready).');
   }
 
   const rows = await fetchPracticeRows(supabase);
@@ -449,11 +582,6 @@ async function main() {
       const midiMissingConfirmed = midiProbe.status === 'missing';
       const xmlMissingConfirmed = xmlProbe.status === 'missing';
 
-      /**
-       * Missing counts only when we can actually confirm absence — never when the other side
-       * is `probe_error` (ambiguous). If either side is ambiguous, the track must be `probe_error`,
-       * not `missing_source_object`.
-       */
       if (!anySourceProbeError) {
         if (midiMissingConfirmed) notes.push('missing_source_midi_object');
         if (xmlMissingConfirmed) notes.push('missing_source_xml_object');
@@ -502,29 +630,38 @@ async function main() {
       }
     }
 
-    let status: Status;
+    let scanStatus: ScanStatus;
     if (!sourceMidiKey || !sourceXmlKey) {
-      status = 'missing_path';
+      scanStatus = 'missing_path';
     } else {
       const midiPs = midiSourceProbeStatus;
       const xmlPs = xmlSourceProbeStatus;
       const anySourceProbeError = midiPs === 'probe_error' || xmlPs === 'probe_error';
       if (anySourceProbeError) {
         probeErrorCount += 1;
-        status = 'probe_error';
+        scanStatus = 'probe_error';
       } else if (midiPs === 'missing' || xmlPs === 'missing') {
-        status = 'missing_source_object';
+        scanStatus = 'missing_source_object';
       } else if (!targetBucketExists) {
-        status = 'ready_target_bucket_missing';
+        scanStatus = 'ready_target_bucket_missing';
       } else if (midiTargetProbeStatus === 'probe_error' || xmlTargetProbeStatus === 'probe_error') {
         probeErrorCount += 1;
-        status = 'target_probe_error';
+        scanStatus = 'target_probe_error';
       } else if (midiTargetExists || xmlTargetExists) {
-        status = 'target_already_exists';
+        scanStatus = 'target_already_exists';
       } else {
-        status = 'ready';
+        scanStatus = 'ready';
       }
     }
+
+    const initCopyStatus = (): CopyObjectStatus => {
+      if (!sourceMidiKey || !sourceXmlKey) return 'not_applicable';
+      if (scanStatus !== 'ready') return 'not_applicable';
+      return 'pending';
+    };
+
+    const midiCopyStatus = initCopyStatus();
+    const xmlCopyStatus = initCopyStatus();
 
     items.push({
       id: row.id,
@@ -550,12 +687,151 @@ async function main() {
       xmlSourceProbeError,
       midiTargetProbeError,
       xmlTargetProbeError,
-      status,
+      scanStatus,
+      /** Populated after optional apply pass; scan-time equals scanStatus. */
+      status: scanStatus,
+      finalStatus: scanStatus,
       notes: notes.length ? notes : undefined,
+      midiCopyStatus,
+      xmlCopyStatus,
     });
   }
 
+  /** ---------------- APPLY COPY PASS (optional) ---------------- */
+  let copiedObjectCount = 0;
+  let skippedExistingCount = 0;
+  let copyFailedCount = 0;
+  let partialFailureCount = 0;
+  const copyMethodAcc: Record<CopyMethod, number> = {
+    supabase_storage_copy_api: 0,
+    download_upload_fallback: 0,
+  };
+
+  if (!dryRun) {
+    const eligible = items.filter(i => i.scanStatus === 'ready');
+    let processedTracks = 0;
+
+    for (const item of eligible) {
+      processedTracks += 1;
+      if (processedTracks === 1 || processedTracks % 25 === 0) {
+        console.log(`[prepare-practice-assets] copy progress: ${processedTracks}/${eligible.length} tracks`);
+      }
+
+      const sm = item.sourceMidiKey!;
+      const sx = item.sourceXmlKey!;
+      const tm = item.targetMidiKey!;
+      const tx = item.targetXmlKey!;
+
+      const copyOne = async (which: 'midi' | 'xml', sourceKey: string, targetKey: string) => {
+        const beforeSrc = await probeStorageObject(supabase, sourceBucket, sourceKey);
+        if (beforeSrc.status !== 'exists') {
+          const msg = `pre_copy_source_not_exists(${which}: ${beforeSrc.status})`;
+          return {ok: false as const, skipped: false as const, msg};
+        }
+
+        const beforeTgt = await probeStorageObject(supabase, targetBucket, targetKey);
+        if (beforeTgt.status === 'probe_error') {
+          const msg = `pre_copy_target_probe_error(${which}: ${beforeTgt.errorMessage ?? 'unknown'})`;
+          return {ok: false as const, skipped: false as const, msg};
+        }
+        if (beforeTgt.status === 'exists' && !overwriteEnabled) {
+          return {ok: true as const, skipped: true as const, msg: 'skipped_existing'};
+        }
+        if (beforeTgt.status === 'exists' && overwriteEnabled) {
+          /** proceed */
+        }
+
+        const res = await copyObjectAcrossBuckets({
+          supabase,
+          sourceBucket,
+          targetBucket,
+          sourceKey,
+          targetKey,
+          overwrite: overwriteEnabled && beforeTgt.status === 'exists',
+        });
+
+        if (!res.ok) {
+          return {ok: false as const, skipped: false as const, msg: res.message};
+        }
+        copyMethodAcc[res.method] += 1;
+
+        const afterTgt = await probeStorageObject(supabase, targetBucket, targetKey);
+        if (afterTgt.status !== 'exists') {
+          const msg = `post_copy_target_missing(${which}: ${afterTgt.status})`;
+          return {ok: false as const, skipped: false as const, msg};
+        }
+
+        return {ok: true as const, skipped: false as const, msg: 'copied'};
+      };
+
+      const midiRes = await copyOne('midi', sm, tm);
+      if (midiRes.skipped) {
+        item.midiCopyStatus = 'skipped_existing';
+        skippedExistingCount += 1;
+      } else if (midiRes.ok) {
+        item.midiCopyStatus = 'copied';
+        copiedObjectCount += 1;
+      } else {
+        item.midiCopyStatus = 'failed';
+        item.midiCopyError = midiRes.msg;
+        copyFailedCount += 1;
+      }
+
+      const xmlRes = await copyOne('xml', sx, tx);
+      if (xmlRes.skipped) {
+        item.xmlCopyStatus = 'skipped_existing';
+        skippedExistingCount += 1;
+      } else if (xmlRes.ok) {
+        item.xmlCopyStatus = 'copied';
+        copiedObjectCount += 1;
+      } else {
+        item.xmlCopyStatus = 'failed';
+        item.xmlCopyError = xmlRes.msg;
+        copyFailedCount += 1;
+      }
+
+      const midiOk = item.midiCopyStatus === 'copied' || item.midiCopyStatus === 'skipped_existing';
+      const xmlOk = item.xmlCopyStatus === 'copied' || item.xmlCopyStatus === 'skipped_existing';
+      const midiFail = item.midiCopyStatus === 'failed';
+      const xmlFail = item.xmlCopyStatus === 'failed';
+
+      if (midiOk && xmlOk) {
+        const midiCopied = item.midiCopyStatus === 'copied';
+        const xmlCopied = item.xmlCopyStatus === 'copied';
+        const midiSkipped = item.midiCopyStatus === 'skipped_existing';
+        const xmlSkipped = item.xmlCopyStatus === 'skipped_existing';
+
+        if (midiCopied || xmlCopied) {
+          /** At least one side was actually copied (the other may still be skipped_existing). */
+          item.finalStatus = 'copied';
+        } else if (midiSkipped && xmlSkipped) {
+          item.finalStatus = 'skipped_existing';
+        } else {
+          /** Should not happen, but keep it explicit. */
+          item.finalStatus = 'failed';
+        }
+        item.status = item.finalStatus;
+      } else if ((midiFail && xmlOk) || (xmlFail && midiOk)) {
+        partialFailureCount += 1;
+        item.finalStatus = 'partial_failure';
+        item.status = item.finalStatus;
+        item.notes = [...(item.notes ?? []), 'partial_failure_track'];
+      } else {
+        /** Both failed (or inconsistent — treat as failed) */
+        item.finalStatus = 'failed';
+        item.status = item.finalStatus;
+      }
+    }
+  } else {
+    const plannedObjects = items.filter(i => i.scanStatus === 'ready').length * 2;
+    console.log(`[prepare-practice-assets] Planned objects to copy (if APPLY+CONFIRM): ${plannedObjects}`);
+  }
+
   const summary: Summary = {
+    dryRun,
+    applyRequested,
+    confirmed,
+    overwriteEnabled,
     totalPracticeTracks: rows.length,
     readyCount,
     missingPathCount,
@@ -568,11 +844,19 @@ async function main() {
     sourceProbeErrorCount,
     targetProbeErrorCount,
     ambiguousCount: sourceProbeErrorCount + targetProbeErrorCount,
+    copiedObjectCount,
+    skippedExistingCount,
+    copyFailedCount,
+    partialFailureCount,
   };
 
-  const report = {
+  const copyMethodNote = dryRun
+    ? 'dry_run_only (implementation prefers supabase.storage.from(source).copy(..., {destinationBucket: target}); fallback download+upload if copy fails)'
+    : `used_methods: copy_api=${copyMethodAcc.supabase_storage_copy_api}, download_upload_fallback=${copyMethodAcc.download_upload_fallback}`;
+
+  writeReportFile(reportPath, {
     generatedAt: new Date().toISOString(),
-    dryRun: true,
+    copyMethodNote,
     sourceBucket,
     sourceBucketExists,
     targetBucket,
@@ -580,22 +864,33 @@ async function main() {
     pathMode,
     summary,
     items,
-  };
+  });
 
-  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf8');
-
-  console.log('\n[prepare-practice-assets] Dry-run completed.');
+  if (dryRun) {
+    console.log('\n[prepare-practice-assets] Dry-run completed.');
+  } else {
+    console.log('\n[prepare-practice-assets] Apply pass completed.');
+  }
   console.log(`[prepare-practice-assets] sourceBucket=${sourceBucket} targetBucket=${targetBucket}`);
   console.log(`[prepare-practice-assets] pathMode=${pathMode}`);
   console.log(`[prepare-practice-assets] report=${reportPath}`);
   console.log('\nSummary:');
   console.log(JSON.stringify(summary, null, 2));
 
-  printSample('Sample anomalies: missing path', items, i => i.status === 'missing_path');
-  printSample('Sample anomalies: missing source object (confirmed)', items, i => i.status === 'missing_source_object');
-  printSample('Sample anomalies: source probe error (ambiguous)', items, i => i.status === 'probe_error');
-  printSample('Sample anomalies: target probe error (ambiguous)', items, i => i.status === 'target_probe_error');
-  printSample('Sample anomalies: target already exists', items, i => i.status === 'target_already_exists');
+  printSample('Sample anomalies: missing path', items, i => i.scanStatus === 'missing_path');
+  printSample(
+    'Sample anomalies: missing source object (confirmed)',
+    items,
+    i => i.scanStatus === 'missing_source_object',
+  );
+  printSample('Sample anomalies: source probe error (ambiguous)', items, i => i.scanStatus === 'probe_error');
+  printSample(
+    'Sample anomalies: target probe error (ambiguous)',
+    items,
+    i => i.scanStatus === 'target_probe_error',
+  );
+  printSample('Sample anomalies: target already exists', items, i => i.scanStatus === 'target_already_exists');
+  printSample('Sample anomalies: partial failure (apply)', items, i => i.finalStatus === 'partial_failure');
 }
 
 main().catch((err) => {
