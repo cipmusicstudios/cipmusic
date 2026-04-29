@@ -36,6 +36,7 @@
     "sync:cip-from-overrides": "node scripts/sync-cip-links-from-overrides.mjs",
     "generate:official-metadata": "tsx scripts/generate-local-import-official-metadata.ts",
     "build:manifest": "tsx scripts/build-songs-manifest.ts",
+    "prepare:practice-assets": "tsx scripts/prepare-practice-assets-migration.ts",
     "build:manifest:metadata": "MANIFEST_METADATA_ONLY=1 tsx scripts/build-songs-manifest.ts",
     "export:youtube-channel-cache": "tsx scripts/export-youtube-channel-cache.ts",
     "sync:bilibili-video-overrides": "tsx scripts/sync-bilibili-video-overrides.ts",
