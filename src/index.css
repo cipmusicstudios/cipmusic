@@ -1093,3 +1093,40 @@ body {
 .immersive-cover-orb--playing {
   animation: immersive-orb-breathe 3.2s ease-in-out infinite;
 }
+
+/* ── Responsive patch 1: narrow / coarse-pointer 主内容满宽 + 滚动区底栏留白（不改配色/玻璃） ── */
+@media (max-width: 767px), (pointer: coarse) and (max-width: 1024px) {
+  main {
+    align-self: stretch !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .app-main-content {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-bottom: calc(var(--player-bar-stack-h) + 2.25rem) !important;
+  }
+
+  .app-chrome-shell {
+    width: min(100%, calc(100vw - 24px)) !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .music-page,
+  .focus-page,
+  .settings-page {
+    max-width: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+}

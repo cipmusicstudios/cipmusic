@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState, useRef, useEffect, useCallback } from 'react';
+import React, { memo, useMemo, useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { Search, ChevronLeft, ChevronDown } from 'lucide-react';
 import { FixedSizeList, FixedSizeGrid, type ListChildComponentProps } from 'react-window';
 import type { Track } from './types/track';
@@ -32,6 +32,13 @@ const MUSIC_SORT_TRIGGER =
   'relative flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-white/16 bg-white/[0.08] px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-mist-text)]/88 hover:bg-white/14 transition-colors';
 /** 歌曲列表与艺人网格分页：每页条数（播放器上一首/下一首/连播仅在此范围内） */
 const MUSIC_PAGE_SIZE = 20;
+
+/** 虚拟列表 / 艺人网格首帧宽度：避免 800/896 默认值在窄屏撑开占位；ResizeObserver 随后对齐真实容器 */
+function initialVirtualListWidth(): number {
+  if (typeof window === 'undefined') return 360;
+  return Math.max(280, Math.min(window.innerWidth - 24, 2000));
+}
+
 /** FixedSizeGrid 行高：略大于内容块，配合单元格内 flex 垂直居中后上下留白接近 */
 const ARTIST_GRID_ROW_HEIGHT = 252;
 const ARTIST_GRID_GAP_Y = 16;
@@ -585,10 +592,10 @@ const SongListChrome = memo(function SongListChrome({
   );
 
   const listContainerRef = useRef<HTMLDivElement>(null);
-  const [listWidth, setListWidth] = useState(800);
+  const [listWidth, setListWidth] = useState(initialVirtualListWidth);
   const [listHeight, setListHeight] = useState(400);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = listContainerRef.current;
     if (!el) return;
     const ro = new ResizeObserver(() => {
@@ -598,8 +605,11 @@ const SongListChrome = memo(function SongListChrome({
       if (h > 0) setListHeight(h);
     });
     ro.observe(el);
-    setListWidth(el.clientWidth || 800);
-    setListHeight(el.clientHeight || 400);
+    const w0 = el.clientWidth;
+    const h0 = el.clientHeight;
+    if (w0 > 0) setListWidth(w0);
+    else setListWidth(initialVirtualListWidth());
+    if (h0 > 0) setListHeight(h0);
     return () => ro.disconnect();
   }, [layoutKey]);
 
@@ -1102,9 +1112,12 @@ export const MusicTab = memo(function MusicTab({
   }, [filteredArtistsForGrid, artistGridPage]);
 
   const artistGridHostRef = useRef<HTMLDivElement>(null);
-  const [artistGridSize, setArtistGridSize] = useState({ width: 896, height: 480 });
+  const [artistGridSize, setArtistGridSize] = useState(() => ({
+    width: initialVirtualListWidth(),
+    height: 480,
+  }));
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (musicView !== 'artists') return;
     const el = artistGridHostRef.current;
     if (!el) return;

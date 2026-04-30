@@ -1441,13 +1441,23 @@ export default function App() {
       className="isolate h-[100dvh] overflow-hidden flex flex-col items-center relative text-[var(--color-mist-text)]"
       onClick={handleBackdropClick}
     >
-      {/* Portrait Mode Blocker */}
-      <div className="fixed inset-0 z-[9999] bg-[#0E0B0A] flex-col items-center justify-center p-8 text-center hidden [@media(pointer:coarse)_and_(orientation:portrait)]:flex">
-        <svg className="w-12 h-12 text-white/50 mb-6 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-        <h2 className="text-xl font-medium text-[var(--color-mist-text)] mb-3 text-balance">{currentLang === '简体中文' ? '请横向旋转设备使用' : currentLang === '繁體中文' ? '請橫向旋轉設備使用' : 'Please rotate your device'}</h2>
-        <p className="text-[var(--color-mist-text)]/60 text-sm leading-relaxed max-w-[280px]">
-          {currentLang === '简体中文' ? 'AuraSounds 专为横版体验设计，请横屏获得最佳沉浸感。' : currentLang === '繁體中文' ? 'AuraSounds 專為橫版體驗設計，請橫屏獲得最佳沉浸感。' : 'AuraSounds is designed for landscape mode. Please rotate your device for the best experience.'}
-        </p>
+      {/* Portrait: non-blocking hint only (coarse + portrait). Must not cover UI — pointer-events-none. */}
+      <div
+        className="pointer-events-none fixed left-0 right-0 top-24 z-[45] hidden px-3 [@media(pointer:coarse)_and_(orientation:portrait)]:block"
+        aria-live="polite"
+      >
+        <div className="mx-auto max-w-6xl rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[11px] leading-snug backdrop-blur-sm">
+          <p className="font-medium text-[var(--color-mist-text)]">
+            {currentLang === '简体中文' ? '请横向旋转设备使用' : currentLang === '繁體中文' ? '請橫向旋轉設備使用' : 'Please rotate your device'}
+          </p>
+          <p className="mt-0.5 text-[var(--color-mist-text)]/72">
+            {currentLang === '简体中文'
+              ? 'AuraSounds 专为横版体验设计，请横屏获得最佳沉浸感。'
+              : currentLang === '繁體中文'
+                ? 'AuraSounds 專為橫版體驗設計，請橫屏獲得最佳沉浸感。'
+                : 'AuraSounds is designed for landscape mode. Please rotate your device for the best experience.'}
+          </p>
+        </div>
       </div>
 
       <BackgroundLayer
@@ -1481,7 +1491,7 @@ export default function App() {
             aria-hidden={immersiveMode}
           >
           <div
-            className={`w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 transition-all duration-300 ease-out ${
+            className={`app-main-content w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 transition-all duration-300 ease-out ${
               immersiveMode ? 'pointer-events-none opacity-0 translate-y-1' : ''
             }`}
           >
