@@ -6,6 +6,21 @@ import {isSupabaseConfigured, supabase} from '../lib/supabase';
 export type SupabaseAuthModalMode = 'sign-in' | 'sign-up';
 
 export type SupabaseAuthModalCopy = {
+  /** Main modal title when not on forgot-password subview */
+  mainHeading: string;
+  tabSignIn: string;
+  tabSignUp: string;
+  primarySignIn: string;
+  /** Primary CTA on sign-up tab (e.g. Create account) */
+  primarySignUp: string;
+  oauthDivider: string;
+  oauthGoogle: string;
+  closeAriaLabel: string;
+  invalidEmailOrPassword: string;
+  emailNotConfirmed: string;
+  userAlreadyRegistered: string;
+  alreadyHaveAccount: string;
+  dontHaveAccount: string;
   emailConfirmTitle: string;
   emailConfirmBody: string;
   emailConfirmSpam: string;
@@ -37,6 +52,45 @@ export type SupabaseAuthModalCopy = {
   resetEmailRequired: string;
 };
 
+/** Map common Supabase Auth English messages to localized copy; fall back to raw message. */
+export function localizeAuthErrorMessage(
+  raw: string | null | undefined,
+  code: string | null | undefined,
+  copy: SupabaseAuthModalCopy,
+): string {
+  const m = (raw || '').trim();
+  const c = (code || '').trim();
+  const lower = m.toLowerCase();
+  if (
+    lower.includes('invalid login credentials') ||
+    lower.includes('invalid email or password') ||
+    c === 'invalid_credentials'
+  ) {
+    return copy.invalidEmailOrPassword;
+  }
+  if (lower.includes('email not confirmed') || c === 'email_not_confirmed') {
+    return copy.emailNotConfirmed;
+  }
+  if (
+    lower.includes('already registered') ||
+    lower.includes('user already registered') ||
+    c === 'signup_disabled' ||
+    c === 'user_already_exists'
+  ) {
+    return copy.userAlreadyRegistered;
+  }
+  if (
+    lower.includes('password') &&
+    (lower.includes('at least 6') ||
+      lower.includes('should be at least 6') ||
+      lower.includes('minimum') ||
+      c === 'weak_password')
+  ) {
+    return copy.passwordTooShort;
+  }
+  return m || copy.genericError;
+}
+
 type Props = {
   open: boolean;
   mode: SupabaseAuthModalMode;
@@ -64,7 +118,20 @@ const forgotLinkClass =
   'text-[11px] font-semibold text-[var(--color-mist-text)]/52 underline decoration-[var(--color-mist-text)]/28 underline-offset-2 transition-colors hover:text-[var(--color-mist-text)]/78';
 
 const defaultAuthCopy: SupabaseAuthModalCopy = {
-  emailConfirmTitle: 'Confirmation email sent',
+  mainHeading: 'Sign in / Sign up',
+  tabSignIn: 'Sign in',
+  tabSignUp: 'Sign up',
+  primarySignIn: 'Sign in',
+  primarySignUp: 'Create account',
+  oauthDivider: 'Or continue with',
+  oauthGoogle: 'Google',
+  closeAriaLabel: 'Close',
+  invalidEmailOrPassword: 'Invalid email or password.',
+  emailNotConfirmed: 'Please confirm your email before signing in.',
+  userAlreadyRegistered: 'This email is already registered. Try signing in instead.',
+  alreadyHaveAccount: 'Already have an account?',
+  dontHaveAccount: "Don't have an account?",
+  emailConfirmTitle: 'Check your email',
   emailConfirmBody:
     "If this email can be registered, we've sent a confirmation link. Please check your inbox to activate your account. If you already have an account, switch to Sign in.",
   emailConfirmSpam:
@@ -137,7 +204,11 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
           const {error} = await supabase.auth.signInWithPassword({email: e, password});
           setBusy(false);
           if (error) {
-            setErrorMsg(error.message);
+            const code =
+              'code' in error && typeof (error as {code?: string}).code === 'string'
+                ? (error as {code?: string}).code!
+                : undefined;
+            setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
             return;
           }
           onSuccess?.();
@@ -150,7 +221,11 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
           });
           setBusy(false);
           if (error) {
-            setErrorMsg(error.message);
+            const code =
+              'code' in error && typeof (error as {code?: string}).code === 'string'
+                ? (error as {code?: string}).code!
+                : undefined;
+            setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
             return;
           }
           if (data.session) {
@@ -192,7 +267,11 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
             code: 'code' in error ? String((error as {code?: string}).code) : undefined,
           });
           console.error('[SupabaseAuth] resetPasswordForEmail raw error', error);
-          setErrorMsg(error.message);
+          const code =
+            'code' in error && typeof (error as {code?: string}).code === 'string'
+              ? (error as {code?: string}).code!
+              : undefined;
+          setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
           return;
         }
         setResetEmailSent(true);
@@ -214,7 +293,13 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
         provider: 'google',
         options: {redirectTo: window.location.origin},
       });
-      if (error) setErrorMsg(error.message);
+      if (error) {
+        const code =
+          'code' in error && typeof (error as {code?: string}).code === 'string'
+            ? (error as {code?: string}).code!
+            : undefined;
+        setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
+      }
     })();
   };
 
@@ -240,13 +325,13 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
             <div className="glass-panel mx-auto flex max-w-full flex-col gap-3 rounded-[20px] px-4 pb-4 pt-3.5 shadow-[0_10px_32px_rgba(72,54,37,0.1)]">
               <div className="flex items-start justify-between gap-2">
                 <h2 className="text-[1.05rem] font-semibold tracking-tight text-[var(--color-mist-text)]">
-                  {subView === 'forgot' ? copy.resetPasswordTitle : 'Sign in / Sign up'}
+                  {subView === 'forgot' ? copy.resetPasswordTitle : copy.mainHeading}
                 </h2>
                 <button
                   type="button"
                   onClick={onClose}
                   className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[var(--color-mist-text)]/40 transition-colors hover:bg-white/45 hover:text-[var(--color-mist-text)]/65"
-                  aria-label="Close"
+                  aria-label={copy.closeAriaLabel}
                 >
                   <X className="h-3.5 w-3.5" strokeWidth={2} />
                 </button>
@@ -314,14 +399,14 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
                       onClick={() => onModeChange('sign-in')}
                       className={`flex-1 rounded-full py-2 text-[12px] font-semibold transition-all ${mode === 'sign-in' ? tabBtnActive : tabBtnIdle}`}
                     >
-                      Sign in
+                      {copy.tabSignIn}
                     </button>
                     <button
                       type="button"
                       onClick={() => onModeChange('sign-up')}
                       className={`flex-1 rounded-full py-2 text-[12px] font-semibold transition-all ${mode === 'sign-up' ? tabBtnActive : tabBtnIdle}`}
                     >
-                      Sign up
+                      {copy.tabSignUp}
                     </button>
                   </div>
 
@@ -386,14 +471,14 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
                           onClick={handleEmailAuth}
                           className="inline-flex h-10 w-full items-center justify-center rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white/92 disabled:opacity-55"
                         >
-                          {mode === 'sign-in' ? 'Sign in' : 'Sign up'}
+                          {mode === 'sign-in' ? copy.primarySignIn : copy.primarySignUp}
                         </button>
                       </div>
                     </div>
 
                     <div className="mt-6 flex flex-col items-center gap-2">
                       <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-mist-text)]/38">
-                        or continue with
+                        {copy.oauthDivider}
                       </p>
                       <button
                         type="button"
@@ -401,7 +486,7 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
                         onClick={handleGoogle}
                         className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/18 px-3 py-1.5 text-[12px] font-medium text-[var(--color-mist-text)]/72 transition-colors hover:bg-white/30 hover:text-[var(--color-mist-text)]/88 disabled:opacity-55"
                       >
-                        Google
+                        {copy.oauthGoogle}
                       </button>
                     </div>
                   </div>

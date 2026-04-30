@@ -3,6 +3,7 @@ import {AnimatePresence, motion} from 'motion/react';
 import {X} from 'lucide-react';
 import {isSupabaseConfigured, supabase} from '../lib/supabase';
 import type {SupabaseAuthModalCopy} from './supabase-auth-modal';
+import {localizeAuthErrorMessage} from './supabase-auth-modal';
 
 const PASSWORD_MIN_LEN = 6;
 
@@ -101,7 +102,11 @@ export function SupabaseResetPasswordGate({open, authCopy, onDone}: Props) {
         const {error} = await supabase.auth.updateUser({password: p});
         setBusy(false);
         if (error) {
-          setErrorMsg(error.message);
+          const code =
+            'code' in error && typeof (error as {code?: string}).code === 'string'
+              ? (error as {code?: string}).code!
+              : undefined;
+          setErrorMsg(localizeAuthErrorMessage(error.message, code, c));
           return;
         }
         setPhase('success');
@@ -145,7 +150,7 @@ export function SupabaseResetPasswordGate({open, authCopy, onDone}: Props) {
                 type="button"
                 onClick={phase === 'success' ? handleCloseSuccess : onDone}
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[var(--color-mist-text)]/40 transition-colors hover:bg-white/45 hover:text-[var(--color-mist-text)]/65"
-                aria-label="Close"
+                aria-label={c.closeAriaLabel}
               >
                 <X className="h-3.5 w-3.5" strokeWidth={2} />
               </button>

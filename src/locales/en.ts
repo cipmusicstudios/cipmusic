@@ -325,7 +325,20 @@ export const en = {
     buyText: 'Buy via WeChat',
   },
   authModal: {
-    emailConfirmTitle: 'Confirmation email sent',
+    mainHeading: 'Sign in / Sign up',
+    tabSignIn: 'Sign in',
+    tabSignUp: 'Sign up',
+    primarySignIn: 'Sign in',
+    primarySignUp: 'Create account',
+    oauthDivider: 'Or continue with',
+    oauthGoogle: 'Google',
+    closeAriaLabel: 'Close',
+    invalidEmailOrPassword: 'Invalid email or password.',
+    emailNotConfirmed: 'Please confirm your email before signing in.',
+    userAlreadyRegistered: 'This email is already registered. Try signing in instead.',
+    alreadyHaveAccount: 'Already have an account?',
+    dontHaveAccount: "Don't have an account?",
+    emailConfirmTitle: 'Check your email',
     emailConfirmBody:
       "If this email can be registered, we've sent a confirmation link. Please check your inbox to activate your account. If you already have an account, switch to Sign in.",
     emailConfirmSpam:
