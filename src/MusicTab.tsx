@@ -23,13 +23,13 @@ import type { MusicPlaybackContext } from './music-playback-context';
 const MUSIC_ALL_CATEGORY = 'all';
 const SEARCH_DEBOUNCE_MS = 240;
 
-/** 音乐页浏览区：静态磨砂（无 backdrop-filter，性能优先） */
+/** 音乐页浏览区：静态磨砂（无 backdrop-filter，性能优先）；移动端进一步压高度 */
 const MUSIC_BROWSE_PANEL =
-  'glass-panel-static !rounded-2xl mb-6 px-4 py-3.5 sm:px-5 sm:py-4';
+  'glass-panel-static !rounded-2xl mb-6 px-4 py-3.5 max-md:!mb-2 max-md:!rounded-xl max-md:!px-2.5 max-md:!py-1.5 sm:px-5 sm:py-4';
 const MUSIC_SEARCH_INPUT =
-  'h-9 w-full min-w-0 rounded-xl border border-white/18 bg-white/[0.08] pl-9 pr-3 text-sm text-[var(--color-mist-text)] placeholder:text-[var(--color-mist-text)]/38 shadow-[inset_0_1px_2px_rgba(255,255,255,0.35)] focus:outline-none focus:border-amber-200/45 focus:bg-white/14 focus:ring-1 focus:ring-amber-200/35';
+  'h-9 max-md:h-7 w-full min-w-0 rounded-xl border border-white/18 bg-white/[0.08] pl-9 max-md:pl-7 max-md:pr-2 pr-3 text-sm max-md:text-[12px] text-[var(--color-mist-text)] placeholder:text-[var(--color-mist-text)]/38 shadow-[inset_0_1px_2px_rgba(255,255,255,0.35)] focus:outline-none focus:border-amber-200/45 focus:bg-white/14 focus:ring-1 focus:ring-amber-200/35';
 const MUSIC_SORT_TRIGGER =
-  'relative flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border border-white/16 bg-white/[0.08] px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-mist-text)]/88 hover:bg-white/14 transition-colors';
+  'relative flex h-9 max-md:h-7 shrink-0 cursor-pointer items-center gap-1.5 max-md:gap-1 rounded-xl border border-white/16 bg-white/[0.08] px-3 max-md:px-1.5 text-[11px] max-md:text-[9px] font-semibold uppercase tracking-wider text-[var(--color-mist-text)]/88 hover:bg-white/14 transition-colors';
 /** 歌曲列表与艺人网格分页：每页条数（播放器上一首/下一首/连播仅在此范围内） */
 const MUSIC_PAGE_SIZE = 20;
 
@@ -41,6 +41,8 @@ function initialVirtualListWidth(): number {
 
 /** FixedSizeGrid 行高：略大于内容块，配合单元格内 flex 垂直居中后上下留白接近 */
 const ARTIST_GRID_ROW_HEIGHT = 252;
+const ARTIST_GRID_ROW_HEIGHT_COMPACT_2COL = 142;
+const ARTIST_GRID_ROW_HEIGHT_COMPACT_1COL = 120;
 const ARTIST_GRID_GAP_Y = 16;
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
@@ -97,7 +99,10 @@ const parseDurationToSecondsStatic = (value: unknown) => {
   return (Number.isFinite(mins) ? mins : 0) * 60 + (Number.isFinite(secs) ? secs : 0);
 };
 
+/** 与 BottomPlayer 窄屏断点一致 */
+const MUSIC_NARROW_TOUCH_MQ = '(max-width: 767px), (pointer: coarse) and (max-width: 1024px)';
 const SONG_ROW_HEIGHT = 76;
+const MOBILE_SONG_ROW_HEIGHT = 76;
 
 /** 易混歌名/俗称，拼进标题检索（正式 `title` 不变）。key = metadata.identity.slug */
 const EXTRA_TRACK_TITLE_SEARCH_BY_SLUG: Record<string, string> = {
@@ -273,6 +278,8 @@ type SongListRowData = {
   onSelectTrack: (t: Track, autoplay?: boolean) => void;
   currentLang: string;
   songCategoryLabelMap: Map<string, string>;
+  /** 窄屏 / 触摸设备：紧凑纵向行 + 隐藏表头 */
+  compactList: boolean;
 };
 
 type ArtistGridCellData = {
@@ -283,6 +290,7 @@ type ArtistGridCellData = {
   currentLang: string;
   t: any;
   onPickArtist: (id: string) => void;
+  compact: boolean;
 };
 
 function artistAvatarRingClass(kind: ArtistImageKind | undefined): string {
@@ -389,12 +397,74 @@ function MusicPaginationBar({
 }
 
 const SongRow = memo(function SongRow({ index, style, data }: ListChildComponentProps<SongListRowData>) {
-  const { tracks, rowIndexOffset, currentTrackId, isPlaying, onSelectTrack, currentLang, songCategoryLabelMap } = data;
+  const { tracks, rowIndexOffset, currentTrackId, isPlaying, onSelectTrack, currentLang, songCategoryLabelMap, compactList } = data;
   const track = tracks[index];
   const isActive = currentTrackId === track.id;
   const coverUrl = getCoverThumbnailUrl(
     (track.metadataStatus === 'approved' && track.sourceCoverUrl) ? track.sourceCoverUrl : track.coverUrl,
   );
+
+  if (compactList) {
+    const cat = formatTrackCategoryBadges(track, songCategoryLabelMap, currentLang);
+    const dur = getTrackListDurationLabel(track);
+    return (
+      <div style={style}>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onSelectTrack(track, true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelectTrack(track, true);
+            }
+          }}
+          className={`music-list-row music-list-row--compact flex cursor-pointer items-center gap-1.5 border-b border-white/[0.08] px-2 py-0.5 transition-colors hover:bg-white/10 ${
+            isActive ? 'bg-white/15' : ''
+          }`}
+        >
+          <div className="relative h-11 w-11 shrink-0 self-center">
+            <img
+              src={coverUrl}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full rounded-md object-cover shadow-sm"
+              referrerPolicy="no-referrer"
+            />
+            {isActive && isPlaying && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-amber-600/90 shadow">
+                <span className="sr-only">Playing</span>
+              </span>
+            )}
+          </div>
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
+            <div className="min-w-0 flex-1 overflow-hidden text-left">
+              <span
+                className={`block truncate text-[12px] font-medium leading-tight ${
+                  isActive ? 'text-[var(--color-mist-text)] underline decoration-amber-600/30 underline-offset-2' : 'text-[var(--color-mist-text)]'
+                }`}
+              >
+                {getDisplayTrackTitle(track, currentLang) || 'Untitled'}
+              </span>
+              <div className="mt-0.5 flex min-w-0 flex-nowrap items-center gap-1">
+                <span className="min-w-0 truncate text-[10px] leading-tight text-[var(--color-mist-text)]/52">
+                  {getDisplayTrackArtist(track, currentLang)}
+                </span>
+                <span className="max-w-[4.5rem] shrink-0 truncate rounded border border-white/[0.07] bg-white/[0.035] px-1 py-px text-[8px] font-medium leading-none text-[var(--color-mist-text)]/34" title={cat}>
+                  {cat}
+                </span>
+              </div>
+            </div>
+            <div className="shrink-0 self-center text-right font-mono text-[10px] tabular-nums leading-none text-[var(--color-mist-text)]/48">
+              {dur}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={style}>
       <div
@@ -407,7 +477,7 @@ const SongRow = memo(function SongRow({ index, style, data }: ListChildComponent
             onSelectTrack(track, true);
           }
         }}
-        className={`music-list-row grid grid-cols-12 gap-4 px-8 py-4 items-center cursor-pointer transition-colors border-b border-white/10 hover:bg-white/10 ${isActive ? 'bg-white/20' : ''}`}
+        className={`music-list-row grid grid-cols-12 gap-4 px-8 py-4 items-center cursor-pointer transition-colors border-b border-white/10 hover:bg-white/10 max-md:hidden ${isActive ? 'bg-white/20' : ''}`}
       >
         <div className="col-span-1 text-center text-[var(--color-mist-text)]/50">
           {isActive && isPlaying ? (
@@ -455,7 +525,7 @@ const ArtistGridCell = memo(function ArtistGridCell({
   style: React.CSSProperties;
   data: ArtistGridCellData;
 }) {
-  const { artists, columnCount, artistImageMap, artistImageKindMap, currentLang, t, onPickArtist } = data;
+  const { artists, columnCount, artistImageMap, artistImageKindMap, currentLang, t, onPickArtist, compact } = data;
   const index = rowIndex * columnCount + columnIndex;
   if (index >= artists.length) {
     return <div style={style} className="box-border" />;
@@ -464,6 +534,69 @@ const ArtistGridCell = memo(function ArtistGridCell({
   const dictKey = dictionaryCanonicalId(artist.id);
   const imgKind = artistImageKindMap[dictKey] ?? artistImageKindMap[artist.id];
   const avatarSrc = resolveArtistImageUrlFromMaps(artist.id, artistImageMap, artist.coverUrl);
+  if (compact) {
+    return (
+      <div
+        style={{
+          ...style,
+          paddingRight: columnIndex < columnCount - 1 ? 8 : 0,
+          paddingLeft: columnIndex > 0 ? 8 : 0,
+          paddingBottom: 10,
+          boxSizing: 'border-box',
+        }}
+        className="box-border flex items-stretch justify-center"
+      >
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onPickArtist(artist.id)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onPickArtist(artist.id);
+            }
+          }}
+          className="artist-card glass-tile flex h-full w-full max-w-[200px] cursor-pointer flex-col items-center gap-1.5 rounded-2xl px-2 py-2 text-center transition-colors hover:bg-white/14 sm:max-w-none"
+        >
+          <img
+            src={avatarSrc}
+            alt={artist.name}
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            data-artist-image-kind={imgKind ?? ''}
+            className={
+              'artist-avatar h-16 w-16 shrink-0 rounded-full object-cover object-center shadow-md transition-transform duration-300 group-hover:scale-105 bg-[var(--color-mist-text)]/10' +
+              artistAvatarRingClass(imgKind)
+            }
+            onError={e => {
+              const el = e.currentTarget;
+              if (el.dataset.fallbackApplied) return;
+              el.dataset.fallbackApplied = '1';
+              el.src =
+                'https://ui-avatars.com/api/?name=' +
+                encodeURIComponent(artist.name) +
+                '&background=404040&color=fff&size=128';
+            }}
+          />
+          <div className="flex min-w-0 w-full flex-col gap-0.5">
+            <span className="line-clamp-2 text-xs font-medium leading-snug text-[var(--color-mist-text)]">{artist.displayName}</span>
+            {artist.reviewStatus && artist.reviewStatus !== 'ok' && (
+              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-700/90">
+                {artist.reviewStatus === 'needsReview' ? '待审核' : '未知艺人'}
+              </span>
+            )}
+            <span className="text-[10px] leading-snug text-[var(--color-mist-text)]/65">
+              {currentLang === 'English'
+                ? `${artist.songCount} ${artist.songCount === 1 ? 'song' : 'songs'}`
+                : t.music.songCount.replace('{{count}}', String(artist.songCount))}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -578,6 +711,15 @@ const SongListChrome = memo(function SongListChrome({
   onSongPageChange,
 }: SongListChromeProps) {
   const rowIndexOffset = (songPage - 1) * MUSIC_PAGE_SIZE;
+  const [musicNarrowTouch, setMusicNarrowTouch] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(MUSIC_NARROW_TOUCH_MQ);
+    const fn = () => setMusicNarrowTouch(mq.matches);
+    fn();
+    mq.addEventListener('change', fn);
+    return () => mq.removeEventListener('change', fn);
+  }, []);
+
   const listItemData = useMemo(
     (): SongListRowData => ({
       tracks: filteredSongTracks,
@@ -587,8 +729,9 @@ const SongListChrome = memo(function SongListChrome({
       onSelectTrack,
       currentLang,
       songCategoryLabelMap,
+      compactList: musicNarrowTouch,
     }),
-    [filteredSongTracks, rowIndexOffset, currentTrackId, isPlaying, onSelectTrack, currentLang, songCategoryLabelMap],
+    [filteredSongTracks, rowIndexOffset, currentTrackId, isPlaying, onSelectTrack, currentLang, songCategoryLabelMap, musicNarrowTouch],
   );
 
   const listContainerRef = useRef<HTMLDivElement>(null);
@@ -615,17 +758,17 @@ const SongListChrome = memo(function SongListChrome({
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500">
-      <div className={`${MUSIC_BROWSE_PANEL} space-y-3`}>
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3">
+      <div className={`${MUSIC_BROWSE_PANEL} space-y-3 max-md:space-y-1.5`}>
+        <div className="flex flex-col gap-3 max-md:gap-1.5 lg:flex-row lg:items-center lg:gap-3">
           <div
             className={
               artistFilter
-                ? 'flex min-w-0 flex-1 flex-wrap items-center gap-3'
-                : 'flex shrink-0 flex-wrap items-center gap-3'
+                ? 'flex min-w-0 flex-1 flex-wrap items-center gap-3 max-md:gap-2'
+                : 'flex shrink-0 flex-wrap items-center gap-3 max-md:gap-2'
             }
           >
             {artistFilter ? (
-              <div className="flex min-w-0 items-center gap-3 sm:gap-4 animate-in slide-in-from-left-4 duration-300">
+              <div className="flex min-w-0 items-center gap-3 max-md:gap-2 sm:gap-4 animate-in slide-in-from-left-4 duration-300">
                 <button
                   type="button"
                   onClick={() => setMusicView('artists')}
@@ -661,20 +804,20 @@ const SongListChrome = memo(function SongListChrome({
                 </span>
               </div>
             ) : (
-              <div className="music-subnav-pills glass-pill-rail h-10 shrink-0 items-center">
-                <button type="button" className="glass-pill-tab glass-pill-tab--active h-9 px-4 text-sm font-medium">
+              <div className="music-subnav-pills glass-pill-rail flex h-10 max-md:h-7 shrink-0 items-center rounded-xl">
+                <button type="button" className="glass-pill-tab glass-pill-tab--active h-9 max-md:h-7 max-md:px-2.5 max-md:text-[11px] px-4 text-sm font-medium">
                   {t.music.songs}
                 </button>
-                <button type="button" onClick={() => setMusicView('artists')} className="glass-pill-tab h-9 px-4 text-sm font-medium">
+                <button type="button" onClick={() => setMusicView('artists')} className="glass-pill-tab h-9 max-md:h-7 max-md:px-2.5 max-md:text-[11px] px-4 text-sm font-medium">
                   {t.music.artists}
                 </button>
               </div>
             )}
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-2 lg:justify-end">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5 max-md:gap-1 sm:flex-row sm:items-center sm:gap-2 lg:justify-end">
             <div className="relative min-w-0 flex-1 group">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mist-text)]/35 transition-opacity group-focus-within:text-[var(--color-mist-text)]/55" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mist-text)]/35 transition-opacity group-focus-within:text-[var(--color-mist-text)]/55 max-md:left-2 max-md:h-3 max-md:w-3" />
               <input
                 type="text"
                 placeholder={t.nav.search}
@@ -687,7 +830,7 @@ const SongListChrome = memo(function SongListChrome({
               <span>
                 {sortBy === 'recently_played' ? 'Newest' : sortBy === 'a_z' ? 'A-Z' : 'Duration'}
               </span>
-              <ChevronDown className="h-3.5 w-3.5 opacity-55 transition-transform group-hover:translate-y-px" />
+              <ChevronDown className="h-3.5 w-3.5 max-md:h-3 max-md:w-3 opacity-55 transition-transform group-hover:translate-y-px" />
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as 'recently_played' | 'a_z' | 'duration')}
@@ -703,8 +846,8 @@ const SongListChrome = memo(function SongListChrome({
         </div>
 
         {!artistFilter && (
-          <div className="border-t border-white/12 pt-3">
-            <div className="flex flex-wrap items-center gap-1.5">
+          <div className="music-browse-filter-chips border-t border-white/12 pt-2 max-md:pt-1">
+            <div className="flex flex-wrap items-center gap-1 max-md:gap-0.5">
               {songCategoryOptions.map(option => (
                 <button
                   key={option.value}
@@ -723,14 +866,14 @@ const SongListChrome = memo(function SongListChrome({
       </div>
 
       <div className="music-list glass-panel-static rounded-[32px] overflow-hidden flex flex-col">
-        <div className="music-list-header grid grid-cols-12 gap-4 px-8 py-4 border-b border-white/10 text-sm font-medium text-[var(--color-mist-text)]/60 uppercase tracking-wider">
+        <div className="music-list-header hidden md:grid grid-cols-12 gap-4 px-8 py-4 border-b border-white/10 text-sm font-medium text-[var(--color-mist-text)]/60 uppercase tracking-wider">
           <div className="col-span-1 text-center">#</div>
           <div className="col-span-6">{t.music.title}</div>
           <div className="col-span-3">{t.music.category}</div>
           <div className="col-span-2 text-right">{t.music.duration}</div>
         </div>
 
-        <div ref={listContainerRef} className="h-[50vh] min-h-[200px] overflow-hidden custom-scrollbar">
+        <div ref={listContainerRef} className="h-[50vh] min-h-[200px] max-md:h-[56vh] max-md:min-h-[200px] overflow-hidden custom-scrollbar">
           {filteredSongTracks.length === 0 ? (
             <div className="px-8 py-12 text-center text-[var(--color-mist-text)]/50 text-sm">No tracks match.</div>
           ) : (
@@ -738,7 +881,7 @@ const SongListChrome = memo(function SongListChrome({
               height={listHeight}
               width={listWidth}
               itemCount={filteredSongTracks.length}
-              itemSize={SONG_ROW_HEIGHT}
+              itemSize={musicNarrowTouch ? MOBILE_SONG_ROW_HEIGHT : SONG_ROW_HEIGHT}
               itemData={listItemData}
               overscanCount={4}
             >
@@ -825,6 +968,15 @@ export const MusicTab = memo(function MusicTab({
   const debouncedArtistSearch = useDebouncedValue(artistSearchQuery, SEARCH_DEBOUNCE_MS);
   const [selectedArtistCategory, setSelectedArtistCategory] = useState<string>('all');
   const [artistSortBy, setArtistSortBy] = useState<'a_z' | 'z_a' | 'most_songs'>('most_songs');
+
+  const [musicNarrowTouch, setMusicNarrowTouch] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(MUSIC_NARROW_TOUCH_MQ);
+    const fn = () => setMusicNarrowTouch(mq.matches);
+    fn();
+    mq.addEventListener('change', fn);
+    return () => mq.removeEventListener('change', fn);
+  }, []);
 
   const handlePickArtist = useCallback((id: string) => {
     setSelectedArtist(id);
@@ -1132,8 +1284,24 @@ export const MusicTab = memo(function MusicTab({
     return () => ro.disconnect();
   }, [musicView]);
 
-  const artistGridColumnCount = artistGridSize.width >= 1024 ? 4 : artistGridSize.width >= 640 ? 3 : 2;
-  const artistColumnWidth = Math.max(120, Math.floor(artistGridSize.width / artistGridColumnCount));
+  const artistGridColumnCount = musicNarrowTouch
+    ? artistGridSize.width < 340
+      ? 1
+      : 2
+    : artistGridSize.width >= 1024
+      ? 4
+      : artistGridSize.width >= 640
+        ? 3
+        : 2;
+  const artistColumnWidth = Math.max(
+    musicNarrowTouch ? (artistGridColumnCount === 1 ? 96 : 72) : 120,
+    Math.floor(artistGridSize.width / artistGridColumnCount),
+  );
+  const artistRowHeightEffective = musicNarrowTouch
+    ? artistGridColumnCount === 1
+      ? ARTIST_GRID_ROW_HEIGHT_COMPACT_1COL
+      : ARTIST_GRID_ROW_HEIGHT_COMPACT_2COL
+    : ARTIST_GRID_ROW_HEIGHT;
   const artistRowCount =
     pagedArtistsForGrid.length === 0
       ? 0
@@ -1148,6 +1316,7 @@ export const MusicTab = memo(function MusicTab({
       currentLang,
       t,
       onPickArtist: handlePickArtist,
+      compact: musicNarrowTouch,
     }),
     [
       pagedArtistsForGrid,
@@ -1157,25 +1326,26 @@ export const MusicTab = memo(function MusicTab({
       currentLang,
       t,
       handlePickArtist,
+      musicNarrowTouch,
     ],
   );
 
   const renderArtistView = () => (
     <div className="flex flex-col animate-in fade-in duration-500">
-      <div className={`${MUSIC_BROWSE_PANEL} space-y-3`}>
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-3">
-          <div className="music-subnav-pills glass-pill-rail h-10 shrink-0 items-center">
-            <button type="button" onClick={() => setMusicView('songs')} className="glass-pill-tab h-9 px-4 text-sm font-medium">
+      <div className={`${MUSIC_BROWSE_PANEL} space-y-3 max-md:space-y-1.5`}>
+        <div className="flex flex-col gap-3 max-md:gap-1.5 lg:flex-row lg:items-center lg:gap-3">
+          <div className="music-subnav-pills glass-pill-rail flex h-10 max-md:h-7 shrink-0 items-center rounded-xl">
+            <button type="button" onClick={() => setMusicView('songs')} className="glass-pill-tab h-9 max-md:h-7 max-md:px-2.5 max-md:text-[11px] px-4 text-sm font-medium">
               {t.music.songs}
             </button>
-            <button type="button" className="glass-pill-tab glass-pill-tab--active h-9 px-4 text-sm font-medium">
+            <button type="button" className="glass-pill-tab glass-pill-tab--active h-9 max-md:h-7 max-md:px-2.5 max-md:text-[11px] px-4 text-sm font-medium">
               {t.music.artists}
             </button>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row sm:items-center sm:gap-2 lg:justify-end">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5 max-md:gap-1 sm:flex-row sm:items-center sm:gap-2 lg:justify-end">
             <div className="relative min-w-0 flex-1 group">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mist-text)]/35 transition-opacity group-focus-within:text-[var(--color-mist-text)]/55" />
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-mist-text)]/35 transition-opacity group-focus-within:text-[var(--color-mist-text)]/55 max-md:left-2 max-md:h-3 max-md:w-3" />
               <input
                 type="text"
                 placeholder={t.music.searchArtists}
@@ -1188,7 +1358,7 @@ export const MusicTab = memo(function MusicTab({
               <span>
                 {artistSortBy === 'a_z' ? 'A-Z' : artistSortBy === 'z_a' ? 'Z-A' : t.music.mostSongs}
               </span>
-              <ChevronDown className="h-3.5 w-3.5 opacity-55 transition-transform group-hover:translate-y-px" />
+              <ChevronDown className="h-3.5 w-3.5 max-md:h-3 max-md:w-3 opacity-55 transition-transform group-hover:translate-y-px" />
               <select
                 value={artistSortBy}
                 onChange={e => setArtistSortBy(e.target.value as 'a_z' | 'z_a' | 'most_songs')}
@@ -1203,8 +1373,8 @@ export const MusicTab = memo(function MusicTab({
           </div>
         </div>
 
-        <div className="border-t border-white/12 pt-3">
-          <div className="flex flex-wrap items-center gap-1.5">
+        <div className="music-browse-filter-chips border-t border-white/12 pt-2 max-md:pt-1">
+          <div className="flex flex-wrap items-center gap-1 max-md:gap-0.5">
             {artistCategoryOptions.map(option => (
               <button
                 key={option.value}
@@ -1223,7 +1393,7 @@ export const MusicTab = memo(function MusicTab({
 
       <div
         ref={artistGridHostRef}
-        className="h-[min(72vh,820px)] min-h-[320px] w-full overflow-hidden rounded-[32px]"
+        className="h-[min(72vh,820px)] max-md:h-[min(50vh,560px)] min-h-[320px] max-md:min-h-[220px] w-full overflow-hidden rounded-[32px]"
       >
         {filteredArtistsForGrid.length === 0 ? (
           <div className="px-8 py-12 text-center text-[var(--color-mist-text)]/50 text-sm">No artists match.</div>
@@ -1234,7 +1404,7 @@ export const MusicTab = memo(function MusicTab({
             columnWidth={artistColumnWidth}
             height={artistGridSize.height}
             rowCount={artistRowCount}
-            rowHeight={ARTIST_GRID_ROW_HEIGHT}
+            rowHeight={artistRowHeightEffective}
             width={artistGridSize.width}
             itemData={artistGridItemData}
           >

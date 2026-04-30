@@ -14,7 +14,7 @@ import {
   TreePine, AudioLines, Coffee, BookOpen, Youtube, Brain,
   Piano, X, Activity, AlarmClock, Timer, Globe, ExternalLink, MessageCircle, Tv,
   Mail, Radio, Sparkles, Smartphone, TreeDeciduous, Library,
-  Heart, History
+  Heart, History, MoreHorizontal
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { en } from './locales/en';
@@ -1893,6 +1893,7 @@ const TopNav = memo(function TopNav({
 const PlayerProgressStrip = memo(function PlayerProgressStrip({
   showPracticePanel,
   compactPracticeMode,
+  stackedMobileDense = false,
   audioRef,
   trackId,
   formatTime,
@@ -1902,6 +1903,8 @@ const PlayerProgressStrip = memo(function PlayerProgressStrip({
 }: {
   showPracticePanel: boolean;
   compactPracticeMode: boolean;
+  /** 窄屏堆叠底栏：更扁的进度区与时间字号 */
+  stackedMobileDense?: boolean;
   audioRef: React.RefObject<HTMLAudioElement | null>;
   trackId: string;
   formatTime: (time: number) => string;
@@ -1941,22 +1944,24 @@ const PlayerProgressStrip = memo(function PlayerProgressStrip({
 
   return (
     <div
-      className={`w-full ${compactPracticeMode ? 'max-w-5xl' : ''} flex min-w-0 items-center gap-2 text-[11px] sm:text-xs text-[var(--color-mist-text)]/50 font-mono tabular-nums`}
+      className={`w-full ${compactPracticeMode ? 'max-w-5xl' : ''} flex min-w-0 items-center ${stackedMobileDense ? 'gap-x-1.5 gap-y-0 px-0.5 text-[9px] leading-none text-[var(--color-mist-text)]/52' : 'gap-2 text-[11px] sm:text-xs text-[var(--color-mist-text)]/50'} font-mono tabular-nums`}
     >
-      <span className="shrink-0 min-w-[2.75rem] text-right">{formatTime(displayTime)}</span>
+      <span className={`shrink-0 text-right ${stackedMobileDense ? 'min-w-[2.2rem] pl-0.5' : 'min-w-[2.75rem]'}`}>{formatTime(displayTime)}</span>
       <div
         ref={progressBarRef}
-        className="min-w-0 flex-1 h-1 bg-white/15 rounded-full overflow-hidden group cursor-pointer"
+        className={`min-w-0 flex-1 ${stackedMobileDense ? 'h-[3px]' : 'h-1'} bg-white/15 rounded-full overflow-hidden group cursor-pointer`}
         onPointerDown={onPointerDown}
       >
         <div
           className="h-full bg-[var(--color-mist-text)]/40 group-hover:bg-[var(--color-mist-text)]/60 transition-colors relative"
           style={{ width: `${pct}%` }}
         >
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-[var(--color-mist-text)] rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div
+            className={`absolute right-0 top-1/2 -translate-y-1/2 bg-[var(--color-mist-text)] rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity ${stackedMobileDense ? 'h-1.5 w-1.5' : 'w-2 h-2'}`}
+          ></div>
         </div>
       </div>
-      <span className="shrink-0 min-w-[3.25rem] text-left">{formatTime(duration)}</span>
+      <span className={`shrink-0 text-left ${stackedMobileDense ? 'min-w-[2.2rem] pr-0.5' : 'min-w-[3.25rem]'}`}>{formatTime(duration)}</span>
     </div>
   );
 });
@@ -2027,6 +2032,8 @@ const BottomPlayer = memo(function BottomPlayer({
   const compactPracticeMode = false;
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [showVolumePopover, setShowVolumePopover] = useState(false);
+  const [showPlayerMoreMenu, setShowPlayerMoreMenu] = useState(false);
+  const [narrowStackedPlayer, setNarrowStackedPlayer] = useState(false);
   const playerToolsRef = React.useRef<HTMLDivElement>(null);
   const [smartRadioActive, setSmartRadioActive] = useState(false);
   const [premiumGateReason, setPremiumGateReason] = useState<null | 'smartRadio'>(null);
@@ -2078,19 +2085,41 @@ const BottomPlayer = memo(function BottomPlayer({
   const crossfadeSkipEndedRef = React.useRef(false);
   const speeds = [0.5, 0.75, 1, 1.25, 1.5];
   const canUsePractice = currentTrack.practiceEnabled ?? hasPracticeAssets(currentTrack);
+  /** 窄屏底栏第 2 行：图标与 label 统一间距；略带上内边距避免贴底 */
+  const stackedRow2BtnClass =
+    'flex h-7 w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-0.5 py-0.5 transition-colors';
+  const stackedTertiaryLabelClass =
+    'text-[9px] font-medium uppercase tracking-tighter leading-[1.15] text-[var(--color-mist-text)]/68';
 
   React.useEffect(() => {
-    if (!showSpeedMenu && !showVolumePopover) return;
+    const mqNarrow = window.matchMedia('(max-width: 767px), (pointer: coarse) and (max-width: 1024px)');
+    const syncLayout = () => {
+      setNarrowStackedPlayer(mqNarrow.matches);
+    };
+    syncLayout();
+    mqNarrow.addEventListener('change', syncLayout);
+    return () => {
+      mqNarrow.removeEventListener('change', syncLayout);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!narrowStackedPlayer) setShowPlayerMoreMenu(false);
+  }, [narrowStackedPlayer]);
+
+  React.useEffect(() => {
+    if (!showSpeedMenu && !showVolumePopover && !showPlayerMoreMenu) return;
     const onDown = (e: MouseEvent) => {
       const el = playerToolsRef.current;
       if (el && !el.contains(e.target as Node)) {
         setShowSpeedMenu(false);
         setShowVolumePopover(false);
+        setShowPlayerMoreMenu(false);
       }
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [showSpeedMenu, showVolumePopover]);
+  }, [showSpeedMenu, showVolumePopover, showPlayerMoreMenu]);
   const resolvedYoutubeUrl = getTrackYoutubeUrl(currentTrack);
   const resolvedBilibiliUrl = getTrackBilibiliUrlForLocale(currentTrack, currentLang);
   const canOpenExternalVideo = trackHasExternalVideo(currentTrack, currentLang);
@@ -2584,7 +2613,7 @@ const BottomPlayer = memo(function BottomPlayer({
   };
 
   return (
-    <footer data-no-home-click="player" className="player-bar-dock fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center overflow-visible px-0 pb-2.5 pt-0 md:pb-4 pointer-events-none">
+    <footer data-no-home-click="player" className="player-bar-dock fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center overflow-visible px-0 pt-0 pb-[env(safe-area-inset-bottom,0px)] md:pb-4 pointer-events-none">
       <audio
         ref={audioRef}
         data-role="main-player"
@@ -2645,8 +2674,16 @@ const BottomPlayer = memo(function BottomPlayer({
         }`}
       >
         <div
-          className={`player-bar pointer-events-auto relative w-full overflow-visible ${compactPracticeMode ? 'flex px-4 gap-4' : 'grid grid-cols-[minmax(0,1fr)_minmax(0,2.05fr)_minmax(12.75rem,auto)] items-center gap-x-3 gap-y-1 py-2.5 px-4 sm:gap-x-4 sm:px-4 lg:px-5'}`}
+          className={`player-bar pointer-events-auto relative w-full overflow-visible ${
+            compactPracticeMode
+              ? 'flex gap-4 px-4'
+              : narrowStackedPlayer
+                ? 'player-bar--stacked-narrow flex min-w-0 flex-col gap-y-0.5 py-1 px-2.5'
+                : 'grid grid-cols-[minmax(0,1fr)_minmax(0,2.05fr)_minmax(12.75rem,auto)] items-center gap-x-3 gap-y-1 py-2.5 px-4 sm:gap-x-4 sm:px-4 lg:px-5'
+          }`}
         >
+        {!narrowStackedPlayer ? (
+        <>
         {!compactPracticeMode && !showPracticePanel && !immersiveMode && (
           <ImmersiveModeEntryButton
             variant="player"
@@ -2955,6 +2992,456 @@ const BottomPlayer = memo(function BottomPlayer({
             )}
           </div>
         </div>
+        </>
+        ) : (
+          <>
+            {!compactPracticeMode && !showPracticePanel && !immersiveMode && (
+              <ImmersiveModeEntryButton
+                variant="player"
+                onClick={onEnterImmersive}
+                title={t.player.immersiveMode}
+              />
+            )}
+            {/* 窄屏 Row1：左 cover+标题；右整组 Favorite · Prev · Play · Next · Radio（Play 在 Prev/Next 之间），整行铺满 */}
+            <div className="flex w-full min-w-0 items-center gap-2">
+              <div className="flex min-w-0 flex-1 items-center gap-2 pr-0.5">
+                <img
+                  src={
+                    (currentTrack.metadataStatus === 'approved' && currentTrack.sourceCoverUrl)
+                      ? currentTrack.sourceCoverUrl
+                      : (currentTrack.coverUrl ||
+                        'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=200&auto=format&fit=crop')
+                  }
+                  alt="Album Art"
+                  className="player-cover h-10 w-10 shrink-0 rounded-md object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <span className="player-title block truncate text-[13px] font-medium leading-tight text-[var(--color-mist-text)]">
+                    {getDisplayTrackTitle(currentTrack, currentLang)}
+                  </span>
+                  <span className="player-artist block truncate text-[11px] leading-tight text-[var(--color-mist-text)]/58">
+                    {getDisplayTrackArtist(currentTrack, currentLang)}
+                  </span>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={handleFavoriteClick}
+                  aria-pressed={!isGuest ? isFavorite : undefined}
+                  aria-label={
+                    isGuest
+                      ? `${t.settings.guestPromptTitle} — ${getDisplayTrackTitle(currentTrack, currentLang)}`
+                      : isFavorite
+                        ? `${t.player.removeFavorite} — ${getDisplayTrackTitle(currentTrack, currentLang)}`
+                        : `${t.player.addFavorite} — ${getDisplayTrackTitle(currentTrack, currentLang)}`
+                  }
+                  title={
+                    isGuest
+                      ? t.settings.guestPromptTitle
+                      : isFavorite
+                        ? t.player.removeFavorite
+                        : t.player.addFavorite
+                  }
+                  className={`hidden min-[401px]:inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-[opacity,background-color,color] hover:bg-white/12 active:scale-95 ${
+                    isGuest
+                      ? 'text-[var(--color-mist-text)]/35'
+                      : isFavorite
+                        ? 'text-[#b8956a]'
+                        : 'text-[var(--color-mist-text)]/58'
+                  }`}
+                >
+                  <Heart
+                    className={`h-4 w-4 translate-y-px ${
+                      !isGuest && isFavorite
+                        ? 'text-[#b8956a] [filter:drop-shadow(0_0_4px_rgba(235,210,170,0.45))]'
+                        : ''
+                    }`}
+                    fill={!isGuest && isFavorite ? 'currentColor' : 'none'}
+                    strokeWidth={1.5}
+                    aria-hidden
+                  />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleMusicLibrarySkipBack}
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[var(--color-mist-text)]/88 transition-colors hover:bg-white/12 hover:text-[var(--color-mist-text)]"
+                  aria-label="Previous"
+                >
+                  <SkipBack className="h-3.5 w-3.5 fill-current" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="player-play-btn inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/22 bg-white/15 text-[var(--color-mist-text)] transition-colors hover:bg-white/24 hover:border-white/28"
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                >
+                  {isPlaying ? <Pause className="h-3.5 w-3.5 fill-current" /> : <Play className="h-3.5 w-3.5 fill-current ml-0.5" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleMusicLibrarySkipForward}
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[var(--color-mist-text)]/88 transition-colors hover:bg-white/12 hover:text-[var(--color-mist-text)]"
+                  aria-label="Next"
+                >
+                  <SkipForward className="h-3.5 w-3.5 fill-current" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSmartRadioClick}
+                  aria-pressed={isPremium ? smartRadioActive : undefined}
+                  aria-label={
+                    isPremium
+                      ? `${t.premium.smartRadioTitle}. ${t.premium.smartRadioTooltipHint} ${smartRadioActive ? t.common.enabled : t.common.disabled}.`
+                      : t.premium.smartRadioTitle
+                  }
+                  title={`${t.premium.smartRadioTitle} — ${t.premium.smartRadioTooltipHint}`}
+                  className={`hidden min-[401px]:inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-[opacity,background-color,color] hover:bg-white/12 active:scale-95 ${
+                    isPremium
+                      ? smartRadioActive
+                        ? 'text-[#b8956a]'
+                        : 'text-[var(--color-mist-text)]/58'
+                      : 'text-[var(--color-mist-text)]/38'
+                  }`}
+                >
+                  <Radio
+                    className={`h-4 w-4 translate-y-px ${
+                      isPremium && smartRadioActive ? 'text-[#b8956a] [filter:drop-shadow(0_0_4px_rgba(235,210,170,0.45))]' : ''
+                    }`}
+                    strokeWidth={1.5}
+                    aria-hidden
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="w-full min-w-0 shrink-0 px-1 -mt-px">
+              <PlayerProgressStrip
+                showPracticePanel={showPracticePanel}
+                compactPracticeMode={compactPracticeMode}
+                stackedMobileDense
+                audioRef={audioRef}
+                trackId={currentTrack.id}
+                formatTime={formatTime}
+                progressBarRef={progressBarRef}
+                onPointerDown={handleProgressPointerDown}
+                progressSyncTick={progressSyncTick}
+              />
+            </div>
+            <div ref={playerToolsRef} className="player-stacked-tools w-full min-w-0 -mt-px">
+              {!compactPracticeMode && (
+              <div className="grid w-full min-w-0 grid-cols-4 min-[401px]:grid-cols-6 gap-x-1 gap-y-0.5 px-1">
+                <button
+                  type="button"
+                  onClick={() => canUsePractice && setShowPracticePanel(!showPracticePanel)}
+                  disabled={!canUsePractice}
+                  className={`${stackedRow2BtnClass} min-w-0 w-full ${
+                    !canUsePractice
+                      ? 'cursor-not-allowed opacity-25'
+                      : showPracticePanel
+                        ? 'bg-white/22 text-[var(--color-mist-text)] ring-1 ring-white/28'
+                        : 'text-[var(--color-mist-text)]/60 hover:bg-white/16 hover:text-[var(--color-mist-text)]'
+                  }`}
+                  title={canUsePractice ? `${t.player.practiceMode} — ${t.music.practice}` : t.player.practiceNotAvailable}
+                  aria-label={canUsePractice ? t.player.practiceMode : t.player.practiceNotAvailable}
+                >
+                  <Piano className="h-[18px] w-[18px] shrink-0" />
+                  <span className={stackedTertiaryLabelClass}>{t.music.practice}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!currentTrack || !canOpenExternalVideo) return;
+                    const isCN = currentLang === '简体中文';
+                    const url = isCN
+                      ? (resolvedBilibiliUrl || resolvedYoutubeUrl)
+                      : (resolvedYoutubeUrl || resolvedBilibiliUrl);
+                    if (url) window.open(url, '_blank');
+                  }}
+                  disabled={!canOpenExternalVideo}
+                  className={`${stackedRow2BtnClass} min-w-0 w-full ${
+                    canOpenExternalVideo
+                      ? 'text-[var(--color-mist-text)]/60 hover:bg-white/16 hover:text-[var(--color-mist-text)]'
+                      : 'cursor-not-allowed text-[var(--color-mist-text)]/22 opacity-55'
+                  }`}
+                  title={
+                    canOpenExternalVideo
+                      ? t.player.watchVideo
+                      : linkStatus === 'missingVideo'
+                        ? t.player.videoMissingCip
+                        : t.player.videoNotAvailable
+                  }
+                  aria-disabled={!canOpenExternalVideo}
+                  aria-label={t.player.video}
+                >
+                  <Youtube className="h-[18px] w-[18px] shrink-0" />
+                  <span className={stackedTertiaryLabelClass}>{t.player.video}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => resolvedSheetUrl && window.open(resolvedSheetUrl, '_blank')}
+                  disabled={!resolvedSheetUrl}
+                  className={`${stackedRow2BtnClass} min-w-0 w-full ${
+                    resolvedSheetUrl
+                      ? 'text-[var(--color-mist-text)]/60 hover:bg-white/16 hover:text-[var(--color-mist-text)]'
+                      : 'cursor-not-allowed text-[var(--color-mist-text)]/22 opacity-55'
+                  }`}
+                  title={
+                    resolvedSheetUrl
+                      ? t.player.sheetMusic
+                      : linkStatus === 'missingSheet' && canOpenExternalVideo
+                        ? t.player.sheetMissingFromVideo
+                        : t.player.sheetNotAvailable
+                  }
+                  aria-disabled={!resolvedSheetUrl}
+                  aria-label={t.player.sheet}
+                >
+                  <BookOpen className="h-[18px] w-[18px] shrink-0" />
+                  <span className={stackedTertiaryLabelClass}>{t.player.sheet}</span>
+                </button>
+                <div className="relative hidden min-[401px]:flex min-w-0 flex-col items-stretch">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowSpeedMenu(s => !s);
+                      setShowVolumePopover(false);
+                      setShowPlayerMoreMenu(false);
+                    }}
+                    className={`${stackedRow2BtnClass} min-w-0 w-full text-[var(--color-mist-text)]/60 hover:bg-white/16 hover:text-[var(--color-mist-text)]`}
+                    title={`${t.player.playbackSpeed} (${playbackRate}x)`}
+                    aria-label={`${t.player.speed} ${playbackRate}x`}
+                    aria-expanded={showSpeedMenu}
+                    aria-haspopup="true"
+                  >
+                    <Clock className="h-[18px] w-[18px] shrink-0" />
+                    <span className={stackedTertiaryLabelClass}>{t.player.speed}</span>
+                  </button>
+                  {showSpeedMenu && (
+                    <div className="glass-popover absolute bottom-full left-1/2 z-20 mb-1 flex min-w-[5.5rem] -translate-x-1/2 animate-in flex-col gap-0.5 rounded-2xl p-2 duration-200 slide-in-from-bottom-2">
+                      {speeds.map(s => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            setPlaybackRate(s);
+                            setShowSpeedMenu(false);
+                          }}
+                          className={`rounded-lg px-3 py-1.5 text-left text-xs transition-colors ${playbackRate === s ? 'bg-white/20 text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/60 hover:bg-white/10'}`}
+                        >
+                          {s}x
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="relative hidden min-[401px]:flex min-w-0 flex-col items-stretch">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowVolumePopover(s => !s);
+                      setShowSpeedMenu(false);
+                      setShowPlayerMoreMenu(false);
+                    }}
+                    className={`${stackedRow2BtnClass} min-w-0 w-full text-[var(--color-mist-text)]/60 hover:bg-white/16 hover:text-[var(--color-mist-text)]`}
+                    title={t.player.volume}
+                    aria-expanded={showVolumePopover}
+                    aria-label={t.player.volume}
+                  >
+                    {isMuted || volume === 0 ? (
+                      <VolumeX className="h-[18px] w-[18px] shrink-0" />
+                    ) : volume < 0.5 ? (
+                      <Volume1 className="h-[18px] w-[18px] shrink-0" />
+                    ) : (
+                      <Volume2 className="h-[18px] w-[18px] shrink-0" />
+                    )}
+                    <span className={stackedTertiaryLabelClass}>{t.player.volume}</span>
+                  </button>
+                  {showVolumePopover && (
+                    <div className="glass-popover absolute bottom-full left-1/2 z-20 mb-1 flex w-[8.5rem] -translate-x-1/2 animate-in flex-col gap-2 rounded-2xl p-3 duration-200 slide-in-from-bottom-2">
+                      <div
+                        className="group h-2 w-full cursor-pointer overflow-hidden rounded-full bg-white/22"
+                        onClick={e => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const newVolume = Math.max(0, Math.min(1, x / rect.width));
+                          setVolume(newVolume);
+                          if (newVolume > 0) setIsMuted(false);
+                        }}
+                        onKeyDown={e => e.preventDefault()}
+                        role="presentation"
+                      >
+                        <div
+                          className="h-full bg-[var(--color-mist-text)]/55 transition-colors group-hover:bg-[var(--color-mist-text)]/75"
+                          style={{ width: `${isMuted ? 0 : volume * 100}%` }}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isMuted) {
+                            setIsMuted(false);
+                            if (volume === 0) setVolume(lastVolume || 0.7);
+                          } else {
+                            setLastVolume(volume);
+                            setIsMuted(true);
+                          }
+                        }}
+                        className="text-center text-[10px] font-medium text-[var(--color-mist-text)]/50 hover:text-[var(--color-mist-text)]/78"
+                      >
+                        {isMuted ? t.player.unmute : t.player.mute}
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="relative flex min-w-0 flex-col items-stretch">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPlayerMoreMenu(s => !s);
+                      setShowSpeedMenu(false);
+                      setShowVolumePopover(false);
+                    }}
+                    className={`${stackedRow2BtnClass} min-w-0 w-full text-[var(--color-mist-text)]/60 hover:bg-white/16 hover:text-[var(--color-mist-text)]`}
+                    aria-expanded={showPlayerMoreMenu}
+                    aria-haspopup="true"
+                    aria-label="More"
+                  >
+                    <MoreHorizontal className="h-4 w-4 shrink-0" />
+                    <span className={stackedTertiaryLabelClass}>More</span>
+                  </button>
+                  {showPlayerMoreMenu && (
+                    <div className="glass-popover absolute bottom-full right-0 z-30 mb-1 flex w-[13.75rem] max-w-[calc(100vw-2rem)] animate-in flex-col gap-0.5 rounded-xl p-2 duration-200 slide-in-from-bottom-2">
+                      <div className="flex flex-col gap-0.5 min-[401px]:hidden">
+                      <button
+                        type="button"
+                        className={`flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs font-medium transition-colors hover:bg-white/12 ${
+                          isGuest
+                            ? 'text-[var(--color-mist-text)]/38'
+                            : isFavorite
+                              ? 'text-[#b8956a]'
+                              : 'text-[var(--color-mist-text)]/78'
+                        }`}
+                        onClick={handleFavoriteClick}
+                        aria-pressed={!isGuest ? isFavorite : undefined}
+                        aria-label={
+                          isGuest
+                            ? `${t.settings.guestPromptTitle} — ${getDisplayTrackTitle(currentTrack, currentLang)}`
+                            : isFavorite
+                              ? `${t.player.removeFavorite} — ${getDisplayTrackTitle(currentTrack, currentLang)}`
+                              : `${t.player.addFavorite} — ${getDisplayTrackTitle(currentTrack, currentLang)}`
+                        }
+                      >
+                        <Heart
+                          className="h-4 w-4 shrink-0"
+                          fill={!isGuest && isFavorite ? 'currentColor' : 'none'}
+                          strokeWidth={1.5}
+                          aria-hidden
+                        />
+                        <span className="min-w-0 flex-1 truncate">
+                          {isGuest
+                            ? t.settings.guestPromptTitle
+                            : isFavorite
+                              ? t.player.removeFavorite
+                              : t.player.addFavorite}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs font-medium transition-colors hover:bg-white/12 ${
+                          isPremium
+                            ? smartRadioActive
+                              ? 'text-[#b8956a]'
+                              : 'text-[var(--color-mist-text)]/72'
+                            : 'text-[var(--color-mist-text)]/35'
+                        }`}
+                        onClick={() => {
+                          handleSmartRadioClick();
+                        }}
+                        aria-pressed={isPremium ? smartRadioActive : undefined}
+                        aria-label={
+                          isPremium
+                            ? `${t.premium.smartRadioTitle}. ${t.premium.smartRadioTooltipHint} ${smartRadioActive ? t.common.enabled : t.common.disabled}.`
+                            : t.premium.smartRadioTitle
+                        }
+                      >
+                        <Radio className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden />
+                        <span className="min-w-0 flex-1 truncate">{t.premium.smartRadioTitle}</span>
+                      </button>
+                      <div className="border-t border-white/10 pt-2 mt-1">
+                        <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-mist-text)]/45">{t.player.speed}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {speeds.map(s => (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => {
+                                setPlaybackRate(s);
+                              }}
+                              className={`rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${playbackRate === s ? 'bg-white/20 text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/58 hover:bg-white/10'}`}
+                            >
+                              {s}x
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="border-t border-white/10 pt-2 mt-1">
+                        <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-mist-text)]/45">{t.player.volume}</div>
+                        <div
+                          className="group mb-1.5 h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/22"
+                          onClick={e => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const newVolume = Math.max(0, Math.min(1, x / rect.width));
+                            setVolume(newVolume);
+                            if (newVolume > 0) setIsMuted(false);
+                          }}
+                          onKeyDown={e => e.preventDefault()}
+                          role="presentation"
+                        >
+                          <div
+                            className="h-full bg-[var(--color-mist-text)]/55 transition-colors group-hover:bg-[var(--color-mist-text)]/75"
+                            style={{ width: `${isMuted ? 0 : volume * 100}%` }}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isMuted) {
+                              setIsMuted(false);
+                              if (volume === 0) setVolume(lastVolume || 0.7);
+                            } else {
+                              setLastVolume(volume);
+                              setIsMuted(true);
+                            }
+                          }}
+                          className="w-full text-center text-[10px] font-medium text-[var(--color-mist-text)]/50 hover:text-[var(--color-mist-text)]/78"
+                        >
+                          {isMuted ? t.player.unmute : t.player.mute}
+                        </button>
+                      </div>
+                      </div>
+                      <div className="hidden min-[401px]:flex flex-col gap-0.5">
+                        {!immersiveMode && !showPracticePanel ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowPlayerMoreMenu(false);
+                              onEnterImmersive();
+                            }}
+                            className="w-full rounded-lg px-2 py-2 text-left text-xs font-medium text-[var(--color-mist-text)]/78 transition-colors hover:bg-white/12"
+                          >
+                            {t.player.immersiveMode}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
       </div>
     </footer>
@@ -3000,16 +3487,16 @@ function HorizontalScroller({ children, showHint = false, t }: { children: React
       {/* Left Arrow - Positioned in the safe padding area */}
       <button
         onClick={() => scroll('left')}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full glass-tile flex items-center justify-center text-[var(--color-mist-text)] opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-300"
+        className="absolute left-2 top-1/2 z-30 w-8 h-8 -translate-y-1/2 rounded-full glass-tile flex items-center justify-center text-[var(--color-mist-text)] opacity-60 transition-all duration-300 hover:opacity-100 hover:scale-105 md:left-4 md:h-10 md:w-10"
         aria-label="Scroll left"
       >
-        <ChevronLeft className="w-6 h-6" />
+        <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
       </button>
 
       {/* Scroll Track — overflow-y: visible so selected card's top glow/shadow isn't clipped */}
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto no-scrollbar pb-2 pt-3 px-16 scroll-smooth"
+        className="flex gap-2.5 overflow-x-auto no-scrollbar scroll-smooth pb-1 pt-2 px-9 md:gap-4 md:pb-2 md:pt-3 md:px-16"
         style={{ overflowY: 'visible' }}
       >
         {children}
@@ -3018,10 +3505,10 @@ function HorizontalScroller({ children, showHint = false, t }: { children: React
       {/* Right Arrow - Positioned in the safe padding area */}
       <button
         onClick={() => scroll('right')}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full glass-tile flex items-center justify-center text-[var(--color-mist-text)] opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-300"
+        className="absolute right-2 top-1/2 z-30 w-8 h-8 -translate-y-1/2 rounded-full glass-tile flex items-center justify-center text-[var(--color-mist-text)] opacity-60 transition-all duration-300 hover:opacity-100 hover:scale-105 md:right-4 md:h-10 md:w-10"
         aria-label="Scroll right"
       >
-        <ChevronRight className="w-6 h-6" />
+        <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
       </button>
     </div>
   );
@@ -3310,12 +3797,12 @@ const FocusTab = memo(function FocusTab({
   );
 
   return (
-    <div className="focus-page w-full max-w-5xl mx-auto animate-in fade-in duration-500 pb-12">
-      <div className="focus-panel glass-effect-static p-8 rounded-[40px] flex flex-col gap-10">
+    <div className="focus-page mx-auto w-full max-w-5xl animate-in pb-12 duration-500 fade-in max-md:pb-8">
+      <div className="focus-panel glass-effect-static flex flex-col gap-10 rounded-[40px] p-8 max-md:gap-5 max-md:rounded-[30px] max-md:p-5">
 
         {/* 1) THEME STRIP */}
-        <div className="flex flex-col gap-4">
-          <h3 className="text-lg font-medium text-[var(--color-mist-text)] ml-1">{t.home.theme}</h3>
+        <div className="flex flex-col gap-4 max-md:gap-2">
+          <h3 className="ml-1 text-lg font-medium text-[var(--color-mist-text)] max-md:ml-0.5 max-md:text-base">{t.home.theme}</h3>
           <HorizontalScroller showHint t={t}>
             {SCENES.map(scene => {
               const locked = scene.premiumOnly && !isPremium;
@@ -3331,7 +3818,7 @@ const FocusTab = memo(function FocusTab({
                     }
                     void onSelectScene(scene.id);
                   }}
-                  className={`relative w-56 h-32 rounded-2xl overflow-hidden shrink-0 cursor-pointer group transition-all duration-300 ${isActive
+                  className={`relative w-56 h-32 max-md:h-24 max-md:w-48 rounded-2xl overflow-hidden shrink-0 cursor-pointer group transition-all duration-300 ${isActive
                     ? 'shadow-[0_0_0_2px_rgba(255,255,255,0.5),0_8px_24px_rgba(0,0,0,0.35)] -translate-y-1.5 scale-[1.02]'
                     : 'hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:-translate-y-0.5'
                     }`}
@@ -3358,9 +3845,9 @@ const FocusTab = memo(function FocusTab({
                       <div className="h-7 w-7 rounded-full border-2 border-white/35 border-t-white animate-spin" />
                     </div>
                   )}
-                  <div className="absolute bottom-3 left-3 flex flex-col">
-                    <span className="text-white text-sm font-medium">{t.themes[scene.id as keyof typeof t.themes]}</span>
-                    <span className="text-[10px] text-white/80 bg-white/20 px-2 py-0.5 rounded-full w-fit mt-1 glass-utility border border-white/20">{t.tags[scene.tag as keyof typeof t.tags]}</span>
+                  <div className="absolute bottom-2.5 left-2.5 flex flex-col max-md:bottom-2 max-md:left-2">
+                    <span className="text-sm font-medium text-white max-md:text-[13px]">{t.themes[scene.id as keyof typeof t.themes]}</span>
+                    <span className="mt-0.5 w-fit rounded-full border border-white/18 bg-white/16 px-1.5 py-px text-[10px] text-white/78 glass-utility max-md:mt-0 max-md:text-[9px]">{t.tags[scene.tag as keyof typeof t.tags]}</span>
                   </div>
                   {isActive && (
                     <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white/90 flex items-center justify-center shadow">
@@ -3374,10 +3861,10 @@ const FocusTab = memo(function FocusTab({
         </div>
 
         {/* 2) AMBIENT STRIP */}
-        <div className="flex flex-col gap-4">
-          <div className="ml-1 flex flex-col gap-1">
-            <h3 className="text-lg font-medium text-[var(--color-mist-text)]">{t.home.ambience}</h3>
-            <p className="text-xs text-[var(--color-mist-text)]/56">{t.common.ambienceLimit}</p>
+        <div className="flex flex-col gap-4 max-md:gap-2">
+          <div className="ml-1 flex flex-col gap-1 max-md:ml-0.5 max-md:gap-0">
+            <h3 className="text-lg font-medium text-[var(--color-mist-text)] max-md:text-base">{t.home.ambience}</h3>
+            <p className="text-xs text-[var(--color-mist-text)]/56 max-md:text-[11px] max-md:leading-snug">{t.common.ambienceLimit}</p>
           </div>
           <HorizontalScroller showHint t={t}>
             {ambientItems.map(amb => {
@@ -3387,7 +3874,7 @@ const FocusTab = memo(function FocusTab({
                 <div
                   key={amb.id}
                   onClick={() => toggleAmbience(amb.id)}
-                  className={`relative w-56 h-32 rounded-2xl overflow-hidden shrink-0 cursor-pointer group transition-all duration-300 ${isActive
+                  className={`relative w-56 h-32 max-md:h-24 max-md:w-48 rounded-2xl overflow-hidden shrink-0 cursor-pointer group transition-all duration-300 ${isActive
                     ? 'shadow-[0_0_0_2px_rgba(255,255,255,0.45),0_8px_24px_rgba(0,0,0,0.35)] -translate-y-1.5 scale-[1.02]'
                     : 'hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:-translate-y-0.5'
                     }`}
@@ -3395,9 +3882,9 @@ const FocusTab = memo(function FocusTab({
                   <img src={(amb as any).imageUrl} alt={amb.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" referrerPolicy="no-referrer" />
                   <div className={`absolute inset-0 transition-colors ${isActive ? 'bg-[var(--color-mist-text)]/15' : 'bg-[var(--color-mist-text)]/40 group-hover:bg-[var(--color-mist-text)]/20'}`}></div>
                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-mist-text)]/60 via-transparent to-transparent"></div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                    <Icon className={`w-8 h-8 transition-transform duration-300 ${isActive ? 'scale-110 text-white' : 'text-white/80 group-hover:scale-110'}`} />
-                    <span className="text-white text-sm font-medium tracking-wide">{amb.name}</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 max-md:gap-1">
+                    <Icon className={`h-8 w-8 transition-transform duration-300 max-md:h-7 max-md:w-7 ${isActive ? 'scale-110 text-white' : 'text-white/80 group-hover:scale-110'}`} />
+                    <span className="text-sm font-medium tracking-wide text-white max-md:text-[13px]">{amb.name}</span>
                   </div>
                   {isActive && (
                     <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white/90 flex items-center justify-center shadow">
@@ -3423,7 +3910,7 @@ const FocusTab = memo(function FocusTab({
 
           {/* Active Ambience Pills — shown when at least 1 is active */}
           {activeAmbiences.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap mt-1 animate-in fade-in duration-300">
+            <div className="mt-1 flex flex-wrap items-center gap-2 animate-in fade-in duration-300 max-md:mt-0.5 max-md:gap-1.5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-mist-text)]/40 shrink-0">{t.ambient.nowPlaying}</span>
               {activeAmbiences.map(id => {
                 const item = ambientItems.find(a => a.id === id);
@@ -3446,99 +3933,96 @@ const FocusTab = memo(function FocusTab({
         </div>
 
         {/* 3) SESSION / POMODORO PANEL */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 ml-1">
-            <TomatoIcon className="w-4 h-4 text-[var(--color-mist-text)]/60" />
-            <h3 className="text-lg font-medium text-[var(--color-mist-text)]">{t.home.pomodoro}</h3>
+        <div className="flex flex-col gap-4 max-md:gap-2">
+          <div className="ml-1 flex items-center gap-2 max-md:ml-0.5 max-md:gap-1.5">
+            <TomatoIcon className="h-4 w-4 text-[var(--color-mist-text)]/60 max-md:h-3.5 max-md:w-3.5" />
+            <h3 className="text-lg font-medium text-[var(--color-mist-text)] max-md:text-base">{t.home.pomodoro}</h3>
           </div>
 
-          <div className="glass-panel-static px-6 py-5 flex flex-col gap-5 shadow-sm">
+          <div className="glass-panel-static flex flex-col gap-5 px-6 py-5 shadow-sm max-md:gap-2.5 max-md:px-3 max-md:py-3">
 
-            {/* ── IDLE: 3-column grid layout ────────────────────── */}
+            {/* ── IDLE: desktop 3-col grid; mobile stacked compact ────────────────────── */}
             {status === 'idle' && (
-              <div className="grid grid-cols-[1fr_auto_auto] items-center gap-6 animate-in fade-in duration-300">
+              <div className="flex animate-in fade-in flex-col gap-3 duration-300 md:grid md:grid-cols-[1fr_auto_auto] md:items-center md:gap-6">
 
-                {/* LEFT: Preset Cards */}
-                <div className="flex items-center gap-4 flex-wrap">
-                  {/* Classic Card */}
+                {/* Presets row */}
+                <div className="flex flex-wrap items-center gap-2 md:gap-4">
                   <button
                     onClick={() => setPomoPreset('classic')}
-                    className={`px-5 py-3 rounded-2xl flex flex-col items-start gap-2 transition-all duration-300 border ${pomoPreset === 'classic'
-                      ? 'bg-white/35 border-white/50 text-[var(--color-mist-text)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] -translate-y-1 scale-[1.03]'
-                      : 'bg-white/10 border-white/10 text-[var(--color-mist-text)]/40 hover:bg-white/20 hover:border-white/20'
+                    className={`flex flex-col items-start gap-1 rounded-2xl border px-3 py-2 transition-all duration-300 max-md:rounded-xl md:gap-2 md:px-5 md:py-3 ${pomoPreset === 'classic'
+                      ? 'border-white/50 bg-white/35 text-[var(--color-mist-text)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:-translate-y-1 md:scale-[1.03]'
+                      : 'border-white/10 bg-white/10 text-[var(--color-mist-text)]/40 hover:border-white/20 hover:bg-white/20'
                       }`}
                   >
-                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">{t.home.classic}</span>
+                    <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 md:text-[10px]">{t.home.classic}</span>
                     <div className="flex items-end gap-1 leading-none">
-                      <span className="text-2xl font-bold">25</span>
-                      <span className="text-sm font-medium opacity-20 mb-1">/</span>
-                      <span className="text-lg font-bold opacity-80">5</span>
+                      <span className="text-lg font-bold md:text-2xl">25</span>
+                      <span className="mb-0.5 text-xs font-medium opacity-20 md:mb-1 md:text-sm">/</span>
+                      <span className="text-base font-bold opacity-80 md:text-lg">5</span>
                     </div>
                   </button>
 
-                  {/* Custom Card (Container for direct-editable inputs) */}
                   <div
                     onClick={() => setPomoPreset('custom')}
-                    className={`px-5 py-3 rounded-2xl flex flex-col items-start gap-2 transition-all duration-300 border cursor-pointer ${pomoPreset === 'custom'
-                      ? 'bg-white/35 border-white/50 text-[var(--color-mist-text)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] -translate-y-1 scale-[1.03]'
-                      : 'bg-white/10 border-white/10 text-[var(--color-mist-text)]/40 hover:bg-white/20 hover:border-white/20 group'
+                    className={`flex cursor-pointer flex-col items-start gap-1 rounded-2xl border px-3 py-2 transition-all duration-300 max-md:rounded-xl md:gap-2 md:px-5 md:py-3 ${pomoPreset === 'custom'
+                      ? 'border-white/50 bg-white/35 text-[var(--color-mist-text)] shadow-[0_8px_30px_rgb(0,0,0,0.12)] md:-translate-y-1 md:scale-[1.03]'
+                      : 'border-white/10 bg-white/10 text-[var(--color-mist-text)]/40 hover:border-white/20 hover:bg-white/20 group'
                       }`}
                   >
-                    <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">{t.home.custom}</span>
-                    <div className="flex items-center gap-2">
-                      <div className="flex flex-col items-center gap-1">
+                    <span className="text-[9px] font-bold uppercase tracking-wider opacity-60 md:text-[10px]">{t.home.custom}</span>
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                      <div className="flex flex-col items-center gap-0.5 md:gap-1">
                         <input
                           type="number"
                           min="1" max="999"
                           value={pomoFocus}
                           onChange={e => { setPomoPreset('custom'); setPomoFocus(e.target.value); }}
                           onClick={e => e.stopPropagation()}
-                          className={`w-14 bg-white/10 border border-white/10 rounded-lg py-1 text-lg font-bold text-center focus:outline-none focus:bg-white/20 transition-all ${pomoPreset === 'custom' ? 'text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/40'
+                          className={`w-11 rounded-lg border border-white/10 bg-white/10 py-0.5 text-center text-sm font-bold transition-all focus:bg-white/20 focus:outline-none md:w-14 md:py-1 md:text-lg ${pomoPreset === 'custom' ? 'text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/40'
                             }`}
                         />
-                        <span className="text-[7px] font-bold uppercase opacity-30">{t.home.focusDuration}</span>
+                        <span className="text-[6px] font-bold uppercase opacity-30 md:text-[7px]">{t.home.focusDuration}</span>
                       </div>
-                      <span className="text-white/20 font-bold mb-4">:</span>
-                      <div className="flex flex-col items-center gap-1">
+                      <span className="mb-2 font-bold text-white/20 md:mb-4">:</span>
+                      <div className="flex flex-col items-center gap-0.5 md:gap-1">
                         <input
                           type="number"
                           min="0" max="999"
                           value={pomoBreak}
                           onChange={e => { setPomoPreset('custom'); setPomoBreak(e.target.value); }}
                           onClick={e => e.stopPropagation()}
-                          className={`w-14 bg-white/10 border border-white/10 rounded-lg py-1 text-lg font-bold text-center focus:outline-none focus:bg-white/20 transition-all ${pomoPreset === 'custom' ? 'text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/40'
+                          className={`w-11 rounded-lg border border-white/10 bg-white/10 py-0.5 text-center text-sm font-bold transition-all focus:bg-white/20 focus:outline-none md:w-14 md:py-1 md:text-lg ${pomoPreset === 'custom' ? 'text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/40'
                             }`}
                         />
-                        <span className="text-[7px] font-bold uppercase opacity-30">{t.home.breakDuration}</span>
+                        <span className="text-[6px] font-bold uppercase opacity-30 md:text-[7px]">{t.home.breakDuration}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 border-l border-white/10 pl-6">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-mist-text)]/40">{t.home.fadeOutLabel}</span>
-                  <div className="flex gap-1.5">
+                <div className="flex flex-col gap-1 border-white/10 max-md:w-full max-md:border-0 max-md:pl-0 md:gap-2 md:border-l md:pl-6">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--color-mist-text)]/40 md:text-[10px]">{t.home.fadeOutLabel}</span>
+                  <div className="flex flex-wrap gap-1 md:gap-1.5">
                     {(['Off', '30s', '1m'] as const).map(v => (
                       <button
                         key={v}
                         onClick={() => setFadeOut(v)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all border ${fadeOut === v
-                          ? 'bg-white/30 border-white/40 text-[var(--color-mist-text)]'
-                          : 'bg-white/8 border-white/10 text-[var(--color-mist-text)]/40 hover:bg-white/15'
+                        className={`rounded-lg border px-2 py-0.5 text-[11px] font-bold transition-all max-md:px-2 max-md:text-[10px] md:px-2.5 md:py-1 md:text-xs ${fadeOut === v
+                          ? 'border-white/40 bg-white/30 text-[var(--color-mist-text)]'
+                          : 'border-white/10 bg-white/8 text-[var(--color-mist-text)]/40 hover:bg-white/15'
                           }`}
                       >
                         {v === 'Off' ? t.home.fadeOutOff : v === '30s' ? t.home.fadeOut30 : t.home.fadeOut1m}
                       </button>
                     ))}
                   </div>
-                  <span className="text-[10px] text-[var(--color-mist-text)]/25 leading-tight">{t.home.fadeDesc}</span>
+                  <span className="hidden text-[10px] leading-tight text-[var(--color-mist-text)]/25 md:block">{t.home.fadeDesc}</span>
                 </div>
 
-                {/* RIGHT: Start button */}
-                <div className="border-l border-white/10 pl-6">
+                <div className="max-md:w-full md:border-l md:pl-6">
                   <button
                     onClick={handleStartSession}
-                    className={`${premiumUi.upgradeButtonCompact} rounded-full`}
+                    className={`${premiumUi.upgradeButtonCompact} max-md:w-full max-md:justify-center rounded-full`}
                   >
                     {t.home.startSession}
                   </button>
@@ -3547,7 +4031,7 @@ const FocusTab = memo(function FocusTab({
             )}
             {/* ── ACTIVE / PAUSED / FINISHED: live view ─────────────── */}
             {status !== 'idle' && (
-              <div className="flex items-center justify-between gap-6 animate-in fade-in duration-300">
+              <div className="flex animate-in fade-in items-center justify-between gap-6 duration-300 max-md:gap-3">
 
                 {/* Phase badge + big countdown */}
                 <div className="flex flex-col gap-1">
@@ -3562,7 +4046,7 @@ const FocusTab = memo(function FocusTab({
                           t.home.sessionComplete}
                   </div>
                   {status !== 'finished' ? (
-                    <span className="text-[44px] font-bold tracking-tight text-[var(--color-mist-text)] tabular-nums leading-none">
+                    <span className="text-[44px] font-bold leading-none tracking-tight text-[var(--color-mist-text)] tabular-nums max-md:text-[34px]">
                       {fmtSecs(secsLeft)}
                     </span>
                   ) : (

@@ -62,9 +62,10 @@ html {
    which incorrectly activates desktop-size styles.
    ═══════════════════════════════════════════════════════ */
 @media (pointer: coarse) and (max-height: 500px) and (orientation: landscape) {
+  /* 堆叠底栏在矮横屏仍需要可读高度；旧 3rem 仅适合极扁三列，会裁切工具按钮 */
   html {
-    --player-bar-h: 3rem;
-    --player-bar-stack-h: calc(var(--player-bar-h) + 0.65rem);
+    --player-bar-h: 3.25rem;
+    --player-bar-stack-h: 7rem;
   }
 
   /* ── Bottom Player Bar ── */
@@ -758,6 +759,15 @@ body {
   border-color: rgba(255, 255, 255, 0.22);
 }
 
+/* 音乐页分类 chips：仅窄屏压高度（不改配色体系） */
+@media (max-width: 767px) {
+  .music-browse-filter-chips .glass-filter-chip {
+    padding: 0.125rem 0.5rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.03em;
+  }
+}
+
 .glass-filter-chip--active {
   color: var(--color-mist-text);
   font-weight: 600;
@@ -809,6 +819,15 @@ body {
     inset 0 1px 0 0 rgba(255, 255, 255, 0.55);
   min-height: var(--player-bar-h);
   height: auto;
+}
+
+/* 窄屏堆叠底栏：更轻 bottom bar 观感（配色与玻璃材质不变） */
+.player-bar.player-bar--stacked-narrow {
+  border-radius: 12px;
+  box-shadow:
+    0 6px 20px rgba(72, 54, 37, 0.07),
+    0 2px 8px rgba(72, 54, 37, 0.05),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.48);
 }
 
 .glass-effect {
@@ -1110,7 +1129,7 @@ body {
     box-sizing: border-box !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-bottom: calc(var(--player-bar-stack-h) + 2.25rem) !important;
+    padding-bottom: calc(var(--player-bar-stack-h) + 0.28rem) !important;
   }
 
   .app-chrome-shell {
@@ -1128,5 +1147,18 @@ body {
     width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
+  }
+
+  html {
+    --player-bar-h: 2.75rem;
+    --player-bar-stack-h: 7.25rem;
+  }
+}
+
+@media (max-width: 767px) and (orientation: portrait),
+  (pointer: coarse) and (max-width: 1024px) and (orientation: portrait) {
+  html {
+    --player-bar-h: 2.75rem;
+    --player-bar-stack-h: 8rem;
   }
 }
