@@ -44,6 +44,10 @@ import { SupabaseResetPasswordGate } from './auth/supabase-reset-password-gate';
 import { defaultMusicPlaybackContext, type MusicPlaybackContext } from './music-playback-context';
 import { pickNextSmartRadioTrack, pushRecentTrackId } from './smart-radio-pick';
 import {
+  guestMayStartPlayback,
+  recordGuestPlayedTrackIfNew,
+} from './lib/guest-play-limit';
+import {
   loadFavoriteIds,
   saveFavoriteIds,
   loadRecentTrackIds,
@@ -460,6 +464,7 @@ export default function App() {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<Track>(defaultTrack);
+  const currentTrackIdRef = useRef(currentTrack.id);
   const [tracks, setTracks] = useState<Track[]>([]);
   /** 仅乐库页：与 MusicTab 当前筛选一致的曲目顺序，供底部播放器上一首/下一首 */
   const [musicLibraryPlaybackQueue, setMusicLibraryPlaybackQueue] = useState<Track[]>([]);
@@ -756,9 +761,33 @@ export default function App() {
   );
   const [devAccountTier, setDevAccountTier] = useState<'guest' | 'basic' | 'premium' | null>(null);
   const [showGuestFeaturePrompt, setShowGuestFeaturePrompt] = useState(false);
+  const [showGuestPlayLimitPrompt, setShowGuestPlayLimitPrompt] = useState(false);
   const accountTier = devAccountTier ?? (showDevTierPreview && isPremium ? 'premium' : 'basic');
   /** Dev「访客」模式，或未登录 Supabase（logout 后必须走此分支，避免假 Basic 账号 UI） */
   const isGuest = accountTier === 'guest' || !session?.user;
+
+  React.useEffect(() => {
+    currentTrackIdRef.current = currentTrack.id;
+  }, [currentTrack.id]);
+
+  const setIsPlayingGated = useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) => {
+      setIsPlaying(prev => {
+        const next = typeof value === 'function' ? (value as (p: boolean) => boolean)(prev) : value;
+        if (next) {
+          if (!guestMayStartPlayback(isGuest, currentTrackIdRef.current)) {
+            setShowGuestPlayLimitPrompt(true);
+            return false;
+          }
+          if (isGuest) {
+            recordGuestPlayedTrackIfNew(currentTrackIdRef.current);
+          }
+        }
+        return next;
+      });
+    },
+    [isGuest],
+  );
 
   /** 与 read-membership 同步的 Supabase user id；访客 / Dev 访客不请求 */
   const membershipUserId = useMemo(() => {
@@ -1218,22 +1247,33 @@ export default function App() {
     practiceSnapNoticeTimerRef.current = setTimeout(() => setPracticeSnapNotice(null), 1800);
   };
 
-  const selectTrackForPlayback = React.useCallback((track: Track, autoplay = true) => {
-    playbackHandoffRef.current = null;
-    setShowPracticePanel(false);
-    setPracticeTransportSeekTarget(null);
-    resetPlaybackTimeline();
-    smartRadioRecentRef.current = pushRecentTrackId(smartRadioRecentRef.current, track.id);
-    if (!isGuest) {
-      setRecentTrackIds(prev => {
-        const next = touchRecentList(prev, track.id);
-        saveRecentTrackIds(next);
-        return next;
-      });
-    }
-    setCurrentTrack(track);
-    setIsPlaying(autoplay);
-  }, [isGuest]);
+  const selectTrackForPlayback = React.useCallback(
+    (track: Track, autoplay = true): boolean => {
+      if (autoplay && !guestMayStartPlayback(isGuest, track.id)) {
+        setShowGuestPlayLimitPrompt(true);
+        return false;
+      }
+      playbackHandoffRef.current = null;
+      setShowPracticePanel(false);
+      setPracticeTransportSeekTarget(null);
+      resetPlaybackTimeline();
+      smartRadioRecentRef.current = pushRecentTrackId(smartRadioRecentRef.current, track.id);
+      if (!isGuest) {
+        setRecentTrackIds(prev => {
+          const next = touchRecentList(prev, track.id);
+          saveRecentTrackIds(next);
+          return next;
+        });
+      }
+      setCurrentTrack(track);
+      setIsPlaying(autoplay);
+      if (autoplay && isGuest) {
+        recordGuestPlayedTrackIfNew(track.id);
+      }
+      return true;
+    },
+    [isGuest],
+  );
 
   const getNextSmartRadioTrack = React.useCallback((): Track | null => {
     return pickNextSmartRadioTrack({
@@ -1244,27 +1284,39 @@ export default function App() {
     });
   }, [currentTrack, tracks, musicPlaybackContext]);
 
-  const advancePlaybackWithCrossfadeHandoff = React.useCallback((track: Track, resumeAtSec: number) => {
-    playbackHandoffRef.current = resumeAtSec;
-    smartRadioRecentRef.current = pushRecentTrackId(smartRadioRecentRef.current, track.id);
-    if (!isGuest) {
-      setRecentTrackIds(prev => {
-        const next = touchRecentList(prev, track.id);
-        saveRecentTrackIds(next);
-        return next;
-      });
-    }
-    setShowPracticePanel(false);
-    setPracticeTransportSeekTarget(null);
-    resetPlaybackTimeline();
-    setPlaybackTimelineTime(resumeAtSec, true);
-    setCurrentTrack(track);
-    setIsPlaying(true);
-  }, [isGuest]);
+  const advancePlaybackWithCrossfadeHandoff = React.useCallback(
+    (track: Track, resumeAtSec: number): boolean => {
+      if (!guestMayStartPlayback(isGuest, track.id)) {
+        setShowGuestPlayLimitPrompt(true);
+        setIsPlaying(false);
+        return false;
+      }
+      playbackHandoffRef.current = resumeAtSec;
+      smartRadioRecentRef.current = pushRecentTrackId(smartRadioRecentRef.current, track.id);
+      if (!isGuest) {
+        setRecentTrackIds(prev => {
+          const next = touchRecentList(prev, track.id);
+          saveRecentTrackIds(next);
+          return next;
+        });
+      }
+      setShowPracticePanel(false);
+      setPracticeTransportSeekTarget(null);
+      resetPlaybackTimeline();
+      setPlaybackTimelineTime(resumeAtSec, true);
+      setCurrentTrack(track);
+      setIsPlaying(true);
+      if (isGuest) {
+        recordGuestPlayedTrackIfNew(track.id);
+      }
+      return true;
+    },
+    [isGuest],
+  );
 
   const handleTopNavSelectTrack = React.useCallback(
     (track: Track) => {
-      selectTrackForPlayback(track, true);
+      if (!selectTrackForPlayback(track, true)) return;
       setActiveView('home');
     },
     [selectTrackForPlayback],
@@ -1663,6 +1715,62 @@ export default function App() {
               </div>
             )}
           </AnimatePresence>
+
+          <AnimatePresence>
+            {showGuestPlayLimitPrompt && (
+              <div className="fixed inset-0 z-[320] flex items-center justify-center p-6">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowGuestPlayLimitPrompt(false)}
+                  className="absolute inset-0 bg-[rgba(245,236,226,0.52)]"
+                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                  className="relative glass-panel w-full max-w-md rounded-[32px] px-8 py-8"
+                >
+                  <div className="flex flex-col gap-4 text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/50 bg-white/55 text-[var(--color-mist-text)]/78">
+                      <User className="h-6 w-6" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h3 className="text-2xl font-semibold tracking-tight text-[var(--color-mist-text)]">
+                        {t.settings.guestListenLimitTitle}
+                      </h3>
+                      <p className="text-sm leading-6 text-[var(--color-mist-text)]/72">
+                        {t.settings.guestListenLimitDesc}
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowGuestPlayLimitPrompt(false);
+                          openAuthModal('sign-up');
+                        }}
+                        className="flex-1 rounded-2xl bg-white/82 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white"
+                      >
+                        {t.common.signUp}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowGuestPlayLimitPrompt(false);
+                          openAuthModal('sign-in');
+                        }}
+                        className="flex-1 rounded-2xl border border-white/36 bg-white/34 px-5 py-3 text-sm font-semibold text-[var(--color-mist-text)]/86 transition-colors hover:bg-white/48"
+                      >
+                        {t.common.logIn}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
         </>
       )}
 
@@ -1671,7 +1779,7 @@ export default function App() {
           <PracticePanel
             currentTrack={currentTrack}
             isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
+            setIsPlaying={setIsPlayingGated}
             playbackRate={playbackRate}
             setPlaybackRate={setPlaybackRate}
             onClose={() => setShowPracticePanel(false)}
@@ -1692,7 +1800,7 @@ export default function App() {
       <BottomPlayer
         currentTrack={currentTrack}
         isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
+        setIsPlaying={setIsPlayingGated}
         playbackRate={playbackRate}
         setPlaybackRate={setPlaybackRate}
         showPracticePanel={showPracticePanel}
@@ -2015,11 +2123,11 @@ const BottomPlayer = memo(function BottomPlayer({
   setPracticeMidiOutputMuted: React.Dispatch<React.SetStateAction<boolean>>,
   musicLibrarySkipEnabled: boolean,
   musicLibraryPlaybackQueue: Track[],
-  onMusicLibrarySkipToTrack: (track: Track, autoplay: boolean) => void,
+  onMusicLibrarySkipToTrack: (track: Track, autoplay: boolean) => boolean,
   onOpenSettingsMembership: () => void,
   playbackHandoffRef: React.MutableRefObject<number | null>,
   getNextSmartRadioTrack: () => Track | null,
-  advancePlaybackWithCrossfadeHandoff: (track: Track, resumeAtSec: number) => void,
+  advancePlaybackWithCrossfadeHandoff: (track: Track, resumeAtSec: number) => boolean,
   onSmartRadioToast: (msg: string) => void,
   isFavorite: boolean,
   onToggleFavorite: (trackId: string) => void,
@@ -2596,17 +2704,13 @@ const BottomPlayer = memo(function BottomPlayer({
     }
     if (isPremium && smartRadioActive) {
       const smartNext = getNextSmartRadioTrack();
-      if (smartNext) {
-        onMusicLibrarySkipToTrack(smartNext, true);
-        return;
-      }
+      if (smartNext && onMusicLibrarySkipToTrack(smartNext, true)) return;
     }
     if (musicLibrarySkipEnabled && musicLibraryPlaybackQueue.length > 0) {
       const idx = musicLibraryPlaybackQueue.findIndex(t => t.id === currentTrack.id);
       if (idx >= 0 && idx < musicLibraryPlaybackQueue.length - 1) {
         const nextTrack = musicLibraryPlaybackQueue[idx + 1];
-        onMusicLibrarySkipToTrack(nextTrack, true);
-        return;
+        if (onMusicLibrarySkipToTrack(nextTrack, true)) return;
       }
     }
     setIsPlaying(false);

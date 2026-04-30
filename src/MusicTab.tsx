@@ -275,7 +275,7 @@ type SongListRowData = {
   rowIndexOffset: number;
   currentTrackId: string;
   isPlaying: boolean;
-  onSelectTrack: (t: Track, autoplay?: boolean) => void;
+  onSelectTrack: (t: Track, autoplay?: boolean) => boolean;
   currentLang: string;
   songCategoryLabelMap: Map<string, string>;
   /** 窄屏 / 触摸设备：紧凑纵向行 + 隐藏表头 */
@@ -665,7 +665,7 @@ type SongListChromeProps = {
   filteredSongTracks: Track[];
   currentTrackId: string;
   isPlaying: boolean;
-  onSelectTrack: (t: Track, autoplay?: boolean) => void;
+  onSelectTrack: (t: Track, autoplay?: boolean) => boolean;
   currentLang: string;
   songCategoryLabelMap: Map<string, string>;
   t: any;
@@ -914,7 +914,7 @@ export const MusicTab = memo(function MusicTab({
 }: {
   tracks: Track[];
   currentTrackId: string;
-  onSelectTrack: (t: Track, autoplay?: boolean) => void;
+  onSelectTrack: (t: Track, autoplay?: boolean) => boolean;
   /** 供底部播放器「上一首/下一首」：与当前列表筛选一致（歌曲列表或艺人详情），艺人网格视图为空列表 */
   onPlaybackQueueChange?: (queue: Track[]) => void;
   /** Smart Radio：同步乐库浏览上下文（艺人页 / 分类筛选） */

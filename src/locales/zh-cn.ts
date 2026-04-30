@@ -240,6 +240,8 @@ export const zhCN = {
     premiumDescShort: '当前会员权益已全部生效，可在此查看方案状态并管理订阅。',
     guestPromptTitle: '免费注册即可使用',
     guestPromptDesc: '注册后即可使用环境音效、番茄钟、收藏与最近播放功能。',
+    guestListenLimitTitle: '登录后继续收听',
+    guestListenLimitDesc: '创建免费账号即可继续收听，并保存你喜欢的歌曲。',
     guestAuthCta: '登录 / 注册',
     guestAuthCtaHint: '登录或注册后可使用收藏、最近播放、环境音效与番茄钟。',
     basicPlanName: '基础方案',

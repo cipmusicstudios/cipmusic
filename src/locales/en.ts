@@ -241,6 +241,8 @@ export const en = {
     premiumDescShort: 'Your premium access is active. Review your plan details and manage the subscription here.',
     guestPromptTitle: 'Free signup required',
     guestPromptDesc: 'Create a free account to use ambience, Pomodoro, favorites, and recently played.',
+    guestListenLimitTitle: 'Sign in to keep listening',
+    guestListenLimitDesc: 'Create a free account to continue listening and save your favorites.',
     guestAuthCta: 'Sign in / Sign up',
     guestAuthCtaHint: 'Sign in or sign up to unlock favorites, recently played, ambience, and pomodoro.',
     basicPlanName: 'Basic Plan',

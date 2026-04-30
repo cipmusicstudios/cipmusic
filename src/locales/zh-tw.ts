@@ -240,6 +240,8 @@ export const zhTW = {
     premiumDescShort: '目前會員權益已全部生效，可在此查看方案狀態並管理訂閱。',
     guestPromptTitle: '免費註冊即可使用',
     guestPromptDesc: '註冊後即可使用環境音效、番茄鐘、收藏與最近播放功能。',
+    guestListenLimitTitle: '登入後繼續收聽',
+    guestListenLimitDesc: '建立免費帳號即可繼續收聽，並儲存你喜歡的歌曲。',
     guestAuthCta: '登入 / 註冊',
     guestAuthCtaHint: '登入或註冊後可使用收藏、最近播放、環境音效與番茄鐘。',
     basicPlanName: '基礎方案',
