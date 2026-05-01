@@ -55,6 +55,14 @@ import {
   toggleFavoriteList,
   touchRecentList,
 } from './user-library-storage';
+import {
+  listFavoritesRemote,
+  listRecentlyPlayedRemote,
+  addFavoriteRemote,
+  removeFavoriteRemote,
+  recordRecentlyPlayedRemote,
+} from './lib/user-library-remote';
+import { migrateLocalLibraryToSupabase } from './lib/user-library-migration';
 import type { Track, MetadataCandidate, TrackMetadata } from './types/track';
 export type { MetadataCandidate, Track, TrackMetadata } from './types/track';
 import type { PracticeSeekDebug } from './practice/practice-types';
@@ -894,14 +902,60 @@ export default function App() {
 
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => loadFavoriteIds());
   const [recentTrackIds, setRecentTrackIds] = useState<string[]>(() => loadRecentTrackIds());
+
+  /**
+   * Cross-device user library sync: when a session is present, migrate any
+   * legacy localStorage entries once and then hydrate React state from
+   * Supabase. Guests retain pure-localStorage behavior (handled below in the
+   * dispatching toggleFavorite / recents writes).
+   */
+  const userLibraryUserId = session?.user?.id ?? null;
+  useEffect(() => {
+    if (!userLibraryUserId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        await migrateLocalLibraryToSupabase(userLibraryUserId);
+      } catch (e) {
+        console.warn('[user-library] migration error', e);
+      }
+      if (cancelled) return;
+      try {
+        const [remoteFav, remoteRecent] = await Promise.all([
+          listFavoritesRemote(),
+          listRecentlyPlayedRemote(),
+        ]);
+        if (cancelled) return;
+        setFavoriteIds(remoteFav);
+        setRecentTrackIds(remoteRecent);
+      } catch (e) {
+        console.warn('[user-library] remote hydration failed; keeping local state', e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userLibraryUserId]);
+
   const toggleFavorite = React.useCallback((trackId: string) => {
     if (isGuest) return;
+    const userId = session?.user?.id ?? null;
     setFavoriteIds(prev => {
       const next = toggleFavoriteList(prev, trackId);
-      saveFavoriteIds(next);
+      const wasFav = prev.includes(trackId);
+      if (userId) {
+        // Signed-in: persist to Supabase. Fire-and-forget; UI updates optimistically.
+        const remote = wasFav
+          ? removeFavoriteRemote(userId, trackId)
+          : addFavoriteRemote(userId, trackId);
+        void remote.catch(e => console.warn('[user-library] favorite write failed', e));
+      } else {
+        // No session (edge case: !isGuest yet no session.user): keep legacy localStorage.
+        saveFavoriteIds(next);
+      }
       return next;
     });
-  }, [isGuest]);
+  }, [isGuest, session?.user?.id]);
 
   const [settingsMembershipScrollToken, setSettingsMembershipScrollToken] = useState(0);
   const openSettingsMembership = useCallback(() => {
@@ -1259,9 +1313,16 @@ export default function App() {
       resetPlaybackTimeline();
       smartRadioRecentRef.current = pushRecentTrackId(smartRadioRecentRef.current, track.id);
       if (!isGuest) {
+        const userId = session?.user?.id ?? null;
         setRecentTrackIds(prev => {
           const next = touchRecentList(prev, track.id);
-          saveRecentTrackIds(next);
+          if (userId) {
+            void recordRecentlyPlayedRemote(userId, track.id).catch(e =>
+              console.warn('[user-library] recents write failed', e),
+            );
+          } else {
+            saveRecentTrackIds(next);
+          }
           return next;
         });
       }
@@ -1272,7 +1333,7 @@ export default function App() {
       }
       return true;
     },
-    [isGuest],
+    [isGuest, session?.user?.id],
   );
 
   const getNextSmartRadioTrack = React.useCallback((): Track | null => {
@@ -1294,9 +1355,16 @@ export default function App() {
       playbackHandoffRef.current = resumeAtSec;
       smartRadioRecentRef.current = pushRecentTrackId(smartRadioRecentRef.current, track.id);
       if (!isGuest) {
+        const userId = session?.user?.id ?? null;
         setRecentTrackIds(prev => {
           const next = touchRecentList(prev, track.id);
-          saveRecentTrackIds(next);
+          if (userId) {
+            void recordRecentlyPlayedRemote(userId, track.id).catch(e =>
+              console.warn('[user-library] recents write failed', e),
+            );
+          } else {
+            saveRecentTrackIds(next);
+          }
           return next;
         });
       }
@@ -1311,7 +1379,7 @@ export default function App() {
       }
       return true;
     },
-    [isGuest],
+    [isGuest, session?.user?.id],
   );
 
   const handleTopNavSelectTrack = React.useCallback(
