@@ -1,9 +1,13 @@
 /**
- * Phase D Step 5 — public `songs` bucket 中旧 Practice MIDI/MusicXML 删除准备（**仅 dry-run**）
+ * Phase D Step 5 — public `songs` bucket 中旧 Practice MIDI/MusicXML 删除：dry-run + 受控真实删除
  *
- * - 只读 `songs` 表 + Storage list 探测
- * - **绝不**调用 remove / 不写 DB / 不改 bucket
- * - 未来若实现真实删除，须另设双 env 门闸；本脚本 **不包含** 删除实现
+ * 默认：**DRY RUN ONLY**（不调用 remove）
+ * 真实删除须同时满足：
+ *   PRACTICE_DELETE_PUBLIC_APPLY=1
+ *   PRACTICE_DELETE_PUBLIC_CONFIRM=delete-public-practice-assets
+ *   PRACTICE_DELETE_PUBLIC_LIMIT=<正整数>
+ *
+ * **绝不**删除 practice-assets bucket、绝不删除 audio.mp3、不改 DB。
  *
  * Usage:
  *   npm run prepare:delete-public-practice-assets
@@ -24,19 +28,7 @@ dotenv.config({path: path.resolve(process.cwd(), '.env.local')});
 
 const REPORT_PATH = path.resolve(process.cwd(), 'tmp/public-practice-assets-delete-dry-run.json');
 
-/** 硬性拒绝：即使误传删除相关 env，也不执行删除（本脚本内无 delete API 调用）。 */
-const FORBIDDEN_DELETE_ENVS = [
-  'PRACTICE_DELETE_PUBLIC_ASSETS',
-  'PRACTICE_DELETE_CONFIRM',
-  'ALLOW_DELETE_PUBLIC_PRACTICE',
-];
-for (const k of FORBIDDEN_DELETE_ENVS) {
-  const v = process.env[k]?.trim();
-  if (v && v !== '0' && v.toLowerCase() !== 'false') {
-    console.error(`[prepare-delete-public-practice-assets] Refusing to run: ${k} is set. This script is DRY-RUN ONLY.`);
-    process.exit(1);
-  }
-}
+const REQUIRED_CONFIRM = 'delete-public-practice-assets';
 
 type SongRow = {
   id: string;
@@ -58,6 +50,17 @@ type ObjectOutcome =
   | 'probe_error'
   | 'no_key';
 
+/** Item-level delete / dry-run plan status */
+type DeleteStatus =
+  | 'not_applicable'
+  | 'planned'
+  | 'deleted'
+  | 'skipped_existing_missing'
+  | 'blocked_missing_private_copy'
+  | 'probe_error'
+  | 'delete_failed'
+  | 'post_delete_verify_failed';
+
 type ObjectDetail = {
   kind: ObjectKind;
   key: string | null;
@@ -67,6 +70,8 @@ type ObjectDetail = {
   publicProbeError?: string;
   privateProbeError?: string;
   outcome: ObjectOutcome;
+  deleteStatus: DeleteStatus;
+  deleteError?: string;
 };
 
 type TrackReport = {
@@ -77,8 +82,19 @@ type TrackReport = {
 };
 
 type Summary = {
-  dryRunOnly: true;
-  noObjectsDeleted: true;
+  dryRun: boolean;
+  /** legacy-friendly */
+  dryRunOnly: boolean;
+  noObjectsDeleted: boolean;
+  applyRequested: boolean;
+  confirmed: boolean;
+  limit: number | null;
+  plannedDeleteObjectCount: number;
+  deletedObjectCount: number;
+  skippedObjectCount: number;
+  deleteFailedCount: number;
+  postDeletePublicStillExistsCount: number;
+  privateStillExistsCount: number;
   generatedAt: string;
   publicBucket: string;
   privateBucket: string;
@@ -93,6 +109,13 @@ type Summary = {
   alreadyMissingPublicCopyCount: number;
   probeErrorCount: number;
   noKeyObjectCount: number;
+  refusedReason?: string;
+};
+
+type PlannedItem = {
+  trackIndex: number;
+  objectIndex: number;
+  key: string;
 };
 
 function requiredEnv(name: string, value: string | undefined): string {
@@ -140,6 +163,21 @@ function splitDirAndFile(key: string): {dir: string; file: string} {
   const idx = normalized.lastIndexOf('/');
   if (idx < 0) return {dir: '', file: normalized};
   return {dir: normalized.slice(0, idx), file: normalized.slice(idx + 1)};
+}
+
+function fileBasenameLower(key: string): string {
+  return splitDirAndFile(key).file.toLowerCase();
+}
+
+/** 仅允许删除 Practice 谱面资源；禁止 audio.mp3 及非白名单扩展名 */
+function isAllowedPracticeAssetKey(key: string): boolean {
+  const norm = key.replace(/^\/+/, '');
+  if (norm.toLowerCase().includes('audio.mp3')) return false;
+  const base = fileBasenameLower(key);
+  if (base === 'audio.mp3') return false;
+  if (base === 'performance.mid') return true;
+  if (base === 'score.musicxml') return true;
+  return /\.(mid|midi|musicxml|xml|mxl)$/i.test(base);
 }
 
 function formatProbeError(err: unknown): string {
@@ -245,7 +283,6 @@ function classifyObject(
 type ExtraVerification = {
   manifestChunksChecked: number;
   manifestChunksWithMidiOrMusicXmlKeys: string[];
-  /** true when no chunk contained midiUrl / musicXmlUrl / musicxmlUrl on any track */
   manifestChunksOmitPracticeUrls: boolean;
   practiceCodePathNote: string;
 };
@@ -273,9 +310,165 @@ function verifyManifestChunks(): ExtraVerification {
   };
 }
 
+function parseLimit(raw: string | undefined): number | null {
+  if (raw == null || raw.trim() === '') return null;
+  const n = Number.parseInt(raw.trim(), 10);
+  if (!Number.isFinite(n) || n < 1) return null;
+  return n;
+}
+
+function refuse(message: string, detail: string): never {
+  console.error('REFUSED');
+  console.error(detail);
+  console.error('No objects were deleted');
+  throw new ExitError(message, detail);
+}
+
+class ExitError extends Error {
+  constructor(
+    message: string,
+    public detail: string,
+  ) {
+    super(message);
+    this.name = 'ExitError';
+  }
+}
+
+function collectSafeDeletionPlan(tracks: TrackReport[]): PlannedItem[] {
+  const plan: PlannedItem[] = [];
+  tracks.forEach((t, trackIndex) => {
+    t.objects.forEach((o, objectIndex) => {
+      if (o.outcome !== 'safe_to_delete_candidate' || !o.key) return;
+      if (!isAllowedPracticeAssetKey(o.key)) return;
+      plan.push({trackIndex, objectIndex, key: o.key});
+    });
+  });
+  return plan;
+}
+
+async function runDeletePass(params: {
+  supabase: SupabaseClient;
+  publicBucket: string;
+  privateBucket: string;
+  tracks: TrackReport[];
+  planSlice: PlannedItem[];
+}): Promise<{
+  deletedObjectCount: number;
+  skippedObjectCount: number;
+  deleteFailedCount: number;
+  postDeletePublicStillExistsCount: number;
+  privateStillExistsCount: number;
+}> {
+  const {supabase, publicBucket, privateBucket, tracks, planSlice} = params;
+  let deletedObjectCount = 0;
+  let skippedObjectCount = 0;
+  let deleteFailedCount = 0;
+  let postDeletePublicStillExistsCount = 0;
+  let privateStillExistsCount = 0;
+
+  for (const item of planSlice) {
+    const o = tracks[item.trackIndex].objects[item.objectIndex];
+    if (!o.key) continue;
+
+    if (!isAllowedPracticeAssetKey(o.key)) {
+      o.deleteStatus = 'not_applicable';
+      o.deleteError = 'key_not_allowed_for_delete';
+      skippedObjectCount += 1;
+      continue;
+    }
+
+    const pub = await probeStorageObject(supabase, publicBucket, o.key);
+    const priv = await probeStorageObject(supabase, privateBucket, o.key);
+
+    if (pub.status === 'probe_error' || priv.status === 'probe_error') {
+      o.deleteStatus = 'probe_error';
+      o.deleteError = pub.errorMessage || priv.errorMessage;
+      skippedObjectCount += 1;
+      continue;
+    }
+    if (!priv.exists) {
+      o.deleteStatus = 'blocked_missing_private_copy';
+      skippedObjectCount += 1;
+      continue;
+    }
+    if (!pub.exists) {
+      o.deleteStatus = 'skipped_existing_missing';
+      skippedObjectCount += 1;
+      continue;
+    }
+
+    const rm = await supabase.storage.from(publicBucket).remove([o.key]);
+    if (rm.error) {
+      o.deleteStatus = 'delete_failed';
+      o.deleteError = formatProbeError(rm.error);
+      deleteFailedCount += 1;
+      skippedObjectCount += 1;
+      continue;
+    }
+
+    const pubAfter = await probeStorageObject(supabase, publicBucket, o.key);
+    const privAfter = await probeStorageObject(supabase, privateBucket, o.key);
+
+    if (pubAfter.exists) {
+      o.deleteStatus = 'post_delete_verify_failed';
+      o.deleteError = 'public_object_still_exists_after_remove';
+      postDeletePublicStillExistsCount += 1;
+      deleteFailedCount += 1;
+      skippedObjectCount += 1;
+      continue;
+    }
+    if (!privAfter.exists) {
+      o.deleteStatus = 'post_delete_verify_failed';
+      o.deleteError = 'private_copy_missing_after_delete';
+      privateStillExistsCount += 1;
+      deleteFailedCount += 1;
+      skippedObjectCount += 1;
+      continue;
+    }
+
+    o.deleteStatus = 'deleted';
+    deletedObjectCount += 1;
+  }
+
+  return {
+    deletedObjectCount,
+    skippedObjectCount,
+    deleteFailedCount,
+    postDeletePublicStillExistsCount,
+    privateStillExistsCount,
+  };
+}
+
 async function main(): Promise<void> {
-  console.log('DRY RUN ONLY — prepare-delete-public-practice-assets');
-  console.log('No objects were deleted and no delete API is implemented in this script.\n');
+  const applyRaw = process.env.PRACTICE_DELETE_PUBLIC_APPLY?.trim();
+  const applyRequested = applyRaw === '1';
+  const confirmRaw = process.env.PRACTICE_DELETE_PUBLIC_CONFIRM?.trim() || '';
+  const confirmed = confirmRaw === REQUIRED_CONFIRM;
+  const limitParsed = parseLimit(process.env.PRACTICE_DELETE_PUBLIC_LIMIT);
+
+  if (applyRequested && !confirmed) {
+    refuse(
+      'missing_confirm',
+      '缺少 PRACTICE_DELETE_PUBLIC_CONFIRM=delete-public-practice-assets',
+    );
+  }
+
+  if (applyRequested && confirmed && limitParsed == null) {
+    refuse(
+      'missing_limit',
+      '真实删除必须显式设置 PRACTICE_DELETE_PUBLIC_LIMIT=<正整数>（全量删除亦须设上限）。',
+    );
+  }
+
+  /** 通过门闸后：未请求 apply → 始终 dry-run；请求 apply 则必已带 confirm + LIMIT */
+  const dryRun = !applyRequested;
+  if (dryRun) {
+    console.log('DRY RUN ONLY — prepare-delete-public-practice-assets');
+    console.log('No objects were deleted.\n');
+  } else {
+    console.log('APPLY MODE — deleting from public bucket only (practice-assets untouched).');
+    console.log(`LIMIT=${limitParsed}\n`);
+  }
 
   const url = supabaseUrl();
   const serviceKey = requiredEnv('SUPABASE_SERVICE_ROLE_KEY', process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -330,6 +523,7 @@ async function main(): Promise<void> {
           publicStatus: 'missing',
           privateStatus: 'missing',
           outcome: 'no_key',
+          deleteStatus: 'not_applicable',
         });
         continue;
       }
@@ -361,6 +555,7 @@ async function main(): Promise<void> {
         publicProbeError: pub.errorMessage,
         privateProbeError: priv.errorMessage,
         outcome,
+        deleteStatus: 'not_applicable',
       });
     }
 
@@ -379,9 +574,56 @@ async function main(): Promise<void> {
     if (relevant.every(o => o.outcome === 'safe_to_delete_candidate')) safeToDeleteTrackCount += 1;
   }
 
+  const fullPlan = collectSafeDeletionPlan(tracks);
+  let plannedDeleteObjectCount = 0;
+  if (limitParsed != null) {
+    plannedDeleteObjectCount = Math.min(limitParsed, fullPlan.length);
+  }
+
+  if (limitParsed != null) {
+    for (let i = 0; i < fullPlan.length && i < plannedDeleteObjectCount; i += 1) {
+      const p = fullPlan[i];
+      tracks[p.trackIndex].objects[p.objectIndex].deleteStatus = 'planned';
+    }
+  }
+
+  let deletedObjectCount = 0;
+  let skippedObjectCount = 0;
+  let deleteFailedCount = 0;
+  let postDeletePublicStillExistsCount = 0;
+  let privateStillExistsCount = 0;
+
+  if (!dryRun && limitParsed != null) {
+    const planSlice = fullPlan.slice(0, plannedDeleteObjectCount);
+    const del = await runDeletePass({
+      supabase,
+      publicBucket,
+      privateBucket,
+      tracks,
+      planSlice,
+    });
+    deletedObjectCount = del.deletedObjectCount;
+    skippedObjectCount = del.skippedObjectCount;
+    deleteFailedCount = del.deleteFailedCount;
+    postDeletePublicStillExistsCount = del.postDeletePublicStillExistsCount;
+    privateStillExistsCount = del.privateStillExistsCount;
+  }
+
+  const noObjectsDeleted = dryRun || deletedObjectCount === 0;
+
   const summary: Summary = {
-    dryRunOnly: true,
-    noObjectsDeleted: true,
+    dryRun,
+    dryRunOnly: dryRun,
+    noObjectsDeleted,
+    applyRequested,
+    confirmed: applyRequested && confirmed,
+    limit: limitParsed,
+    plannedDeleteObjectCount,
+    deletedObjectCount,
+    skippedObjectCount,
+    deleteFailedCount,
+    postDeletePublicStillExistsCount,
+    privateStillExistsCount,
     generatedAt: new Date().toISOString(),
     publicBucket,
     privateBucket,
@@ -406,6 +648,13 @@ async function main(): Promise<void> {
   console.log('Summary:', JSON.stringify(summary, null, 2));
   console.log('\nStatic verification:', JSON.stringify(extraVerification, null, 2));
   console.log(`\nReport written: ${REPORT_PATH}`);
+
+  if (dryRun && limitParsed == null) {
+    console.log(
+      `\n注意：若需真实删除，必须同时设置 ${'PRACTICE_DELETE_PUBLIC_APPLY=1'}、${'PRACTICE_DELETE_PUBLIC_CONFIRM=' + REQUIRED_CONFIRM} 与 PRACTICE_DELETE_PUBLIC_LIMIT=<正整数>。` +
+        ` 当前 safe_to_delete_candidate 对象总数 = ${fullPlan.length}（与 summary.safeToDeleteObjectCount 一致）。`,
+    );
+  }
 
   const blockedSamples = tracks
     .flatMap(t =>
@@ -441,6 +690,9 @@ async function main(): Promise<void> {
 }
 
 main().catch(e => {
+  if (e instanceof ExitError) {
+    process.exit(1);
+  }
   console.error(e);
   process.exit(1);
 });
