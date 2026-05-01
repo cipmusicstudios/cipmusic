@@ -54,6 +54,7 @@ import {
   isValidManifestDuration,
 } from './manifest-duration-merge.ts';
 import { applyProductionMetadataLocks } from '../src/manifest-production-metadata-locks.ts';
+import { writebackListSortFields } from './writeback-list-sort.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
@@ -466,6 +467,52 @@ async function main() {
   console.log(
     `[build-songs-manifest] listSort: youtube_published=${sortYtPub} youtube_channel_index=${sortYtIdx} fallback_no_youtube_order=${sortFb} (tracks array sorted newest-first)`,
   );
+
+  // ── List-sort writeback to Supabase songs (off by default) ──────────────────
+  // Triggered only when MANIFEST_WRITEBACK_LIST_SORT=1 (live) or
+  // MANIFEST_WRITEBACK_LIST_SORT_DRY_RUN=1 (no DB writes). Uses the service
+  // role key (SUPABASE_SERVICE_ROLE_KEY); must run only in trusted Node env.
+  // Safe-guarded: only runs against MANIFEST_SOURCE=production, because
+  // local-import seed ids are not Supabase UUIDs and would all be skipped.
+  const writebackLive = process.env.MANIFEST_WRITEBACK_LIST_SORT === '1';
+  const writebackDryRun = process.env.MANIFEST_WRITEBACK_LIST_SORT_DRY_RUN === '1';
+  if (writebackLive || writebackDryRun) {
+    if (MANIFEST_SOURCE !== 'production') {
+      console.warn(
+        `[build-songs-manifest] writeback skipped: MANIFEST_SOURCE=${MANIFEST_SOURCE}. ` +
+          'Writeback only supported when source=production (ids must be Supabase UUIDs).',
+      );
+    } else {
+      try {
+        const wbStats = await writebackListSortFields(entries, { dryRun: writebackDryRun });
+        console.log(
+          `[build-songs-manifest] writeback list_sort: ` +
+            `scanned=${wbStats.totalScanned} attempted=${wbStats.attempted} ` +
+            `updated=${wbStats.updated} ` +
+            `skippedNoId=${wbStats.skippedNoId} skippedNonUuid=${wbStats.skippedNonUuid} ` +
+            `skippedNoSortValue=${wbStats.skippedNoSortValue} ` +
+            `failed=${wbStats.failed} dryRun=${wbStats.dryRun}`,
+        );
+        if (wbStats.failures.length > 0) {
+          console.error(
+            '[build-songs-manifest] writeback failures (first 10):',
+            wbStats.failures.slice(0, 10),
+          );
+        }
+      } catch (e) {
+        console.error(
+          '[build-songs-manifest] writeback error — manifest build continues; DB not modified:',
+          e instanceof Error ? e.message : e,
+        );
+      }
+    }
+  } else {
+    console.log(
+      '[build-songs-manifest] writeback list_sort: SKIPPED ' +
+        '(set MANIFEST_WRITEBACK_LIST_SORT=1 to enable, or MANIFEST_WRITEBACK_LIST_SORT_DRY_RUN=1 for dry-run).',
+    );
+  }
+
   const generatedAt = new Date().toISOString();
 
   let firstChunkSize = MANIFEST_CHUNK_TARGET;
