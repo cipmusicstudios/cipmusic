@@ -186,6 +186,8 @@ export const zhCN = {
     premiumPitch: '升级至会员以解锁实时谱面追踪、循环练习、分手模式及节拍器。',
     upgradeToPractice: '立即升级以练习',
     close: '关闭',
+    landscapeHint: 'Practice Mode 建议横屏使用。',
+    continueAnyway: '继续使用',
   },
   settings: {
     account: '账户',

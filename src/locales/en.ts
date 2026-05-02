@@ -187,6 +187,8 @@ export const en = {
     premiumPitch: 'Unlock precise score-following, Section Looping, Hand Filters and Metronome controls with Premium.',
     upgradeToPractice: 'Upgrade to Practice',
     close: 'Close',
+    landscapeHint: 'Practice Mode works best in landscape.',
+    continueAnyway: 'Continue anyway',
   },
   settings: {
     account: 'Account',

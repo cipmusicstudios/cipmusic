@@ -2292,13 +2292,15 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
   return (
     <div
-      className={`practice-container fixed left-0 right-0 z-40 ${lightweightMode ? '' : 'animate-in slide-in-from-bottom duration-500'}`}
+      className={`practice-container fixed left-0 right-0 z-40 max-h-[100dvh] max-md:overscroll-contain ${lightweightMode ? '' : 'animate-in slide-in-from-bottom duration-500'}`}
       style={{
-        bottom: 'calc(var(--player-bar-stack-h, calc(6rem + 1.1rem)) + var(--practice-above-player-gap, 0.5rem))',
-        top: 'max(1.5rem, calc(100vh - 48rem), env(safe-area-inset-top, 0px))',
+        bottom:
+          'calc(env(safe-area-inset-bottom, 0px) + var(--player-bar-stack-h, calc(6rem + 1.1rem)) + var(--practice-above-player-gap, 0.5rem))',
       }}
     >
-      <div className={`${lightweightMode ? 'w-full h-full min-h-0 border-t border-white/20 flex flex-col justify-end rounded-t-[28px] overflow-hidden bg-[rgba(247,242,235,0.96)] relative' : 'w-full h-full min-h-0 glass-effect-static border-t border-white/40 flex flex-col justify-end rounded-t-[40px] shadow-2xl overflow-hidden bg-[var(--color-mist-bg)] relative'}`}>
+      <div
+        className={`${lightweightMode ? 'relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-[28px] border-t border-white/20 bg-[rgba(247,242,235,0.96)]' : 'relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-[40px] border-t border-white/40 bg-[var(--color-mist-bg)] glass-effect-static shadow-2xl'}`}
+      >
 
         {/* PREMIUM STATIC OVERLAY */}
         {!isPremium && (
@@ -2343,7 +2345,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 	        {/* 1) 谱面 flex-1 + 限高滚动：恢复可见谱子，温和放宽高度 */}
 	        <div
             ref={staffViewportRef}
-            className={`practice-staff relative flex min-h-0 w-full max-h-[min(58vh,32rem)] flex-1 flex-col justify-start overflow-y-auto overflow-x-hidden bg-[#f8f6f0] shadow-inner`}
+            className={`practice-staff relative flex min-h-0 w-full flex-1 flex-col justify-start overflow-y-auto overflow-x-hidden bg-[#f8f6f0] shadow-inner max-md:min-h-[28svh] max-h-none md:max-h-[min(58vh,32rem)]`}
           >
 	          <div className={`${lightweightMode ? 'relative w-full flex flex-col items-start pt-1 pb-10' : 'absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-1'}`}>
             <div ref={scrollContainerRef} className={`relative w-full px-[5vw] transition-none origin-top ${lightweightMode ? 'min-h-max' : ''}`}>
@@ -2398,8 +2400,8 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
           {!lightweightMode && <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/20 to-transparent z-10 pointer-events-none"></div>}
         </div>
 
-        <div className="practice-keyboard relative z-20 -mt-12 flex h-52 min-h-52 max-h-52 shrink-0 select-none border-t-[3px] border-[#8b0000]/60 bg-black/40 px-0 pb-0 pt-1">
-          <div className="flex w-full h-full relative">
+        <div className="practice-keyboard relative z-20 -mt-12 flex h-52 min-h-52 max-h-52 shrink-0 select-none overflow-x-auto overflow-y-hidden border-t-[3px] border-[#8b0000]/60 bg-black/40 px-0 pb-0 pt-1">
+          <div className="relative flex h-full min-w-max w-full">
             {whiteKeys.map((note) => {
               const isC = note.startsWith('C');
               const sharpNote = `${note.charAt(0)}#${note.slice(1)}`;

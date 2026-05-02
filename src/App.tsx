@@ -372,43 +372,108 @@ const BackgroundLayer = memo(function BackgroundLayer({
   const [videoReady, setVideoReady] = useState(false);
   const [showImg, setShowImg] = useState(true);
   const [videoSrc, setVideoSrc] = useState(scene.url);
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const lastPlayTsRef = React.useRef(0);
+  const playScheduleRef = React.useRef(0);
+  const prevLightweightRef = React.useRef(lightweight);
 
+  const primarySrc = scene.url;
+  const fallbackSrc = scene.videoFallbackUrl ?? '';
+
+  /** 场景 / 横竖屏 URL 变化：清空错误与 fallback 内存，回到主 URL */
   React.useEffect(() => {
     setVideoError(false);
     setVideoReady(false);
     setShowImg(true);
-    setVideoSrc(scene.url);
-  }, [scene.url]);
+    setVideoSrc(primarySrc);
+  }, [primarySrc, fallbackSrc]);
+
+  /** 轻量模式（Practice）：只有 poster 兜底，必须保留 img，避免 video 卸载后「无层可显示」 */
+  React.useEffect(() => {
+    if (lightweight) {
+      setShowImg(true);
+    }
+  }, [lightweight]);
+
+  /** 结束 Practice：强制回到主视频 URL 并重置就绪态，避免 stale videoReady + showImg=false 卡死 */
+  React.useEffect(() => {
+    if (prevLightweightRef.current && !lightweight) {
+      setVideoError(false);
+      setVideoReady(false);
+      setShowImg(true);
+      setVideoSrc(primarySrc);
+    }
+    prevLightweightRef.current = lightweight;
+  }, [lightweight, primarySrc]);
+
+  const attemptVideoPlay = React.useCallback(() => {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return;
+    if (lightweight || scene.type !== 'video') return;
+    if (videoError) return;
+    if (document.visibilityState === 'hidden') return;
+
+    const now = Date.now();
+    if (now - lastPlayTsRef.current < 320) return;
+    lastPlayTsRef.current = now;
+
+    window.setTimeout(() => {
+      const el = videoRef.current;
+      if (!el || lightweight) return;
+      el.muted = true;
+      const ret = el.play();
+      if (ret !== undefined && typeof (ret as Promise<void>).catch === 'function') {
+        void (ret as Promise<void>).catch(() => {});
+      }
+    }, 0);
+  }, [lightweight, scene.type, videoError]);
+
+  const scheduleAttemptPlay = React.useCallback(() => {
+    playScheduleRef.current += 1;
+    const token = playScheduleRef.current;
+    requestAnimationFrame(() => {
+      if (token !== playScheduleRef.current) return;
+      attemptVideoPlay();
+    });
+  }, [attemptVideoPlay]);
 
   React.useEffect(() => {
-    // 跨越 220ms 的 opacity fade-out 后，彻底卸载 <img> 释放显存图层
-    if (videoReady && scene.type === 'video') {
-      const tmr = setTimeout(() => setShowImg(false), 300);
-      return () => clearTimeout(tmr);
-    }
-  }, [videoReady, scene.type]);
+    scheduleAttemptPlay();
+    const onVis = () => scheduleAttemptPlay();
+    const onPageShow = () => scheduleAttemptPlay();
+    const onOrient = () => scheduleAttemptPlay();
+    document.addEventListener('visibilitychange', onVis);
+    window.addEventListener('pageshow', onPageShow);
+    window.addEventListener('orientationchange', onOrient);
+    window.addEventListener('resize', onOrient);
+    return () => {
+      document.removeEventListener('visibilitychange', onVis);
+      window.removeEventListener('pageshow', onPageShow);
+      window.removeEventListener('orientationchange', onOrient);
+      window.removeEventListener('resize', onOrient);
+    };
+  }, [scheduleAttemptPlay]);
 
-  /**
-   * 背景层布局：
-   *
-   *   wrapper: position: fixed; inset: 0; overflow: hidden;
-   *            —— 贴满 ICB（即真实可视区，不含任何滚动条沟槽）。
-   *            因为 index.css 已经移除 `html { overflow-y: scroll }`，
-   *            只在页面实际溢出时才出现滚动条，此时滚动条本身就是最右侧像素，
-   *            不存在需要"额外盖过去"的沟槽；wrapper 的右边界恰好与视口右边界
-   *            （或滚动条左边界）重合，不会再漏出 html 背景色。
-   *
-   *   media (img/video):
-   *            position: absolute; 中心定位 + min-width/min-height: 100%;
-   *            transform: translate(-50%, -50%); object-fit: cover。
-   *            —— "center + cover"：即便 wrapper 实际宽度因 DPR / 子像素
-   *            round-down 比预期少 1px，min-width:100% 也会把 media 拉至少
-   *            等于 wrapper 宽，再居中切出，不会单边露缝。
-   *
-   *   不使用 contain: paint / 100vw / 100vh：
-   *            contain: paint 会改写内部 fixed 元素的容纳块；100vw/100vh 在
-   *            有滚动条时会把沟槽算进去导致背景超宽。两者都是历史坑，一并避开。
-   */
+  React.useEffect(() => {
+    if (videoReady && !lightweight && scene.type === 'video') {
+      scheduleAttemptPlay();
+    }
+  }, [videoReady, lightweight, scene.type, scheduleAttemptPlay]);
+
+  React.useEffect(() => {
+    if (lightweight || scene.type !== 'video' || videoError) return;
+    const t = window.setTimeout(() => scheduleAttemptPlay(), 60);
+    return () => window.clearTimeout(t);
+  }, [lightweight, videoSrc, scene.type, videoError, scheduleAttemptPlay]);
+
+  React.useEffect(() => {
+    if (videoReady && scene.type === 'video' && !lightweight) {
+      const tmr = window.setTimeout(() => setShowImg(false), 300);
+      return () => window.clearTimeout(tmr);
+    }
+  }, [videoReady, scene.type, lightweight]);
+
+  const canUseVideo = scene.type === 'video' && !lightweight && !videoError;
+
   const wrapperStyle: React.CSSProperties = {
     position: 'fixed',
     inset: 0,
@@ -434,8 +499,6 @@ const BackgroundLayer = memo(function BackgroundLayer({
     willChange: 'opacity, transform',
   };
 
-  const canUseVideo = scene.type === 'video' && !lightweight && !videoError;
-
   return (
     <div style={wrapperStyle}>
       {showImg && (
@@ -456,6 +519,8 @@ const BackgroundLayer = memo(function BackgroundLayer({
       )}
       {canUseVideo && (
         <video
+          ref={videoRef}
+          key={`bg-video-${primarySrc}::${videoSrc}::${lightweight ? 1 : 0}`}
           src={videoSrc}
           autoPlay
           loop
@@ -465,14 +530,17 @@ const BackgroundLayer = memo(function BackgroundLayer({
           poster={scene.thumbnail}
           onLoadedData={() => setVideoReady(true)}
           onCanPlay={() => setVideoReady(true)}
+          onPlaying={() => setVideoReady(true)}
           onError={() => {
             if (scene.videoFallbackUrl && videoSrc !== scene.videoFallbackUrl) {
               console.warn('[BackgroundLayer] Video failed; falling back to landscape URL.');
               setVideoSrc(scene.videoFallbackUrl);
               setVideoReady(false);
+              setShowImg(true);
               return;
             }
             setVideoError(true);
+            setShowImg(true);
           }}
           style={{
             ...mediaStyle,
@@ -794,6 +862,10 @@ export default function App() {
   const [sceneLoadingId, setSceneLoadingId] = useState<SceneId | null>(null);
   const isMobilePortrait = useCoarsePortraitMobile();
   const [showPracticePanel, setShowPracticePanel] = useState(false);
+  const [practicePortraitHintDismissed, setPracticePortraitHintDismissed] = useState(false);
+  const [isCoarsePointer, setIsCoarsePointer] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(pointer: coarse)').matches : false,
+  );
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [practiceMidiOutputVolume, setPracticeMidiOutputVolume] = useState(0.7);
   const [practiceMidiOutputMuted, setPracticeMidiOutputMuted] = useState(false);
@@ -818,6 +890,31 @@ export default function App() {
   React.useEffect(() => {
     currentTrackIdRef.current = currentTrack.id;
   }, [currentTrack.id]);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(pointer: coarse)');
+    const sync = () => setIsCoarsePointer(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  React.useEffect(() => {
+    if (!showPracticePanel) {
+      setPracticePortraitHintDismissed(false);
+    }
+  }, [showPracticePanel]);
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (showPracticePanel) {
+      root.classList.add('practice-panel-open');
+    } else {
+      root.classList.remove('practice-panel-open');
+    }
+    return () => root.classList.remove('practice-panel-open');
+  }, [showPracticePanel]);
 
   const setIsPlayingGated = useCallback(
     (value: boolean | ((prev: boolean) => boolean)) => {
@@ -1473,6 +1570,12 @@ export default function App() {
   }, [activeSceneBase, resolvedSceneUrls, isMobilePortrait]);
   const lightweightPracticeMode = showPracticePanel;
   const practiceIsolatedMode = showPracticePanel;
+  const practicePortraitAdvice =
+    showPracticePanel &&
+    hasPracticeAssets(currentTrack) &&
+    !practicePortraitHintDismissed &&
+    isCoarsePointer &&
+    isMobilePortrait;
 
   const handleSceneSelect = useCallback(
     async (sceneId: SceneId) => {
@@ -1691,12 +1794,12 @@ export default function App() {
              * 的沉浸式规则；现在由 handleBackdropClick 在 target 路径里主动判断，
              * 只有命中按钮/输入/卡片等「data-no-home-click」标签时才跳过。
              */
-            className="flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden z-10 relative"
+            className={`flex-1 min-h-0 w-full z-10 relative ${practiceIsolatedMode ? 'max-md:overflow-hidden max-md:overscroll-y-none' : 'overflow-y-auto overflow-x-hidden'}`}
             onClick={handleBackdropClick}
             aria-hidden={immersiveMode}
           >
           <div
-            className={`app-main-content w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 md:pt-32 pb-32 md:pb-32 transition-all duration-300 ease-out ${
+            className={`app-main-content w-full max-w-6xl mx-auto px-4 sm:px-6 pt-[7.25rem] md:pt-32 pb-32 md:pb-32 transition-all duration-300 ease-out ${
               immersiveMode ? 'pointer-events-none opacity-0 translate-y-1' : ''
             }`}
           >
@@ -1950,6 +2053,24 @@ export default function App() {
         </Suspense>
       )}
 
+      {practicePortraitAdvice && (
+        <div
+          data-no-home-click="practice-orientation-hint"
+          className="pointer-events-auto fixed inset-x-3 top-[calc(env(safe-area-inset-top,0px)+5.5rem)] z-[199] max-md:block md:hidden"
+        >
+          <div className="flex flex-col gap-2 rounded-2xl border border-white/22 bg-[rgba(20,18,16,0.88)] px-3 py-2.5 text-[var(--color-mist-text)] shadow-lg backdrop-blur-md">
+            <p className="text-center text-[12px] font-medium leading-snug text-white/92">{t.practice.landscapeHint}</p>
+            <button
+              type="button"
+              className="mx-auto rounded-full border border-white/35 bg-white/12 px-3 py-1.5 text-[11px] font-semibold text-white/95 hover:bg-white/20"
+              onClick={() => setPracticePortraitHintDismissed(true)}
+            >
+              {t.practice.continueAnyway}
+            </button>
+          </div>
+        </div>
+      )}
+
       <BottomPlayer
         currentTrack={currentTrack}
         isPlaying={isPlaying}
@@ -2086,13 +2207,17 @@ const TopNav = memo(function TopNav({
           immersiveMode ? 'pointer-events-none' : 'pointer-events-auto'
         }`}
       >
-        <div className="topnav-bar glass-panel group/topnav relative w-full overflow-visible rounded-full py-2.5 shadow-md md:py-3">
-          <nav className="topnav-tabs flex items-center justify-center gap-4 overflow-x-auto custom-scrollbar pl-2.5 pr-14 sm:gap-5 sm:pr-16 md:gap-6 md:pl-3 md:pr-[4.5rem]">
+        <div
+          className={`topnav-bar glass-panel group/topnav relative w-full overflow-visible rounded-[22px] shadow-md max-md:flex max-md:flex-col max-md:gap-1 max-md:py-1.5 md:rounded-full md:py-3`}
+        >
+          <nav
+            className="topnav-tabs flex min-h-0 w-full min-w-0 items-center gap-1.5 overflow-x-auto overflow-y-hidden [-ms-overflow-style:none] [scrollbar-width:none] max-md:justify-start max-md:px-2 max-md:pl-2 max-md:pr-2 [&::-webkit-scrollbar]:hidden md:justify-center md:gap-5 md:overflow-x-visible md:px-3 md:pr-[4.5rem] lg:gap-6"
+          >
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveView(tab.id)}
-                className={`topnav-tab glass-pill-tab flex items-center gap-1.5 whitespace-nowrap px-4 py-2.5 font-medium md:px-5 [&_svg]:h-4 [&_svg]:w-4 md:[&_svg]:h-5 md:[&_svg]:w-5 ${activeView === tab.id ? 'glass-pill-tab--active shadow-sm' : ''}`}
+                className={`topnav-tab glass-pill-tab flex shrink-0 items-center gap-1 whitespace-nowrap px-3 py-2 text-[11px] font-medium max-md:max-w-none sm:px-3.5 md:gap-1.5 md:px-5 md:py-2.5 md:text-[0.9375rem] [&_svg]:h-3.5 [&_svg]:w-3.5 md:[&_svg]:h-5 md:[&_svg]:w-5 ${activeView === tab.id ? 'glass-pill-tab--active shadow-sm' : ''}`}
               >
                 {tab.icon && tab.icon}
                 <span>{tab.label}</span>
@@ -2100,49 +2225,51 @@ const TopNav = memo(function TopNav({
             ))}
           </nav>
 
-          {!immersiveMode && !immersiveEntryHidden && (
-            <ImmersiveModeEntryButton
-              variant="topnav"
-              onClick={onEnterImmersive}
-              title={t.player.immersiveMode}
-            />
-          )}
+          <div className="topnav-trailing flex w-full items-center justify-end gap-2 border-white/12 max-md:border-t max-md:px-2 max-md:pb-0.5 max-md:pt-1 md:absolute md:right-3 md:top-1/2 md:w-auto md:-translate-y-1/2 md:border-t-0 md:px-0 md:pb-0 md:pt-0">
+            {!immersiveMode && !immersiveEntryHidden && (
+              <div className="relative hidden md:block">
+                <ImmersiveModeEntryButton
+                  variant="topnav"
+                  onClick={onEnterImmersive}
+                  title={t.player.immersiveMode}
+                />
+              </div>
+            )}
 
-          <div className="topnav-right pointer-events-auto absolute right-1.5 top-1/2 z-[35] flex -translate-y-1/2 items-center gap-1.5 sm:right-2 sm:gap-2 md:right-3 md:gap-3">
             <div className="relative">
-            <button
-              onClick={() => setShowLangMenu(!showLangMenu)}
-              className="topnav-lang-btn flex shrink-0 items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-2.5 py-1.5 text-[var(--color-mist-text)] transition-colors hover:bg-white/25"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              <span className="text-[11px] font-bold tracking-wider">{activeLang.code}</span>
-            </button>
+              <button
+                onClick={() => setShowLangMenu(!showLangMenu)}
+                className="topnav-lang-btn flex shrink-0 items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-2.5 py-1.5 text-[var(--color-mist-text)] transition-colors hover:bg-white/25"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                <span className="text-[11px] font-bold tracking-wider md:text-[11px]">{activeLang.code}</span>
+              </button>
 
-            <AnimatePresence>
-              {showLangMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="glass-popover absolute top-full right-0 mt-3 rounded-2xl p-2 flex flex-col gap-1 min-w-[160px] z-[60]"
-                >
-                  {languages.map(lang => (
-                    <button
-                      key={lang.name}
-                      onClick={() => {
-                        setCurrentLang(lang.name);
-                        setShowLangMenu(false);
-                      }}
-                      className={`px-4 py-2 text-sm rounded-xl text-left transition-colors flex items-center justify-between ${currentLang === lang.name ? 'bg-white/20 text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/60 hover:bg-white/10'}`}
-                    >
-                      <span>{lang.name === '繁體中文' ? '繁體中文' : lang.name}</span>
-                      {currentLang === lang.name && <div className="w-1.5 h-1.5 rounded-full bg-amber-600/60"></div>}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+              <AnimatePresence>
+                {showLangMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="glass-popover absolute top-full right-0 z-[60] mt-3 flex min-w-[160px] flex-col gap-1 rounded-2xl p-2"
+                  >
+                    {languages.map(lang => (
+                      <button
+                        key={lang.name}
+                        onClick={() => {
+                          setCurrentLang(lang.name);
+                          setShowLangMenu(false);
+                        }}
+                        className={`flex items-center justify-between rounded-xl px-4 py-2 text-left text-sm transition-colors ${currentLang === lang.name ? 'bg-white/20 text-[var(--color-mist-text)]' : 'text-[var(--color-mist-text)]/60 hover:bg-white/10'}`}
+                      >
+                        <span>{lang.name === '繁體中文' ? '繁體中文' : lang.name}</span>
+                        {currentLang === lang.name && <div className="h-1.5 w-1.5 rounded-full bg-amber-600/60"></div>}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

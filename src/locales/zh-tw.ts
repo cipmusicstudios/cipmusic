@@ -186,6 +186,8 @@ export const zhTW = {
     premiumPitch: '升級至會員以解鎖即時譜面追蹤、循環練習、分手模式及節拍器。',
     upgradeToPractice: '立即升級以練習',
     close: '關閉',
+    landscapeHint: 'Practice Mode 建議橫向使用。',
+    continueAnyway: '繼續使用',
   },
   settings: {
     account: '帳戶',
