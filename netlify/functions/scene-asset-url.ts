@@ -10,9 +10,9 @@ import {
 const ALLOWED_SCENE_IDS = ['forestCafe', 'celestialDome'] as const;
 type PremiumSceneId = (typeof ALLOWED_SCENE_IDS)[number];
 
-const SCENE_OBJECT_FILENAMES: Record<PremiumSceneId, string> = {
-  forestCafe: 'forest.mp4',
-  celestialDome: 'starry.mp4',
+const SCENE_OBJECT_FILENAMES: Record<PremiumSceneId, {landscape: string; portrait: string}> = {
+  forestCafe: {landscape: 'forest.mp4', portrait: 'portrait/forest-portrait.mp4'},
+  celestialDome: {landscape: 'starry.mp4', portrait: 'portrait/starry-portrait.mp4'},
 };
 
 const corsHeaders: Record<string, string> = {
@@ -65,6 +65,10 @@ function parseAuthHeader(event: HandlerEvent): string | null {
 
 function isPremiumSceneId(v: unknown): v is PremiumSceneId {
   return typeof v === 'string' && (ALLOWED_SCENE_IDS as readonly string[]).includes(v);
+}
+
+function isPortraitOrientation(v: unknown): boolean {
+  return v === 'portrait';
 }
 
 function isPremiumEntitled(row: Record<string, unknown> | null): boolean {
@@ -132,7 +136,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     missingR2Env: missingR2EnvNames(),
   };
 
-  let body: {sceneId?: unknown};
+  let body: {sceneId?: unknown; orientation?: unknown};
   try {
     body = JSON.parse(event.body || '{}');
   } catch {
@@ -146,6 +150,8 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
       errorStage: 'invalid_scene_id',
     });
   }
+
+  const orientation = isPortraitOrientation(body.orientation) ? 'portrait' : 'landscape';
 
   const token = parseAuthHeader(event);
   if (!token) {
@@ -212,7 +218,8 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     });
   }
 
-  const filename = SCENE_OBJECT_FILENAMES[sceneId];
+  const sceneFiles = SCENE_OBJECT_FILENAMES[sceneId];
+  const filename = sceneFiles[orientation];
   if (!filename) {
     logLine({stage: 'scene_not_found', sceneId, userId, ok: false});
     return fail(404, 'SCENE_NOT_FOUND', 'Scene asset is not configured', {
@@ -240,6 +247,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   logLine({
     stage: 'ok',
     sceneId,
+    orientation,
     userId,
     authOk: true,
     entitlementOk: true,

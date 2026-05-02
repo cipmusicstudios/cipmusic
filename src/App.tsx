@@ -35,7 +35,7 @@ import {
   type RemoteMembershipFetchFailureReason,
   type RemoteUserMembership,
 } from './lib/membership-remote';
-import {resolveSceneAssetUrl, type PremiumSceneId} from './lib/scene-asset-url';
+import {resolveSceneAssetUrl, type PremiumSceneId, type SceneVideoOrientation} from './lib/scene-asset-url';
 import { SettingsAccountLibraryBlock } from './settings-account-library';
 import { UiGlassPreviewTab } from './UiGlassPreviewTab';
 import { supabaseUserDisplayName, useSupabaseAuth } from './auth/supabase-auth-provider';
@@ -167,17 +167,22 @@ export type SceneDefinition = {
   type: 'image' | 'video';
   thumbnail: string;
   premiumOnly?: boolean;
+  /** Landscape / 桌面 / 手机横屏 */
   publicUrl?: string;
+  /** 手机竖屏（窄屏 + portrait）时的公开 MP4；缺省则沿用 publicUrl */
+  portraitPublicUrl?: string;
   brokered?: boolean;
 };
 
 export type Scene = SceneDefinition & {
   url: string;
+  /** portrait 视频加载失败时回退（通常为 landscape URL） */
+  videoFallbackUrl?: string;
 };
 
 export const SCENES: SceneDefinition[] = [
-  { id: 'tideHaven', name: 'Tidal Oasis', tag: 'cafe', type: 'video', publicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/pianocafe.mp4', thumbnail: BG_FALLBACK_IMAGE_URL, premiumOnly: false },
-  { id: 'rainlightHall', name: 'Rainlight Oasis', tag: 'rain', type: 'video', publicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/rainhall.mp4', thumbnail: 'https://i.imgur.com/iq2hWwS.jpeg', premiumOnly: false },
+  { id: 'tideHaven', name: 'Tidal Oasis', tag: 'cafe', type: 'video', publicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/pianocafe.mp4', portraitPublicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/portrait/pianocafe-portrait.mp4', thumbnail: BG_FALLBACK_IMAGE_URL, premiumOnly: false },
+  { id: 'rainlightHall', name: 'Rainlight Oasis', tag: 'rain', type: 'video', publicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/rainhall.mp4', portraitPublicUrl: 'https://pub-eeb94ee381d34192a80791665bbe911d.r2.dev/portrait/rainhall-portrait.mp4', thumbnail: 'https://i.imgur.com/iq2hWwS.jpeg', premiumOnly: false },
   { id: 'forestCafe', name: 'Forest Oasis', tag: 'forest', type: 'video', thumbnail: 'https://i.imgur.com/GGg2cSI.jpeg', premiumOnly: true, brokered: true },
   { id: 'celestialDome', name: 'Celestial Oasis', tag: 'night', type: 'video', thumbnail: 'https://i.imgur.com/E5TWs8E.jpeg', premiumOnly: true, brokered: true },
 ];
@@ -335,6 +340,27 @@ const AMBIENCE_KEYS = Object.keys(AMBIENCE_AUDIO_URLS) as AmbientKey[];
 const AMBIENCE_FADE_IN_MS = 180;
 const AMBIENCE_FADE_OUT_MS = 220;
 
+/** 窄屏手机竖屏：用于选用 portrait 背景 MP4（iPad / 桌面横屏仍为 false） */
+function useCoarsePortraitMobile(): boolean {
+  const [isPortrait, setIsPortrait] = useState(false);
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(max-width: 767px) and (orientation: portrait)');
+    const sync = () => setIsPortrait(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    const onResizeOrOrient = () => sync();
+    window.addEventListener('orientationchange', onResizeOrOrient);
+    window.addEventListener('resize', onResizeOrOrient);
+    return () => {
+      mq.removeEventListener('change', sync);
+      window.removeEventListener('orientationchange', onResizeOrOrient);
+      window.removeEventListener('resize', onResizeOrOrient);
+    };
+  }, []);
+  return isPortrait;
+}
+
 const BackgroundLayer = memo(function BackgroundLayer({
   scene,
   lightweight = false,
@@ -345,11 +371,13 @@ const BackgroundLayer = memo(function BackgroundLayer({
   const [videoError, setVideoError] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [showImg, setShowImg] = useState(true);
+  const [videoSrc, setVideoSrc] = useState(scene.url);
 
   React.useEffect(() => {
     setVideoError(false);
     setVideoReady(false);
     setShowImg(true);
+    setVideoSrc(scene.url);
   }, [scene.url]);
 
   React.useEffect(() => {
@@ -412,7 +440,7 @@ const BackgroundLayer = memo(function BackgroundLayer({
     <div style={wrapperStyle}>
       {showImg && (
         <img
-          src={scene.thumbnail || scene.url}
+          src={scene.thumbnail || videoSrc}
           alt={scene.name}
           referrerPolicy="no-referrer"
           crossOrigin="anonymous"
@@ -428,7 +456,7 @@ const BackgroundLayer = memo(function BackgroundLayer({
       )}
       {canUseVideo && (
         <video
-          src={scene.url}
+          src={videoSrc}
           autoPlay
           loop
           muted
@@ -437,7 +465,15 @@ const BackgroundLayer = memo(function BackgroundLayer({
           poster={scene.thumbnail}
           onLoadedData={() => setVideoReady(true)}
           onCanPlay={() => setVideoReady(true)}
-          onError={() => setVideoError(true)}
+          onError={() => {
+            if (scene.videoFallbackUrl && videoSrc !== scene.videoFallbackUrl) {
+              console.warn('[BackgroundLayer] Video failed; falling back to landscape URL.');
+              setVideoSrc(scene.videoFallbackUrl);
+              setVideoReady(false);
+              return;
+            }
+            setVideoError(true);
+          }}
           style={{
             ...mediaStyle,
             opacity: videoReady ? 1 : 0,
@@ -448,6 +484,8 @@ const BackgroundLayer = memo(function BackgroundLayer({
     </div>
   );
 });
+
+type PremiumSceneResolvedPair = {landscape?: string; portrait?: string};
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>(() => {
@@ -750,8 +788,11 @@ export default function App() {
   }, []);
 
   const [activeSceneId, setActiveSceneId] = useState<SceneId>('tideHaven');
-  const [resolvedSceneUrls, setResolvedSceneUrls] = useState<Partial<Record<PremiumSceneId, string>>>({});
+  const [resolvedSceneUrls, setResolvedSceneUrls] = useState<
+    Partial<Record<PremiumSceneId, PremiumSceneResolvedPair>>
+  >({});
   const [sceneLoadingId, setSceneLoadingId] = useState<SceneId | null>(null);
+  const isMobilePortrait = useCoarsePortraitMobile();
   const [showPracticePanel, setShowPracticePanel] = useState(false);
   const [immersiveMode, setImmersiveMode] = useState(false);
   const [practiceMidiOutputVolume, setPracticeMidiOutputVolume] = useState(0.7);
@@ -1397,15 +1438,39 @@ export default function App() {
 
   const activeSceneBase = SCENES.find(s => s.id === activeSceneId) || SCENES[0];
   const activeScene = useMemo<Scene>(() => {
-    const brokeredUrl =
-      activeSceneBase.id === 'forestCafe' || activeSceneBase.id === 'celestialDome'
-        ? resolvedSceneUrls[activeSceneBase.id as PremiumSceneId]
-        : undefined;
+    const base = activeSceneBase;
+    const thumb = base.thumbnail;
+    if (!base.brokered) {
+      const land = base.publicUrl || thumb;
+      const port = base.portraitPublicUrl;
+      const wantPort = Boolean(isMobilePortrait && port);
+      const primary = wantPort ? port! : land;
+      const videoFallbackUrl = wantPort && land ? land : undefined;
+      return {
+        ...base,
+        url: primary || land || thumb,
+        videoFallbackUrl,
+      };
+    }
+    const pid = base.id as PremiumSceneId;
+    const pair = resolvedSceneUrls[pid] || {};
+    if (isMobilePortrait) {
+      const primary = pair.portrait || pair.landscape;
+      const videoFallbackUrl =
+        pair.portrait && pair.landscape && primary === pair.portrait ? pair.landscape : undefined;
+      return {
+        ...base,
+        url: primary || thumb,
+        videoFallbackUrl,
+      };
+    }
+    const primary = pair.landscape || pair.portrait;
     return {
-      ...activeSceneBase,
-      url: brokeredUrl || activeSceneBase.publicUrl || activeSceneBase.thumbnail,
+      ...base,
+      url: primary || thumb,
+      videoFallbackUrl: undefined,
     };
-  }, [activeSceneBase, resolvedSceneUrls]);
+  }, [activeSceneBase, resolvedSceneUrls, isMobilePortrait]);
   const lightweightPracticeMode = showPracticePanel;
   const practiceIsolatedMode = showPracticePanel;
 
@@ -1424,7 +1489,14 @@ export default function App() {
 
       setSceneLoadingId(sceneId);
       const premiumSceneId = sceneId as PremiumSceneId;
-      const result = await resolveSceneAssetUrl(premiumSceneId);
+      const orientation: SceneVideoOrientation = isMobilePortrait ? 'portrait' : 'landscape';
+      let targetOrient: SceneVideoOrientation = orientation;
+      let result = await resolveSceneAssetUrl(premiumSceneId, {orientation});
+      if (result.ok !== true && orientation === 'portrait') {
+        console.warn('[scene-asset-url] portrait broker failed; falling back to landscape.', result);
+        result = await resolveSceneAssetUrl(premiumSceneId, {orientation: 'landscape'});
+        targetOrient = 'landscape';
+      }
       setSceneLoadingId(current => (current === sceneId ? null : current));
       if (result.ok !== true) {
         if (result.reason === 'premium_required') {
@@ -1438,13 +1510,45 @@ export default function App() {
       }
 
       setResolvedSceneUrls(prev => {
-        if (prev[premiumSceneId] === result.url) return prev;
-        return {...prev, [premiumSceneId]: result.url};
+        const prevPair = prev[premiumSceneId] ?? {};
+        if (prevPair[targetOrient] === result.url) return prev;
+        return {...prev, [premiumSceneId]: {...prevPair, [targetOrient]: result.url}};
       });
       setActiveSceneId(sceneId);
     },
-    [resolvedPremiumAccess, showAmbienceToast, t.home.upgradeUnlock],
+    [resolvedPremiumAccess, showAmbienceToast, t.home.upgradeUnlock, isMobilePortrait],
   );
+
+  useEffect(() => {
+    if (!resolvedPremiumAccess) return;
+    const base = SCENES.find(s => s.id === activeSceneId);
+    if (!base?.brokered) return;
+    const premiumSceneId = activeSceneId as PremiumSceneId;
+    const orientation: SceneVideoOrientation = isMobilePortrait ? 'portrait' : 'landscape';
+    const pair = resolvedSceneUrls[premiumSceneId];
+    const filled = orientation === 'portrait' ? pair?.portrait : pair?.landscape;
+    if (filled) return;
+
+    let cancelled = false;
+    void (async () => {
+      let r = await resolveSceneAssetUrl(premiumSceneId, {orientation});
+      let storeOrient: SceneVideoOrientation = orientation;
+      if (r.ok !== true && orientation === 'portrait') {
+        console.warn('[scene-asset-url] portrait resolve failed on orientation change.', r);
+        r = await resolveSceneAssetUrl(premiumSceneId, {orientation: 'landscape'});
+        storeOrient = 'landscape';
+      }
+      if (cancelled || r.ok !== true) return;
+      setResolvedSceneUrls(prev => {
+        const prevPair = prev[premiumSceneId] ?? {};
+        if (prevPair[storeOrient] === r.url) return prev;
+        return {...prev, [premiumSceneId]: {...prevPair, [storeOrient]: r.url}};
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [resolvedPremiumAccess, activeSceneId, isMobilePortrait, resolvedSceneUrls]);
 
   useEffect(() => {
     if (!showPracticePanel) return;
@@ -1561,25 +1665,6 @@ export default function App() {
       className="isolate h-[100dvh] overflow-hidden flex flex-col items-center relative text-[var(--color-mist-text)]"
       onClick={handleBackdropClick}
     >
-      {/* Portrait: non-blocking hint only (coarse + portrait). Must not cover UI — pointer-events-none. */}
-      <div
-        className="pointer-events-none fixed left-0 right-0 top-24 z-[45] hidden px-3 [@media(pointer:coarse)_and_(orientation:portrait)]:block"
-        aria-live="polite"
-      >
-        <div className="mx-auto max-w-6xl rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[11px] leading-snug backdrop-blur-sm">
-          <p className="font-medium text-[var(--color-mist-text)]">
-            {currentLang === '简体中文' ? '请横向旋转设备使用' : currentLang === '繁體中文' ? '請橫向旋轉設備使用' : 'Please rotate your device'}
-          </p>
-          <p className="mt-0.5 text-[var(--color-mist-text)]/72">
-            {currentLang === '简体中文'
-              ? 'AuraSounds 专为横版体验设计，请横屏获得最佳沉浸感。'
-              : currentLang === '繁體中文'
-                ? 'AuraSounds 專為橫版體驗設計，請橫屏獲得最佳沉浸感。'
-                : 'AuraSounds is designed for landscape mode. Please rotate your device for the best experience.'}
-          </p>
-        </div>
-      </div>
-
       <BackgroundLayer
         scene={activeScene}
         lightweight={lightweightPracticeMode || !homeBackgroundVideoEnabled}

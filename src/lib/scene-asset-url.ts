@@ -2,6 +2,9 @@ import {supabase} from './supabase';
 
 export type PremiumSceneId = 'forestCafe' | 'celestialDome';
 
+/** 背景视频朝向：与 broker 请求体一致，默认 landscape 兼容旧客户端 */
+export type SceneVideoOrientation = 'landscape' | 'portrait';
+
 export type SceneAssetResolved = {
   url: string;
   expiresAt: number;
@@ -34,20 +37,29 @@ export type SceneAssetResolveResult =
 const BROKER_ENDPOINT = '/.netlify/functions/scene-asset-url';
 const DEFAULT_LOCAL_TTL_MS = 55 * 60 * 1000;
 
-const cache = new Map<PremiumSceneId, SceneAssetResolved>();
+const cache = new Map<string, SceneAssetResolved>();
 
-function readFromCache(sceneId: PremiumSceneId): SceneAssetResolved | null {
-  const entry = cache.get(sceneId);
+function normalizeOrientation(v: SceneVideoOrientation | undefined): SceneVideoOrientation {
+  return v === 'portrait' ? 'portrait' : 'landscape';
+}
+
+function cacheStorageKey(sceneId: PremiumSceneId, orientation: SceneVideoOrientation): string {
+  return `${sceneId}:${orientation}`;
+}
+
+function readFromCache(sceneId: PremiumSceneId, orientation: SceneVideoOrientation): SceneAssetResolved | null {
+  const key = cacheStorageKey(sceneId, orientation);
+  const entry = cache.get(key);
   if (!entry) return null;
   if (entry.expiresAt <= Date.now() + 60_000) {
-    cache.delete(sceneId);
+    cache.delete(key);
     return null;
   }
   return entry;
 }
 
-function writeToCache(sceneId: PremiumSceneId, url: string, expiresAt: number) {
-  cache.set(sceneId, {url, expiresAt});
+function writeToCache(sceneId: PremiumSceneId, orientation: SceneVideoOrientation, url: string, expiresAt: number) {
+  cache.set(cacheStorageKey(sceneId, orientation), {url, expiresAt});
 }
 
 export function invalidateSceneAssetCache(sceneId?: PremiumSceneId) {
@@ -55,13 +67,16 @@ export function invalidateSceneAssetCache(sceneId?: PremiumSceneId) {
     cache.clear();
     return;
   }
-  cache.delete(sceneId);
+  cache.delete(cacheStorageKey(sceneId, 'landscape'));
+  cache.delete(cacheStorageKey(sceneId, 'portrait'));
 }
 
 export async function resolveSceneAssetUrl(
   sceneId: PremiumSceneId,
+  options?: {orientation?: SceneVideoOrientation},
 ): Promise<SceneAssetResolveResult> {
-  const cached = readFromCache(sceneId);
+  const orientation = normalizeOrientation(options?.orientation);
+  const cached = readFromCache(sceneId, orientation);
   if (cached) {
     return {ok: true, url: cached.url, expiresAt: cached.expiresAt, accessMode: 'cache'};
   }
@@ -85,7 +100,7 @@ export async function resolveSceneAssetUrl(
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({sceneId}),
+      body: JSON.stringify({sceneId, orientation}),
     });
   } catch (err) {
     return {
@@ -110,7 +125,7 @@ export async function resolveSceneAssetUrl(
     const expiresAt =
       Number.isFinite(parsedExpiresAt) ? parsedExpiresAt : Date.now() + DEFAULT_LOCAL_TTL_MS;
     const accessMode = typeof payload.accessMode === 'string' ? payload.accessMode : 'broker';
-    writeToCache(sceneId, urlStr, expiresAt);
+    writeToCache(sceneId, orientation, urlStr, expiresAt);
     return {ok: true, url: urlStr, expiresAt, accessMode};
   }
 
