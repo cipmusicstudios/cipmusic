@@ -16,5 +16,5 @@ import type {
   MusicalPosition,
   PracticeMeasureTimelineEntry,
 } from './practice-types';
-import { parseMusicXmlHandAssignment, consumeHandLabel } from '../musicxml-hand-utils';
+import { assignSingleTrackMidiHandsFromMusicXml } from '../musicxml-hand-utils';
 

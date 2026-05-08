@@ -16,7 +16,7 @@ import type {
   MusicalPosition,
   PracticeMeasureTimelineEntry,
 } from './practice-types';
-import { parseMusicXmlHandAssignment, consumeHandLabel } from '../musicxml-hand-utils';
+import { assignSingleTrackMidiHandsFromMusicXml } from '../musicxml-hand-utils';
 import { stopPianoLikeVoice } from './piano-like-voice';
 import { premiumUi, premiumUiModal } from '../premium-ui';
 import {
@@ -1103,25 +1103,53 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
         const isSingleTrack = trackPitches.length <= 1;
         let handMode: 'dual-track' | 'musicxml-derived' | 'both-only' = 'dual-track';
-        let xmlQueues: Map<number, ('left' | 'right')[]> | null = null;
+        let musicXmlHands: Array<'left' | 'right'> | null = null;
 
         if (isSingleTrack && musicXmlAssetUrl) {
           try {
             const xmlRes = await fetch(musicXmlAssetUrl);
             const xmlText = await xmlRes.text();
             if (cancelled) return;
-            const result = parseMusicXmlHandAssignment(xmlText);
-            if (result && result.leftCount > 0 && result.rightCount > 0) {
-              xmlQueues = result.pitchHandQueues;
-              handMode = 'musicxml-derived';
+            const soleTrack = trackPitches[0]?.track;
+            if (soleTrack && soleTrack.notes.length > 0) {
+              const chron = [...soleTrack.notes].sort(
+                (a, b) => a.ticks - b.ticks || a.midi - b.midi,
+              );
+              const mapped = assignSingleTrackMidiHandsFromMusicXml(
+                xmlText,
+                chron.map(n => ({ midi: n.midi, ticks: n.ticks })),
+                { trackId: currentTrack.id, title: currentTrack.title },
+              );
+              if (mapped) {
+                musicXmlHands = mapped.hands;
+                handMode = 'musicxml-derived';
+              } else {
+                musicXmlHands = null;
+                handMode = 'both-only';
+                if (import.meta.env.DEV) {
+                  console.warn('[practice-hand] MusicXML hand mapping unavailable', {
+                    trackId: currentTrack.id,
+                    title: currentTrack.title,
+                  });
+                }
+              }
             } else {
               handMode = 'both-only';
             }
           } catch {
             handMode = 'both-only';
+            musicXmlHands = null;
           }
         } else if (isSingleTrack) {
           handMode = 'both-only';
+        }
+
+        if (import.meta.env.DEV && handMode === 'dual-track' && trackPitches.length > 1) {
+          console.info('[practice-hand] strategy: midi-track', {
+            trackId: currentTrack.id,
+            title: currentTrack.title,
+            midiTrackCount: trackPitches.length,
+          });
         }
 
         if (cancelled) return;
@@ -1147,19 +1175,20 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
               });
             });
           });
-        } else if (handMode === 'musicxml-derived' && xmlQueues) {
-          midi.tracks.forEach(track => {
-            if (track.notes.length === 0) return;
-            track.notes.forEach(note => {
-              notes.push({
-                name: note.name,
-                midi: note.midi,
-                time: note.time,
-                duration: note.duration,
-                ticks: note.ticks,
-                velocity: note.velocity ?? 0.7,
-                hand: consumeHandLabel(note.midi, xmlQueues!),
-              });
+        } else if (handMode === 'musicxml-derived' && musicXmlHands) {
+          const soleTrack = trackPitches[0]!.track;
+          const chron = [...soleTrack.notes].sort(
+            (a, b) => a.ticks - b.ticks || a.midi - b.midi,
+          );
+          chron.forEach((note, j) => {
+            notes.push({
+              name: note.name,
+              midi: note.midi,
+              time: note.time,
+              duration: note.duration,
+              ticks: note.ticks,
+              velocity: note.velocity ?? 0.7,
+              hand: musicXmlHands![j]!,
             });
           });
         } else {
@@ -2292,14 +2321,14 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 
   return (
     <div
-      className={`practice-container fixed left-0 right-0 z-40 max-h-[100dvh] max-md:overscroll-contain ${lightweightMode ? '' : 'animate-in slide-in-from-bottom duration-500'}`}
+      className={`practice-container practice-mobile-layout fixed left-0 right-0 z-40 flex max-h-[100dvh] flex-col min-h-0 max-md:overscroll-contain ${lightweightMode ? '' : 'animate-in slide-in-from-bottom duration-500'}`}
       style={{
         bottom:
           'calc(env(safe-area-inset-bottom, 0px) + var(--player-bar-stack-h, calc(6rem + 1.1rem)) + var(--practice-above-player-gap, 0.5rem))',
       }}
     >
       <div
-        className={`${lightweightMode ? 'relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-[28px] border-t border-white/20 bg-[rgba(247,242,235,0.96)]' : 'relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-t-[40px] border-t border-white/40 bg-[var(--color-mist-bg)] glass-effect-static shadow-2xl'}`}
+        className={`${lightweightMode ? 'relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-t-[28px] border-t border-white/20 bg-[rgba(247,242,235,0.96)]' : 'relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-t-[40px] border-t border-white/40 bg-[var(--color-mist-bg)] glass-effect-static shadow-2xl'}`}
       >
 
         {/* PREMIUM STATIC OVERLAY */}
@@ -2345,7 +2374,7 @@ const PRACTICE_MIDI_OUTPUT_GAIN_BOOST = 2.25;
 	        {/* 1) 谱面 flex-1 + 限高滚动：恢复可见谱子，温和放宽高度 */}
 	        <div
             ref={staffViewportRef}
-            className={`practice-staff relative flex min-h-0 w-full flex-1 flex-col justify-start overflow-y-auto overflow-x-hidden bg-[#f8f6f0] shadow-inner max-md:min-h-[28svh] max-h-none md:max-h-[min(58vh,32rem)]`}
+            className={`practice-staff relative flex min-h-0 w-full flex-1 flex-col justify-start overflow-y-auto overflow-x-hidden bg-[#f8f6f0] shadow-inner md:max-h-[min(58vh,32rem)]`}
           >
 	          <div className={`${lightweightMode ? 'relative w-full flex flex-col items-start pt-1 pb-10' : 'absolute top-0 w-full h-full flex flex-col items-start overflow-hidden pt-1'}`}>
             <div ref={scrollContainerRef} className={`relative w-full px-[5vw] transition-none origin-top ${lightweightMode ? 'min-h-max' : ''}`}>
