@@ -2078,7 +2078,6 @@ export default function App() {
         playbackRate={playbackRate}
         setPlaybackRate={setPlaybackRate}
         showPracticePanel={showPracticePanel}
-        isCoarsePointer={isCoarsePointer}
         setShowPracticePanel={setShowPracticePanel}
         isPremium={resolvedPremiumAccess}
         currentLang={currentLang}
@@ -2362,7 +2361,6 @@ const BottomPlayer = memo(function BottomPlayer({
   playbackRate,
   setPlaybackRate,
   showPracticePanel,
-  isCoarsePointer,
   setShowPracticePanel,
   isPremium,
   currentLang,
@@ -2394,7 +2392,6 @@ const BottomPlayer = memo(function BottomPlayer({
   playbackRate: number,
   setPlaybackRate: (v: number) => void,
   showPracticePanel: boolean,
-  isCoarsePointer: boolean,
   setShowPracticePanel: (v: boolean) => void,
   isPremium: boolean,
   currentLang: string,
@@ -2420,7 +2417,7 @@ const BottomPlayer = memo(function BottomPlayer({
   onEnterImmersive: () => void,
   t: any
 }) {
-  const compactPracticeMode = showPracticePanel && isCoarsePointer;
+  const compactPracticeMode = false;
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [showVolumePopover, setShowVolumePopover] = useState(false);
   const [showPlayerMoreMenu, setShowPlayerMoreMenu] = useState(false);
@@ -3063,13 +3060,13 @@ const BottomPlayer = memo(function BottomPlayer({
         <div
           className={`player-bar pointer-events-auto relative w-full overflow-visible ${
             compactPracticeMode
-              ? 'player-bar--practice-compact flex min-w-0 items-center gap-2 px-2 py-1 sm:gap-2.5 sm:px-3 sm:py-1.5'
+              ? 'flex gap-4 px-4'
               : narrowStackedPlayer
                 ? 'player-bar--stacked-narrow flex min-w-0 flex-col gap-y-0.5 py-1 px-2.5'
                 : 'grid grid-cols-[minmax(0,1fr)_minmax(0,2.05fr)_minmax(12.75rem,auto)] items-center gap-x-3 gap-y-1 py-2.5 px-4 sm:gap-x-4 sm:px-4 lg:px-5'
           }`}
         >
-        {!narrowStackedPlayer || compactPracticeMode ? (
+        {!narrowStackedPlayer ? (
         <>
         {!compactPracticeMode && !showPracticePanel && !immersiveMode && (
           <ImmersiveModeEntryButton
