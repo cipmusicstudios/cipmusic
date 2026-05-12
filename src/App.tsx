@@ -2078,6 +2078,7 @@ export default function App() {
         playbackRate={playbackRate}
         setPlaybackRate={setPlaybackRate}
         showPracticePanel={showPracticePanel}
+        isCoarsePointer={isCoarsePointer}
         setShowPracticePanel={setShowPracticePanel}
         isPremium={resolvedPremiumAccess}
         currentLang={currentLang}
@@ -2361,6 +2362,7 @@ const BottomPlayer = memo(function BottomPlayer({
   playbackRate,
   setPlaybackRate,
   showPracticePanel,
+  isCoarsePointer,
   setShowPracticePanel,
   isPremium,
   currentLang,
@@ -2392,6 +2394,7 @@ const BottomPlayer = memo(function BottomPlayer({
   playbackRate: number,
   setPlaybackRate: (v: number) => void,
   showPracticePanel: boolean,
+  isCoarsePointer: boolean,
   setShowPracticePanel: (v: boolean) => void,
   isPremium: boolean,
   currentLang: string,
@@ -2417,7 +2420,7 @@ const BottomPlayer = memo(function BottomPlayer({
   onEnterImmersive: () => void,
   t: any
 }) {
-  const compactPracticeMode = false;
+  const compactPracticeMode = showPracticePanel && isCoarsePointer;
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [showVolumePopover, setShowVolumePopover] = useState(false);
   const [showPlayerMoreMenu, setShowPlayerMoreMenu] = useState(false);
@@ -3060,13 +3063,13 @@ const BottomPlayer = memo(function BottomPlayer({
         <div
           className={`player-bar pointer-events-auto relative w-full overflow-visible ${
             compactPracticeMode
-              ? 'flex gap-4 px-4'
+              ? 'player-bar--practice-compact flex min-w-0 items-center gap-2 px-2 py-1 sm:gap-2.5 sm:px-3 sm:py-1.5'
               : narrowStackedPlayer
                 ? 'player-bar--stacked-narrow flex min-w-0 flex-col gap-y-0.5 py-1 px-2.5'
                 : 'grid grid-cols-[minmax(0,1fr)_minmax(0,2.05fr)_minmax(12.75rem,auto)] items-center gap-x-3 gap-y-1 py-2.5 px-4 sm:gap-x-4 sm:px-4 lg:px-5'
           }`}
         >
-        {!narrowStackedPlayer ? (
+        {!narrowStackedPlayer || compactPracticeMode ? (
         <>
         {!compactPracticeMode && !showPracticePanel && !immersiveMode && (
           <ImmersiveModeEntryButton
@@ -4672,7 +4675,7 @@ const SettingsTab = memo(function SettingsTab({
   }, [settingsMembershipScrollToken]);
 
   return (
-    <div className="settings-page mx-auto flex w-full max-w-6xl flex-col gap-6 pb-20">
+    <div className="settings-page mx-auto flex w-full max-w-6xl flex-col gap-6 pb-36 md:pb-44">
       <MembershipCheckoutModal
         open={checkoutOpen}
         onClose={() => setCheckoutOpen(false)}
@@ -4996,6 +4999,50 @@ const SettingsTab = memo(function SettingsTab({
             })}
           </div>
         </section>
+      </div>
+
+      <div
+        data-no-home-click="footer"
+        className="mt-5 w-full border-t border-white/10 pt-4 text-[rgba(255,255,255,0.48)] [text-shadow:0_0.5px_1.5px_rgba(0,0,0,0.42),0_1px_6px_rgba(0,0,0,0.22)] md:mt-7 md:pt-5"
+      >
+        <nav
+          className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[12px] text-inherit"
+          aria-label="Legal"
+        >
+          <a
+            href="/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded px-1 py-0.5 transition-colors hover:text-white/70"
+          >
+            {t.footer?.legalLinkPrivacy}
+          </a>
+          <span className="text-white/30" aria-hidden>
+            ·
+          </span>
+          <a
+            href="/terms.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded px-1 py-0.5 transition-colors hover:text-white/70"
+          >
+            {t.footer?.legalLinkTerms}
+          </a>
+          <span className="text-white/30" aria-hidden>
+            ·
+          </span>
+          <a
+            href="/about.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded px-1 py-0.5 transition-colors hover:text-white/70"
+          >
+            {t.footer?.legalLinkAbout}
+          </a>
+        </nav>
+        <p className="mx-auto mt-3 max-w-xl px-2 text-center text-[11px] leading-relaxed text-inherit md:text-[12px]">
+          {t.footer?.operatorLegalLine}
+        </p>
       </div>
     </div>
   );

@@ -367,6 +367,12 @@ export const zhTW = {
     enterEmailPassword: '請輸入電子信箱和密碼。',
     resetEmailRequired: '請輸入電子信箱。',
   },
+  footer: {
+    operatorLegalLine: '營運主體：北京叮鈴文化傳播有限公司',
+    legalLinkPrivacy: '隱私權政策',
+    legalLinkTerms: '使用者條款',
+    legalLinkAbout: '關於我們',
+  },
   tags: {
     rain: '雨聲',
     night: '夜間',

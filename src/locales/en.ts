@@ -386,5 +386,11 @@ export const en = {
     fire: 'Fire',
     noise: 'Noise',
     scroll: 'Scroll →'
-  }
+  },
+  footer: {
+    operatorLegalLine: 'Operating entity: Beijing Dingling Cultural Communication Co., Ltd.',
+    legalLinkPrivacy: 'Privacy Policy',
+    legalLinkTerms: 'Terms of Service',
+    legalLinkAbout: 'About',
+  },
 };

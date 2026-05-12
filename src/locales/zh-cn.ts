@@ -409,6 +409,12 @@ export const zhCN = {
     enterEmailPassword: '请输入邮箱和密码。',
     resetEmailRequired: '请输入邮箱。',
   },
+  footer: {
+    operatorLegalLine: '运营主体：北京叮铃文化传播有限公司',
+    legalLinkPrivacy: '隐私政策',
+    legalLinkTerms: '用户协议',
+    legalLinkAbout: '关于我们',
+  },
   tags: {
     rain: '雨声',
     night: '夜间',
