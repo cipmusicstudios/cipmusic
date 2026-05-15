@@ -154,9 +154,28 @@ export function applyCatalogOverridesToTrack(track: Track): Track {
   }
   if (ov.workProjectKey) workProjectKey = ov.workProjectKey;
 
-  const practiceEnabled = Boolean(
-    nextAssets.audioUrl && nextAssets.midiUrl && nextAssets.musicxmlUrl,
-  );
+  /**
+   * Phase C: 不要在 catalog-override 层重算 `practiceEnabled`。
+   *
+   * 历史代码用 `audioUrl && midiUrl && musicxmlUrl` 来推 `practiceEnabled`，
+   * 这套在 Phase A1/A2 之前还能工作（远端 Track 直接带 midiUrl / musicxmlUrl）。
+   * Phase A2 收口后，anon SELECT 不再返回 `midi_url` / `musicxml_url`，
+   * 远端 Track 的这两个字段在运行时永远是 `undefined`，
+   * 一旦命中本层（如新导入 5 首歌的人工锁定）就会把 `practiceEnabled`
+   * 静默改成 `false`，导致 Practice 按钮在 idle Supabase 替换后消失。
+   *
+   * 真正的 Practice 入口判定来源是 `songs.has_practice_mode` /
+   * manifest 的 `hasPracticeMode`（mapper 已写入 `track.practiceEnabled`）；
+   * 本层只能 pass-through，不要篡改。本层确实"不**通过本层**覆盖
+   * Practice 资源路径"的契约（见本文件顶部注释 line 16）。
+   *
+   * 同时同步 `nextAssets.practiceEnabled` / `nextAssets.hasPracticeAssets`
+   * 防止其它读取 metadata 的旧代码看到不一致的视图。
+   */
+  const practiceEnabled =
+    typeof track.practiceEnabled === 'boolean'
+      ? track.practiceEnabled
+      : Boolean(nextAssets.audioUrl && nextAssets.midiUrl && nextAssets.musicxmlUrl);
   nextAssets.practiceEnabled = practiceEnabled;
   nextAssets.hasPracticeAssets = practiceEnabled;
 
