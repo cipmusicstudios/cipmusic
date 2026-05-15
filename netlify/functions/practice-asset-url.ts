@@ -11,11 +11,9 @@ const SIGNED_URL_TTL_SECONDS = 600;
 /**
  * Phase D Step 0 兼容化：签名 bucket 解析。
  *
- * - `SUPABASE_PRACTICE_BUCKET` 显式配置 → 用它（未来 Phase D Step 4 切到 `practice-assets` private bucket 用）
- * - 否则 fallback 到 `SUPABASE_SONGS_BUCKET`（与历史行为一致）
+ * - `SUPABASE_PRACTICE_BUCKET` 显式配置 → 用它（生产 often points at `practice-assets` private bucket）
+ * - 否则 fallback 到 `SUPABASE_SONGS_BUCKET`
  * - 再否则默认 `songs`
- *
- * 当前线上不配置 `SUPABASE_PRACTICE_BUCKET`，所以该函数返回 `'songs'`，行为与 Phase C 完全一致。
  *
  * 注意：函数式而非常量化，便于本地脚本通过 env 切换 bucket 做端到端测试，无需重启进程。
  */

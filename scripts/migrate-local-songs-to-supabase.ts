@@ -1,3 +1,18 @@
+/**
+ * Local import → Supabase migration.
+ *
+ * `--apply` uploads `audio.mp3` to the public `songs` bucket (`SUPABASE_SONGS_BUCKET` / `--bucket`, default `songs`).
+ * When both `performance.mid` and `score.musicxml` exist locally, we also **mirror the same object keys**
+ * into `SUPABASE_PRACTICE_BUCKET` (default `practice-assets`) so Netlify `practice-asset-url` can sign them.
+ *
+ * Practice mirror env:
+ *   - `SUPABASE_PRACTICE_BUCKET` — private broker bucket (optional; default `practice-assets`).
+ *   - `PRACTICE_MIGRATION_OVERWRITE=1` — replace objects that already exist in the practice bucket.
+ *       Default: skip existing targets (safe, no silent overwrite).
+ *
+ * Post-import verification:
+ *   `npm run verify:practice-assets-import -- --only-slugs "slug-a,slug-b"`
+ */
 import 'dotenv/config';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,6 +22,12 @@ import { execFileSync } from 'node:child_process';
 import { createClient } from '@supabase/supabase-js';
 import { parseFile } from 'music-metadata';
 import { buildLocalImportTrack } from '../src/local-import-build-track.ts';
+import {
+  assertPracticeBucketExists,
+  isPracticeMigrationOverwriteEnabled,
+  publishMidiXmlToPracticeBucket,
+  resolveImportPracticeBucketName,
+} from './lib/publish-practice-assets-to-private-bucket.ts';
 
 type SongSeed = {
   id: string;
@@ -637,6 +658,8 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
   if (!dryRun) {
     const { supabaseUrl: resolvedSupabaseUrl, client: supabase } = buildSupabaseClient();
     await ensureBucketExists(supabase, bucket, dryRun);
+    const practiceBucketName = resolveImportPracticeBucketName();
+    let assertedPracticeBucket = false;
     const existingSongsBySlug = await loadExistingSongsBySlug(
       supabase,
       selectedFolders.map(folder => folder.slug),
@@ -674,6 +697,30 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
         await uploadFile(supabase, bucket, xmlLocalPath, xmlRemotePath, inferContentType(folder.files.musicxml), dryRun);
       }
 
+      const hasPracticeFiles = Boolean(
+        midiLocalPath && xmlLocalPath && folder.files.midi && folder.files.musicxml,
+      );
+      if (hasPracticeFiles) {
+        if (!assertedPracticeBucket) {
+          await assertPracticeBucketExists(supabase, practiceBucketName);
+          assertedPracticeBucket = true;
+        }
+        const overwritePractice = isPracticeMigrationOverwriteEnabled();
+        const publishResult = await publishMidiXmlToPracticeBucket({
+          supabase,
+          songsBucket: bucket,
+          practiceBucket: practiceBucketName,
+          midiKey: midiRemotePath,
+          xmlKey: xmlRemotePath,
+          dryRun: false,
+          overwrite: overwritePractice,
+        });
+        console.log(
+          `[migrate-local-songs] practice broker bucket "${practiceBucketName}": MIDI ${publishResult.midi}, XML ${publishResult.xml}` +
+            (overwritePractice ? ' (overwrite=1)' : ''),
+        );
+      }
+
       const { durationLabel } = await readDurationLabel(audioLocalPath);
       const row = buildMigrationRow(
         folder,
@@ -697,14 +744,36 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
   console.log(`[dry-run] local folders: ${folders.length}`);
   console.log(`[dry-run] selected: ${selectedFolders.length}`);
   console.log(`[dry-run] bucket: ${bucket}`);
+  const practiceBucketDry = resolveImportPracticeBucketName();
+  const overwriteDry = isPracticeMigrationOverwriteEnabled();
+  console.log(
+    `[dry-run] Practice broker mirror target SUPABASE_PRACTICE_BUCKET="${practiceBucketDry}" overwrite PRACTICE_MIGRATION_OVERWRITE=${overwriteDry ? '1' : '(off)'}`,
+  );
+
+  /** Best-effort: match apply-mode storageSlug when service role credentials are available. */
+  let existingRowsDry = new Map<string, ExistingSongRow>();
+  try {
+    const { client: sbDry } = buildSupabaseClient();
+    existingRowsDry = await loadExistingSongsBySlug(
+      sbDry,
+      selectedFolders.map(f => f.slug),
+    );
+  } catch {
+    /** Missing SUPABASE_SERVICE_ROLE_KEY → preview uses folder slug + artist heuristic only */
+  }
+
   for (const folder of selectedFolders) {
     const audioLocalPath = path.join(folder.dirPath, folder.files.audio as string);
     const { durationLabel } = await readDurationLabel(audioLocalPath);
-    // dry-run：拿不到 existingRow，仍走 artist-aware 算法预览未来 storage path。
     const draftTrack = buildLocalImportTrack(folder.seed);
-    const resolvedArtistForSlug = pickPreferredString(draftTrack.artist, draftTrack.sourceArtist);
-    const storageSlug = toAsciiSafeStorageSlug(folder.slug, resolvedArtistForSlug);
-    const row = buildMigrationRow(folder, storageSlug, durationLabel, supabaseUrl, bucket);
+    const existingRowDry = existingRowsDry.get(folder.slug);
+    const resolvedArtistForSlug = pickPreferredString(
+      existingRowDry?.artist,
+      draftTrack.artist,
+      draftTrack.sourceArtist,
+    );
+    const storageSlug = resolveFinalStorageSlug(folder, resolvedArtistForSlug, existingRowDry);
+    const row = buildMigrationRow(folder, storageSlug, durationLabel, supabaseUrl, bucket, existingRowDry);
     console.log(
       JSON.stringify(
         {
@@ -731,6 +800,11 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
         2,
       ),
     );
+    if (row.has_practice_mode) {
+      console.log(
+        `  [dry-run] (--apply would mirror performance.mid + score.musicxml to "${practiceBucketDry}" keys: ${row.midi_path}; ${row.xml_path})`,
+      );
+    }
   }
 }
 
