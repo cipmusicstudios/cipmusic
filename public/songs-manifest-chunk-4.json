@@ -4,6 +4,243 @@
   "chunkIndex": 4,
   "tracks": [
     {
+      "id": "2da10db4-2c2c-4238-b88a-bda9231acc35",
+      "title": "Bridge over troubled water",
+      "displayTitle": "Bridge over troubled water",
+      "originalArtist": "Simon and Garfunkel",
+      "canonicalArtistId": "simon-garfunkel",
+      "canonicalArtistDisplayName": "Simon and Garfunkel",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a3/84/0a/a3840a6d-44e8-0afe-fc3e-316c517dddfe/5099749521421.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/bridge-over-troubled-water/audio.mp3",
+      "duration": "05:22",
+      "durationSeconds": 322,
+      "hasPracticeMode": false,
+      "importSource": "remote",
+      "slug": "Bridge over troubled water",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=NMUIDV3m3zk",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "NMUIDV3m3zk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/69070",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "忧愁河上的金桥",
+        "zhHant": "憂愁河上的金橋",
+        "en": "Bridge Over Troubled Water"
+      },
+      "artists": {
+        "zhHans": "Simon and Garfunkel",
+        "zhHant": "Simon and Garfunkel",
+        "en": "Simon and Garfunkel"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:14:35.667935+00:00",
+      "youtubeSortIndex": 433,
+      "youtubePublishedAt": "2022-02-20T12:00:00.000Z",
+      "listSortPublishedAtMs": 1645358400000,
+      "listSortPublishedAt": "2022-02-20T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "568cf1cf-3828-4ad2-8cdc-efa7d2f899b4",
+      "title": "光字片",
+      "displayTitle": "光字片",
+      "originalArtist": "《光字片》钢琴版 周深 电视剧",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M0000024Nayf2wuQGL.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-411cae0a23/audio.mp3",
+      "duration": "04:19",
+      "durationSeconds": 259,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "光字片",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=hPjGWO5Xj8s",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "hPjGWO5Xj8s",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/57755",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "光字片",
+        "en": "Guang Zi Pian"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:36:57.621183+00:00",
+      "youtubeSortIndex": 434,
+      "youtubePublishedAt": "2022-02-19T12:00:00.000Z",
+      "listSortPublishedAtMs": 1645272000000,
+      "listSortPublishedAt": "2022-02-19T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "82190fad-feab-4d16-82ad-7ef281e9797e",
+      "title": "渐暖",
+      "displayTitle": "渐暖",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/fb/02/42/fb024208-344a-4e0b-07cb-9b13019d67d5/886449952748.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-c9a4db1907/audio.mp3",
+      "duration": "03:12",
+      "durationSeconds": 192,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "渐暖",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=HBy4_Icxnjw",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "HBy4_Icxnjw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/57132",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "渐暖",
+        "en": "Jian Nuan"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:44:01.906386+00:00",
+      "youtubeSortIndex": 437,
+      "youtubePublishedAt": "2022-02-14T12:00:00.000Z",
+      "listSortPublishedAtMs": 1644840000000,
+      "listSortPublishedAt": "2022-02-14T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "9211fc81-8922-4953-94ee-52d71a1c55e0",
+      "title": "全世界在你身后",
+      "displayTitle": "全世界在你身后",
+      "originalArtist": "都智文",
+      "canonicalArtistId": "du-zhi-wen",
+      "canonicalArtistDisplayName": "都智文",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/f7f80c153b6995c85886a06af0efae0d/1000x1000-000000-80-0-0.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-db49c208a0/audio.mp3",
+      "duration": "03:47",
+      "durationSeconds": 227,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "全世界在你身后",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=LHHzy0zOKbc",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "LHHzy0zOKbc",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/56780",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "全世界在你身后",
+        "en": "Quan Shi Jie Zai Ni Shen Hou"
+      },
+      "artists": {
+        "zhHans": "都智文",
+        "zhHant": "都智文",
+        "en": "Bernard Du"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:37:04.798269+00:00",
+      "youtubeSortIndex": 439,
+      "youtubePublishedAt": "2022-02-11T12:00:00.000Z",
+      "listSortPublishedAtMs": 1644580800000,
+      "listSortPublishedAt": "2022-02-11T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "53e2face-08f0-4ac4-9ab1-b117595a0410",
+      "title": "雪花",
+      "displayTitle": "雪花",
+      "originalArtist": "易烊千玺",
+      "canonicalArtistId": "yi-yang-qian-xi",
+      "canonicalArtistDisplayName": "易烊千玺",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001gVJI43J4b9G.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-a81ba94099/audio.mp3",
+      "duration": "03:13",
+      "durationSeconds": 193,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "雪花",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=ZW_Yc5ZbpRY",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "ZW_Yc5ZbpRY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/56679",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "雪花",
+        "en": "Xue Hua"
+      },
+      "artists": {
+        "zhHans": "易烊千玺",
+        "zhHant": "易烊千玺",
+        "en": "Jackson Yee"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:48:00.175732+00:00",
+      "youtubeSortIndex": 441,
+      "youtubePublishedAt": "2022-02-09T12:00:00.000Z",
+      "listSortPublishedAtMs": 1644408000000,
+      "listSortPublishedAt": "2022-02-09T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "1e546a03-aefb-4456-9219-4ecc05560c3a",
       "title": "星鱼",
       "displayTitle": "星鱼",
@@ -4186,237 +4423,6 @@
       "youtubePublishedAt": "2021-08-11T12:00:00.000Z",
       "listSortPublishedAtMs": 1628683200000,
       "listSortPublishedAt": "2021-08-11T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "458d09d7-b97d-4374-ad05-ec048ab8f5f5",
-      "title": "傻瓜",
-      "displayTitle": "傻瓜",
-      "originalArtist": "《傻瓜》钢琴版 时代少年团",
-      "canonicalArtistId": "tnt",
-      "canonicalArtistDisplayName": "时代少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273495a35ad97bf0c90b613bb03",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-63de340500/audio.mp3",
-      "duration": "03:50",
-      "durationSeconds": 230,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "傻瓜",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=85j-_7b8uZc",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "85j-_7b8uZc",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/42417",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "傻瓜",
-        "en": "Sha Gua"
-      },
-      "artists": {
-        "zhHans": "时代少年团",
-        "zhHant": "時代少年團",
-        "en": "Teens In Times"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:36:44.517401+00:00",
-      "youtubeSortIndex": 576,
-      "youtubePublishedAt": "2021-08-10T12:00:00.000Z",
-      "listSortPublishedAtMs": 1628596800000,
-      "listSortPublishedAt": "2021-08-10T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "07752a89-cdaf-4f19-86db-9daf1818f797",
-      "title": "POP/STARS",
-      "displayTitle": "POP/STARS",
-      "originalArtist": "K/DA",
-      "canonicalArtistId": "review/07752a89-cdaf-4f19-86db-9daf1818f797",
-      "canonicalArtistDisplayName": "K",
-      "artistReviewStatus": "needsReview",
-      "artistResolutionNotes": [
-        "dictionary_miss"
-      ],
-      "tags": [
-        "韩流流行",
-        "游戏"
-      ],
-      "categoryKeys": [
-        "kpop",
-        "game"
-      ],
-      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2739703a4afd5c93a80bc13382b",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/pop-star/audio.mp3",
-      "duration": "03:24",
-      "durationSeconds": 204,
-      "hasPracticeMode": false,
-      "importSource": "remote",
-      "slug": "pop star",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=y0cHI4kkn-A",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "y0cHI4kkn-A",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": null,
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "POP/STARS",
-        "zhHant": "POP/STARS",
-        "en": "POP/STARS"
-      },
-      "artists": {
-        "zhHans": "K/DA",
-        "zhHant": "K/DA",
-        "en": "K/DA"
-      },
-      "workProjectKey": "league-of-legends",
-      "supabaseCreatedAt": "2026-04-14T02:31:20.154319+00:00",
-      "youtubeSortIndex": 577,
-      "youtubePublishedAt": "2021-08-08T12:00:00.000Z",
-      "listSortPublishedAtMs": 1628424000000,
-      "listSortPublishedAt": "2021-08-08T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "0bbfd15a-c5c1-4933-a1fc-907b5eb36b02",
-      "title": "Masayume chasing",
-      "displayTitle": "Masayume chasing",
-      "originalArtist": "妖精的尾巴 フェアリーテイル 보아",
-      "canonicalArtistId": "review/0bbfd15a-c5c1-4933-a1fc-907b5eb36b02",
-      "canonicalArtistDisplayName": "妖精的尾巴 フェアリーテイル 보아",
-      "artistReviewStatus": "needsReview",
-      "artistResolutionNotes": [
-        "dictionary_miss"
-      ],
-      "tags": [
-        "日系流行",
-        "动漫"
-      ],
-      "categoryKeys": [
-        "jpop",
-        "anime"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/29/c0/2b/29c02b24-7de3-c908-d0bb-fd551d9a7740/ANTCD-12163.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/masayume-chasing/audio.mp3",
-      "duration": "01:31",
-      "durationSeconds": 91,
-      "hasPracticeMode": false,
-      "importSource": "remote",
-      "slug": "masayume chasing",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=cdrCtzLOg1E",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "cdrCtzLOg1E",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": null,
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Masayume Chasing"
-      },
-      "artists": {},
-      "supabaseCreatedAt": "2026-04-14T02:30:10.0628+00:00",
-      "youtubeSortIndex": 578,
-      "youtubePublishedAt": "2021-08-07T12:00:00.000Z",
-      "listSortPublishedAtMs": 1628337600000,
-      "listSortPublishedAt": "2021-08-07T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "05f3dad7-7639-4085-a833-e53425aa3080",
-      "title": "朱雀",
-      "displayTitle": "朱雀",
-      "originalArtist": "时代少年团",
-      "canonicalArtistId": "tnt",
-      "canonicalArtistDisplayName": "时代少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000Ez12M0Fj0LT.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-d654b96eac/audio.mp3",
-      "duration": "04:06",
-      "durationSeconds": 246,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "朱雀",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=4rlQdlnuABY",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "4rlQdlnuABY",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/41954",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "朱雀",
-        "en": "Zhu Que"
-      },
-      "artists": {
-        "zhHans": "时代少年团",
-        "zhHant": "時代少年團",
-        "en": "Teens In Times"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:43:19.208848+00:00",
-      "youtubeSortIndex": 580,
-      "youtubePublishedAt": "2021-08-05T12:00:00.000Z",
-      "listSortPublishedAtMs": 1628164800000,
-      "listSortPublishedAt": "2021-08-05T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "63d8693a-a0cf-42bd-a42c-1f8c273ec207",
-      "title": "流星也为你落下来了",
-      "displayTitle": "流星也为你落下来了",
-      "originalArtist": "王源",
-      "canonicalArtistId": "wang-yuan",
-      "canonicalArtistDisplayName": "王源",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://cdn-images.dzcdn.net/images/cover/f8726c554702abc7b483f2e5d85afae3/1000x1000-000000-80-0-0.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-487e834d67/audio.mp3",
-      "duration": "03:22",
-      "durationSeconds": 202,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "流星也为你落下来了",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=nimgEMiDnr8",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "nimgEMiDnr8",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/45561",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "流星也为你落下来了",
-        "en": "Liu Xing Ye Wei Ni Luo Xia Lai Liao"
-      },
-      "artists": {
-        "zhHans": "王源",
-        "zhHant": "王源",
-        "en": "Roy Wang"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:43:53.800623+00:00",
-      "youtubeSortIndex": 581,
-      "youtubePublishedAt": "2021-08-03T12:00:00.000Z",
-      "listSortPublishedAtMs": 1627992000000,
-      "listSortPublishedAt": "2021-08-03T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

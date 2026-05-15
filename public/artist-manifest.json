@@ -1,7 +1,65 @@
 {
   "version": 1,
-  "generatedAt": "2026-04-28T23:51:05.635Z",
+  "generatedAt": "2026-05-14T22:11:09.918Z",
   "artists": [
+    {
+      "canonicalArtistId": "tnt",
+      "displayName": "时代少年团",
+      "songCount": 39,
+      "songIds": [
+        "79248e52-11ca-45fd-8822-8a5f94a1cfc0",
+        "24d0000a-7b3c-464b-8c44-fcd771a30f74",
+        "73d7bfa7-ab8e-40b2-9be1-39c443624a2d",
+        "ff590101-0fca-4b0b-8094-f15cc6f8b9bf",
+        "cf65b5ac-5c9b-46c2-bd22-5fe1874e320f",
+        "c8bec2e7-a119-4083-b7ec-84d4414bf2dd",
+        "8f988d4e-4448-40a1-981d-92eda3b4de54",
+        "c4d6ff07-663b-4aa8-b82d-3c3359b21f6e",
+        "3c2735a1-2dd0-4c2f-9b0b-bf8f2e42d8d8",
+        "1d3ab356-7fe6-49b5-a930-beb40aa39c83",
+        "71bb05d1-6b88-4ad0-89d7-8482c67d8817",
+        "5a834793-3977-49db-8301-a81032ce7491",
+        "7bca926f-8b1b-4014-982e-0be89a2423ea",
+        "581a6dd0-daf5-4e71-a623-3ca03d9efd1b",
+        "e6b22c48-d1e4-4894-b86a-95a1c71495ef",
+        "c6e9a7b4-eb8b-4dd0-adae-0986f51249a7",
+        "82490eb7-181a-463e-baf4-a007ed76e472",
+        "d2a1ad48-4889-4299-bb33-a2db4a47c497",
+        "fe6bfbd1-e71c-4cde-bff5-8a69eed2e8ed",
+        "253864d1-4f1a-486b-86a2-d6f4d8fa097d",
+        "206ca38e-0ba4-4979-9de6-fc14ffac5458",
+        "03052ace-a028-408f-a376-5f15fc2d9371",
+        "06df603b-a416-4894-9c8e-625f728d1544",
+        "c19bfd25-2106-4936-8872-6230dfb9831e",
+        "3fb4a207-bc87-4723-8ab5-1369ff13d4c5",
+        "62db4c4e-a132-4d64-aed9-b0b7c3df7df5",
+        "fb40255e-1eb4-4da6-835f-4f650bb5253f",
+        "134d4530-d0ac-4aa8-8296-a05868a3d419",
+        "81250b0b-7d5c-4219-93f7-3513ac037581",
+        "ab07523c-cfd5-4a88-93ca-638bb3953dfd",
+        "82190fad-feab-4d16-82ad-7ef281e9797e",
+        "0879104a-059c-438f-92df-6bb63831a96b",
+        "3a45de1f-41c0-4d51-a2da-8f71d5d7e571",
+        "16153189-53fb-40c2-8f94-799d5534b811",
+        "89886903-baca-49c3-9341-c1514cc6236d",
+        "0f94599f-f9f5-4b0f-b95f-c8485b6ddf53",
+        "458d09d7-b97d-4374-ad05-ec048ab8f5f5",
+        "05f3dad7-7639-4085-a833-e53425aa3080",
+        "40234d49-d2a2-41bc-a2b6-748073123aca"
+      ],
+      "sampleOriginalArtists": [
+        "严浩翔",
+        "时代少年团",
+        "时代少年团 严浩翔&贺峻霖",
+        "时代少年团 张真源&严浩翔 合作曲",
+        "时代少年团 马嘉祺&严浩翔"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/f8d3ad9ceacd7b7e4626476d32d087eb/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer_artist_zh_name",
+      "artistImageConfidence": 1,
+      "artistImageKind": "group_photo"
+    },
     {
       "canonicalArtistId": "zhou-shen",
       "displayName": "周深",
@@ -58,63 +116,6 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "tnt",
-      "displayName": "时代少年团",
-      "songCount": 38,
-      "songIds": [
-        "24d0000a-7b3c-464b-8c44-fcd771a30f74",
-        "73d7bfa7-ab8e-40b2-9be1-39c443624a2d",
-        "ff590101-0fca-4b0b-8094-f15cc6f8b9bf",
-        "cf65b5ac-5c9b-46c2-bd22-5fe1874e320f",
-        "c8bec2e7-a119-4083-b7ec-84d4414bf2dd",
-        "8f988d4e-4448-40a1-981d-92eda3b4de54",
-        "c4d6ff07-663b-4aa8-b82d-3c3359b21f6e",
-        "3c2735a1-2dd0-4c2f-9b0b-bf8f2e42d8d8",
-        "1d3ab356-7fe6-49b5-a930-beb40aa39c83",
-        "71bb05d1-6b88-4ad0-89d7-8482c67d8817",
-        "5a834793-3977-49db-8301-a81032ce7491",
-        "7bca926f-8b1b-4014-982e-0be89a2423ea",
-        "581a6dd0-daf5-4e71-a623-3ca03d9efd1b",
-        "e6b22c48-d1e4-4894-b86a-95a1c71495ef",
-        "c6e9a7b4-eb8b-4dd0-adae-0986f51249a7",
-        "82490eb7-181a-463e-baf4-a007ed76e472",
-        "d2a1ad48-4889-4299-bb33-a2db4a47c497",
-        "fe6bfbd1-e71c-4cde-bff5-8a69eed2e8ed",
-        "253864d1-4f1a-486b-86a2-d6f4d8fa097d",
-        "206ca38e-0ba4-4979-9de6-fc14ffac5458",
-        "03052ace-a028-408f-a376-5f15fc2d9371",
-        "06df603b-a416-4894-9c8e-625f728d1544",
-        "c19bfd25-2106-4936-8872-6230dfb9831e",
-        "3fb4a207-bc87-4723-8ab5-1369ff13d4c5",
-        "62db4c4e-a132-4d64-aed9-b0b7c3df7df5",
-        "fb40255e-1eb4-4da6-835f-4f650bb5253f",
-        "134d4530-d0ac-4aa8-8296-a05868a3d419",
-        "81250b0b-7d5c-4219-93f7-3513ac037581",
-        "ab07523c-cfd5-4a88-93ca-638bb3953dfd",
-        "82190fad-feab-4d16-82ad-7ef281e9797e",
-        "0879104a-059c-438f-92df-6bb63831a96b",
-        "3a45de1f-41c0-4d51-a2da-8f71d5d7e571",
-        "16153189-53fb-40c2-8f94-799d5534b811",
-        "89886903-baca-49c3-9341-c1514cc6236d",
-        "0f94599f-f9f5-4b0f-b95f-c8485b6ddf53",
-        "458d09d7-b97d-4374-ad05-ec048ab8f5f5",
-        "05f3dad7-7639-4085-a833-e53425aa3080",
-        "40234d49-d2a2-41bc-a2b6-748073123aca"
-      ],
-      "sampleOriginalArtists": [
-        "时代少年团",
-        "时代少年团 严浩翔&贺峻霖",
-        "时代少年团 张真源&严浩翔 合作曲",
-        "时代少年团 马嘉祺&严浩翔",
-        "《傻瓜》钢琴版 时代少年团"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/f8d3ad9ceacd7b7e4626476d32d087eb/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer_artist_zh_name",
-      "artistImageConfidence": 1,
-      "artistImageKind": "group_photo"
     },
     {
       "canonicalArtistId": "into1",
@@ -565,6 +566,27 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "illit",
+      "displayName": "ILLIT",
+      "songCount": 6,
+      "songIds": [
+        "4c828c96-de0e-4481-aff9-0ae4a3139358",
+        "7e327da0-d6cc-41f8-9677-3e9f7b666c71",
+        "626dc443-7066-40ad-8cc8-d6b8d4d55b79",
+        "32a01b0f-306c-4e92-aa7e-315aaaea6619",
+        "e30348e9-47ab-4de5-a381-89299daefeff",
+        "04ebdf26-714d-4f20-886d-2d50ab37bd41"
+      ],
+      "sampleOriginalArtists": [
+        "ILLIT"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/fc9af226576dd0244593dff0c10bebf0/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "group_photo"
+    },
+    {
       "canonicalArtistId": "newjeans",
       "displayName": "NewJeans",
       "songCount": 6,
@@ -722,26 +744,6 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "illit",
-      "displayName": "ILLIT",
-      "songCount": 5,
-      "songIds": [
-        "7e327da0-d6cc-41f8-9677-3e9f7b666c71",
-        "626dc443-7066-40ad-8cc8-d6b8d4d55b79",
-        "32a01b0f-306c-4e92-aa7e-315aaaea6619",
-        "e30348e9-47ab-4de5-a381-89299daefeff",
-        "04ebdf26-714d-4f20-886d-2d50ab37bd41"
-      ],
-      "sampleOriginalArtists": [
-        "ILLIT"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/fc9af226576dd0244593dff0c10bebf0/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "group_photo"
-    },
-    {
       "canonicalArtistId": "liu-yu-ning",
       "displayName": "刘宇宁",
       "songCount": 5,
@@ -880,6 +882,26 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
+    },
+    {
+      "canonicalArtistId": "yan-hao-xiang",
+      "displayName": "严浩翔",
+      "songCount": 4,
+      "songIds": [
+        "79248e52-11ca-45fd-8822-8a5f94a1cfc0",
+        "404fe557-a26e-45a6-9eef-1af0ecee8135",
+        "c85b3af5-4862-4164-86f2-54adf531ebf7",
+        "251189dd-16e0-40d8-bbd8-d74cddc5931c"
+      ],
+      "sampleOriginalArtists": [
+        "严浩翔",
+        "时代少年团 严浩翔"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ac6c68e837b5f36486d1042c700061ec/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "mayday",
@@ -1062,25 +1084,6 @@
       "artistImageSource": "deezer_artist_search",
       "artistImageConfidence": 0.92,
       "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "yan-hao-xiang",
-      "displayName": "严浩翔",
-      "songCount": 3,
-      "songIds": [
-        "404fe557-a26e-45a6-9eef-1af0ecee8135",
-        "c85b3af5-4862-4164-86f2-54adf531ebf7",
-        "251189dd-16e0-40d8-bbd8-d74cddc5931c"
-      ],
-      "sampleOriginalArtists": [
-        "时代少年团 严浩翔",
-        "严浩翔"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ac6c68e837b5f36486d1042c700061ec/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "liu-yu-xin",
@@ -1337,6 +1340,24 @@
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/56c65ac9ea451119ddc8c0b02915d103/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "justin-bieber",
+      "displayName": "Justin Bieber",
+      "songCount": 2,
+      "songIds": [
+        "d58c71f9-db53-4913-9622-cb02071d8c21",
+        "be004160-2a57-430c-8169-7d8dbb915fec"
+      ],
+      "sampleOriginalArtists": [
+        "Justin Bieber",
+        "The Kid LAROI、Justin Bieber"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/da/Justin_Bieber_in_2015.jpg",
+      "artistImageSource": "wikipedia_en_commons_portrait_2015",
+      "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
     },
     {
@@ -1633,6 +1654,24 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "bonbon-girls-303",
+      "displayName": "硬糖少女303",
+      "songCount": 2,
+      "songIds": [
+        "ae2f8edb-e1e4-4f38-8777-0a59887426af",
+        "69e0f88c-f242-4bfa-a727-64ca0bf7934d"
+      ],
+      "sampleOriginalArtists": [
+        "浪姐版",
+        "BonBon Girls 303"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/87828594b7364eb86325309f27a05996/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 1,
+      "artistImageKind": "group_photo"
     },
     {
       "canonicalArtistId": "kenshi-yonezu",
@@ -2186,22 +2225,6 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "justin-bieber",
-      "displayName": "Justin Bieber",
-      "songCount": 1,
-      "songIds": [
-        "be004160-2a57-430c-8169-7d8dbb915fec"
-      ],
-      "sampleOriginalArtists": [
-        "The Kid LAROI、Justin Bieber"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/da/Justin_Bieber_in_2015.jpg",
-      "artistImageSource": "wikipedia_en_commons_portrait_2015",
-      "artistImageConfidence": 1,
-      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "review/07752a89-cdaf-4f19-86db-9daf1818f797",
@@ -3308,6 +3331,22 @@
       "artistImageKind": null
     },
     {
+      "canonicalArtistId": "tseng-pei-ci",
+      "displayName": "曾沛慈",
+      "songCount": 1,
+      "songIds": [
+        "c0d763ff-4378-4dfc-8299-938eed122eac"
+      ],
+      "sampleOriginalArtists": [
+        "曾沛慈"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "g-dragon",
       "displayName": "权志龙",
       "songCount": 1,
@@ -3578,22 +3617,6 @@
       "artistImageSource": "spotify_open_artist_0lhcAgqzhRZuhHTXJsilSc",
       "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "bonbon-girls-303",
-      "displayName": "硬糖少女303",
-      "songCount": 1,
-      "songIds": [
-        "69e0f88c-f242-4bfa-a727-64ca0bf7934d"
-      ],
-      "sampleOriginalArtists": [
-        "BonBon Girls 303"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/87828594b7364eb86325309f27a05996/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 1,
-      "artistImageKind": "group_photo"
     },
     {
       "canonicalArtistId": "cheng-xiang",

@@ -4,6 +4,233 @@
   "chunkIndex": 2,
   "tracks": [
     {
+      "id": "404fe557-a26e-45a6-9eef-1af0ecee8135",
+      "title": "The beast",
+      "displayTitle": "The beast",
+      "originalArtist": "时代少年团 严浩翔",
+      "canonicalArtistId": "yan-hao-xiang",
+      "canonicalArtistDisplayName": "严浩翔",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/6b/be/02/6bbe026b-6756-6af8-5ecb-25dd8276801a/4896004079328.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/the-beast/audio.mp3",
+      "duration": "03:26",
+      "durationSeconds": 206,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "the beast",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=IujrfDFKrcg",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "IujrfDFKrcg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/165164",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "The Beast"
+      },
+      "artists": {
+        "zhHans": "严浩翔",
+        "zhHant": "嚴浩翔",
+        "en": "Yan Haoxiang"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:33:14.405691+00:00",
+      "youtubeSortIndex": 213,
+      "youtubePublishedAt": "2024-04-12T12:00:00.000Z",
+      "listSortPublishedAtMs": 1712923200000,
+      "listSortPublishedAt": "2024-04-12T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "5926d86d-f67a-4410-a181-613fffd9deb5",
+      "title": "Sheesh",
+      "displayTitle": "Sheesh",
+      "originalArtist": "BABYMONSTER",
+      "canonicalArtistId": "babymonster",
+      "canonicalArtistDisplayName": "BABYMONSTER",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fb/68/85/fb68856f-4965-5d30-78ea-fe6bb261f4ff/3000px.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/sheesh/audio.mp3",
+      "duration": "02:52",
+      "durationSeconds": 172,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "sheesh",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=2CZiQeCYevY",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "2CZiQeCYevY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/164361",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Sheesh"
+      },
+      "artists": {
+        "zhHans": "BABYMONSTER",
+        "zhHant": "BABYMONSTER",
+        "en": "BABYMONSTER"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:31:57.940462+00:00",
+      "youtubeSortIndex": 214,
+      "youtubePublishedAt": "2024-04-09T12:00:00.000Z",
+      "listSortPublishedAtMs": 1712664000000,
+      "listSortPublishedAt": "2024-04-09T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "0df50156-94ef-4b0b-911b-8e080b6f2736",
+      "title": "蜃楼",
+      "displayTitle": "蜃楼",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000003szpvI3LMhQ7.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-77eefb13cb/audio.mp3",
+      "duration": "03:50",
+      "durationSeconds": 230,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "蜃楼",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=zXdQtbnDcCs",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "zXdQtbnDcCs",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/163857",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "蜃楼",
+        "en": "Shen Lou"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:46:25.156417+00:00",
+      "youtubeSortIndex": 215,
+      "youtubePublishedAt": "2024-04-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1712404800000,
+      "listSortPublishedAt": "2024-04-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "07ecb565-732b-4851-831b-9e0382d30db7",
+      "title": "失恋循环",
+      "displayTitle": "失恋循环",
+      "originalArtist": "时代少年团 宋亚轩",
+      "canonicalArtistId": "song-ya-xuan",
+      "canonicalArtistDisplayName": "宋亚轩",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/34/59/83/3459835f-a437-213c-6f4c-4b786790fd8d/4894972126563.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-66047b02c2/audio.mp3",
+      "duration": "03:34",
+      "durationSeconds": 214,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "失恋循环",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fAHrwpwPtgU",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "fAHrwpwPtgU",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/163353",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "失恋循环",
+        "en": "Shi Lian Xun Huan"
+      },
+      "artists": {
+        "zhHans": "宋亚轩",
+        "zhHant": "宋亞軒",
+        "en": "Song Yaxuan"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:39:13.696333+00:00",
+      "youtubeSortIndex": 217,
+      "youtubePublishedAt": "2024-04-03T12:00:00.000Z",
+      "listSortPublishedAtMs": 1712145600000,
+      "listSortPublishedAt": "2024-04-03T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "04ebdf26-714d-4f20-886d-2d50ab37bd41",
+      "title": "Magnetic",
+      "displayTitle": "Magnetic",
+      "originalArtist": "ILLIT",
+      "canonicalArtistId": "illit",
+      "canonicalArtistDisplayName": "ILLIT",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3e/49/1e/3e491e43-4961-21ab-2abe-37fb1c0feb40/196922879227_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/magnetic/audio.mp3",
+      "duration": "02:41",
+      "durationSeconds": 161,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Magnetic",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=NOCG5zz6Gn8",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "NOCG5zz6Gn8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/162422",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Magnetic"
+      },
+      "artists": {
+        "zhHans": "ILLIT",
+        "zhHant": "ILLIT",
+        "en": "ILLIT"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:30:01.242092+00:00",
+      "youtubeSortIndex": 218,
+      "youtubePublishedAt": "2024-03-29T12:00:00.000Z",
+      "listSortPublishedAtMs": 1711713600000,
+      "listSortPublishedAt": "2024-03-29T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "79323e53-9ae3-4be9-aa7a-d04ffd804a07",
       "title": "Fate",
       "displayTitle": "Fate",
@@ -4192,233 +4419,6 @@
       "youtubePublishedAt": "2023-06-02T12:00:00.000Z",
       "listSortPublishedAtMs": 1685707200000,
       "listSortPublishedAt": "2023-06-02T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "7df701be-40ed-42de-99b8-5442172c7680",
-      "title": "Letting go",
-      "displayTitle": "Letting go",
-      "originalArtist": "蔡健雅",
-      "canonicalArtistId": "cai-jian-ya",
-      "canonicalArtistDisplayName": "蔡健雅",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/5d/6d/51/5d6d5168-5b14-da04-d7d4-4ce6e34ac177/4000x4000.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/letting-go/audio.mp3",
-      "duration": "04:20",
-      "durationSeconds": 260,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "letting go",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=irpjDoaUxgQ",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "irpjDoaUxgQ",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/111674",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Letting Go"
-      },
-      "artists": {
-        "zhHans": "蔡健雅",
-        "zhHant": "蔡健雅",
-        "en": "Tanya Chua"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:29:21.176697+00:00",
-      "youtubeSortIndex": 321,
-      "youtubePublishedAt": "2023-05-30T12:00:00.000Z",
-      "listSortPublishedAtMs": 1685448000000,
-      "listSortPublishedAt": "2023-05-30T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "b97eaf68-ca15-427d-98ba-fe995183a9d0",
-      "title": "就这样长大",
-      "displayTitle": "就这样长大",
-      "originalArtist": "INTO1",
-      "canonicalArtistId": "into1",
-      "canonicalArtistDisplayName": "INTO1",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000subKZ0ZLglo.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-a4c385c4bf/audio.mp3",
-      "duration": "04:35",
-      "durationSeconds": 275,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "就这样长大",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=ips0s2vGGNs",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "ips0s2vGGNs",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/111106",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "就这样长大",
-        "en": "Jiu Zhe Yang Chang Da"
-      },
-      "artists": {
-        "zhHans": "INTO1",
-        "zhHant": "INTO1",
-        "en": "INTO1"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:40:12.111578+00:00",
-      "youtubeSortIndex": 322,
-      "youtubePublishedAt": "2023-05-25T12:00:00.000Z",
-      "listSortPublishedAtMs": 1685016000000,
-      "listSortPublishedAt": "2023-05-25T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "206ca38e-0ba4-4979-9de6-fc14ffac5458",
-      "title": "背对地球奔跑",
-      "displayTitle": "背对地球奔跑",
-      "originalArtist": "时代少年团",
-      "canonicalArtistId": "tnt",
-      "canonicalArtistDisplayName": "时代少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/db/b1/60/dbb160d9-8afa-71c4-a83d-e018c3ba778f/6942360843719.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-83cc4a3a87/audio.mp3",
-      "duration": "02:55",
-      "durationSeconds": 175,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "背对地球奔跑",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=ZVb52VySvB8",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "ZVb52VySvB8",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/110589",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "背对地球奔跑",
-        "en": "Bei Dui Di Qiu Ben Pao"
-      },
-      "artists": {
-        "zhHans": "时代少年团",
-        "zhHant": "時代少年團",
-        "en": "Teens In Times"
-      },
-      "supabaseCreatedAt": "2026-04-13T19:28:03.244839+00:00",
-      "youtubeSortIndex": 323,
-      "youtubePublishedAt": "2023-05-22T12:00:00.000Z",
-      "listSortPublishedAtMs": 1684756800000,
-      "listSortPublishedAt": "2023-05-22T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "d8d03970-9e42-4231-982d-4b8de6646bd5",
-      "title": "Queen card",
-      "displayTitle": "Queen card",
-      "originalArtist": "I-DLE",
-      "canonicalArtistId": "i-dle",
-      "canonicalArtistDisplayName": "I-DLE",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/7b/59/56/7b59565a-c6bd-a615-9cc2-955cb8481dfb/8804775254703.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/queen-card/audio.mp3",
-      "duration": "02:44",
-      "durationSeconds": 164,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "queen card",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=GH0eT_NAKxE",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "GH0eT_NAKxE",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/110077",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Queen Card"
-      },
-      "artists": {
-        "zhHans": "I-DLE",
-        "zhHant": "I-DLE",
-        "en": "I-DLE"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:31:29.933723+00:00",
-      "youtubeSortIndex": 324,
-      "youtubePublishedAt": "2023-05-17T12:00:00.000Z",
-      "listSortPublishedAtMs": 1684324800000,
-      "listSortPublishedAt": "2023-05-17T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "18b888d6-6738-42bb-ae73-16ac2ef1254e",
-      "title": "Allergy",
-      "displayTitle": "Allergy",
-      "originalArtist": "I-DLE",
-      "canonicalArtistId": "i-dle",
-      "canonicalArtistDisplayName": "I-DLE",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/7b/59/56/7b59565a-c6bd-a615-9cc2-955cb8481dfb/8804775254703.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/allergy/audio.mp3",
-      "duration": "02:41",
-      "durationSeconds": 161,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "Allergy",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=N7yPwlhsO9U",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "N7yPwlhsO9U",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/109380",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Allergy"
-      },
-      "artists": {
-        "zhHans": "I-DLE",
-        "zhHant": "I-DLE",
-        "en": "I-DLE"
-      },
-      "supabaseCreatedAt": "2026-04-13T19:55:27.298269+00:00",
-      "youtubeSortIndex": 325,
-      "youtubePublishedAt": "2023-05-13T12:00:00.000Z",
-      "listSortPublishedAtMs": 1683979200000,
-      "listSortPublishedAt": "2023-05-13T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

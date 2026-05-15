@@ -8,6 +8,149 @@
 import type { CatalogOverride } from './catalog-override-types';
 
 export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
+  "一个人想着一个人": {
+    title: "一个人想着一个人",
+    displayTitle: "一个人想着一个人",
+    titles: {
+      zhHans: "一个人想着一个人",
+      zhHant: "一個人想著一個人"
+    },
+    artist: "曾沛慈",
+    artists: {
+      zhHans: "曾沛慈",
+      zhHant: "曾沛慈",
+      en: "Pets Tseng"
+    },
+    category: "华语流行",
+    categoryTags: [
+      "华语流行",
+      "影视"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=PSmlM4YIU9g",
+      video: "https://www.youtube.com/watch?v=PSmlM4YIU9g",
+      bilibili: "https://www.bilibili.com/video/BV1NkoLBFEgz/",
+      sheet: "https://www.mymusic5.com/cipmusic/377881"
+    },
+    canonicalArtistId: "tseng-pei-ci",
+    canonicalArtistDisplayName: "曾沛慈",
+    artistReviewStatus: "ok"
+  },
+  "beauty and a beat": {
+    title: "Beauty And A Beat",
+    displayTitle: "Beauty And A Beat",
+    titles: {
+      zhHans: "Beauty And A Beat",
+      zhHant: "Beauty And A Beat",
+      en: "Beauty And A Beat"
+    },
+    artist: "Justin Bieber",
+    artists: {
+      zhHans: "Justin Bieber",
+      zhHant: "Justin Bieber",
+      en: "Justin Bieber"
+    },
+    category: "欧美流行",
+    categoryTags: [
+      "欧美流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=VnHWtToVqfE",
+      video: "https://www.youtube.com/watch?v=VnHWtToVqfE",
+      bilibili: "https://www.bilibili.com/video/BV1Y39eBHErG/",
+      sheet: "https://www.mymusic5.com/cipmusic/379479"
+    },
+    canonicalArtistId: "justin-bieber",
+    canonicalArtistDisplayName: "Justin Bieber",
+    artistReviewStatus: "ok"
+  },
+  "it's me": {
+    title: "It's Me",
+    displayTitle: "It's Me",
+    titles: {
+      zhHans: "It's Me",
+      zhHant: "It's Me",
+      en: "It's Me"
+    },
+    artist: "ILLIT",
+    artists: {
+      zhHans: "ILLIT",
+      zhHant: "ILLIT",
+      en: "ILLIT"
+    },
+    category: "韩流流行",
+    categoryTags: [
+      "韩流流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=EuK6ARGz7aE",
+      video: "https://www.youtube.com/watch?v=EuK6ARGz7aE",
+      bilibili: "https://www.bilibili.com/video/BV1padGBLEpn/",
+      sheet: "https://www.mymusic5.com/cipmusic/380924"
+    },
+    canonicalArtistId: "illit",
+    canonicalArtistDisplayName: "ILLIT",
+    artistReviewStatus: "ok"
+  },
+  "BonBon Girls": {
+    title: "心愿便利贴+BonBon Girls",
+    displayTitle: "心愿便利贴+BonBon Girls",
+    titles: {
+      zhHans: "心愿便利贴+BonBon Girls",
+      zhHant: "心願便利貼+BonBon Girls",
+      en: "Sticky Note Wish + BonBon Girls"
+    },
+    artist: "浪姐版",
+    artists: {
+      zhHans: "浪姐版",
+      zhHant: "浪姐版",
+      en: "Sisters version"
+    },
+    category: "华语流行",
+    categoryTags: [
+      "华语流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=yX1qEqZt_dI",
+      video: "https://www.youtube.com/watch?v=yX1qEqZt_dI",
+      bilibili: "https://www.bilibili.com/video/BV1MjRPB8Eua/",
+      sheet: "https://www.mymusic5.com/cipmusic/380004"
+    },
+    canonicalArtistId: "bonbon-girls-303",
+    canonicalArtistDisplayName: "浪姐版",
+    artistReviewStatus: "ok"
+  },
+  "someone to love": {
+    title: "Someone to Love",
+    displayTitle: "Someone to Love",
+    titles: {
+      zhHans: "Someone to Love",
+      zhHant: "Someone to Love",
+      en: "Someone to Love"
+    },
+    artist: "严浩翔",
+    artists: {
+      zhHans: "严浩翔",
+      zhHant: "嚴浩翔",
+      en: "Yan Haoxiang"
+    },
+    category: "华语流行",
+    categoryTags: [
+      "华语流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=MUlqFpNNurg",
+      video: "https://www.youtube.com/watch?v=MUlqFpNNurg",
+      bilibili: "https://www.bilibili.com/video/BV1d65A6kE9p/",
+      sheet: "https://www.mymusic5.com/cipmusic/381623"
+    },
+    canonicalArtistId: "yan-hao-xiang",
+    coCanonicalArtistIds: [
+      "tnt"
+    ],
+    canonicalArtistDisplayName: "严浩翔",
+    artistReviewStatus: "ok"
+  },
   "5点23": {
     title: "5点23",
     displayTitle: "5点23",

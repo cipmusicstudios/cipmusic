@@ -4,6 +4,241 @@
   "chunkIndex": 0,
   "tracks": [
     {
+      "id": "c0d763ff-4378-4dfc-8299-938eed122eac",
+      "title": "一个人想着一个人",
+      "displayTitle": "一个人想着一个人",
+      "originalArtist": "曾沛慈",
+      "canonicalArtistId": "tseng-pei-ci",
+      "canonicalArtistDisplayName": "曾沛慈",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "华语流行",
+        "影视"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "film"
+      ],
+      "coverUrl": "https://picsum.photos/seed/local_%E4%B8%80%E4%B8%AA%E4%BA%BA%E6%83%B3%E7%9D%80%E4%B8%80%E4%B8%AA%E4%BA%BA/300/300",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b3907eebea-track-ee1ae21192/audio.mp3",
+      "duration": "04:01",
+      "durationSeconds": 241,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "一个人想着一个人",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=PSmlM4YIU9g",
+      "youtubeVideoTitle": "曾沛慈 — 一个人想着一个人（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "PSmlM4YIU9g",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1NkoLBFEgz/",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/377881",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "一个人想着一个人",
+        "zhHant": "一個人想著一個人",
+        "en": "Thinking of Someone Alone"
+      },
+      "artists": {
+        "zhHans": "曾沛慈",
+        "zhHant": "曾沛慈",
+        "en": "Pets Tseng"
+      },
+      "supabaseCreatedAt": "2026-05-14T21:13:19.304641+00:00",
+      "listSortPublishedAtMs": 5001977199304,
+      "listSortPublishedAt": "2128-07-04T06:06:39.304Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
+      "id": "79248e52-11ca-45fd-8822-8a5f94a1cfc0",
+      "title": "Someone to Love",
+      "displayTitle": "Someone to Love",
+      "originalArtist": "严浩翔",
+      "canonicalArtistId": "yan-hao-xiang",
+      "coCanonicalArtistIds": [
+        "tnt"
+      ],
+      "canonicalArtistDisplayName": "严浩翔",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://picsum.photos/seed/local_someone_to_love/300/300",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/someone-to-love-track-ba510f42d3/audio.mp3",
+      "duration": "03:27",
+      "durationSeconds": 207,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "someone to love",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=MUlqFpNNurg",
+      "youtubeVideoTitle": "严浩翔 / 时代少年团 — Someone to Love（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "MUlqFpNNurg",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1d65A6kE9p/",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/381623",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Someone to Love",
+        "zhHant": "Someone to Love",
+        "en": "Someone to Love"
+      },
+      "artists": {
+        "zhHans": "严浩翔",
+        "zhHant": "嚴浩翔",
+        "en": "Yan Haoxiang"
+      },
+      "supabaseCreatedAt": "2026-05-14T21:13:16.536673+00:00",
+      "listSortPublishedAtMs": 5001977196536,
+      "listSortPublishedAt": "2128-07-04T06:06:36.536Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
+      "id": "4c828c96-de0e-4481-aff9-0ae4a3139358",
+      "title": "It's Me",
+      "displayTitle": "It's Me",
+      "originalArtist": "ILLIT",
+      "canonicalArtistId": "illit",
+      "canonicalArtistDisplayName": "ILLIT",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://picsum.photos/seed/local_it_s_me/300/300",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/it-s-me-illit/audio.mp3",
+      "duration": "02:17",
+      "durationSeconds": 137,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "it's me",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=EuK6ARGz7aE",
+      "youtubeVideoTitle": "ILLIT — It's Me（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "EuK6ARGz7aE",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1padGBLEpn/",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/380924",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "It's Me",
+        "zhHant": "It's Me",
+        "en": "It's Me"
+      },
+      "artists": {
+        "zhHans": "ILLIT",
+        "zhHant": "ILLIT",
+        "en": "ILLIT"
+      },
+      "supabaseCreatedAt": "2026-05-14T21:13:14.33953+00:00",
+      "listSortPublishedAtMs": 5001977194339,
+      "listSortPublishedAt": "2128-07-04T06:06:34.339Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
+      "id": "ae2f8edb-e1e4-4f38-8777-0a59887426af",
+      "title": "心愿便利贴+BonBon Girls",
+      "displayTitle": "心愿便利贴+BonBon Girls",
+      "originalArtist": "浪姐版",
+      "canonicalArtistId": "bonbon-girls-303",
+      "canonicalArtistDisplayName": "浪姐版",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "dictionary_miss",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://picsum.photos/seed/local_BonBon_Girls/300/300",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/bonbon-girls-track-9ec2ab8cdf/audio.mp3",
+      "duration": "02:20",
+      "durationSeconds": 140,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "BonBon Girls",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=yX1qEqZt_dI",
+      "youtubeVideoTitle": "心愿便利贴+BonBon Girls（浪姐版，用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "yX1qEqZt_dI",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1MjRPB8Eua/",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/380004",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "心愿便利贴+BonBon Girls",
+        "zhHant": "心願便利貼+BonBon Girls",
+        "en": "Sticky Note Wish + BonBon Girls"
+      },
+      "artists": {
+        "zhHans": "浪姐版",
+        "zhHant": "浪姐版",
+        "en": "Sisters version"
+      },
+      "supabaseCreatedAt": "2026-05-14T21:13:11.837864+00:00",
+      "listSortPublishedAtMs": 5001977191837,
+      "listSortPublishedAt": "2128-07-04T06:06:31.837Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
+      "id": "d58c71f9-db53-4913-9622-cb02071d8c21",
+      "title": "Beauty And A Beat",
+      "displayTitle": "Beauty And A Beat",
+      "originalArtist": "Justin Bieber",
+      "canonicalArtistId": "justin-bieber",
+      "canonicalArtistDisplayName": "Justin Bieber",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://picsum.photos/seed/local_beauty_and_a_beat/300/300",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/beauty-and-a-beat-justin-bieber/audio.mp3",
+      "duration": "03:48",
+      "durationSeconds": 228,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "beauty and a beat",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=VnHWtToVqfE",
+      "youtubeVideoTitle": "Justin Bieber — Beauty And A Beat（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "VnHWtToVqfE",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1Y39eBHErG/",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/379479",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Beauty And A Beat",
+        "zhHant": "Beauty And A Beat",
+        "en": "Beauty And A Beat"
+      },
+      "artists": {
+        "zhHans": "Justin Bieber",
+        "zhHant": "Justin Bieber",
+        "en": "Justin Bieber"
+      },
+      "supabaseCreatedAt": "2026-05-14T21:12:48.717837+00:00",
+      "listSortPublishedAtMs": 5001977168717,
+      "listSortPublishedAt": "2128-07-04T06:06:08.717Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
       "id": "be004160-2a57-430c-8169-7d8dbb915fec",
       "title": "STAY",
       "displayTitle": "STAY (with Justin Bieber)",
@@ -4186,230 +4421,6 @@
       "youtubePublishedAt": "2025-04-22T12:00:00.000Z",
       "listSortPublishedAtMs": 1745323200000,
       "listSortPublishedAt": "2025-04-22T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "3c2735a1-2dd0-4c2f-9b0b-bf8f2e42d8d8",
-      "title": "至少我还算快乐",
-      "displayTitle": "至少我还算快乐",
-      "originalArtist": "时代少年团",
-      "canonicalArtistId": "tnt",
-      "canonicalArtistDisplayName": "时代少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/86/4d/51/864d51c1-6b36-54a3-714a-f4a56e85e50c/4894972807370.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-c1a27dd298/audio.mp3",
-      "duration": "03:16",
-      "durationSeconds": 196,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "至少我还算快乐",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=a_DIyi6gp-s",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "a_DIyi6gp-s",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/276856",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "至少我还算快乐",
-        "en": "Zhi Shao Wo Huan Suan Kuai Le"
-      },
-      "artists": {
-        "zhHans": "时代少年团",
-        "zhHant": "時代少年團",
-        "en": "Teens In Times"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:45:49.614177+00:00",
-      "youtubeSortIndex": 105,
-      "youtubePublishedAt": "2025-04-15T12:00:00.000Z",
-      "listSortPublishedAtMs": 1744718400000,
-      "listSortPublishedAt": "2025-04-15T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
-      "title": "跳楼机",
-      "displayTitle": "跳楼机",
-      "originalArtist": "利比",
-      "canonicalArtistId": "review/7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
-      "canonicalArtistDisplayName": "利比",
-      "artistReviewStatus": "needsReview",
-      "artistResolutionNotes": [
-        "dictionary_miss"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000SDUwR2buEUa.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b0df94a16d/audio.mp3",
-      "duration": "03:22",
-      "durationSeconds": 202,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "跳楼机",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=hvhHKUU8Omw",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "hvhHKUU8Omw",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/272362",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "跳楼机",
-        "en": "Tiao Lou Ji"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:46:54.973273+00:00",
-      "youtubeSortIndex": 106,
-      "youtubePublishedAt": "2025-04-11T12:00:00.000Z",
-      "listSortPublishedAtMs": 1744372800000,
-      "listSortPublishedAt": "2025-04-11T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "8266220f-24b6-4cdb-b87c-1db9d0231b9b",
-      "title": "Dynamite",
-      "displayTitle": "Dynamite",
-      "originalArtist": "BTS",
-      "canonicalArtistId": "bts",
-      "canonicalArtistDisplayName": "防弹少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/03/8d/0e/038d0e52-e96d-f386-b8eb-9f77fa013543/195497146918_Cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/dynamite/audio.mp3",
-      "duration": "03:18",
-      "durationSeconds": 198,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "Dynamite",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=YDeLg97KF58",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "YDeLg97KF58",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/269485",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Dynamite"
-      },
-      "artists": {
-        "zhHans": "防弹少年团",
-        "zhHant": "防彈少年團",
-        "en": "BTS"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:25:36.193574+00:00",
-      "youtubeSortIndex": 108,
-      "youtubePublishedAt": "2025-04-04T12:00:00.000Z",
-      "listSortPublishedAtMs": 1743768000000,
-      "listSortPublishedAt": "2025-04-04T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "6e45b694-c00d-4247-8591-212d378b1ff2",
-      "title": "任性",
-      "displayTitle": "任性",
-      "originalArtist": "五月天",
-      "canonicalArtistId": "mayday",
-      "canonicalArtistDisplayName": "五月天",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001V8PDy1om05K.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b19c7cabfe/audio.mp3",
-      "duration": "04:28",
-      "durationSeconds": 268,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "任性",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=VW_0a9RRtm0",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "VW_0a9RRtm0",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/268761",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "任性",
-        "en": "Ren Xing"
-      },
-      "artists": {
-        "zhHans": "五月天",
-        "zhHant": "五月天",
-        "en": "Mayday"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:35:55.099267+00:00",
-      "youtubeSortIndex": 109,
-      "youtubePublishedAt": "2025-04-01T12:00:00.000Z",
-      "listSortPublishedAtMs": 1743508800000,
-      "listSortPublishedAt": "2025-04-01T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "71fb9f87-adc8-4237-bc84-28ef86ccafbe",
-      "title": "像晴天像雨天",
-      "displayTitle": "像晴天像雨天",
-      "originalArtist": "汪苏泷",
-      "canonicalArtistId": "silence-wang",
-      "canonicalArtistDisplayName": "汪苏泷",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/99/cf/5a/99cf5a43-8154-ebea-08e3-2e36f64770db/4894965521962.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-889bf75853/audio.mp3",
-      "duration": "04:00",
-      "durationSeconds": 240,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "像晴天像雨天",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=3Mh39uRPbPM",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "3Mh39uRPbPM",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/267679",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "像晴天像雨天",
-        "en": "Xiang Qing Tian Xiang Yu Tian"
-      },
-      "artists": {
-        "zhHans": "汪苏泷",
-        "zhHant": "汪蘇瀧",
-        "en": "Silence Wang"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:36:48.709001+00:00",
-      "youtubeSortIndex": 110,
-      "youtubePublishedAt": "2025-03-28T12:00:00.000Z",
-      "listSortPublishedAtMs": 1743163200000,
-      "listSortPublishedAt": "2025-03-28T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

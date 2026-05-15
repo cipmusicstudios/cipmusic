@@ -1,61 +1,25 @@
 {
-  "generatedAt": "2026-04-14T18:35:15.297Z",
-  "manifestGeneratedAt": "2026-04-14T18:35:14.467Z",
-  "trackCount": 544,
+  "generatedAt": "2026-05-14T22:11:24.538Z",
+  "manifestGeneratedAt": "2026-05-14T22:11:09.918Z",
+  "trackCount": 554,
   "durationSummary": {
-    "ok": 544,
+    "ok": 554,
     "badCount": 0,
     "badSlugs": [],
-    "withSeconds": 544
+    "withSeconds": 554
   },
-  "issueCount": 4,
+  "issueCount": 1,
   "issuesByCode": {
-    "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH": 4
+    "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH": 1
   },
   "issues": [
     {
       "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
       "severity": "warn",
-      "trackId": "local_像你这样的朋友",
-      "slug": "像你这样的朋友",
-      "displayTitle": "像你这样的朋友",
-      "message": "originalArtist (陈楚生、王栎鑫、王铮亮、陆虎、苏醒 、张远) differs from canonical display (0713男团) after normalization.",
-      "hints": [
-        "May be intentional (feat.)",
-        "Verify artist dictionary + overrides"
-      ]
-    },
-    {
-      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
-      "severity": "warn",
-      "trackId": "local_chains",
-      "slug": "chains",
-      "displayTitle": "Chains",
-      "message": "originalArtist (BOYS ll PLANET) differs from canonical display (Alpha Drive One) after normalization.",
-      "hints": [
-        "May be intentional (feat.)",
-        "Verify artist dictionary + overrides"
-      ]
-    },
-    {
-      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
-      "severity": "warn",
-      "trackId": "local_恋与深空主题曲",
-      "slug": "恋与深空主题曲",
-      "displayTitle": "恋与深空主题曲",
-      "message": "originalArtist (莎拉·布莱曼) differs from canonical display (恋与深空) after normalization.",
-      "hints": [
-        "May be intentional (feat.)",
-        "Verify artist dictionary + overrides"
-      ]
-    },
-    {
-      "code": "ORIGINAL_ARTIST_VS_CANONICAL_DISPLAY_MISMATCH",
-      "severity": "warn",
-      "trackId": "local_斗地主",
-      "slug": "斗地主",
-      "displayTitle": "斗地主",
-      "message": "originalArtist (（无原唱）) differs from canonical display (斗地主（游戏）) after normalization.",
+      "trackId": "ad55d05d-c0cb-46fc-89b8-5f779540874d",
+      "slug": "这样很好",
+      "displayTitle": "这样很好",
+      "message": "originalArtist (丨 :) differs from canonical display (陈奕迅) after normalization.",
       "hints": [
         "May be intentional (feat.)",
         "Verify artist dictionary + overrides"

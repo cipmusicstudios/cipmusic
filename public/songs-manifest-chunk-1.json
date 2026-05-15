@@ -4,6 +4,230 @@
   "chunkIndex": 1,
   "tracks": [
     {
+      "id": "3c2735a1-2dd0-4c2f-9b0b-bf8f2e42d8d8",
+      "title": "至少我还算快乐",
+      "displayTitle": "至少我还算快乐",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/86/4d/51/864d51c1-6b36-54a3-714a-f4a56e85e50c/4894972807370.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-c1a27dd298/audio.mp3",
+      "duration": "03:16",
+      "durationSeconds": 196,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "至少我还算快乐",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=a_DIyi6gp-s",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "a_DIyi6gp-s",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/276856",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "至少我还算快乐",
+        "en": "Zhi Shao Wo Huan Suan Kuai Le"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:45:49.614177+00:00",
+      "youtubeSortIndex": 105,
+      "youtubePublishedAt": "2025-04-15T12:00:00.000Z",
+      "listSortPublishedAtMs": 1744718400000,
+      "listSortPublishedAt": "2025-04-15T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
+      "title": "跳楼机",
+      "displayTitle": "跳楼机",
+      "originalArtist": "利比",
+      "canonicalArtistId": "review/7d3c8e9e-98a4-4ca2-bfca-d74b98b3997c",
+      "canonicalArtistDisplayName": "利比",
+      "artistReviewStatus": "needsReview",
+      "artistResolutionNotes": [
+        "dictionary_miss"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000000SDUwR2buEUa.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b0df94a16d/audio.mp3",
+      "duration": "03:22",
+      "durationSeconds": 202,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "跳楼机",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=hvhHKUU8Omw",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "hvhHKUU8Omw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/272362",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "跳楼机",
+        "en": "Tiao Lou Ji"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:46:54.973273+00:00",
+      "youtubeSortIndex": 106,
+      "youtubePublishedAt": "2025-04-11T12:00:00.000Z",
+      "listSortPublishedAtMs": 1744372800000,
+      "listSortPublishedAt": "2025-04-11T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "8266220f-24b6-4cdb-b87c-1db9d0231b9b",
+      "title": "Dynamite",
+      "displayTitle": "Dynamite",
+      "originalArtist": "BTS",
+      "canonicalArtistId": "bts",
+      "canonicalArtistDisplayName": "防弹少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/03/8d/0e/038d0e52-e96d-f386-b8eb-9f77fa013543/195497146918_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/dynamite/audio.mp3",
+      "duration": "03:18",
+      "durationSeconds": 198,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Dynamite",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=YDeLg97KF58",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "YDeLg97KF58",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/269485",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Dynamite"
+      },
+      "artists": {
+        "zhHans": "防弹少年团",
+        "zhHant": "防彈少年團",
+        "en": "BTS"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:25:36.193574+00:00",
+      "youtubeSortIndex": 108,
+      "youtubePublishedAt": "2025-04-04T12:00:00.000Z",
+      "listSortPublishedAtMs": 1743768000000,
+      "listSortPublishedAt": "2025-04-04T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "6e45b694-c00d-4247-8591-212d378b1ff2",
+      "title": "任性",
+      "displayTitle": "任性",
+      "originalArtist": "五月天",
+      "canonicalArtistId": "mayday",
+      "canonicalArtistDisplayName": "五月天",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000001V8PDy1om05K.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b19c7cabfe/audio.mp3",
+      "duration": "04:28",
+      "durationSeconds": 268,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "任性",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=VW_0a9RRtm0",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "VW_0a9RRtm0",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/268761",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "任性",
+        "en": "Ren Xing"
+      },
+      "artists": {
+        "zhHans": "五月天",
+        "zhHant": "五月天",
+        "en": "Mayday"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:35:55.099267+00:00",
+      "youtubeSortIndex": 109,
+      "youtubePublishedAt": "2025-04-01T12:00:00.000Z",
+      "listSortPublishedAtMs": 1743508800000,
+      "listSortPublishedAt": "2025-04-01T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "71fb9f87-adc8-4237-bc84-28ef86ccafbe",
+      "title": "像晴天像雨天",
+      "displayTitle": "像晴天像雨天",
+      "originalArtist": "汪苏泷",
+      "canonicalArtistId": "silence-wang",
+      "canonicalArtistDisplayName": "汪苏泷",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/99/cf/5a/99cf5a43-8154-ebea-08e3-2e36f64770db/4894965521962.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-889bf75853/audio.mp3",
+      "duration": "04:00",
+      "durationSeconds": 240,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "像晴天像雨天",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=3Mh39uRPbPM",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "3Mh39uRPbPM",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/267679",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "像晴天像雨天",
+        "en": "Xiang Qing Tian Xiang Yu Tian"
+      },
+      "artists": {
+        "zhHans": "汪苏泷",
+        "zhHant": "汪蘇瀧",
+        "en": "Silence Wang"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:36:48.709001+00:00",
+      "youtubeSortIndex": 110,
+      "youtubePublishedAt": "2025-03-28T12:00:00.000Z",
+      "listSortPublishedAtMs": 1743163200000,
+      "listSortPublishedAt": "2025-03-28T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "1d684a19-251b-42f2-abce-d3d5175855a3",
       "title": "HOT",
       "displayTitle": "HOT",
@@ -4165,233 +4389,6 @@
       "youtubePublishedAt": "2024-04-16T12:00:00.000Z",
       "listSortPublishedAtMs": 1713268800000,
       "listSortPublishedAt": "2024-04-16T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "404fe557-a26e-45a6-9eef-1af0ecee8135",
-      "title": "The beast",
-      "displayTitle": "The beast",
-      "originalArtist": "时代少年团 严浩翔",
-      "canonicalArtistId": "yan-hao-xiang",
-      "canonicalArtistDisplayName": "严浩翔",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/6b/be/02/6bbe026b-6756-6af8-5ecb-25dd8276801a/4896004079328.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/the-beast/audio.mp3",
-      "duration": "03:26",
-      "durationSeconds": 206,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "the beast",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=IujrfDFKrcg",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "IujrfDFKrcg",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/165164",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "The Beast"
-      },
-      "artists": {
-        "zhHans": "严浩翔",
-        "zhHant": "嚴浩翔",
-        "en": "Yan Haoxiang"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:33:14.405691+00:00",
-      "youtubeSortIndex": 213,
-      "youtubePublishedAt": "2024-04-12T12:00:00.000Z",
-      "listSortPublishedAtMs": 1712923200000,
-      "listSortPublishedAt": "2024-04-12T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "5926d86d-f67a-4410-a181-613fffd9deb5",
-      "title": "Sheesh",
-      "displayTitle": "Sheesh",
-      "originalArtist": "BABYMONSTER",
-      "canonicalArtistId": "babymonster",
-      "canonicalArtistDisplayName": "BABYMONSTER",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fb/68/85/fb68856f-4965-5d30-78ea-fe6bb261f4ff/3000px.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/sheesh/audio.mp3",
-      "duration": "02:52",
-      "durationSeconds": 172,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "sheesh",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=2CZiQeCYevY",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "2CZiQeCYevY",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/164361",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Sheesh"
-      },
-      "artists": {
-        "zhHans": "BABYMONSTER",
-        "zhHant": "BABYMONSTER",
-        "en": "BABYMONSTER"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:31:57.940462+00:00",
-      "youtubeSortIndex": 214,
-      "youtubePublishedAt": "2024-04-09T12:00:00.000Z",
-      "listSortPublishedAtMs": 1712664000000,
-      "listSortPublishedAt": "2024-04-09T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "0df50156-94ef-4b0b-911b-8e080b6f2736",
-      "title": "蜃楼",
-      "displayTitle": "蜃楼",
-      "originalArtist": "周深",
-      "canonicalArtistId": "zhou-shen",
-      "canonicalArtistDisplayName": "周深",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000003szpvI3LMhQ7.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-77eefb13cb/audio.mp3",
-      "duration": "03:50",
-      "durationSeconds": 230,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "蜃楼",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=zXdQtbnDcCs",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "zXdQtbnDcCs",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/163857",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "蜃楼",
-        "en": "Shen Lou"
-      },
-      "artists": {
-        "zhHans": "周深",
-        "zhHant": "周深",
-        "en": "Zhou Shen"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:46:25.156417+00:00",
-      "youtubeSortIndex": 215,
-      "youtubePublishedAt": "2024-04-06T12:00:00.000Z",
-      "listSortPublishedAtMs": 1712404800000,
-      "listSortPublishedAt": "2024-04-06T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "07ecb565-732b-4851-831b-9e0382d30db7",
-      "title": "失恋循环",
-      "displayTitle": "失恋循环",
-      "originalArtist": "时代少年团 宋亚轩",
-      "canonicalArtistId": "song-ya-xuan",
-      "canonicalArtistDisplayName": "宋亚轩",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/34/59/83/3459835f-a437-213c-6f4c-4b786790fd8d/4894972126563.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-66047b02c2/audio.mp3",
-      "duration": "03:34",
-      "durationSeconds": 214,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "失恋循环",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fAHrwpwPtgU",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "fAHrwpwPtgU",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/163353",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "失恋循环",
-        "en": "Shi Lian Xun Huan"
-      },
-      "artists": {
-        "zhHans": "宋亚轩",
-        "zhHant": "宋亞軒",
-        "en": "Song Yaxuan"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:39:13.696333+00:00",
-      "youtubeSortIndex": 217,
-      "youtubePublishedAt": "2024-04-03T12:00:00.000Z",
-      "listSortPublishedAtMs": 1712145600000,
-      "listSortPublishedAt": "2024-04-03T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "04ebdf26-714d-4f20-886d-2d50ab37bd41",
-      "title": "Magnetic",
-      "displayTitle": "Magnetic",
-      "originalArtist": "ILLIT",
-      "canonicalArtistId": "illit",
-      "canonicalArtistDisplayName": "ILLIT",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3e/49/1e/3e491e43-4961-21ab-2abe-37fb1c0feb40/196922879227_Cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/magnetic/audio.mp3",
-      "duration": "02:41",
-      "durationSeconds": 161,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "Magnetic",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=NOCG5zz6Gn8",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "NOCG5zz6Gn8",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/162422",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Magnetic"
-      },
-      "artists": {
-        "zhHans": "ILLIT",
-        "zhHant": "ILLIT",
-        "en": "ILLIT"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:30:01.242092+00:00",
-      "youtubeSortIndex": 218,
-      "youtubePublishedAt": "2024-03-29T12:00:00.000Z",
-      "listSortPublishedAtMs": 1711713600000,
-      "listSortPublishedAt": "2024-03-29T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

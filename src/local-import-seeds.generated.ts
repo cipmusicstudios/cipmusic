@@ -4248,5 +4248,45 @@ export const LOCAL_IMPORT_SEEDS = [
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
     "titleOverride": "Stay"
+  },
+  {
+    "id": "local_beauty_and_a_beat",
+    "slug": "beauty and a beat",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Beauty And A Beat"
+  },
+  {
+    "id": "local_BonBon_Girls",
+    "slug": "BonBon Girls",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "心愿便利贴+BonBon Girls"
+  },
+  {
+    "id": "local_it_s_me",
+    "slug": "it's me",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "It's Me"
+  },
+  {
+    "id": "local_someone_to_love",
+    "slug": "someone to love",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Someone to Love"
+  },
+  {
+    "id": "local_一个人想着一个人",
+    "slug": "一个人想着一个人",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "一个人想着一个人"
   }
 ] as const;
