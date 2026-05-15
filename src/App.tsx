@@ -192,9 +192,14 @@ export const SCENES: SceneDefinition[] = [
  * Phase A2 安全收口：anon 前端不再 SELECT `midi_url` / `musicxml_url`，避免任何未登录访客
  * 通过 PostgREST 直接拿到付费谱面源文件直链。`audio_url` 暂时保留以维持普通播放。
  * `has_practice_mode` 仅作为 UI 标志位，真正资源 URL 必须经 Practice broker 签发（待 Phase C）。
+ *
+ * 排序字段（`list_sort_published_at_ms` / `list_sort_source`）：build-songs-manifest 写回
+ * Supabase 的 Newest 排序键。客户端在 idle 后用此次远端结果覆盖 manifest 内存态时，必须把
+ * 这两列一起取回并写入 `metadata.enrichment.listSort*`，否则 5 e12 锚点（新导入置顶）会丢失，
+ * 表现为「新导入歌曲掉到列表末端」（df96529 修复前的现象）。
  */
 const SUPABASE_REMOTE_SONG_COLUMNS =
-  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,has_practice_mode,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates';
+  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,has_practice_mode,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates,list_sort_published_at_ms,list_sort_source';
 
 const SUPABASE_SONGS_BUCKET = (import.meta.env.VITE_SUPABASE_SONGS_BUCKET as string | undefined)?.trim() || 'songs';
 
@@ -217,6 +222,34 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
   const musicxmlUrl = undefined;
   const duration = (song.duration as string) || '00:00';
   const hasPracticeAssetsRow = song.has_practice_mode === true;
+
+  /**
+   * Carry the manifest sort key forward when the idle Supabase fetch replaces
+   * manifest-loaded tracks. Without these, `compareMainSongListOrder` falls
+   * back to title order and freshly-imported rows (those that should sit at
+   * the very top via `new_import_created_at` anchor) silently drop to the
+   * bottom of Newest. See `scripts/build-songs-manifest.ts` writeback and
+   * `src/songs-manifest.ts:assignManifestListSort`.
+   */
+  const listSortMsRaw = song.list_sort_published_at_ms;
+  const listSortMs =
+    typeof listSortMsRaw === 'number' && Number.isFinite(listSortMsRaw)
+      ? listSortMsRaw
+      : typeof listSortMsRaw === 'string' && listSortMsRaw.trim() !== '' && Number.isFinite(Number(listSortMsRaw))
+        ? Number(listSortMsRaw)
+        : undefined;
+  const listSortSourceRaw = typeof song.list_sort_source === 'string' ? song.list_sort_source.trim() : '';
+  const KNOWN_LIST_SORT_SOURCES = new Set<NonNullable<Track['metadata']['enrichment']['listSortSource']>>([
+    'youtube_published',
+    'youtube_channel_index',
+    'fallback_no_youtube_order',
+    'catalog_override',
+    'new_import_created_at',
+  ]);
+  const listSortSource: Track['metadata']['enrichment']['listSortSource'] =
+    listSortSourceRaw && KNOWN_LIST_SORT_SOURCES.has(listSortSourceRaw as never)
+      ? (listSortSourceRaw as NonNullable<Track['metadata']['enrichment']['listSortSource']>)
+      : undefined;
 
   return {
     id: song.id as string,
@@ -276,6 +309,12 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
       },
       enrichment: {
         status: song.metadata_status === 'approved' ? 'auto' : 'manual',
+        listSortPublishedAtMs: listSortMs,
+        listSortPublishedAt:
+          typeof listSortMs === 'number' && Number.isFinite(listSortMs)
+            ? new Date(listSortMs).toISOString()
+            : undefined,
+        listSortSource,
       },
     },
   };

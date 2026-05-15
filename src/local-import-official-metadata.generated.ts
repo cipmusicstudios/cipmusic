@@ -14233,5 +14233,132 @@ export const LOCAL_IMPORT_OFFICIAL_METADATA = {
     "coverSource": "apple",
     "coverLocked": true,
     "coverUncertain": false
+  },
+  "一个人想着一个人": {
+    "officialStatus": "confirmed",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2732bc290220b16df50c6324586",
+    "artist": "曾沛慈",
+    "normalizedArtistsInfo": [
+      {
+        "id": "tseng-pei-ci",
+        "names": {
+          "zhHans": "曾沛慈",
+          "zhHant": "曾沛慈",
+          "en": "Pets Tseng"
+        },
+        "type": "solo",
+        "nationality": "zh"
+      }
+    ],
+    "rawCategory": "Mandopop",
+    "mappedCategory": "华语流行",
+    "mappedTags": [
+      "影视"
+    ],
+    "officialSource": "spotify",
+    "officialUrl": "https://open.spotify.com/track/3n3zzFH7zzO0gJNaw4RKSm",
+    "coverLocked": true,
+    "coverSource": "spotify",
+    "coverUncertain": false
+  },
+  "beauty and a beat": {
+    "officialStatus": "confirmed",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2736c20c4638a558132ba95bc39",
+    "artist": "Justin Bieber",
+    "normalizedArtistsInfo": [
+      {
+        "id": "justin-bieber",
+        "names": {
+          "zhHans": "Justin Bieber",
+          "zhHant": "Justin Bieber",
+          "en": "Justin Bieber"
+        },
+        "type": "solo",
+        "nationality": "en"
+      }
+    ],
+    "rawCategory": "Pop",
+    "mappedCategory": "欧美流行",
+    "mappedTags": [],
+    "officialSource": "spotify",
+    "officialUrl": "https://open.spotify.com/track/190jyVPHYjAqEaOGmMzdyk",
+    "coverLocked": true,
+    "coverSource": "spotify",
+    "coverUncertain": false
+  },
+  "it's me": {
+    "officialStatus": "confirmed",
+    "cover": "https://i.scdn.co/image/ab67616d0000b27361eea484e31bca065904f1c6",
+    "artist": "ILLIT",
+    "normalizedArtistsInfo": [
+      {
+        "id": "illit",
+        "names": {
+          "zhHans": "ILLIT",
+          "zhHant": "ILLIT",
+          "en": "ILLIT"
+        },
+        "type": "group",
+        "nationality": "kr"
+      }
+    ],
+    "rawCategory": "K-Pop",
+    "mappedCategory": "韩流流行",
+    "mappedTags": [],
+    "officialSource": "spotify",
+    "officialUrl": "https://open.spotify.com/track/1D5L58KLBbceOynTP4DQnY",
+    "coverLocked": true,
+    "coverSource": "spotify",
+    "coverUncertain": false
+  },
+  "BonBon Girls": {
+    "officialStatus": "confirmed",
+    "cover": "https://i.scdn.co/image/ab67616d0000b273db534ad23f06f0bf4c6f776e",
+    "artist": "浪姐版",
+    "normalizedArtistsInfo": [
+      {
+        "id": "bonbon-girls-303",
+        "names": {
+          "zhHans": "浪姐版",
+          "zhHant": "浪姐版",
+          "en": "Sisters version"
+        },
+        "type": "group",
+        "nationality": "zh"
+      }
+    ],
+    "rawCategory": "Mandopop",
+    "mappedCategory": "华语流行",
+    "mappedTags": [],
+    "officialSource": "spotify",
+    "officialUrl": "https://open.spotify.com/track/18WYdHm0rtDiidy0IK0GQM",
+    "coverLocked": true,
+    "coverSource": "spotify",
+    "coverUncertain": false
+  },
+  "someone to love": {
+    "officialStatus": "confirmed",
+    "cover": "https://i.scdn.co/image/ab67616d0000b2736997d19c29d410f08fe02f86",
+    "artist": "严浩翔",
+    "normalizedArtistsInfo": [
+      {
+        "id": "yan-hao-xiang",
+        "names": {
+          "zhHans": "严浩翔",
+          "zhHant": "嚴浩翔",
+          "en": "Yan Haoxiang"
+        },
+        "type": "solo",
+        "nationality": "zh"
+      }
+    ],
+    "rawCategory": "Mandopop",
+    "mappedCategory": "华语流行",
+    "mappedTags": [],
+    "officialSource": "spotify",
+    "officialUrl": "https://open.spotify.com/track/4UG43GqZxyhsOh3F3oGIGA",
+    "coverLocked": true,
+    "coverSource": "spotify",
+    "coverUncertain": false
   }
 } as const;

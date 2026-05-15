@@ -23,7 +23,7 @@
         "cpop",
         "film"
       ],
-      "coverUrl": "https://picsum.photos/seed/local_%E4%B8%80%E4%B8%AA%E4%BA%BA%E6%83%B3%E7%9D%80%E4%B8%80%E4%B8%AA%E4%BA%BA/300/300",
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2732bc290220b16df50c6324586",
       "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b3907eebea-track-ee1ae21192/audio.mp3",
       "duration": "04:01",
       "durationSeconds": 241,
@@ -72,7 +72,7 @@
       "categoryKeys": [
         "cpop"
       ],
-      "coverUrl": "https://picsum.photos/seed/local_someone_to_love/300/300",
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2736997d19c29d410f08fe02f86",
       "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/someone-to-love-track-ba510f42d3/audio.mp3",
       "duration": "03:27",
       "durationSeconds": 207,
@@ -118,7 +118,7 @@
       "categoryKeys": [
         "kpop"
       ],
-      "coverUrl": "https://picsum.photos/seed/local_it_s_me/300/300",
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b27361eea484e31bca065904f1c6",
       "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/it-s-me-illit/audio.mp3",
       "duration": "02:17",
       "durationSeconds": 137,
@@ -164,7 +164,7 @@
       "categoryKeys": [
         "cpop"
       ],
-      "coverUrl": "https://picsum.photos/seed/local_BonBon_Girls/300/300",
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273db534ad23f06f0bf4c6f776e",
       "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/bonbon-girls-track-9ec2ab8cdf/audio.mp3",
       "duration": "02:20",
       "durationSeconds": 140,
@@ -210,7 +210,7 @@
       "categoryKeys": [
         "western"
       ],
-      "coverUrl": "https://picsum.photos/seed/local_beauty_and_a_beat/300/300",
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2736c20c4638a558132ba95bc39",
       "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/beauty-and-a-beat-justin-bieber/audio.mp3",
       "duration": "03:48",
       "durationSeconds": 228,
