@@ -30,6 +30,8 @@ interface ImportMetaEnv {
   readonly VITE_ZPAY_CREATE_ORDER_URL?: string;
   /** 覆盖会员读取 Function URL（默认 `/.netlify/functions/read-membership`） */
   readonly VITE_READ_MEMBERSHIP_URL?: string;
+  /** 前端安全发行地区：global 或 mainland_china；控制视频 provider 优先级 */
+  readonly VITE_DISTRIBUTION_REGION?: string;
 }
 
 interface ImportMeta {

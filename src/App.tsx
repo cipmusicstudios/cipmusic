@@ -91,11 +91,12 @@ import {
   getDisplayTrackTitle,
   getDisplayTrackArtist,
   getTrackYoutubeUrl,
-  getTrackBilibiliUrlForLocale,
+  getTrackBilibiliUrlWithOverride,
   trackHasExternalVideo,
   getTrackSheetUrl,
   hasPracticeAssets,
 } from './track-display';
+import { isMainlandChinaDistribution } from './distribution-region';
 
 type MembershipFetchIssue = 'none' | RemoteMembershipFetchFailureReason;
 
@@ -631,7 +632,7 @@ export default function App() {
   const [artistsData, setArtistsData] = useState<any[]>([]);
   /** 首屏仅用静态背景图；空闲后再挂 `<video>`，避免首帧解码阻塞 */
   const [homeBackgroundVideoEnabled, setHomeBackgroundVideoEnabled] = useState(false);
-  const [currentLang, setCurrentLang] = useState('English');
+  const [currentLang, setCurrentLang] = useState(isMainlandChinaDistribution ? '简体中文' : 'English');
   const t = translations[currentLang] || en;
   const { session } = useSupabaseAuth();
   const [appPathname, setAppPathname] = useState(() =>
@@ -2548,8 +2549,11 @@ const BottomPlayer = memo(function BottomPlayer({
     return () => document.removeEventListener('mousedown', onDown);
   }, [showSpeedMenu, showVolumePopover, showPlayerMoreMenu]);
   const resolvedYoutubeUrl = getTrackYoutubeUrl(currentTrack);
-  const resolvedBilibiliUrl = getTrackBilibiliUrlForLocale(currentTrack, currentLang);
-  const canOpenExternalVideo = trackHasExternalVideo(currentTrack, currentLang);
+  const resolvedBilibiliUrl = getTrackBilibiliUrlWithOverride(currentTrack);
+  const resolvedExternalVideoUrl = isMainlandChinaDistribution
+    ? (resolvedBilibiliUrl || resolvedYoutubeUrl)
+    : (resolvedYoutubeUrl || resolvedBilibiliUrl);
+  const canOpenExternalVideo = trackHasExternalVideo(currentTrack);
   const resolvedSheetUrl = getTrackSheetUrl(currentTrack);
   const linkStatus = currentTrack.metadata?.enrichment?.linkStatus;
 
@@ -3269,11 +3273,7 @@ const BottomPlayer = memo(function BottomPlayer({
                   type="button"
                   onClick={() => {
                     if (!currentTrack || !canOpenExternalVideo) return;
-                    const isCN = currentLang === '简体中文';
-                    const url = isCN
-                      ? (resolvedBilibiliUrl || resolvedYoutubeUrl)
-                      : (resolvedYoutubeUrl || resolvedBilibiliUrl);
-                    if (url) window.open(url, '_blank');
+                    if (resolvedExternalVideoUrl) window.open(resolvedExternalVideoUrl, '_blank');
                   }}
                   disabled={!canOpenExternalVideo}
                   className={`flex min-w-[2.75rem] shrink-0 flex-col items-center gap-0.5 rounded-lg px-0.5 py-1 transition-colors sm:min-w-[2.875rem] ${canOpenExternalVideo
@@ -3575,11 +3575,7 @@ const BottomPlayer = memo(function BottomPlayer({
                   type="button"
                   onClick={() => {
                     if (!currentTrack || !canOpenExternalVideo) return;
-                    const isCN = currentLang === '简体中文';
-                    const url = isCN
-                      ? (resolvedBilibiliUrl || resolvedYoutubeUrl)
-                      : (resolvedYoutubeUrl || resolvedBilibiliUrl);
-                    if (url) window.open(url, '_blank');
+                    if (resolvedExternalVideoUrl) window.open(resolvedExternalVideoUrl, '_blank');
                   }}
                   disabled={!canOpenExternalVideo}
                   className={`${stackedRow2BtnClass} min-w-0 w-full ${

@@ -39,14 +39,10 @@ export function getTrackBilibiliUrl(track: Track): string | undefined {
   return u.replace(/\/?$/, '');
 }
 
-/**
- * 曲目已有 B 站链接时沿用；否则在「简体中文」下使用 `data/video-overrides.json` 的 videoUrlZhHans。
- */
-export function getTrackBilibiliUrlForLocale(track: Track, currentLang: string): string | undefined {
+export function getTrackBilibiliUrlWithOverride(track: Track): string | undefined {
   const direct = getTrackBilibiliUrl(track);
   if (direct) return direct;
-  if (currentLang === '简体中文') return getVideoOverrideZhHansUrl(track);
-  return undefined;
+  return getVideoOverrideZhHansUrl(track);
 }
 
 export function getTrackYoutubeUrl(track: Track): string | undefined {
@@ -59,14 +55,10 @@ export function getTrackSheetUrl(track: Track): string | undefined {
   return isRealSheetUrl(u) ? u : undefined;
 }
 
-/**
- * True when the track has a real YouTube watch URL,或 B 站视频页，或在简中模式下命中 video-overrides。
- */
-export function trackHasExternalVideo(track: Track, currentLang?: string): boolean {
+export function trackHasExternalVideo(track: Track): boolean {
   const yt = getTrackYoutubeUrl(track);
-  const bili = getTrackBilibiliUrl(track);
-  const zhBili = currentLang === '简体中文' ? getVideoOverrideZhHansUrl(track) : undefined;
-  return Boolean(yt || bili || zhBili);
+  const bili = getTrackBilibiliUrlWithOverride(track);
+  return Boolean(yt || bili);
 }
 
 export const getLocalizedTrackTitle = (track: Track, currentLang: string) => {
