@@ -210,6 +210,23 @@ const NEW_IMPORT_SORT_BASE_MS = 5_000_000_000_000;
  */
 const NEW_IMPORT_CUTOFF_MS = Date.parse('2026-04-22T00:00:00Z');
 
+export function buildNewImportListSortFields(createdAtIso: string | null | undefined):
+  | {
+      listSortPublishedAtMs: number;
+      listSortPublishedAt: string;
+      listSortSource: 'new_import_created_at';
+    }
+  | null {
+  const createdAtMs = createdAtIso ? Date.parse(String(createdAtIso)) : NaN;
+  if (!Number.isFinite(createdAtMs) || createdAtMs < NEW_IMPORT_CUTOFF_MS) return null;
+  const ms = NEW_IMPORT_SORT_BASE_MS + (createdAtMs - NEW_IMPORT_CUTOFF_MS);
+  return {
+    listSortPublishedAtMs: ms,
+    listSortPublishedAt: new Date(ms).toISOString(),
+    listSortSource: 'new_import_created_at',
+  };
+}
+
 function stableIdJitterMs(id: string): number {
   let h = 0;
   for (let i = 0; i < id.length; i++) h = (Math.imul(31, h) + id.charCodeAt(i)) | 0;
@@ -229,16 +246,11 @@ export function assignManifestListSort(entry: SongManifestEntry): SongManifestEn
     return entry;
   }
   /** Pin every song imported after the cutoff to the top of Newest via Supabase `created_at`. */
-  const createdAtMs = entry.supabaseCreatedAt
-    ? Date.parse(String(entry.supabaseCreatedAt))
-    : NaN;
-  if (Number.isFinite(createdAtMs) && createdAtMs >= NEW_IMPORT_CUTOFF_MS) {
-    const ms = NEW_IMPORT_SORT_BASE_MS + (createdAtMs - NEW_IMPORT_CUTOFF_MS);
+  const newImportSort = buildNewImportListSortFields(entry.supabaseCreatedAt);
+  if (newImportSort) {
     return {
       ...entry,
-      listSortPublishedAtMs: ms,
-      listSortPublishedAt: new Date(ms).toISOString(),
-      listSortSource: 'new_import_created_at',
+      ...newImportSort,
     };
   }
   const ytMs = entry.youtubePublishedAt ? Date.parse(String(entry.youtubePublishedAt)) : NaN;

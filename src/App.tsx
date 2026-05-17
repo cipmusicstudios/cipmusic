@@ -77,6 +77,7 @@ import {
   mergeCanonicalIntoTrack,
   isSongsManifestCatalog,
   resolveSongsManifestChunkUrl,
+  buildNewImportListSortFields,
 } from './songs-manifest';
 import type { SongManifestEntry } from './songs-manifest';
 import {
@@ -200,7 +201,7 @@ export const SCENES: SceneDefinition[] = [
  * 表现为「新导入歌曲掉到列表末端」（df96529 修复前的现象）。
  */
 const SUPABASE_REMOTE_SONG_COLUMNS =
-  'id,slug,title,artist,primary_category,secondary_category,duration,audio_url,cover_url,has_practice_mode,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates,list_sort_published_at_ms,list_sort_source';
+  'id,slug,title,artist,created_at,primary_category,secondary_category,duration,audio_url,cover_url,has_practice_mode,youtube_url,sheet_url,source_song_title,source_artist,source_cover_url,source_album,source_release_year,source_category,source_genre,metadata_source,metadata_confidence,metadata_status,metadata_candidates,list_sort_published_at_ms,list_sort_source';
 
 const SUPABASE_SONGS_BUCKET = (import.meta.env.VITE_SUPABASE_SONGS_BUCKET as string | undefined)?.trim() || 'songs';
 
@@ -251,6 +252,16 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
     listSortSourceRaw && KNOWN_LIST_SORT_SOURCES.has(listSortSourceRaw as never)
       ? (listSortSourceRaw as NonNullable<Track['metadata']['enrichment']['listSortSource']>)
       : undefined;
+  const createdAt = typeof song.created_at === 'string' ? song.created_at : undefined;
+  const newImportSort = buildNewImportListSortFields(createdAt);
+  const effectiveListSortMs = listSortMs ?? newImportSort?.listSortPublishedAtMs;
+  const effectiveListSortAt =
+    effectiveListSortMs != null
+      ? (newImportSort && effectiveListSortMs === newImportSort.listSortPublishedAtMs
+        ? newImportSort.listSortPublishedAt
+        : new Date(effectiveListSortMs).toISOString())
+      : undefined;
+  const effectiveListSortSource = listSortSource ?? newImportSort?.listSortSource;
 
   return {
     id: song.id as string,
@@ -310,11 +321,76 @@ function mapSupabaseRowToRemoteTrack(song: Record<string, unknown>): Track {
       },
       enrichment: {
         status: song.metadata_status === 'approved' ? 'auto' : 'manual',
-        listSortPublishedAtMs: listSortMs,
-        listSortPublishedAt:
-          typeof listSortMs === 'number' && Number.isFinite(listSortMs)
-            ? new Date(listSortMs).toISOString()
-            : undefined,
+        listSortPublishedAtMs: effectiveListSortMs,
+        listSortPublishedAt: effectiveListSortAt,
+        listSortSource: effectiveListSortSource,
+        supabaseCreatedAt: createdAt,
+      },
+    },
+  };
+}
+
+function mergeRemoteTrackWithManifest(remote: Track, manifestTrack: Track | undefined): Track {
+  if (!manifestTrack) return remote;
+
+  const manifestLinks = manifestTrack.metadata?.links ?? {};
+  const remoteLinks = remote.metadata?.links ?? {};
+  const bilibiliUrl = remote.bilibiliUrl || manifestTrack.bilibiliUrl || manifestLinks.bilibili;
+  const remoteEnrichment = remote.metadata?.enrichment ?? {};
+  const manifestEnrichment = manifestTrack.metadata?.enrichment ?? {};
+  const listSortPublishedAtMs =
+    remoteEnrichment.listSortPublishedAtMs ?? manifestEnrichment.listSortPublishedAtMs;
+  const listSortPublishedAt =
+    remoteEnrichment.listSortPublishedAt ?? manifestEnrichment.listSortPublishedAt;
+  const listSortSource = remoteEnrichment.listSortSource ?? manifestEnrichment.listSortSource;
+
+  return {
+    ...remote,
+    bilibiliUrl,
+    categoryFilterKeys: remote.categoryFilterKeys?.length
+      ? remote.categoryFilterKeys
+      : manifestTrack.categoryFilterKeys,
+    canonicalArtistId: remote.canonicalArtistId ?? manifestTrack.canonicalArtistId,
+    coCanonicalArtistIds: remote.coCanonicalArtistIds ?? manifestTrack.coCanonicalArtistIds,
+    workProjectKey: remote.workProjectKey ?? manifestTrack.workProjectKey,
+    metadata: {
+      ...remote.metadata,
+      display: {
+        ...remote.metadata.display,
+        titles: remote.metadata.display.titles ?? manifestTrack.metadata.display.titles,
+        artists: remote.metadata.display.artists ?? manifestTrack.metadata.display.artists,
+        normalizedArtistsInfo:
+          remote.metadata.display.normalizedArtistsInfo ??
+          manifestTrack.metadata.display.normalizedArtistsInfo,
+        canonicalArtistId:
+          remote.metadata.display.canonicalArtistId ??
+          manifestTrack.metadata.display.canonicalArtistId,
+        coCanonicalArtistIds:
+          remote.metadata.display.coCanonicalArtistIds ??
+          manifestTrack.metadata.display.coCanonicalArtistIds,
+        canonicalArtistDisplayName:
+          remote.metadata.display.canonicalArtistDisplayName ??
+          manifestTrack.metadata.display.canonicalArtistDisplayName,
+        artistReviewStatus:
+          remote.metadata.display.artistReviewStatus ??
+          manifestTrack.metadata.display.artistReviewStatus,
+        workProjectKey:
+          remote.metadata.display.workProjectKey ??
+          manifestTrack.metadata.display.workProjectKey,
+      },
+      links: {
+        ...manifestLinks,
+        ...remoteLinks,
+        youtube: remoteLinks.youtube || manifestLinks.youtube,
+        video: remoteLinks.video || manifestLinks.video,
+        sheet: remoteLinks.sheet || manifestLinks.sheet,
+        bilibili: bilibiliUrl,
+      },
+      enrichment: {
+        ...manifestEnrichment,
+        ...remoteEnrichment,
+        listSortPublishedAtMs,
+        listSortPublishedAt,
         listSortSource,
       },
     },
@@ -864,13 +940,15 @@ export default function App() {
           }
           const rows = data || [];
           setTracks(prev => {
+            const previousById = new Map(prev.map(track => [track.id, track]));
             const nonRemote = prev.filter(t => t.importSource !== 'remote');
             const localIds = new Set(nonRemote.map(t => t.id));
             const added = rows
               .filter(row => row.id != null && !localIds.has(row.id as string))
-              .map(row =>
-                ensureCategoryKeys(mergeCanonicalIntoTrack(mapSupabaseRowToRemoteTrack(row as Record<string, unknown>))),
-              );
+              .map(row => {
+                const remote = mergeCanonicalIntoTrack(mapSupabaseRowToRemoteTrack(row as Record<string, unknown>));
+                return ensureCategoryKeys(mergeRemoteTrackWithManifest(remote, previousById.get(remote.id)));
+              });
             return [...nonRemote, ...added];
           });
         })();
@@ -2550,7 +2628,8 @@ const BottomPlayer = memo(function BottomPlayer({
   }, [showSpeedMenu, showVolumePopover, showPlayerMoreMenu]);
   const resolvedYoutubeUrl = getTrackYoutubeUrl(currentTrack);
   const resolvedBilibiliUrl = getTrackBilibiliUrlWithOverride(currentTrack);
-  const resolvedExternalVideoUrl = isMainlandChinaDistribution
+  const prefersBilibiliForWebLocale = currentLang === '简体中文' || currentLang === '繁體中文';
+  const resolvedExternalVideoUrl = prefersBilibiliForWebLocale
     ? (resolvedBilibiliUrl || resolvedYoutubeUrl)
     : (resolvedYoutubeUrl || resolvedBilibiliUrl);
   const canOpenExternalVideo = trackHasExternalVideo(currentTrack);

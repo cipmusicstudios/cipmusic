@@ -22,6 +22,7 @@ import { execFileSync } from 'node:child_process';
 import { createClient } from '@supabase/supabase-js';
 import { parseFile } from 'music-metadata';
 import { buildLocalImportTrack } from '../src/local-import-build-track.ts';
+import { buildNewImportListSortFields } from '../src/songs-manifest.ts';
 import {
   assertPracticeBucketExists,
   isPracticeMigrationOverwriteEnabled,
@@ -78,6 +79,8 @@ type MigrationRow = {
   metadata_status: string;
   metadata_source: string;
   metadata_confidence: number;
+  list_sort_published_at_ms: number | null;
+  list_sort_source: string | null;
 };
 
 type ExistingSongRow = {
@@ -106,6 +109,8 @@ type ExistingSongRow = {
   metadata_status?: string | null;
   metadata_source?: string | null;
   metadata_confidence?: number | null;
+  list_sort_published_at_ms?: number | string | null;
+  list_sort_source?: string | null;
 };
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -435,6 +440,12 @@ function pickPreferredString(...values: Array<string | null | undefined>) {
   return '';
 }
 
+function pickExistingListSortMs(value: number | string | null | undefined) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  return null;
+}
+
 function buildMigrationRow(
   folder: LocalSongFolder,
   storageSlug: string,
@@ -461,6 +472,8 @@ function buildMigrationRow(
   const audioUrl = toPublicStorageUrl(supabaseUrl, bucket, audioPath || `songs/${storageSlug}/audio.mp3`);
   const midiUrl = toPublicStorageUrl(supabaseUrl, bucket, midiPath);
   const musicxmlUrl = toPublicStorageUrl(supabaseUrl, bucket, xmlPath);
+  const newImportListSort = existingRow ? null : buildNewImportListSortFields(new Date().toISOString());
+  const existingListSortMs = pickExistingListSortMs(existingRow?.list_sort_published_at_ms);
 
   return {
     slug: folder.slug,
@@ -499,6 +512,8 @@ function buildMigrationRow(
       typeof existingRow?.metadata_confidence === 'number' && Number.isFinite(existingRow.metadata_confidence)
         ? existingRow.metadata_confidence
         : 1,
+    list_sort_published_at_ms: existingListSortMs ?? newImportListSort?.listSortPublishedAtMs ?? null,
+    list_sort_source: pickPreferredString(existingRow?.list_sort_source, newImportListSort?.listSortSource) || null,
   };
 }
 
@@ -795,6 +810,8 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
           duration: row.duration,
           is_published: row.is_published,
           has_practice_mode: row.has_practice_mode,
+          list_sort_published_at_ms: row.list_sort_published_at_ms,
+          list_sort_source: row.list_sort_source,
         },
         null,
         2,
