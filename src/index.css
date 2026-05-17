@@ -53,38 +53,106 @@ html {
 }
 
 /*
- * Narrow viewports: while Practice is open, tuck the player bar off-screen so the
- * fixed practice shell can use full visual height. <audio> remains mounted in <footer>.
+ * Practice + touch: keep a visible compact player (not off-screen).
+ * Stack height matches .player-bar--practice-compact so the practice panel clears the footer.
  */
-@media (max-width: 1023px) {
+@media (pointer: coarse) and (max-width: 1024px) {
   html.practice-panel-open {
-    --player-bar-stack-h: 0px;
-    --practice-above-player-gap: 0.25rem;
-  }
-  html.practice-panel-open .player-bar {
-    transform: translate3d(0, 130%, 0);
-    opacity: 0;
-    pointer-events: none;
-    transition:
-      opacity 0.2s ease,
-      transform 0.24s ease;
-  }
-  html.practice-panel-open .app-main-content {
-    padding-bottom: 0.5rem !important;
+    --practice-above-player-gap: 0.35rem;
+    --player-bar-h: 3.2rem;
+    --player-bar-stack-h: calc(3.55rem + env(safe-area-inset-bottom, 0px) + 0.35rem);
   }
 }
 
-/* Phone landscape: give the staff flex room; slightly shorter keyboard row */
-@media (pointer: coarse) and (orientation: landscape) and (max-height: 520px) {
-  .practice-staff {
-    max-height: none !important;
-    min-height: 0 !important;
-    flex: 1 1 auto !important;
+/* Compact practice player: single row, small cover; desktop never uses this class */
+.player-bar.player-bar--practice-compact {
+  border-radius: 14px;
+  min-height: 3.05rem;
+  align-items: center;
+}
+.player-bar.player-bar--practice-compact .player-cover {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: 0.35rem !important;
+}
+.player-bar.player-bar--practice-compact .player-title {
+  font-size: 0.7rem !important;
+  line-height: 1.15 !important;
+}
+.player-bar.player-bar--practice-compact .player-artist {
+  font-size: 0.6rem !important;
+  line-height: 1.1 !important;
+}
+.player-bar.player-bar--practice-compact .player-play-btn {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+}
+.player-bar.player-bar--practice-compact .player-play-btn svg {
+  width: 0.9rem !important;
+  height: 0.9rem !important;
+}
+.player-bar.player-bar--practice-compact .player-center > div:first-child {
+  gap: 0.5rem !important;
+}
+.player-bar.player-bar--practice-compact .player-right-col button[class*='flex-col'] span {
+  font-size: 8px !important;
+}
+.player-bar.player-bar--practice-compact .player-right-col svg {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+.player-bar.player-bar--practice-compact .player-center .font-mono {
+  font-size: 9px !important;
+  gap: 0.35rem !important;
+}
+.player-bar.player-bar--practice-compact .player-center .font-mono .h-1 {
+  height: 3px !important;
+}
+
+/* Phone portrait: staff ~42–48% visual height, keyboard moderate, room for controls + player */
+@media (max-width: 767px) and (orientation: portrait) and (pointer: coarse) {
+  .practice-mobile-layout {
+    min-height: 0;
   }
-  .practice-keyboard {
-    height: 6.75rem !important;
-    min-height: 6.75rem !important;
-    max-height: 6.75rem !important;
+  .practice-mobile-layout .practice-staff {
+    flex: 1 1 44dvh !important;
+    min-height: 0 !important;
+    max-height: min(48dvh, 48svh) !important;
+    overflow-y: auto !important;
+  }
+  .practice-mobile-layout .practice-keyboard {
+    flex: 0 0 auto !important;
+    height: clamp(6.5rem, 27dvh, 7.75rem) !important;
+    min-height: clamp(6.5rem, 27dvh, 7.75rem) !important;
+    max-height: clamp(6.5rem, 27dvh, 7.75rem) !important;
+    margin-top: -2rem !important;
+  }
+  .practice-mobile-layout .practice-controls {
+    flex: 0 0 auto !important;
+    min-height: 38px !important;
+    max-height: 48px !important;
+  }
+}
+
+/* Phone landscape: prioritize staff (~40–45% height), cap keyboard (see also coarse landscape block below) */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 560px) {
+  .practice-mobile-layout .practice-staff {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: min(45dvh, 45svh, 16rem) !important;
+    overflow-y: auto !important;
+  }
+  .practice-mobile-layout .practice-keyboard {
+    flex: 0 0 auto !important;
+    height: min(36dvh, 8.75rem, 140px) !important;
+    min-height: 5.5rem !important;
+    max-height: min(36dvh, 8.75rem, 140px) !important;
+    margin-top: -1.25rem !important;
+  }
+  .practice-mobile-layout .practice-controls {
+    min-height: 30px !important;
+    max-height: 40px !important;
+    flex-wrap: nowrap !important;
   }
 }
 
@@ -191,19 +259,19 @@ html {
   .practice-staff {
     flex: 1 1 auto !important;
     min-height: 0 !important;
-    max-height: min(45vh, 21rem) !important;
+    max-height: min(48dvh, 22rem) !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
   }
 
-  /* ── Practice Keyboard ── 适度叠入谱面 */
+  /* ── Practice Keyboard ── 矮横屏：限制高度，避免占满屏幕 */
   .practice-keyboard {
     flex: 0 0 auto !important;
-    margin-top: -3rem !important;
+    margin-top: -2rem !important;
     z-index: 20 !important;
-    height: 13rem !important;
-    min-height: 13rem !important;
-    max-height: 13rem !important;
+    height: min(34dvh, 8rem, 132px) !important;
+    min-height: 5.5rem !important;
+    max-height: min(34dvh, 8rem, 132px) !important;
   }
 
   /* ── Practice Control Strip ── */
