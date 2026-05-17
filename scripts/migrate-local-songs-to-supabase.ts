@@ -27,6 +27,7 @@ import {
   assertPracticeBucketExists,
   isPracticeMigrationOverwriteEnabled,
   publishMidiXmlToPracticeBucket,
+  probeStorageObject,
   resolveImportPracticeBucketName,
 } from './lib/publish-practice-assets-to-private-bucket.ts';
 
@@ -230,6 +231,7 @@ function parseArgs() {
     dryRun: args.includes('--dry-run') || !args.includes('--apply'),
     sampleCount: 0,
     skipExisting: args.includes('--skip-existing'),
+    overwriteAssets: args.includes('--overwrite-assets') || process.env.IMPORT_ASSET_OVERWRITE === '1',
     deleteSongId: '',
     deleteSongSlug: '',
     bucket: (process.env.SUPABASE_SONGS_BUCKET?.trim() || defaultSongsBucket),
@@ -409,13 +411,29 @@ function toPublicStorageUrl(supabaseUrl: string, bucket: string, objectPath: str
   return `${supabaseUrl.replace(/\/+$/g, '')}/storage/v1/object/public/${bucket}/${encodeURI(objectPath)}`;
 }
 
-async function uploadFile(supabase: ReturnType<typeof createClient>, bucket: string, localPath: string, remotePath: string, contentType: string, dryRun: boolean) {
+async function uploadFile(
+  supabase: ReturnType<typeof createClient>,
+  bucket: string,
+  localPath: string,
+  remotePath: string,
+  contentType: string,
+  dryRun: boolean,
+  overwrite: boolean,
+) {
   if (dryRun) {
+    return;
+  }
+  const existing = await probeStorageObject(supabase, bucket, remotePath);
+  if (existing.status === 'probe_error') {
+    throw new Error(`[migrate] storage probe failed for "${bucket}/${remotePath}": ${existing.errorMessage ?? 'unknown error'}`);
+  }
+  if (existing.status === 'exists' && !overwrite) {
+    console.log(`[migrate] storage skip existing "${bucket}/${remotePath}" (set IMPORT_ASSET_OVERWRITE=1 or --overwrite-assets to replace)`);
     return;
   }
   const fileBytes = fs.readFileSync(localPath);
   const result = await supabase.storage.from(bucket).upload(remotePath, fileBytes, {
-    upsert: true,
+    upsert: overwrite,
     contentType,
   });
   if (result.error) {
@@ -704,12 +722,36 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
       const midiRemotePath = `songs/${storageSlug}/performance.mid`;
       const xmlRemotePath = `songs/${storageSlug}/score.musicxml`;
 
-      await uploadFile(supabase, bucket, audioLocalPath, audioRemotePath, inferContentType(folder.files.audio as string), dryRun);
+      await uploadFile(
+        supabase,
+        bucket,
+        audioLocalPath,
+        audioRemotePath,
+        inferContentType(folder.files.audio as string),
+        dryRun,
+        options.overwriteAssets,
+      );
       if (midiLocalPath && folder.files.midi) {
-        await uploadFile(supabase, bucket, midiLocalPath, midiRemotePath, inferContentType(folder.files.midi), dryRun);
+        await uploadFile(
+          supabase,
+          bucket,
+          midiLocalPath,
+          midiRemotePath,
+          inferContentType(folder.files.midi),
+          dryRun,
+          options.overwriteAssets,
+        );
       }
       if (xmlLocalPath && folder.files.musicxml) {
-        await uploadFile(supabase, bucket, xmlLocalPath, xmlRemotePath, inferContentType(folder.files.musicxml), dryRun);
+        await uploadFile(
+          supabase,
+          bucket,
+          xmlLocalPath,
+          xmlRemotePath,
+          inferContentType(folder.files.musicxml),
+          dryRun,
+          options.overwriteAssets,
+        );
       }
 
       const hasPracticeFiles = Boolean(
@@ -759,6 +801,7 @@ async function runMigrationMode(options: ReturnType<typeof parseArgs>) {
   console.log(`[dry-run] local folders: ${folders.length}`);
   console.log(`[dry-run] selected: ${selectedFolders.length}`);
   console.log(`[dry-run] bucket: ${bucket}`);
+  console.log(`[dry-run] asset overwrite: ${options.overwriteAssets ? 'on' : 'off (existing exact targets will be skipped)'}`);
   const practiceBucketDry = resolveImportPracticeBucketName();
   const overwriteDry = isPracticeMigrationOverwriteEnabled();
   console.log(

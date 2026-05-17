@@ -1,0 +1,30 @@
+{
+  "imports": [
+    {
+      "folder": "heavy serenade",
+      "slug": "heavy serenade",
+      "title": "Heavy Serenade",
+      "displayTitle": "Heavy Serenade",
+      "artist": "NMIXX",
+      "titles": {
+        "zhHans": "Heavy Serenade",
+        "zhHant": "Heavy Serenade",
+        "en": "Heavy Serenade"
+      },
+      "artists": {
+        "zhHans": "NMIXX",
+        "zhHant": "NMIXX",
+        "en": "NMIXX"
+      },
+      "category": "韩流流行",
+      "categoryTags": ["韩流流行"],
+      "spotifyUrl": "https://open.spotify.com/track/1404zSB6dqMIiStHLI7gg4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=eovWUIMFlSg",
+      "bilibiliUrl": "https://www.bilibili.com/video/BV1bt5R6CEXh",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/382540",
+      "canonicalArtistId": "nmixx",
+      "canonicalArtistDisplayName": "NMIXX",
+      "artistReviewStatus": "ok"
+    }
+  ]
+}
