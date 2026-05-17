@@ -4,6 +4,51 @@
   "chunkIndex": 1,
   "tracks": [
     {
+      "id": "ed69b5e7-da37-4c63-9462-92249f6121e9",
+      "title": "Birds Of A Feather",
+      "displayTitle": "Birds Of A Feather",
+      "originalArtist": "Billie Eilish",
+      "canonicalArtistId": "billie-eilish",
+      "canonicalArtistDisplayName": "Billie Eilish",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/9f/69/929f69f1-9977-3a44-d674-11f70c852d1b/24UMGIM36186.rgb.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/birds-of-a-feather/audio.mp3",
+      "duration": "03:29",
+      "durationSeconds": 209,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "birds-of-a-feather",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fD6_gbvI1lg",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "fD6_gbvI1lg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/278554",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "BIRDS OF A FEATHER"
+      },
+      "artists": {
+        "zhHans": "Billie Eilish",
+        "zhHant": "Billie Eilish",
+        "en": "Billie Eilish"
+      },
+      "supabaseCreatedAt": "2026-04-13T19:55:44.592972+00:00",
+      "youtubeSortIndex": 103,
+      "youtubePublishedAt": "2025-04-22T12:00:00.000Z",
+      "listSortPublishedAtMs": 1745323200000,
+      "listSortPublishedAt": "2025-04-22T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "3c2735a1-2dd0-4c2f-9b0b-bf8f2e42d8d8",
       "title": "至少我还算快乐",
       "displayTitle": "至少我还算快乐",
@@ -4343,52 +4388,6 @@
       "youtubePublishedAt": "2024-04-19T12:00:00.000Z",
       "listSortPublishedAtMs": 1713528000000,
       "listSortPublishedAt": "2024-04-19T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "cb1d17b0-cc92-48a2-a73f-27e75859a9e8",
-      "title": "Could it be",
-      "displayTitle": "Could it be",
-      "originalArtist": "宋雨琦",
-      "canonicalArtistId": "i-dle",
-      "canonicalArtistDisplayName": "宋雨琦",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "dictionary_miss",
-        "catalog_override_canonical"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b27305176d244d705d78a92c3d02",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/could-it-be/audio.mp3",
-      "duration": "03:15",
-      "durationSeconds": 195,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "could it be",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fvBRAh239Go",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "fvBRAh239Go",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/165857",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Could It Be"
-      },
-      "artists": {
-        "zhHans": "宋雨琦",
-        "zhHant": "宋雨琦",
-        "en": "YUQI"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:15:21.953804+00:00",
-      "youtubeSortIndex": 212,
-      "youtubePublishedAt": "2024-04-16T12:00:00.000Z",
-      "listSortPublishedAtMs": 1713268800000,
-      "listSortPublishedAt": "2024-04-16T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

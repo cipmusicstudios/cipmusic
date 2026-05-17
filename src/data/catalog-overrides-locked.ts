@@ -151,6 +151,34 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     canonicalArtistDisplayName: "严浩翔",
     artistReviewStatus: "ok"
   },
+  "heavy serenade": {
+    title: "Heavy Serenade",
+    displayTitle: "Heavy Serenade",
+    titles: {
+      zhHans: "Heavy Serenade",
+      zhHant: "Heavy Serenade",
+      en: "Heavy Serenade"
+    },
+    artist: "NMIXX",
+    artists: {
+      zhHans: "NMIXX",
+      zhHant: "NMIXX",
+      en: "NMIXX"
+    },
+    category: "韩流流行",
+    categoryTags: [
+      "韩流流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=eovWUIMFlSg",
+      video: "https://www.youtube.com/watch?v=eovWUIMFlSg",
+      bilibili: "https://www.bilibili.com/video/BV1bt5R6CEXh",
+      sheet: "https://www.mymusic5.com/cipmusic/382540"
+    },
+    canonicalArtistId: "nmixx",
+    canonicalArtistDisplayName: "NMIXX",
+    artistReviewStatus: "ok"
+  },
   "5点23": {
     title: "5点23",
     displayTitle: "5点23",

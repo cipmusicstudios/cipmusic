@@ -4,6 +4,52 @@
   "chunkIndex": 5,
   "tracks": [
     {
+      "id": "4c1e7a1d-cd22-415f-b5ae-99b2974b997f",
+      "title": "风暴眼",
+      "displayTitle": "风暴眼",
+      "originalArtist": "INTO1",
+      "canonicalArtistId": "into1",
+      "canonicalArtistDisplayName": "INTO1",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000004gPCj722MGMA.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-b47f9aba67/audio.mp3",
+      "duration": "04:14",
+      "durationSeconds": 254,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "风暴眼",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=eHeC2LNFMSg",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "eHeC2LNFMSg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://www.mymusicsheet.com/cipmusic/42594",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "风暴眼",
+        "en": "Feng Bao Yan"
+      },
+      "artists": {
+        "zhHans": "INTO1",
+        "zhHant": "INTO1",
+        "en": "INTO1"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:48:25.853727+00:00",
+      "youtubeSortIndex": 575,
+      "youtubePublishedAt": "2021-08-11T12:00:00.000Z",
+      "listSortPublishedAtMs": 1628683200000,
+      "listSortPublishedAt": "2021-08-11T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "458d09d7-b97d-4374-ad05-ec048ab8f5f5",
       "title": "傻瓜",
       "displayTitle": "傻瓜",

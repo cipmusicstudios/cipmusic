@@ -14360,5 +14360,29 @@ export const LOCAL_IMPORT_OFFICIAL_METADATA = {
     "coverLocked": true,
     "coverSource": "spotify",
     "coverUncertain": false
+  },
+  "heavy serenade": {
+    "officialStatus": "confirmed",
+    "cover": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02bbecb95942f283598af3bc40",
+    "artist": "NMIXX",
+    "normalizedArtistsInfo": [
+      {
+        "id": "nmixx",
+        "names": {
+          "zhHans": "NMIXX",
+          "en": "NMIXX"
+        },
+        "type": "group",
+        "nationality": "kr"
+      }
+    ],
+    "rawCategory": "K-Pop",
+    "mappedCategory": "韩流流行",
+    "mappedTags": [],
+    "officialSource": "spotify",
+    "officialUrl": "https://open.spotify.com/track/1404zSB6dqMIiStHLI7gg4",
+    "coverLocked": true,
+    "coverSource": "spotify",
+    "coverUncertain": false
   }
 } as const;

@@ -4,6 +4,52 @@
   "chunkIndex": 2,
   "tracks": [
     {
+      "id": "cb1d17b0-cc92-48a2-a73f-27e75859a9e8",
+      "title": "Could it be",
+      "displayTitle": "Could it be",
+      "originalArtist": "宋雨琦",
+      "canonicalArtistId": "i-dle",
+      "canonicalArtistDisplayName": "宋雨琦",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "dictionary_miss",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b27305176d244d705d78a92c3d02",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/could-it-be/audio.mp3",
+      "duration": "03:15",
+      "durationSeconds": 195,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "could it be",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fvBRAh239Go",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "fvBRAh239Go",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/165857",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Could It Be"
+      },
+      "artists": {
+        "zhHans": "宋雨琦",
+        "zhHant": "宋雨琦",
+        "en": "YUQI"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:15:21.953804+00:00",
+      "youtubeSortIndex": 212,
+      "youtubePublishedAt": "2024-04-16T12:00:00.000Z",
+      "listSortPublishedAtMs": 1713268800000,
+      "listSortPublishedAt": "2024-04-16T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "404fe557-a26e-45a6-9eef-1af0ecee8135",
       "title": "The beast",
       "displayTitle": "The beast",
@@ -4373,52 +4419,6 @@
       "youtubePublishedAt": "2023-06-06T12:00:00.000Z",
       "listSortPublishedAtMs": 1686052800000,
       "listSortPublishedAt": "2023-06-06T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "5fbc21da-eba5-4458-b95e-e3d38a5980c8",
-      "title": "耀眼的你",
-      "displayTitle": "耀眼的你",
-      "originalArtist": "时代少年团 刘耀文",
-      "canonicalArtistId": "liu-yao-wen",
-      "canonicalArtistDisplayName": "刘耀文",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273c56eda7c053530c8dc4b0115",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-e951fc86b7/audio.mp3",
-      "duration": "03:08",
-      "durationSeconds": 188,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "耀眼的你",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=wgQYYIHq9sQ",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "wgQYYIHq9sQ",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/112219",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "耀眼的你",
-        "en": "Yao Yan De Ni"
-      },
-      "artists": {
-        "zhHans": "刘耀文",
-        "zhHant": "劉耀文",
-        "en": "Liu Yaowen"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:45:42.29208+00:00",
-      "youtubeSortIndex": 320,
-      "youtubePublishedAt": "2023-06-02T12:00:00.000Z",
-      "listSortPublishedAtMs": 1685707200000,
-      "listSortPublishedAt": "2023-06-02T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

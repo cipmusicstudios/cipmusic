@@ -672,6 +672,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "titleOverride": "Heavy is the crown"
   },
   {
+    "id": "local_heavy_serenade",
+    "slug": "heavy serenade",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Heavy Serenade"
+  },
+  {
     "id": "local_Hello",
     "slug": "Hello",
     "audioFile": "audio.mp3",

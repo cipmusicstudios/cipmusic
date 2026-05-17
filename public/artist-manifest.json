@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-15T17:59:43.229Z",
+  "generatedAt": "2026-05-17T17:19:19.727Z",
   "artists": [
     {
       "canonicalArtistId": "tnt",
@@ -2337,6 +2337,22 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 1,
       "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "nmixx",
+      "displayName": "NMIXX",
+      "songCount": 1,
+      "songIds": [
+        "6f993ae4-203b-4a13-afd5-30a5752817a8"
+      ],
+      "sampleOriginalArtists": [
+        "NMIXX"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "radwimps",

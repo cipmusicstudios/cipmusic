@@ -88,6 +88,7 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'newjeans': { id: 'newjeans', names: { zhHans: 'NewJeans', en: 'NewJeans' }, type: 'group', nationality: 'kr' },
   'kep1er': { id: 'kep1er', names: { zhHans: 'Kep1er', en: 'Kep1er' }, type: 'group', nationality: 'kr' },
   'triples': { id: 'triples', names: { zhHans: 'tripleS', en: 'tripleS' }, type: 'group', nationality: 'kr' },
+  'nmixx': { id: 'nmixx', names: { zhHans: 'NMIXX', en: 'NMIXX' }, type: 'group', nationality: 'kr' },
 
   // Chinese Solo
   'mao-buyi': { id: 'mao-buyi', names: { zhHans: '毛不易', en: 'Mao Buyi' }, type: 'solo', nationality: 'zh' },

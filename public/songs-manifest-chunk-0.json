@@ -4,6 +4,52 @@
   "chunkIndex": 0,
   "tracks": [
     {
+      "id": "6f993ae4-203b-4a13-afd5-30a5752817a8",
+      "title": "Heavy Serenade",
+      "displayTitle": "Heavy Serenade",
+      "originalArtist": "NMIXX",
+      "canonicalArtistId": "nmixx",
+      "canonicalArtistDisplayName": "NMIXX",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02bbecb95942f283598af3bc40",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/heavy-serenade-nmixx/audio.mp3",
+      "duration": "03:00",
+      "durationSeconds": 180,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "heavy serenade",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=eovWUIMFlSg",
+      "youtubeVideoTitle": "NMIXX — Heavy Serenade（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "eovWUIMFlSg",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1bt5R6CEXh",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/382540",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Heavy Serenade",
+        "zhHant": "Heavy Serenade",
+        "en": "Heavy Serenade"
+      },
+      "artists": {
+        "zhHans": "NMIXX",
+        "zhHant": "NMIXX",
+        "en": "NMIXX"
+      },
+      "supabaseCreatedAt": "2026-05-17T17:17:25.383949+00:00",
+      "listSortPublishedAtMs": 5002222245383,
+      "listSortPublishedAt": "2128-07-07T02:10:45.383Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
       "id": "c0d763ff-4378-4dfc-8299-938eed122eac",
       "title": "一个人想着一个人",
       "displayTitle": "一个人想着一个人",
@@ -4376,51 +4422,6 @@
       "youtubePublishedAt": "2025-04-25T12:00:00.000Z",
       "listSortPublishedAtMs": 1745582400000,
       "listSortPublishedAt": "2025-04-25T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "ed69b5e7-da37-4c63-9462-92249f6121e9",
-      "title": "Birds Of A Feather",
-      "displayTitle": "Birds Of A Feather",
-      "originalArtist": "Billie Eilish",
-      "canonicalArtistId": "billie-eilish",
-      "canonicalArtistDisplayName": "Billie Eilish",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "欧美流行"
-      ],
-      "categoryKeys": [
-        "western"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/92/9f/69/929f69f1-9977-3a44-d674-11f70c852d1b/24UMGIM36186.rgb.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/birds-of-a-feather/audio.mp3",
-      "duration": "03:29",
-      "durationSeconds": 209,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "birds-of-a-feather",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=fD6_gbvI1lg",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "fD6_gbvI1lg",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/278554",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "BIRDS OF A FEATHER"
-      },
-      "artists": {
-        "zhHans": "Billie Eilish",
-        "zhHant": "Billie Eilish",
-        "en": "Billie Eilish"
-      },
-      "supabaseCreatedAt": "2026-04-13T19:55:44.592972+00:00",
-      "youtubeSortIndex": 103,
-      "youtubePublishedAt": "2025-04-22T12:00:00.000Z",
-      "listSortPublishedAtMs": 1745323200000,
-      "listSortPublishedAt": "2025-04-22T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

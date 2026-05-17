@@ -1947,6 +1947,24 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     },
     matchedVideoTitle: '严浩翔 / 时代少年团 — Someone to Love（用户指定 YouTube / Bilibili / Sheet）',
   },
+  'heavy serenade': {
+    title: 'Heavy Serenade',
+    displayTitle: 'Heavy Serenade',
+    titles: { zhHans: 'Heavy Serenade', zhHant: 'Heavy Serenade', en: 'Heavy Serenade' },
+    artist: 'NMIXX',
+    artists: { zhHans: 'NMIXX', zhHant: 'NMIXX', en: 'NMIXX' },
+    categoryTags: ['韩流流行'],
+    officialLinks: {
+      spotify: 'https://open.spotify.com/track/1404zSB6dqMIiStHLI7gg4',
+    },
+    links: {
+      youtube: 'https://www.youtube.com/watch?v=eovWUIMFlSg',
+      video: 'https://www.youtube.com/watch?v=eovWUIMFlSg',
+      bilibili: 'https://www.bilibili.com/video/BV1bt5R6CEXh',
+      sheet: 'https://www.mymusic5.com/cipmusic/382540',
+    },
+    matchedVideoTitle: 'NMIXX — Heavy Serenade（用户指定 YouTube / Bilibili / Sheet）',
+  },
   一个人想着一个人: {
     title: '一个人想着一个人',
     displayTitle: '一个人想着一个人',
