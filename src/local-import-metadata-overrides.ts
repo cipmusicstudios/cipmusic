@@ -2000,6 +2000,7 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     categoryTags: [
       "韩流流行"
     ],
+    cover: "https://i.scdn.co/image/ab67616d0000b273895d4222066b6657a0888555",
     officialLinks: {
       spotify: "https://open.spotify.com/track/5cnWHHvU8MnHTjjAjeJffl"
     },

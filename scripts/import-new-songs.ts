@@ -16,6 +16,88 @@ import {
   type NormalizedNewSongImport,
 } from './new-song-import-shared.ts';
 
+/**
+ * Cover-from-Spotify rule (added 2026-05-24 after the TOP 5 import shipped
+ * with a picsum placeholder despite a spotifyUrl being provided).
+ *
+ * When a spec has `spotifyUrl` and NO `coverUrl`, we fetch the track page's
+ * `<meta property="og:image">` and treat that as the cover. Spotify serves
+ * it from `i.scdn.co` / `image-cdn-*.spotifycdn.com`, which is the same
+ * external-CDN pattern most existing K-pop / Western rows already use.
+ *
+ * If a spotifyUrl is present but the fetch fails (or returns no usable
+ * Spotify CDN image), we STOP THE IMPORT with a clear error. Silent picsum
+ * fallback is no longer allowed in this pipeline path.
+ *
+ * Opt-out: `--allow-cover-placeholder` keeps the old behavior for the rare
+ * case where the user has explicitly accepted a placeholder.
+ */
+const SPOTIFY_COVER_HOSTNAMES = new Set([
+  'i.scdn.co',
+  'image-cdn-ak.spotifycdn.com',
+  'image-cdn-fa.spotifycdn.com',
+  'mosaic.scdn.co',
+]);
+
+async function resolveSpotifyCover(spotifyUrl: string): Promise<string | null> {
+  try {
+    // Spotify's track page returns very different HTML based on User-Agent.
+    // A simple "Mozilla/5.0" yields the SEO/preview HTML which includes the
+    // og:image meta tag. A full Safari UA hits a different SPA shell that
+    // omits og:image and requires JS to populate the cover — useless here.
+    const res = await fetch(spotifyUrl, {
+      redirect: 'follow',
+      headers: { 'User-Agent': 'Mozilla/5.0', Accept: 'text/html' },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const match = html.match(
+      /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
+    );
+    if (!match) return null;
+    const candidate = match[1].trim();
+    try {
+      const u = new URL(candidate);
+      if (!SPOTIFY_COVER_HOSTNAMES.has(u.hostname)) return null;
+    } catch {
+      return null;
+    }
+    return candidate;
+  } catch {
+    return null;
+  }
+}
+
+async function applyCoverFromSpotify(
+  specs: NormalizedNewSongImport[],
+  allowPlaceholder: boolean,
+): Promise<void> {
+  const failures: string[] = [];
+  for (const spec of specs) {
+    if (spec.coverUrl) continue;
+    if (!spec.spotifyUrl) continue;
+    const resolved = await resolveSpotifyCover(spec.spotifyUrl);
+    if (resolved) {
+      spec.coverUrl = resolved;
+      console.log(
+        `[import-new-songs] cover resolved from Spotify for "${spec.slug}": ${resolved}`,
+      );
+      continue;
+    }
+    const msg =
+      `Could not resolve a Spotify cover for "${spec.slug}" from ${spec.spotifyUrl}. ` +
+      `Pass --allow-cover-placeholder to accept the picsum fallback explicitly.`;
+    if (allowPlaceholder) {
+      console.warn(`[import-new-songs] WARNING: ${msg}`);
+    } else {
+      failures.push(msg);
+    }
+  }
+  if (failures.length > 0) {
+    throw new Error('Spotify cover resolution failed:\n- ' + failures.join('\n- '));
+  }
+}
+
 const localOverridesPath = path.join(projectRoot, 'src', 'local-import-metadata-overrides.ts');
 const catalogOverridesPath = path.join(projectRoot, 'src', 'data', 'catalog-overrides-locked.ts');
 
@@ -340,6 +422,10 @@ async function main() {
   }
 
   printPlan(specs);
+  // Fail-loud cover resolution: when spotifyUrl is provided but no coverUrl
+  // is, fetch og:image from Spotify and use it. Refuses to fall through to
+  // the picsum placeholder unless --allow-cover-placeholder is set.
+  await applyCoverFromSpotify(specs, process.argv.includes('--allow-cover-placeholder'));
   await checkSupabaseDuplicates(specs, options.allowDuplicateTitleArtist);
   writeMetadataOverrides(specs, options.dryRun);
   const mobileArtifactPath = options.skipMobileArtifact

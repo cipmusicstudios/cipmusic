@@ -3285,6 +3285,7 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
       bilibili: "https://www.bilibili.com/video/BV1EjGv6aE17",
       sheet: "https://www.mymusic5.com/cipmusic/385317"
     },
+    coverUrl: "https://i.scdn.co/image/ab67616d0000b273895d4222066b6657a0888555",
     canonicalArtistId: "zerobaseone",
     artistReviewStatus: "ok",
     matchedVideoTitle: "ZEROBASEONE — TOP 5（用户指定 YouTube / Bilibili / Sheet）"
