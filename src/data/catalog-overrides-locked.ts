@@ -3261,7 +3261,35 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     categoryTags: [
       "游戏"
     ]
+  },  "top5": {
+    title: "TOP 5",
+    displayTitle: "TOP 5",
+    titles: {
+      zhHans: "TOP 5",
+      zhHant: "TOP 5",
+      en: "TOP 5"
+    },
+    artist: "ZEROBASEONE",
+    artists: {
+      zhHans: "ZEROBASEONE",
+      zhHant: "ZEROBASEONE",
+      en: "ZEROBASEONE"
+    },
+    category: "韩流流行",
+    categoryTags: [
+      "韩流流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=jsEuKe3QG3s",
+      video: "https://www.youtube.com/watch?v=jsEuKe3QG3s",
+      bilibili: "https://www.bilibili.com/video/BV1EjGv6aE17",
+      sheet: "https://www.mymusic5.com/cipmusic/385317"
+    },
+    canonicalArtistId: "zerobaseone",
+    artistReviewStatus: "ok",
+    matchedVideoTitle: "ZEROBASEONE — TOP 5（用户指定 YouTube / Bilibili / Sheet）"
   },
+
 };
 
 export const CATALOG_OVERRIDES_BY_TRACK_ID: Record<string, CatalogOverride> = {

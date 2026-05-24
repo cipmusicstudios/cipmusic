@@ -1982,5 +1982,34 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
       sheet: 'https://www.mymusic5.com/cipmusic/377881',
     },
     matchedVideoTitle: '曾沛慈 — 一个人想着一个人（用户指定 YouTube / Bilibili / Sheet）',
+  },  "top5": {
+    title: "TOP 5",
+    displayTitle: "TOP 5",
+    titles: {
+      zhHans: "TOP 5",
+      zhHant: "TOP 5",
+      en: "TOP 5"
+    },
+    artist: "ZEROBASEONE",
+    artists: {
+      zhHans: "ZEROBASEONE",
+      zhHant: "ZEROBASEONE",
+      en: "ZEROBASEONE"
+    },
+    category: "韩流流行",
+    categoryTags: [
+      "韩流流行"
+    ],
+    officialLinks: {
+      spotify: "https://open.spotify.com/track/5cnWHHvU8MnHTjjAjeJffl"
+    },
+    links: {
+      youtube: "https://www.youtube.com/watch?v=jsEuKe3QG3s",
+      video: "https://www.youtube.com/watch?v=jsEuKe3QG3s",
+      bilibili: "https://www.bilibili.com/video/BV1EjGv6aE17",
+      sheet: "https://www.mymusic5.com/cipmusic/385317"
+    },
+    matchedVideoTitle: "ZEROBASEONE — TOP 5（用户指定 YouTube / Bilibili / Sheet）"
   },
+
 };

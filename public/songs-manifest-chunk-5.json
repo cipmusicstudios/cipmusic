@@ -4,6 +4,48 @@
   "chunkIndex": 5,
   "tracks": [
     {
+      "id": "d54e84c5-14e5-4a39-83d7-b3bbe0efcc22",
+      "title": "You can't sit with us",
+      "displayTitle": "You can't sit with us",
+      "originalArtist": "Sunmi - You Can",
+      "canonicalArtistId": "sunmi",
+      "canonicalArtistDisplayName": "Sunmi",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/de/8d/71/de8d71d6-a66d-a120-a364-47bdce3613c9/cover_KM0013836_1.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/you-can-t-sit-with-us/audio.mp3",
+      "duration": "04:49",
+      "durationSeconds": 289,
+      "hasPracticeMode": false,
+      "importSource": "remote",
+      "slug": "you can't sit with us",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=e56Q2RKLjqc",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "e56Q2RKLjqc",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": null,
+      "linkStatus": "missingSheet",
+      "artists": {
+        "zhHans": "Sunmi",
+        "zhHant": "Sunmi",
+        "en": "Sunmi"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:34:12.062078+00:00",
+      "youtubeSortIndex": 574,
+      "youtubePublishedAt": "2021-08-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1628856000000,
+      "listSortPublishedAt": "2021-08-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "4c1e7a1d-cd22-415f-b5ae-99b2974b997f",
       "title": "风暴眼",
       "displayTitle": "风暴眼",
@@ -550,9 +592,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "A Thousand Years"
-      },
       "artists": {
         "zhHans": "Christina Perri",
         "zhHant": "Christina Perri",
@@ -642,9 +681,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/44193",
       "linkStatus": "linked",
-      "titles": {
-        "en": "O O O"
-      },
       "artists": {
         "zhHans": "Kep1er",
         "zhHant": "Kep1er",
@@ -1011,8 +1047,8 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "U&I",
-        "en": "U&I",
-        "zhHant": "U&I"
+        "zhHant": "U&I",
+        "en": "U&I"
       },
       "artists": {
         "zhHans": "刘雨昕",
@@ -1101,9 +1137,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "Catallena"
-      },
       "supabaseCreatedAt": "2026-04-14T02:15:05.023305+00:00",
       "youtubeSortIndex": 601,
       "youtubePublishedAt": "2021-06-19T12:00:00.000Z",
@@ -1555,9 +1588,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/91900",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Don'T Touch"
-      },
       "supabaseCreatedAt": "2026-04-14T02:25:24.526224+00:00",
       "youtubeSortIndex": 612,
       "youtubePublishedAt": "2021-05-25T12:00:00.000Z",
@@ -1775,9 +1805,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/35617",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Promise"
-      },
       "artists": {
         "zhHans": "THE9",
         "zhHant": "THE9",
@@ -2002,9 +2029,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/34081",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Lover Boy 88"
-      },
       "artists": {
         "zhHans": "INTO1",
         "zhHant": "INTO1",
@@ -2138,9 +2162,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33971",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Nana Party"
-      },
       "supabaseCreatedAt": "2026-04-14T02:30:41.603131+00:00",
       "youtubeSortIndex": 627,
       "youtubePublishedAt": "2021-04-14T12:00:00.000Z",
@@ -2360,7 +2381,7 @@
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/33761",
       "linkStatus": "linked",
       "titles": {
-        "en": "Fix me"
+        "en": "Fix Me"
       },
       "artists": {
         "zhHans": "INTO1",
@@ -2404,9 +2425,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": null,
       "linkStatus": "missingSheet",
-      "titles": {
-        "en": "Love Story"
-      },
       "artists": {
         "zhHans": "Taylor Swift",
         "zhHant": "Taylor Swift",
@@ -2451,8 +2469,8 @@
       "linkStatus": "missingSheet",
       "titles": {
         "zhHans": "Willow",
-        "en": "Willow",
-        "zhHant": "Willow"
+        "zhHant": "Willow",
+        "en": "Willow"
       },
       "artists": {
         "zhHans": "Taylor Swift",
@@ -2989,7 +3007,7 @@
       "sheetUrl": null,
       "linkStatus": "missingVideo",
       "titles": {
-        "en": "HEYA"
+        "en": "Heya"
       },
       "artists": {
         "zhHans": "IVE",

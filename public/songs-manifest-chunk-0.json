@@ -4,6 +4,52 @@
   "chunkIndex": 0,
   "tracks": [
     {
+      "id": "b9367595-6f78-4926-9f32-2fa903b48258",
+      "title": "TOP 5",
+      "displayTitle": "TOP 5",
+      "originalArtist": "ZEROBASEONE",
+      "canonicalArtistId": "zerobaseone",
+      "canonicalArtistDisplayName": "ZEROBASEONE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://picsum.photos/seed/local_top5/300/300",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/top5-zerobaseone/audio.mp3",
+      "duration": "02:27",
+      "durationSeconds": 147,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "top5",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=jsEuKe3QG3s",
+      "youtubeVideoTitle": "ZEROBASEONE — TOP 5（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "jsEuKe3QG3s",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1EjGv6aE17",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/385317",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "TOP 5",
+        "zhHant": "TOP 5",
+        "en": "TOP 5"
+      },
+      "artists": {
+        "zhHans": "ZEROBASEONE",
+        "zhHant": "ZEROBASEONE",
+        "en": "ZEROBASEONE"
+      },
+      "supabaseCreatedAt": "2026-05-24T18:31:28.737295+00:00",
+      "listSortPublishedAtMs": 5002831488737,
+      "listSortPublishedAt": "2128-07-14T03:24:48.737Z",
+      "listSortSource": "new_import_created_at"
+    },
+    {
       "id": "6f993ae4-203b-4a13-afd5-30a5752817a8",
       "title": "Heavy Serenade",
       "displayTitle": "Heavy Serenade",
@@ -682,7 +728,7 @@
       "sheetUrl": "https://mymusic5.com/cipmusic/369512",
       "linkStatus": "linked",
       "titles": {
-        "en": "SWIM"
+        "en": "Swim"
       },
       "artists": {
         "zhHans": "防弹少年团",
@@ -864,9 +910,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/360245",
       "linkStatus": "linked",
-      "titles": {
-        "en": "BLACKHOLE"
-      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -910,7 +953,7 @@
       "sheetUrl": "https://www.mymusic5.com/cipmusic/359491",
       "linkStatus": "linked",
       "titles": {
-        "en": "GO"
+        "en": "Go"
       },
       "artists": {
         "zhHans": "BLACKPINK",
@@ -1138,9 +1181,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/355438",
       "linkStatus": "linked",
-      "titles": {
-        "en": "BANG BANG"
-      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -1183,9 +1223,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/354083",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Colder"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -1461,9 +1498,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/348705",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Runing To Future"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -1508,9 +1542,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/348048",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Coming For You"
-      },
       "artists": {
         "zhHans": "章昊",
         "zhHant": "章昊",
@@ -1695,9 +1726,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/345268",
       "linkStatus": "linked",
-      "titles": {
-        "en": "What It Sounds Like"
-      },
       "artists": {
         "zhHans": "HUNTR/X",
         "zhHant": "HUNTR/X",
@@ -1741,9 +1769,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/343965",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Try Everything"
-      },
       "artists": {
         "zhHans": "Shakira",
         "zhHant": "Shakira",
@@ -1792,8 +1817,8 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "恒星不忘",
-        "en": "Forever Forever",
-        "zhHant": "恆星不忘"
+        "zhHant": "恆星不忘",
+        "en": "Forever Forever"
       },
       "artists": {
         "zhHans": "周杰伦、F4、五月天",
@@ -1882,9 +1907,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/339446",
       "linkStatus": "linked",
-      "titles": {
-        "en": "NOT CUTE ANYMORE"
-      },
       "artists": {
         "zhHans": "ILLIT",
         "zhHant": "ILLIT",
@@ -1927,9 +1949,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/338348",
       "linkStatus": "linked",
-      "titles": {
-        "en": "ONE MORE TIME"
-      },
       "artists": {
         "zhHans": "ALLDAY PROJECT",
         "zhHant": "ALLDAY PROJECT",
@@ -2018,9 +2037,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/333512",
       "linkStatus": "linked",
-      "titles": {
-        "en": "What A Day"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -2111,9 +2127,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic5.com/cipmusic/331497",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Black Veil Bride"
-      },
       "artists": {
         "zhHans": "赵露思",
         "zhHant": "趙露思",
@@ -2245,9 +2258,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusic5.com/cipmusic/326515",
       "linkStatus": "linked",
-      "titles": {
-        "en": "GO!"
-      },
       "supabaseCreatedAt": "2026-04-14T02:27:38.473196+00:00",
       "youtubeSortIndex": 45,
       "youtubePublishedAt": "2025-10-31T12:00:00.000Z",
@@ -2751,7 +2761,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/316627",
       "linkStatus": "linked",
       "titles": {
-        "en": "How It's Done"
+        "en": "How It'S Done"
       },
       "artists": {
         "zhHans": "HUNTR/X",
@@ -2796,9 +2806,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/315368",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Rich Man"
-      },
       "artists": {
         "zhHans": "aespa",
         "zhHant": "aespa",
@@ -2841,9 +2848,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/313604",
       "linkStatus": "linked",
-      "titles": {
-        "en": "ICONIK"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -2934,9 +2938,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/311586",
       "linkStatus": "linked",
-      "titles": {
-        "en": "XOXZ"
-      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -3027,9 +3028,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/309752",
       "linkStatus": "linked",
-      "titles": {
-        "en": "I LIKE U LIKE"
-      },
       "artists": {
         "zhHans": "时代少年团",
         "zhHant": "時代少年團",
@@ -3167,9 +3165,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/307687",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Jasmine"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -3212,9 +3207,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/307015",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Whiplash"
-      },
       "artists": {
         "zhHans": "aespa",
         "zhHant": "aespa",
@@ -3257,9 +3249,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/306460",
       "linkStatus": "linked",
-      "titles": {
-        "en": "plot twist"
-      },
       "artists": {
         "zhHans": "TWS",
         "zhHant": "TWS",
@@ -3302,9 +3291,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/305764",
       "linkStatus": "linked",
-      "titles": {
-        "en": "FAMOUS"
-      },
       "artists": {
         "zhHans": "ALLDAY PROJECT",
         "zhHant": "ALLDAY PROJECT",
@@ -3485,9 +3471,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/300685",
       "linkStatus": "linked",
-      "titles": {
-        "en": "JUMP"
-      },
       "artists": {
         "zhHans": "BLACKPINK",
         "zhHant": "BLACKPINK",
@@ -3531,7 +3514,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/299703",
       "linkStatus": "linked",
       "titles": {
-        "en": "HOLA SOLAR"
+        "en": "Hola Solar"
       },
       "artists": {
         "zhHans": "Alpha Drive One",
@@ -3626,7 +3609,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/296635",
       "linkStatus": "linked",
       "titles": {
-        "en": "STYLE"
+        "en": "Style"
       },
       "artists": {
         "zhHans": "Hearts2Hearts",
@@ -3670,9 +3653,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/295669",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Do The Dance"
-      },
       "artists": {
         "zhHans": "ILLIT",
         "zhHant": "ILLIT",
@@ -3763,9 +3743,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/294118",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Lemon"
-      },
       "artists": {
         "zhHans": "米津玄师",
         "zhHant": "米津玄師",
@@ -3900,9 +3877,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/291090",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Deadman"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -4376,52 +4350,6 @@
       "youtubePublishedAt": "2025-04-29T12:00:00.000Z",
       "listSortPublishedAtMs": 1745928000000,
       "listSortPublishedAt": "2025-04-29T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "b0f76914-113f-4a13-baa3-78e7fe0b72cb",
-      "title": "芥",
-      "displayTitle": "芥",
-      "originalArtist": "丁程鑫",
-      "canonicalArtistId": "ding-chengxin",
-      "canonicalArtistDisplayName": "丁程鑫",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273085582a60aac6f46b8128642",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-e29c1d549b/audio.mp3",
-      "duration": "03:46",
-      "durationSeconds": 226,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "芥",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=PocM0dFQcXg",
-      "youtubeVideoTitle": "时代少年团 丁程鑫《芥》钢琴版 Teens In Times(TNT) Ding ChengXin - “Reach for the light” Piano Cover",
-      "youtubeVideoId": "PocM0dFQcXg",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/113115",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "芥",
-        "en": "Jie"
-      },
-      "artists": {
-        "zhHans": "丁程鑫",
-        "zhHant": "丁程鑫",
-        "en": "Ding Chengxin"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:45:52.309535+00:00",
-      "youtubeSortIndex": 102,
-      "youtubePublishedAt": "2025-04-25T12:00:00.000Z",
-      "listSortPublishedAtMs": 1745582400000,
-      "listSortPublishedAt": "2025-04-25T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

@@ -1,0 +1,29 @@
+{
+  "imports": [
+    {
+      "folder": "top5",
+      "slug": "top5",
+      "title": "TOP 5",
+      "displayTitle": "TOP 5",
+      "artist": "ZEROBASEONE",
+      "titles": {
+        "zhHans": "TOP 5",
+        "zhHant": "TOP 5",
+        "en": "TOP 5"
+      },
+      "artists": {
+        "zhHans": "ZEROBASEONE",
+        "zhHant": "ZEROBASEONE",
+        "en": "ZEROBASEONE"
+      },
+      "category": "韩流流行",
+      "categoryTags": ["韩流流行"],
+      "spotifyUrl": "https://open.spotify.com/track/5cnWHHvU8MnHTjjAjeJffl",
+      "youtubeUrl": "https://www.youtube.com/watch?v=jsEuKe3QG3s",
+      "bilibiliUrl": "https://www.bilibili.com/video/BV1EjGv6aE17",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/385317",
+      "canonicalArtistId": "zerobaseone",
+      "artistReviewStatus": "ok"
+    }
+  ]
+}

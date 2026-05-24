@@ -4,6 +4,52 @@
   "chunkIndex": 1,
   "tracks": [
     {
+      "id": "b0f76914-113f-4a13-baa3-78e7fe0b72cb",
+      "title": "芥",
+      "displayTitle": "芥",
+      "originalArtist": "丁程鑫",
+      "canonicalArtistId": "ding-chengxin",
+      "canonicalArtistDisplayName": "丁程鑫",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273085582a60aac6f46b8128642",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-e29c1d549b/audio.mp3",
+      "duration": "03:46",
+      "durationSeconds": 226,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "芥",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=PocM0dFQcXg",
+      "youtubeVideoTitle": "时代少年团 丁程鑫《芥》钢琴版 Teens In Times(TNT) Ding ChengXin - “Reach for the light” Piano Cover",
+      "youtubeVideoId": "PocM0dFQcXg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/113115",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "芥",
+        "en": "Jie"
+      },
+      "artists": {
+        "zhHans": "丁程鑫",
+        "zhHant": "丁程鑫",
+        "en": "Ding Chengxin"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:45:52.309535+00:00",
+      "youtubeSortIndex": 102,
+      "youtubePublishedAt": "2025-04-25T12:00:00.000Z",
+      "listSortPublishedAtMs": 1745582400000,
+      "listSortPublishedAt": "2025-04-25T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "ed69b5e7-da37-4c63-9462-92249f6121e9",
       "title": "Birds Of A Feather",
       "displayTitle": "Birds Of A Feather",
@@ -34,7 +80,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/278554",
       "linkStatus": "linked",
       "titles": {
-        "en": "BIRDS OF A FEATHER"
+        "en": "Birds Of A Feather"
       },
       "artists": {
         "zhHans": "Billie Eilish",
@@ -165,9 +211,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/269485",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Dynamite"
-      },
       "artists": {
         "zhHans": "防弹少年团",
         "zhHant": "防彈少年團",
@@ -303,7 +346,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/267030",
       "linkStatus": "linked",
       "titles": {
-        "en": "HOT"
+        "en": "Hot"
       },
       "artists": {
         "zhHans": "LE SSERAFIM",
@@ -347,9 +390,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/266172",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Moonlight Dance"
-      },
       "artists": {
         "zhHans": "陈雪燃",
         "zhHant": "陳雪燃",
@@ -392,9 +432,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/262998",
       "linkStatus": "linked",
-      "titles": {
-        "en": "spr."
-      },
       "artists": {
         "zhHans": "宋亚轩",
         "zhHant": "宋亞軒",
@@ -485,7 +522,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/259304",
       "linkStatus": "linked",
       "titles": {
-        "en": "I DO ME"
+        "en": "I Do Me"
       },
       "artists": {
         "zhHans": "KiiiKiii",
@@ -859,9 +896,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/247277",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Doctor! Doctor!"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -906,7 +940,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/246207",
       "linkStatus": "linked",
       "titles": {
-        "en": "HER"
+        "en": "Her"
       },
       "artists": {
         "zhHans": "Minnie",
@@ -996,9 +1030,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/243927",
       "linkStatus": "linked",
-      "titles": {
-        "en": "REBEL HEART"
-      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -1178,9 +1209,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/235872",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Time After Time"
-      },
       "artists": {
         "zhHans": "仓木麻衣",
         "zhHant": "仓木麻衣",
@@ -1272,9 +1300,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/227183",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Love In My Heart"
-      },
       "artists": {
         "zhHans": "BABYMONSTER",
         "zhHant": "BABYMONSTER",
@@ -1868,9 +1893,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/212544",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Imaginary Friend"
-      },
       "artists": {
         "zhHans": "ITZY",
         "zhHant": "ITZY",
@@ -1959,9 +1981,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/207143",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Cherish"
-      },
       "artists": {
         "zhHans": "ILLIT",
         "zhHant": "ILLIT",
@@ -2010,7 +2029,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/205945",
       "linkStatus": "linked",
       "titles": {
-        "en": "APT."
+        "en": "Apt"
       },
       "artists": {
         "zhHans": "Rosé和Bruno Mars",
@@ -2145,9 +2164,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/203278",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Love Money Fame"
-      },
       "artists": {
         "zhHans": "SEVENTEEN",
         "zhHant": "SEVENTEEN",
@@ -2793,9 +2809,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/189122",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Bye Bye Bye"
-      },
       "supabaseCreatedAt": "2026-04-14T02:14:50.588317+00:00",
       "youtubeSortIndex": 174,
       "youtubePublishedAt": "2024-08-16T12:00:00.000Z",
@@ -2928,9 +2941,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/187311",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Remedy"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -3019,9 +3029,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/185853",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Forever"
-      },
       "artists": {
         "zhHans": "BABYMONSTER",
         "zhHant": "BABYMONSTER",
@@ -3202,9 +3209,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/182638",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Klaxon"
-      },
       "artists": {
         "zhHans": "I-DLE",
         "zhHant": "I-DLE",
@@ -3422,9 +3426,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/178914",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Supernatural"
-      },
       "artists": {
         "zhHans": "NewJeans",
         "zhHant": "NewJeans",
@@ -3513,9 +3514,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/177649",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Afterglow"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -3603,9 +3601,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/176514",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Girls Never Die"
-      },
       "artists": {
         "zhHans": "tripleS",
         "zhHant": "tripleS",
@@ -3691,9 +3686,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/175413",
       "linkStatus": "linked",
-      "titles": {
-        "en": "How Sweet"
-      },
       "artists": {
         "zhHans": "NewJeans",
         "zhHant": "NewJeans",
@@ -4057,9 +4049,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/169260",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Sweat"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -4148,9 +4137,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/168544",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Maestro"
-      },
       "artists": {
         "zhHans": "SEVENTEEN",
         "zhHant": "SEVENTEEN",
@@ -4193,9 +4179,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/168428",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Bubble Gum"
-      },
       "artists": {
         "zhHans": "NewJeans",
         "zhHant": "NewJeans",
@@ -4287,9 +4270,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/167688",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Psychic"
-      },
       "artists": {
         "zhHans": "张艺兴",
         "zhHant": "張藝興",
@@ -4332,9 +4312,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/167191",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Lucky Girl Syndrome"
-      },
       "artists": {
         "zhHans": "ILLIT",
         "zhHant": "ILLIT",
@@ -4345,49 +4322,6 @@
       "youtubePublishedAt": "2024-04-23T12:00:00.000Z",
       "listSortPublishedAtMs": 1713873600000,
       "listSortPublishedAt": "2024-04-23T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "f2e91b7b-90d9-4b19-96d9-54c8c44efbfb",
-      "title": "5:20AM",
-      "displayTitle": "5:20AM",
-      "originalArtist": "刀酱",
-      "canonicalArtistId": "review/f2e91b7b-90d9-4b19-96d9-54c8c44efbfb",
-      "canonicalArtistDisplayName": "刀酱",
-      "artistReviewStatus": "needsReview",
-      "artistResolutionNotes": [
-        "dictionary_miss"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/a6/5e/fd/a65efda5-28de-c1be-7204-5269b6f526a3/cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/5-20am/audio.mp3",
-      "duration": "02:44",
-      "durationSeconds": 164,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "5.20am",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=8iEKztPHhXQ",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "8iEKztPHhXQ",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/166521",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "5:20AM",
-        "en": "5:20AM",
-        "zhHant": "5:20AM"
-      },
-      "artists": {},
-      "supabaseCreatedAt": "2026-04-13T17:50:34.126989+00:00",
-      "youtubeSortIndex": 211,
-      "youtubePublishedAt": "2024-04-19T12:00:00.000Z",
-      "listSortPublishedAtMs": 1713528000000,
-      "listSortPublishedAt": "2024-04-19T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

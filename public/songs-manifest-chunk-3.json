@@ -4,6 +4,53 @@
   "chunkIndex": 3,
   "tracks": [
     {
+      "id": "612918db-ea45-43f7-b096-c0f85276019a",
+      "title": "Jump to the breeze",
+      "displayTitle": "Jump to the breeze",
+      "originalArtist": "碧蓝航线六周年主题曲 倖田來未 小室哲哉",
+      "canonicalArtistId": "koda-kumi",
+      "canonicalArtistDisplayName": "倖田來未",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "日系流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "jpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/43/64/75/4364750f-8090-3e45-1c32-5ec497fed8ff/ANTCD-A0000014314.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/jump-to-the-breeze/audio.mp3",
+      "duration": "04:24",
+      "durationSeconds": 264,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "jump to the breeze",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=82juTvowA5Q",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "82juTvowA5Q",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/112527",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Jump To The Breeze"
+      },
+      "artists": {
+        "zhHans": "倖田來未",
+        "zhHant": "倖田來未",
+        "en": "Koda Kumi"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:28:56.794452+00:00",
+      "youtubeSortIndex": 319,
+      "youtubePublishedAt": "2023-06-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1686052800000,
+      "listSortPublishedAt": "2023-06-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "5fbc21da-eba5-4458-b95e-e3d38a5980c8",
       "title": "耀眼的你",
       "displayTitle": "耀眼的你",
@@ -79,9 +126,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/111674",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Letting Go"
-      },
       "artists": {
         "zhHans": "蔡健雅",
         "zhHant": "蔡健雅",
@@ -306,9 +350,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/108279",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Fml"
-      },
       "artists": {
         "zhHans": "SEVENTEEN",
         "zhHant": "SEVENTEEN",
@@ -396,9 +437,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/106832",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Say My Name"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -441,9 +479,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/104945",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Over Me"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -536,7 +571,7 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "5点23",
-        "en": "5:23PM"
+        "en": "5dian 23"
       },
       "artists": {
         "zhHans": "宋亚轩",
@@ -626,9 +661,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/99062",
       "linkStatus": "linked",
-      "titles": {
-        "en": "D N A Cypher"
-      },
       "artists": {
         "zhHans": "张艺兴",
         "zhHant": "張藝興",
@@ -671,9 +703,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/98040",
       "linkStatus": "linked",
-      "titles": {
-        "en": "난 빛나 (Here I Am)"
-      },
       "artists": {
         "zhHans": "ZEROBASEONE",
         "zhHant": "ZEROBASEONE",
@@ -763,9 +792,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/96768",
       "linkStatus": "linked",
-      "titles": {
-        "en": "DON QUIXOTE"
-      },
       "artists": {
         "zhHans": "SEVENTEEN",
         "zhHant": "SEVENTEEN",
@@ -994,9 +1020,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/93404",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Ditto"
-      },
       "artists": {
         "zhHans": "NewJeans",
         "zhHant": "NewJeans",
@@ -1039,9 +1062,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/92170",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Beautiful Christmas"
-      },
       "artists": {
         "zhHans": "Red Velvet",
         "zhHant": "Red Velvet",
@@ -1226,9 +1246,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/84647",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Birthday"
-      },
       "artists": {
         "zhHans": "Red Velvet",
         "zhHant": "Red Velvet",
@@ -1408,9 +1425,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/77709",
       "linkStatus": "linked",
-      "titles": {
-        "en": "The Happiest Girl"
-      },
       "artists": {
         "zhHans": "BLACKPINK",
         "zhHant": "BLACKPINK",
@@ -1595,9 +1609,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/75117",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Shut Down"
-      },
       "artists": {
         "zhHans": "BLACKPINK",
         "zhHant": "BLACKPINK",
@@ -1826,9 +1837,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/74046",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Hug Me"
-      },
       "artists": {
         "zhHans": "蔡徐坤",
         "zhHant": "蔡徐坤",
@@ -1871,9 +1879,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/73453",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Talk That Talk"
-      },
       "artists": {
         "zhHans": "TWICE",
         "zhHant": "TWICE",
@@ -1916,9 +1921,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/72893",
       "linkStatus": "linked",
-      "titles": {
-        "en": "After Like"
-      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -1961,9 +1963,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/72735",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Pink Venom"
-      },
       "artists": {
         "zhHans": "BLACKPINK",
         "zhHant": "BLACKPINK",
@@ -2146,9 +2145,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/71324",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Ready For Love"
-      },
       "artists": {
         "zhHans": "BLACKPINK",
         "zhHant": "BLACKPINK",
@@ -2517,8 +2513,8 @@
       "sheetUrl": "https://mymusic.st/cipmusic/68220",
       "linkStatus": "linked",
       "titles": {
-        "zhHans": "Life's Too Short (English Version)",
         "en": "Life's Too Short (English Version)",
+        "zhHans": "Life's Too Short (English Version)",
         "zhHant": "Life's Too Short (English Version)"
       },
       "artists": {
@@ -2703,9 +2699,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/66754",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Yet To Come (The Most Beautiful Moment)"
-      },
       "artists": {
         "zhHans": "防弹少年团",
         "zhHant": "防彈少年團",
@@ -2797,9 +2790,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/65619",
       "linkStatus": "linked",
-      "titles": {
-        "en": "도깨비불 (Illusion)"
-      },
       "artists": {
         "zhHans": "aespa",
         "zhHant": "aespa",
@@ -3025,11 +3015,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/64427",
       "linkStatus": "linked",
-      "titles": {
-        "zhHans": "Falling You",
-        "zhHant": "Falling You",
-        "en": "Falling You"
-      },
       "artists": {
         "zhHans": "刘耀文",
         "zhHant": "劉耀文",
@@ -3076,7 +3061,7 @@
       "linkStatus": "linked",
       "titles": {
         "zhHans": "M八七",
-        "en": "M87"
+        "en": "Mba Qi"
       },
       "artists": {
         "zhHans": "米津玄师",
@@ -3440,9 +3425,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/61955",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Darl+ing"
-      },
       "artists": {
         "zhHans": "SEVENTEEN",
         "zhHant": "SEVENTEEN",
@@ -3486,7 +3468,7 @@
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/62169",
       "linkStatus": "linked",
       "titles": {
-        "en": "Who am I"
+        "en": "Who Am I"
       },
       "artists": {
         "zhHans": "BRIGHT、WIN METAWIN、Dew Jirawat、Nani Hirunkit",
@@ -3663,9 +3645,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/61472",
       "linkStatus": "linked",
-      "titles": {
-        "en": "LOVE DIVE"
-      },
       "artists": {
         "zhHans": "IVE",
         "zhHant": "IVE",
@@ -3803,9 +3782,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://www.mymusicsheet.com/cipmusic/61476",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Blow"
-      },
       "artists": {
         "zhHans": "王嘉尔",
         "zhHant": "王嘉尔",
@@ -3894,9 +3870,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/59975",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Feel My Rhythm"
-      },
       "artists": {
         "zhHans": "Red Velvet",
         "zhHant": "Red Velvet",
@@ -4083,7 +4056,7 @@
       "sheetUrl": "https://mymusic.st/cipmusic/59816",
       "linkStatus": "linked",
       "titles": {
-        "en": "TOMBOY"
+        "en": "Tomboy"
       },
       "artists": {
         "zhHans": "I-DLE",
@@ -4264,9 +4237,6 @@
       "bilibiliVideoUrl": null,
       "sheetUrl": "https://mymusic.st/cipmusic/58693",
       "linkStatus": "linked",
-      "titles": {
-        "en": "Callin"
-      },
       "artists": {
         "zhHans": "Super Junior",
         "zhHant": "Super Junior",
@@ -4369,51 +4339,6 @@
       "youtubePublishedAt": "2022-03-02T12:00:00.000Z",
       "listSortPublishedAtMs": 1646222400000,
       "listSortPublishedAt": "2022-03-02T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "28e9d70a-8523-4a09-adb9-391fb1358135",
-      "title": "Dawn to dusk",
-      "displayTitle": "Dawn to dusk",
-      "originalArtist": "张艺兴",
-      "canonicalArtistId": "lay-zhang",
-      "canonicalArtistDisplayName": "张艺兴",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/6b/15/d1/6b15d15a-893c-0c94-2699-f048af26ce69/6936740223239.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/dawn-to-dusk/audio.mp3",
-      "duration": "02:44",
-      "durationSeconds": 164,
-      "hasPracticeMode": false,
-      "importSource": "remote",
-      "slug": "dawn to dusk",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=c-LBh1NSL-I",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "c-LBh1NSL-I",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://www.mymusic5.com/cipmusic/359491",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Dawn to Dusk"
-      },
-      "artists": {
-        "zhHans": "张艺兴",
-        "zhHant": "張藝興",
-        "en": "Lay Zhang"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:25:08.420625+00:00",
-      "youtubeSortIndex": 431,
-      "youtubePublishedAt": "2022-02-24T12:00:00.000Z",
-      "listSortPublishedAtMs": 1645704000000,
-      "listSortPublishedAt": "2022-02-24T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

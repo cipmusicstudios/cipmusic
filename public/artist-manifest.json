@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-17T18:06:30.368Z",
+  "generatedAt": "2026-05-24T18:31:30.488Z",
   "artists": [
     {
       "canonicalArtistId": "tnt",
@@ -197,6 +197,36 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "zerobaseone",
+      "displayName": "ZEROBASEONE",
+      "songCount": 13,
+      "songIds": [
+        "b9367595-6f78-4926-9f32-2fa903b48258",
+        "9c17e6d3-2f9f-4212-bb5e-6b135cf9904e",
+        "e6693aa7-8388-472f-bb1c-4129444c239f",
+        "76521b98-c46b-4a23-96e2-69c80ab32007",
+        "dd71c282-815c-44d6-b2a1-7471b28b7525",
+        "da08d496-7d6a-4c9d-9a2c-b0e13050881f",
+        "78c30a6b-e933-413d-8008-b2c7000763aa",
+        "2a10645f-3723-4ab2-bb47-f0c849bd07db",
+        "6521f98a-bbcb-4619-b22e-27d902803080",
+        "8dfcdfde-9552-4a21-9a90-f9bb1677380a",
+        "7306e125-50c3-43e8-8947-7024919ee1df",
+        "3c545913-61e7-411b-8816-60f1989ba4ee",
+        "41ffc9ff-3265-4eb8-a9d5-69410fd47683"
+      ],
+      "sampleOriginalArtists": [
+        "ZEROBASEONE",
+        "ZEROBASEON",
+        "BOYS PLANET"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://kprofiles.com/wp-content/uploads/2023/07/ZB1-1-640x800.jpg",
+      "artistImageSource": "kprofiles_zb1_group_photo_9",
+      "artistImageConfidence": 1,
+      "artistImageKind": "group_photo"
+    },
+    {
       "canonicalArtistId": "jay-chou",
       "displayName": "周杰伦",
       "songCount": 13,
@@ -256,35 +286,6 @@
       "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/0b381aacaf9b4c4c1b60664431c815bf/1000x1000-000000-80-0-0.jpg",
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
-      "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "zerobaseone",
-      "displayName": "ZEROBASEONE",
-      "songCount": 12,
-      "songIds": [
-        "9c17e6d3-2f9f-4212-bb5e-6b135cf9904e",
-        "e6693aa7-8388-472f-bb1c-4129444c239f",
-        "76521b98-c46b-4a23-96e2-69c80ab32007",
-        "dd71c282-815c-44d6-b2a1-7471b28b7525",
-        "da08d496-7d6a-4c9d-9a2c-b0e13050881f",
-        "78c30a6b-e933-413d-8008-b2c7000763aa",
-        "2a10645f-3723-4ab2-bb47-f0c849bd07db",
-        "6521f98a-bbcb-4619-b22e-27d902803080",
-        "8dfcdfde-9552-4a21-9a90-f9bb1677380a",
-        "7306e125-50c3-43e8-8947-7024919ee1df",
-        "3c545913-61e7-411b-8816-60f1989ba4ee",
-        "41ffc9ff-3265-4eb8-a9d5-69410fd47683"
-      ],
-      "sampleOriginalArtists": [
-        "ZEROBASEONE",
-        "ZEROBASEON",
-        "BOYS PLANET"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://kprofiles.com/wp-content/uploads/2023/07/ZB1-1-640x800.jpg",
-      "artistImageSource": "kprofiles_zb1_group_photo_9",
-      "artistImageConfidence": 1,
       "artistImageKind": "group_photo"
     },
     {
