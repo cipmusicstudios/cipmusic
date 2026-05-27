@@ -5154,6 +5154,16 @@ const SettingsTab = memo(function SettingsTab({
         <p className="mx-auto mt-3 max-w-xl px-2 text-center text-[11px] leading-relaxed text-inherit md:text-[12px]">
           {t.footer?.operatorLegalLine}
         </p>
+        <p className="mx-auto mt-1 max-w-xl px-2 text-center text-[11px] leading-relaxed text-inherit md:text-[12px]">
+          <a
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded px-1 py-0.5 transition-colors hover:text-white/70"
+          >
+            京ICP备2024049905号
+          </a>
+        </p>
       </div>
     </div>
   );
