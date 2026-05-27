@@ -288,13 +288,13 @@ export const en = {
       linkNotReadyHint: 'Coming soon',
       monthly: {
         title: 'Monthly',
-        price: '$8.99 / month',
+        price: '$5.99 / month',
         description: 'Flexible access for listening and practice.',
         action: 'Continue →',
       },
       yearly: {
         title: 'Yearly',
-        price: '$79.99 / year',
+        price: '$49.99 / year',
         description: 'Best for long-term listening and practice.',
         action: 'Continue →',
       },

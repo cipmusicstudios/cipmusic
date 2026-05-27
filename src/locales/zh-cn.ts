@@ -305,13 +305,13 @@ export const zhCN = {
         subtitle: '国际支付将通过 Stripe 完成。',
         monthly: {
           title: '国际月付',
-          price: '$8.99 / 月',
+          price: '$5.99 / 月',
           description: '灵活开通，适合先体验。',
           action: '继续 →',
         },
         yearly: {
           title: '国际年付',
-          price: '$79.99 / 年',
+          price: '$49.99 / 年',
           description: '适合长期使用，更省心。',
           action: '继续 →',
         },

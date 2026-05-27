@@ -285,13 +285,13 @@ export const zhTW = {
       linkNotReadyHint: '即將開放',
       monthly: {
         title: '月付',
-        price: 'US$8.99 / 月',
+        price: 'US$5.99 / 月',
         description: '靈活開通，適合先體驗。',
         action: '繼續 →',
       },
       yearly: {
         title: '年付',
-        price: 'US$79.99 / 年',
+        price: 'US$49.99 / 年',
         description: '適合長期使用，更省心。',
         action: '繼續 →',
       },
