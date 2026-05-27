@@ -13,6 +13,7 @@ const PRICING: Record<number, {money: string; name: string}> = {
   30: {money: '25.00', name: 'Premium membership 30 days'},
   365: {money: '198.00', name: 'Premium membership 365 days'},
 };
+const UNSAFE_ZPAY_FRONTEND_HOSTS = new Set(['mall3.z-pay.cn']);
 
 /** 仅含可对外返回的诊断字段，不包含任何密钥或 userId 原文 */
 export type CreateZpayOrderDebug = {
@@ -279,6 +280,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   }
 
   if (mapiResult.ok) {
+    const mapiFrontendUnsafe = hasUnsafeMapiFrontendUrl(mapiResult);
     console.log('[create-zpay-order] mapi success', {
       out_trade_no,
       gateway: mapiGateway,
@@ -288,8 +290,25 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
       hasQrcode: Boolean(mapiResult.qrcode),
       hasImg: Boolean(mapiResult.img),
       tradeNo: mapiResult.trade_no || null,
+      mapiFrontendUnsafe,
       source: 'mapi',
     });
+
+    if (mapiFrontendUnsafe) {
+      console.warn('[create-zpay-order] mapi frontend URL unsafe, fallback to submit.php', {
+        out_trade_no,
+        unsafeHosts: Array.from(UNSAFE_ZPAY_FRONTEND_HOSTS),
+        hasPayurl: Boolean(mapiResult.payurl),
+        hasQrcode: Boolean(mapiResult.qrcode),
+        hasImg: Boolean(mapiResult.img),
+      });
+      return json(200, {
+        payUrl: submitUrl,
+        qrUrl: submitUrl,
+        source: 'submit',
+      });
+    }
+
     /** mapi 没返 payurl 时，用 submit.php 兜底，保证前端「在新窗口打开支付」永远可用 */
     return json(200, {
       payUrl: mapiResult.payurl || submitUrl,
@@ -312,6 +331,50 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   });
   return json(200, {payUrl: submitUrl, source: 'submit'});
 };
+
+function hasUnsafeMapiFrontendUrl(result: MapiSuccess): boolean {
+  return (
+    isUnsafeZpayFrontendUrl(result.payurl) ||
+    isUnsafeZpayFrontendUrl(result.qrcode) ||
+    zpayQrImageEncodesUnsafeUrl(result.img)
+  );
+}
+
+function isUnsafeZpayFrontendUrl(raw?: string): boolean {
+  const host = getUrlHost(raw);
+  return host != null && UNSAFE_ZPAY_FRONTEND_HOSTS.has(host);
+}
+
+function getUrlHost(raw?: string): string | null {
+  if (!raw) return null;
+  try {
+    return new URL(raw).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function zpayQrImageEncodesUnsafeUrl(raw?: string): boolean {
+  if (!raw) return false;
+
+  let pathname: string;
+  try {
+    pathname = new URL(raw).pathname;
+  } catch {
+    return false;
+  }
+
+  const encoded = pathname.split('/').pop()?.replace(/\.[^.]+$/, '');
+  if (!encoded) return false;
+
+  try {
+    const normalized = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    const decoded = Buffer.from(normalized, 'base64').toString('utf8').trim();
+    return isUnsafeZpayFrontendUrl(decoded);
+  } catch {
+    return false;
+  }
+}
 
 type MapiSuccess = {
   ok: true;
