@@ -95,6 +95,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   const key = process.env.ZPAY_KEY?.trim();
   const notifyUrl = process.env.ZPAY_NOTIFY_URL?.trim();
   const returnUrl = process.env.ZPAY_RETURN_URL?.trim();
+  const wxpayCid = process.env.ZPAY_WXPAY_CID?.trim();
 
   /** userId：Supabase Auth UUID。仍接受 body.authingUserId 仅为旧字段名兼容（temporary）。 */
   let body: {membershipDays?: number; userId?: string; authingUserId?: string};
@@ -228,6 +229,9 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     param: out_trade_no,
     sign_type: 'MD5',
   };
+  if (wxpayCid) {
+    signParams.cid = wxpayCid;
+  }
 
   let sign: string;
   try {
