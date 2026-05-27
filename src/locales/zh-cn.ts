@@ -321,13 +321,13 @@ export const zhCN = {
         subtitle: '微信支付为一次性付款，到期后可重新开通。',
         days30: {
           title: '微信支付 · 30 天',
-          price: '¥39',
+          price: '¥25 / 月',
           description: '一次性付款，开通 30 天高级会员。',
           action: '继续 →',
         },
         days365: {
           title: '微信支付 · 365 天',
-          price: '¥299',
+          price: '¥198 / 年',
           description: '一次性付款，开通 365 天高级会员。',
           action: '继续 →',
         },

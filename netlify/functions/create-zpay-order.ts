@@ -10,8 +10,8 @@ const corsHeaders: Record<string, string> = {
 };
 
 const PRICING: Record<number, {money: string; name: string}> = {
-  30: {money: '39.00', name: 'Premium membership 30 days'},
-  365: {money: '299.00', name: 'Premium membership 365 days'},
+  30: {money: '25.00', name: 'Premium membership 30 days'},
+  365: {money: '198.00', name: 'Premium membership 365 days'},
 };
 
 /** 仅含可对外返回的诊断字段，不包含任何密钥或 userId 原文 */
