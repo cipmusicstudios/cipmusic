@@ -103,12 +103,14 @@ From the **mobile** repo, on `feature/google-play-android-release` (do not modif
 unless explicitly asked):
 
 ```bash
-eas build --platform android --profile preview
+eas build --platform android --profile production-android
 ```
 
-(Use the `production` profile only when building the AAB you intend to upload to a Play track; the
-internal-testing/QA build uses the `preview` profile. Verify the profile names in the mobile repo's
-`eas.json`.)
+Use `production-android` for any **Google Play upload, including the Internal Testing track** — it
+is `distribution: store`, so EAS produces a **signed AAB** suitable for Play Console. Do **not** use
+`preview` (or `development`): those are `distribution: internal` and produce an **APK / non-store
+artifact** that Play Console will not accept. (`production` is the iOS-flavoured store profile.)
+Verified against the mobile repo's `eas.json`.
 
 ## Play Console steps still needed (manual — not performed here)
 

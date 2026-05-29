@@ -287,20 +287,28 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
 
   if (!entitled) {
     // 非有效状态（PENDING / ON_HOLD / PAUSED / EXPIRED）：已记录购买，但不发放/不延长会员。
-    console.log('[verify-google-play-purchase] not entitled, recorded only', {
+    // 返回**失败**（ok:false, 402），与移动端契约一致：客户端仅在 `ok === true` 时才
+    // finishTransaction(=acknowledge)。若这里返回 ok:true，客户端会确认一笔未发放 Premium 的
+    // 购买，破坏「未发放就不确认、让 Google 自动退款 / 下次重试」的安全设计。
+    console.warn('[verify-google-play-purchase] not entitled, recorded only', {
       userId,
       subscriptionState,
       basePlanId,
     });
-    return json(200, {
-      ok: true,
-      entitled: false,
-      provider: PROVIDER,
-      subscriptionState,
-      productId: GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID,
-      basePlanId,
-      premiumUntil: null,
-    });
+    return fail(
+      402,
+      'SUBSCRIPTION_NOT_ACTIVE',
+      `Subscription not active (state=${subscriptionState ?? 'unknown'})`,
+      baseDebug({
+        hasAuthHeader: true,
+        authValid: true,
+        productIdMatched,
+        basePlanMatched,
+        subscriptionState,
+        entitled: false,
+        errorStage: 'not_entitled',
+      }),
+    );
   }
 
   // 5) 统一会员发放：premium_until 取「现有」与「Google 到期」中的较晚者，
@@ -335,6 +343,9 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     {
       user_id: userId,
       premium_until: newPremiumUntil,
+      // current_period_end 反映本次 Google 订阅的本期到期，供 read-membership → 移动端展示
+      // 「续费 / 到期日」；与 Stripe / 草案契约保持一致。
+      current_period_end: expiryTime,
       membership_status: 'premium',
       payment_provider: PROVIDER,
       last_payment_at: nowIso,
