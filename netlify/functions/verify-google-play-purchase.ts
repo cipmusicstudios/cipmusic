@@ -210,7 +210,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   const sub = subRes.data;
   const subscriptionState = sub.subscriptionState ?? null;
 
-  // 3) 校验 product + base plan（必须是 cip_premium 且 monthly_599 / annual_4999）。
+  // 3) 校验 product + base plan（必须是 cip_premium 且 monthly-599 / annual-4999）。
   const lineItem = pickPremiumLineItem(sub);
   const productIdMatched = (sub.lineItems ?? []).some(
     li => li.productId === GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID,

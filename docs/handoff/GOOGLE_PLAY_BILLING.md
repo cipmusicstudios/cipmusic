@@ -17,8 +17,8 @@ Hard-coded in `_shared/google-play.ts` (must match Play Console + mobile client)
 | --- | --- |
 | Android package name | `com.cipmusic.aurasounds` |
 | Subscription product | `cip_premium` |
-| Monthly base plan | `monthly_599` — USD **$5.99 / month** |
-| Annual base plan | `annual_4999` — USD **$49.99 / year** |
+| Monthly base plan | `monthly-599` — USD **$5.99 / month** |
+| Annual base plan | `annual-4999` — USD **$49.99 / year** |
 
 ## Request / response contract
 
@@ -40,7 +40,7 @@ Success (entitled):
 ```json
 { "ok": true, "entitled": true, "provider": "google_play",
   "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE", "productId": "cip_premium",
-  "basePlanId": "monthly_599", "premiumUntil": "2026-06-29T12:00:00.000Z", "autoRenew": true }
+  "basePlanId": "monthly-599", "premiumUntil": "2026-06-29T12:00:00.000Z", "autoRenew": true }
 ```
 Recorded but not entitled (e.g. `ON_HOLD` / `PAUSED` / `EXPIRED` / `PENDING`) returns
 `ok:true, entitled:false, premiumUntil:null`. Failures return `ok:false` with a `code`
@@ -54,7 +54,7 @@ secrets-free `debug` block.
 2. Sign an RS256 JWT with the service-account private key (Node `crypto`, zero extra npm deps),
    exchange it at `oauth2.googleapis.com/token` for an `androidpublisher`-scoped access token.
 3. `GET androidpublisher/v3/applications/com.cipmusic.aurasounds/purchases/subscriptionsv2/tokens/{token}`.
-4. Require a `lineItem` with `productId == cip_premium` **and** `basePlanId ∈ {monthly_599, annual_4999}`.
+4. Require a `lineItem` with `productId == cip_premium` **and** `basePlanId ∈ {monthly-599, annual-4999}`.
 5. Treat `ACTIVE`, `IN_GRACE_PERIOD`, `CANCELED` (still within paid period) as entitled.
 6. Upsert the purchase into `membership_google_play_purchases` (idempotency key `purchase_token`).
 7. Set `user_membership.premium_until = max(existing, Google expiryTime)` — absolute time, so
@@ -114,8 +114,8 @@ Verified against the mobile repo's `eas.json`.
 
 ## Play Console steps still needed (manual — not performed here)
 
-1. Create subscription product `cip_premium` with base plans `monthly_599` ($5.99/mo) and
-   `annual_4999` ($49.99/yr), and activate them.
+1. Create subscription product `cip_premium` with base plans `monthly-599` ($5.99/mo) and
+   `annual-4999` ($49.99/yr), and activate them.
 2. Complete the service-account API access + permissions above.
 3. Upload an AAB to the **Internal testing** track and add license testers.
 4. Set the Netlify env vars on the deployed site, then apply the migration to Supabase.

@@ -14,8 +14,8 @@ import {createSign} from 'crypto';
 /** Google Play 订阅产品与 base plan 常量（与 Play Console 配置、移动端一致）。 */
 export const GOOGLE_PLAY_PACKAGE_NAME = 'com.cipmusic.aurasounds';
 export const GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID = 'cip_premium';
-export const GOOGLE_PLAY_BASE_PLAN_MONTHLY = 'monthly_599';
-export const GOOGLE_PLAY_BASE_PLAN_ANNUAL = 'annual_4999';
+export const GOOGLE_PLAY_BASE_PLAN_MONTHLY = 'monthly-599';
+export const GOOGLE_PLAY_BASE_PLAN_ANNUAL = 'annual-4999';
 export const GOOGLE_PLAY_ALLOWED_BASE_PLANS: ReadonlySet<string> = new Set([
   GOOGLE_PLAY_BASE_PLAN_MONTHLY,
   GOOGLE_PLAY_BASE_PLAN_ANNUAL,
