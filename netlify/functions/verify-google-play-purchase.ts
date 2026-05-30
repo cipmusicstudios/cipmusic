@@ -4,7 +4,7 @@ import {
   GOOGLE_PLAY_PACKAGE_NAME,
   GOOGLE_PLAY_SUBSCRIPTION_PRODUCT_ID,
   GOOGLE_PLAY_ALLOWED_BASE_PLANS,
-  GOOGLE_PLAY_SA_ENV,
+  GOOGLE_PLAY_SA_ENV_VARS,
   fetchAccessToken,
   fetchSubscriptionV2,
   isEntitledState,
@@ -40,7 +40,9 @@ function collectMissingEnv(): string[] {
   const missing: string[] = [];
   if (!process.env.SUPABASE_URL?.trim()) missing.push('SUPABASE_URL');
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()) missing.push('SUPABASE_SERVICE_ROLE_KEY');
-  if (!process.env[GOOGLE_PLAY_SA_ENV]?.trim()) missing.push(GOOGLE_PLAY_SA_ENV);
+  for (const name of GOOGLE_PLAY_SA_ENV_VARS) {
+    if (!process.env[name]?.trim()) missing.push(name);
+  }
   return missing;
 }
 
@@ -92,7 +94,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     supabaseConfigured: Boolean(
       process.env.SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
     ),
-    serviceAccountConfigured: Boolean(process.env[GOOGLE_PLAY_SA_ENV]?.trim()),
+    serviceAccountConfigured: GOOGLE_PLAY_SA_ENV_VARS.every(name => Boolean(process.env[name]?.trim())),
     productIdMatched: null,
     basePlanMatched: null,
     subscriptionState: null,
@@ -170,7 +172,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     return fail(
       503,
       'GOOGLE_PLAY_NOT_CONFIGURED',
-      `Missing or invalid ${GOOGLE_PLAY_SA_ENV}`,
+      `Missing or invalid Google Play service-account env (${GOOGLE_PLAY_SA_ENV_VARS.join(', ')})`,
       baseDebug({hasAuthHeader: true, authValid: true, errorStage: 'sa_invalid'}),
     );
   }

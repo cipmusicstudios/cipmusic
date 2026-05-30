@@ -64,24 +64,38 @@ secrets-free `debug` block.
 
 ## Required environment variables / secrets (Netlify)
 
+The service-account credential is split into **three** variables rather than one JSON blob.
+Netlify Functions inherit a combined env that is capped at **4KB**; the full JSON (worse,
+base64-encoded, which inflates it ~33%) overruns that cap and the deploy fails. The split keeps
+each value small.
+
 | Variable | Purpose |
 | --- | --- |
-| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Service-account JSON key. Raw JSON **or** base64 of the JSON (recommended — avoids newline issues with the `private_key`). |
+| `GOOGLE_PLAY_CLIENT_EMAIL` | Service-account `client_email`. |
+| `GOOGLE_PLAY_PRIVATE_KEY` | Service-account `private_key`. May be stored single-line with escaped `\n`; the code normalizes `\n` → real newlines. |
+| `GOOGLE_PLAY_PROJECT_ID` | Service-account `project_id`. |
 | `SUPABASE_URL` | Existing — Supabase project URL (server-side). |
 | `SUPABASE_SERVICE_ROLE_KEY` | Existing — bypasses RLS for the upserts. |
 
-Encode the key for `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`:
+`token_uri` is hard-coded to `https://oauth2.googleapis.com/token` (not an env var). Never commit
+these values or print them in logs (the code logs only HTTP status + truncated bodies).
+
+Extract the three values from the downloaded service-account JSON **without printing the private key**:
 ```bash
-base64 -i service-account.json | tr -d '\n'
+# client_email and project_id are safe to echo:
+node -e "const j=require('./service-account.json'); console.log('GOOGLE_PLAY_CLIENT_EMAIL=', j.client_email); console.log('GOOGLE_PLAY_PROJECT_ID=', j.project_id)"
+# private_key → single line with escaped \n, written to a file (NOT stdout), then paste from the file:
+node -e "const j=require('./service-account.json'); require('fs').writeFileSync('gp_private_key.txt', j.private_key.replace(/\n/g,'\\n'))"
+# gp_private_key.txt now holds the one-line value for GOOGLE_PLAY_PRIVATE_KEY. Delete it after pasting into Netlify.
 ```
-Never commit the key or print it in logs (the code logs only HTTP status + truncated bodies).
 
 ## Google Cloud / Play Console service-account setup
 
 1. **Play Console → Setup → API access** — link the Google Cloud project (or create one).
 2. **Google Cloud Console** — enable the **Google Play Android Developer API** in that project.
 3. **Google Cloud Console → IAM & Admin → Service Accounts** — create a service account; create a
-   **JSON key** and download it. This JSON is what goes into `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
+   **JSON key** and download it. Split its `client_email` / `private_key` / `project_id` into the
+   three `GOOGLE_PLAY_*` env vars above (see the extraction commands).
 4. **Play Console → Users and permissions** — invite the service-account email; grant account
    permissions that include **View financial data** and **Manage orders and subscriptions**
    (app-level access to `com.cipmusic.aurasounds` is sufficient).

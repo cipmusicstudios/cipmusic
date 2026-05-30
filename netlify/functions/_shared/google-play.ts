@@ -54,41 +54,35 @@ export type GooglePlaySubscriptionV2 = {
   testPurchase?: Record<string, unknown>;
 };
 
-export type ServiceAccount = {clientEmail: string; privateKey: string};
-
-export const GOOGLE_PLAY_SA_ENV = 'GOOGLE_PLAY_SERVICE_ACCOUNT_JSON';
+export type ServiceAccount = {clientEmail: string; privateKey: string; projectId: string};
 
 /**
- * 读取服务账号凭据。`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` 可为：
- *  - 原始 JSON 字符串，或
- *  - base64 编码后的 JSON（推荐：private_key 含换行，base64 可避开 Netlify env 换行问题）。
- * 解析失败返回 null（调用方据此返回 503，绝不打印 private_key）。
+ * 拆分式服务账号环境变量（替代单段 GOOGLE_PLAY_SERVICE_ACCOUNT_JSON）。
+ * 原因：Netlify Functions 继承的全部 env 合计有 4KB 上限；整段 JSON（更何况 base64
+ * 还会膨胀 ~33%）会把额度撑爆导致部署失败。拆成三个变量、私钥不再裹 JSON / base64，
+ * 体积更小、可控。token_uri 固定为 OAUTH_TOKEN_URL，无需入 env。
+ */
+export const GOOGLE_PLAY_CLIENT_EMAIL_ENV = 'GOOGLE_PLAY_CLIENT_EMAIL';
+export const GOOGLE_PLAY_PRIVATE_KEY_ENV = 'GOOGLE_PLAY_PRIVATE_KEY';
+export const GOOGLE_PLAY_PROJECT_ID_ENV = 'GOOGLE_PLAY_PROJECT_ID';
+
+/** 三个必需变量名，供 handler 做 missing-env 检查与诊断（不含取值）。 */
+export const GOOGLE_PLAY_SA_ENV_VARS = [
+  GOOGLE_PLAY_CLIENT_EMAIL_ENV,
+  GOOGLE_PLAY_PRIVATE_KEY_ENV,
+  GOOGLE_PLAY_PROJECT_ID_ENV,
+] as const;
+
+/**
+ * 从三个独立环境变量构造服务账号凭据。任一缺失返回 null（调用方据此返回 503，绝不打印 private_key）。
+ * GOOGLE_PLAY_PRIVATE_KEY 常以 `\n` 转义单行保存，这里还原成真实换行供 crypto 使用。
  */
 export function loadServiceAccount(): ServiceAccount | null {
-  const raw = process.env[GOOGLE_PLAY_SA_ENV]?.trim();
-  if (!raw) return null;
-
-  let jsonText = raw;
-  if (!raw.startsWith('{')) {
-    try {
-      jsonText = Buffer.from(raw, 'base64').toString('utf8').trim();
-    } catch {
-      return null;
-    }
-  }
-
-  let parsed: {client_email?: string; private_key?: string};
-  try {
-    parsed = JSON.parse(jsonText);
-  } catch {
-    return null;
-  }
-
-  const clientEmail = (parsed.client_email ?? '').trim();
-  // env 里以 `\n` 转义保存私钥时还原成真实换行。
-  const privateKey = (parsed.private_key ?? '').replace(/\\n/g, '\n').trim();
-  if (!clientEmail || !privateKey) return null;
-  return {clientEmail, privateKey};
+  const clientEmail = process.env[GOOGLE_PLAY_CLIENT_EMAIL_ENV]?.trim() ?? '';
+  const privateKey = (process.env[GOOGLE_PLAY_PRIVATE_KEY_ENV] ?? '').replace(/\\n/g, '\n').trim();
+  const projectId = process.env[GOOGLE_PLAY_PROJECT_ID_ENV]?.trim() ?? '';
+  if (!clientEmail || !privateKey || !projectId) return null;
+  return {clientEmail, privateKey, projectId};
 }
 
 function base64url(input: Buffer | string): string {
