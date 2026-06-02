@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {AnimatePresence, motion} from 'motion/react';
 import {X} from 'lucide-react';
 import {isSupabaseConfigured, supabase} from '../lib/supabase';
@@ -11,7 +11,7 @@ export type SupabaseAuthModalCopy = {
   tabSignIn: string;
   tabSignUp: string;
   primarySignIn: string;
-  /** Primary CTA on sign-up tab (e.g. Create account) */
+  /** Kept for older locale objects; the normal email flow now uses sendLoginCode. */
   primarySignUp: string;
   oauthDivider: string;
   oauthGoogle: string;
@@ -26,6 +26,17 @@ export type SupabaseAuthModalCopy = {
   emailConfirmSpam: string;
   emailFieldLabel: string;
   passwordFieldLabel: string;
+  sendLoginCode: string;
+  enterCodeTitle: string;
+  loginCodeSentBody: string;
+  codeFieldLabel: string;
+  verifyAndContinue: string;
+  changeEmail: string;
+  resendLoginCode: string;
+  codeDeliveryHint: string;
+  codeResent: string;
+  enterEmail: string;
+  enterLoginCode: string;
   forgotPasswordLink: string;
   resetPasswordTitle: string;
   resetPasswordSubtitle: string;
@@ -100,7 +111,7 @@ type Props = {
   authCopy?: SupabaseAuthModalCopy;
 };
 
-type AuthSubView = 'main' | 'forgot';
+type AuthStep = 'email' | 'code';
 
 const inputClass =
   'supabase-auth-input w-full rounded-xl border border-white/35 bg-white/50 px-3 py-2 text-[13px] leading-normal text-[var(--color-mist-text)] shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)] outline-none transition-[border-color,box-shadow] placeholder:text-[var(--color-mist-text)]/36 focus:border-[rgba(182,132,84,0.45)] focus:ring-1 focus:ring-[rgba(182,132,84,0.2)]';
@@ -115,37 +126,49 @@ const tabBtnActive = 'bg-white/75 text-[var(--color-mist-text)] shadow-sm';
 const tabBtnIdle = 'text-[var(--color-mist-text)]/55 hover:bg-white/25 hover:text-[var(--color-mist-text)]/75';
 
 const forgotLinkClass =
-  'text-[11px] font-semibold text-[var(--color-mist-text)]/52 underline decoration-[var(--color-mist-text)]/28 underline-offset-2 transition-colors hover:text-[var(--color-mist-text)]/78';
+  'text-[11px] font-semibold text-[var(--color-mist-text)]/52 underline decoration-[var(--color-mist-text)]/28 underline-offset-2 transition-colors hover:text-[var(--color-mist-text)]/78 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:text-[var(--color-mist-text)]/52';
 
 const defaultAuthCopy: SupabaseAuthModalCopy = {
   mainHeading: 'Sign in / Sign up',
   tabSignIn: 'Sign in',
   tabSignUp: 'Sign up',
-  primarySignIn: 'Sign in',
-  primarySignUp: 'Create account',
+  primarySignIn: 'Send login code',
+  primarySignUp: 'Send login code',
   oauthDivider: 'Or continue with',
   oauthGoogle: 'Google',
   closeAriaLabel: 'Close',
-  invalidEmailOrPassword: 'Invalid email or password.',
-  emailNotConfirmed: 'Please confirm your email before signing in.',
+  invalidEmailOrPassword: 'Invalid email or login code.',
+  emailNotConfirmed: 'Please verify your email code before continuing.',
   userAlreadyRegistered: 'This email is already registered. Try signing in instead.',
   alreadyHaveAccount: 'Already have an account?',
   dontHaveAccount: "Don't have an account?",
   emailConfirmTitle: 'Check your email',
   emailConfirmBody:
-    "If this email can be registered, we've sent a confirmation link. Please check your inbox to activate your account. If you already have an account, switch to Sign in.",
+    "If this email can receive a login code, we've sent one. Please check your inbox.",
   emailConfirmSpam:
     "If you don't see the email, please check your spam or promotions folder.",
   emailFieldLabel: 'Email',
-  passwordFieldLabel: 'Password',
-  forgotPasswordLink: 'Forgot password?',
+  passwordFieldLabel: 'Login code',
+  sendLoginCode: 'Send login code',
+  enterCodeTitle: 'Enter the code sent to your email',
+  loginCodeSentBody: 'Use the login code we sent to this email address.',
+  codeFieldLabel: 'Login code',
+  verifyAndContinue: 'Verify and continue',
+  changeEmail: 'Change email',
+  resendLoginCode: 'Resend code',
+  codeDeliveryHint:
+    "Didn’t receive the code? Please check your spam, promotions, or other inbox folders, and search for “CIP Music” or “noreply@cipmusic.com”.",
+  codeResent: 'Code resent',
+  enterEmail: 'Please enter your email.',
+  enterLoginCode: 'Please enter the login code from your email.',
+  forgotPasswordLink: 'Use login code',
   resetPasswordTitle: 'Reset password',
   resetPasswordSubtitle: "Enter your email and we'll send you a reset link.",
   sendResetLink: 'Send reset link',
   backToSignIn: 'Back to sign in',
   resetEmailSentTitle: 'Next step',
   resetEmailSentBody:
-    "If an account exists for this email and password login is enabled, we'll send a reset link. Please check your inbox and spam folder.",
+    "If a reset link is available for this email, we'll send one. Please check your inbox and spam folder.",
   resetEmailSentSpam:
     "If you don't see the email, please check your spam or promotions folder.",
   forgotPasswordGoogleHint:
@@ -164,77 +187,135 @@ const defaultAuthCopy: SupabaseAuthModalCopy = {
   genericError: 'Something went wrong. Please try again.',
   envMissingHint:
     'Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (anon only) in project root .env.local, then restart the dev server.',
-  enterEmailPassword: 'Please enter email and password.',
+  enterEmailPassword: 'Please enter your email.',
   resetEmailRequired: 'Please enter your email.',
 };
 
 export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange, authCopy}: Props) {
   const copy = authCopy ?? defaultAuthCopy;
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpToken, setOtpToken] = useState('');
+  const [authStep, setAuthStep] = useState<AuthStep>('email');
   const [busy, setBusy] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [emailConfirmNotice, setEmailConfirmNotice] = useState(false);
-  const [subView, setSubView] = useState<AuthSubView>('main');
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [resendAvailableAt, setResendAvailableAt] = useState(0);
+  const [nowMs, setNowMs] = useState(Date.now());
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const envOk = isSupabaseConfigured();
+  const resendSecondsLeft = useMemo(
+    () => Math.max(0, Math.ceil((resendAvailableAt - nowMs) / 1000)),
+    [nowMs, resendAvailableAt],
+  );
 
   useEffect(() => {
     if (!open) return;
     setErrorMsg(null);
-    setEmailConfirmNotice(false);
+    setSuccessMsg(null);
     setResetEmailSent(false);
-    setSubView('main');
+    setOtpEmail('');
+    setOtpToken('');
+    setAuthStep('email');
+    setResendAvailableAt(0);
+    setNowMs(Date.now());
     setBusy(false);
   }, [open, mode]);
 
-  const handleEmailAuth = () => {
+  useEffect(() => {
+    if (!open || resendSecondsLeft <= 0) return;
+    const id = window.setInterval(() => setNowMs(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [open, resendSecondsLeft]);
+
+  const sendLoginCode = async (e: string) => {
+    const {error} = await supabase.auth.signInWithOtp({
+      email: e,
+      options: {
+        emailRedirectTo: window.location.origin,
+        shouldCreateUser: true,
+      },
+    });
+    if (error) return {error};
+    const sentAt = Date.now();
+    setNowMs(sentAt);
+    setResendAvailableAt(sentAt + 60_000);
+    return {error: null};
+  };
+
+  const handleSendLoginCode = (resend = false) => {
     if (!envOk) return;
     void (async () => {
       setErrorMsg(null);
-      setEmailConfirmNotice(false);
-      const e = email.trim();
-      if (!e || !password) {
-        setErrorMsg(copy.enterEmailPassword);
+      setSuccessMsg(null);
+      if (resend && resendSecondsLeft > 0) return;
+      const e = (resend ? otpEmail || email : email).trim();
+      if (!e) {
+        setErrorMsg(copy.enterEmail);
         return;
       }
       setBusy(true);
       try {
-        if (mode === 'sign-in') {
-          const {error} = await supabase.auth.signInWithPassword({email: e, password});
-          setBusy(false);
-          if (error) {
-            const code =
-              'code' in error && typeof (error as {code?: string}).code === 'string'
-                ? (error as {code?: string}).code!
-                : undefined;
-            setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
-            return;
-          }
-          onSuccess?.();
-          onClose();
-        } else {
-          const {data, error} = await supabase.auth.signUp({
-            email: e,
-            password,
-            options: {emailRedirectTo: window.location.origin},
-          });
-          setBusy(false);
-          if (error) {
-            const code =
-              'code' in error && typeof (error as {code?: string}).code === 'string'
-                ? (error as {code?: string}).code!
-                : undefined;
-            setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
-            return;
-          }
-          if (data.session) {
-            onSuccess?.();
-            onClose();
-          } else {
-            setEmailConfirmNotice(true);
-          }
+        const {error} = await sendLoginCode(e);
+        setBusy(false);
+        if (error) {
+          const code =
+            'code' in error && typeof (error as {code?: string}).code === 'string'
+              ? (error as {code?: string}).code!
+              : undefined;
+          setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
+          return;
         }
+        setOtpEmail(e);
+        setOtpToken('');
+        setAuthStep('code');
+        if (resend) setSuccessMsg(copy.codeResent);
+      } catch {
+        setBusy(false);
+        setErrorMsg(copy.genericError);
+      }
+    })();
+  };
+
+  const handleVerifyLoginCode = () => {
+    if (!envOk) return;
+    void (async () => {
+      setErrorMsg(null);
+      setSuccessMsg(null);
+      const e = (otpEmail || email).trim();
+      const token = otpToken.trim().replace(/\s+/g, '');
+      if (!e) {
+        setErrorMsg(copy.enterEmail);
+        setAuthStep('email');
+        return;
+      }
+      if (!token) {
+        setErrorMsg(copy.enterLoginCode);
+        return;
+      }
+      setBusy(true);
+      try {
+        const {data, error} = await supabase.auth.verifyOtp({
+          email: e,
+          token,
+          type: 'email',
+        });
+        setBusy(false);
+        if (error) {
+          const code =
+            'code' in error && typeof (error as {code?: string}).code === 'string'
+              ? (error as {code?: string}).code!
+              : undefined;
+          setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
+          return;
+        }
+        const {data: current} = await supabase.auth.getSession();
+        if (!data.session && !current.session) {
+          setErrorMsg(copy.genericError);
+          return;
+        }
+        onSuccess?.();
+        onClose();
       } catch {
         setBusy(false);
         setErrorMsg(copy.genericError);
@@ -246,6 +327,7 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
     if (!envOk) return;
     void (async () => {
       setErrorMsg(null);
+      setSuccessMsg(null);
       setResetEmailSent(false);
       const e = email.trim();
       if (!e) {
@@ -288,7 +370,7 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
     if (!envOk) return;
     void (async () => {
       setErrorMsg(null);
-      setEmailConfirmNotice(false);
+      setSuccessMsg(null);
       const {error} = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {redirectTo: window.location.origin},
@@ -325,7 +407,7 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
             <div className="glass-panel mx-auto flex max-w-full flex-col gap-3 rounded-[20px] px-4 pb-4 pt-3.5 shadow-[0_10px_32px_rgba(72,54,37,0.1)]">
               <div className="flex items-start justify-between gap-2">
                 <h2 className="text-[1.05rem] font-semibold tracking-tight text-[var(--color-mist-text)]">
-                  {subView === 'forgot' ? copy.resetPasswordTitle : copy.mainHeading}
+                  {authStep === 'code' ? copy.enterCodeTitle : copy.mainHeading}
                 </h2>
                 <button
                   type="button"
@@ -343,75 +425,10 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
                 </p>
               ) : null}
 
-              {subView === 'forgot' ? (
+              <div className="flex flex-col">
                 <div className="flex flex-col gap-3">
-                  <p className="m-0 text-[13px] leading-relaxed text-[var(--color-mist-text)]/72">{copy.resetPasswordSubtitle}</p>
-                  <p className="m-0 text-[11px] leading-snug text-[var(--color-mist-text)]/55">{copy.forgotPasswordGoogleHint}</p>
-                  <label className={authFormRow}>
-                    <span className={authFormLabelClass}>{copy.emailFieldLabel}</span>
-                    <input
-                      type="text"
-                      name="reset-email"
-                      inputMode="email"
-                      autoComplete="email"
-                      value={email}
-                      onChange={ev => setEmail(ev.target.value)}
-                      className={inputClass}
-                    />
-                  </label>
-                  {errorMsg ? (
-                    <p className="rounded-lg border border-amber-900/15 bg-amber-500/12 px-2.5 py-1.5 text-[11px] leading-snug text-amber-950/85">
-                      {errorMsg}
-                    </p>
-                  ) : null}
-                  {resetEmailSent ? (
-                    <div
-                      className="rounded-2xl border-2 border-[rgba(120,150,120,0.35)] bg-[rgba(244,252,246,0.96)] px-4 py-3.5 shadow-[0_4px_14px_rgba(72,54,37,0.06)]"
-                      role="status"
-                    >
-                      <p className="text-[15px] font-bold leading-snug text-[var(--color-mist-text)]">{copy.resetEmailSentTitle}</p>
-                      <p className="mt-2 text-[12px] leading-[1.55] text-[var(--color-mist-text)]/88">{copy.resetEmailSentBody}</p>
-                      <p className="mt-2 text-[11px] leading-snug text-[var(--color-mist-text)]/55">{copy.resetEmailSentSpam}</p>
-                    </div>
-                  ) : null}
-                  <div className={authFormRow}>
-                    <span className={authFormLabelSpacerClass} aria-hidden="true" />
-                    <button
-                      type="button"
-                      disabled={busy || !envOk}
-                      onClick={handleSendResetLink}
-                      className="inline-flex h-10 w-full items-center justify-center rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white/92 disabled:opacity-55"
-                    >
-                      {copy.sendResetLink}
-                    </button>
-                  </div>
-                  <div className="flex justify-center pt-0.5">
-                    <button type="button" className={forgotLinkClass} onClick={() => setSubView('main')}>
-                      {copy.backToSignIn}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="flex rounded-full bg-white/22 p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => onModeChange('sign-in')}
-                      className={`flex-1 rounded-full py-2 text-[12px] font-semibold transition-all ${mode === 'sign-in' ? tabBtnActive : tabBtnIdle}`}
-                    >
-                      {copy.tabSignIn}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onModeChange('sign-up')}
-                      className={`flex-1 rounded-full py-2 text-[12px] font-semibold transition-all ${mode === 'sign-up' ? tabBtnActive : tabBtnIdle}`}
-                    >
-                      {copy.tabSignUp}
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col">
-                    <div className="flex flex-col gap-3">
+                  {authStep === 'email' ? (
+                    <>
                       <label className={authFormRow}>
                         <span className={authFormLabelClass}>{copy.emailFieldLabel}</span>
                         <input
@@ -424,74 +441,104 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
                           className={inputClass}
                         />
                       </label>
-                      <label className={authFormRow}>
-                        <span className={authFormLabelClass}>{copy.passwordFieldLabel}</span>
-                        <input
-                          type="password"
-                          name="password"
-                          autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
-                          value={password}
-                          onChange={ev => setPassword(ev.target.value)}
-                          className={inputClass}
-                        />
-                      </label>
-                      {mode === 'sign-in' ? (
-                        <div className="flex justify-end pt-0.5">
-                          <button type="button" className={forgotLinkClass} onClick={() => setSubView('forgot')}>
-                            {copy.forgotPasswordLink}
-                          </button>
-                        </div>
-                      ) : null}
+                      <p className="m-0 text-[11px] leading-snug text-[var(--color-mist-text)]/52">
+                        {copy.codeDeliveryHint}
+                      </p>
                       {errorMsg ? (
                         <p className="rounded-lg border border-amber-900/15 bg-amber-500/12 px-2.5 py-1.5 text-[11px] leading-snug text-amber-950/85">
                           {errorMsg}
                         </p>
                       ) : null}
-                      {emailConfirmNotice && mode === 'sign-up' ? (
-                        <div
-                          className="rounded-2xl border-2 border-[rgba(167,118,72,0.42)] bg-[rgba(255,244,228,0.98)] px-4 py-3.5 shadow-[0_4px_14px_rgba(72,54,37,0.08),0_1px_0_rgba(255,255,255,0.55)_inset]"
-                          role="status"
-                        >
-                          <p className="text-[15px] font-bold leading-snug tracking-tight text-[var(--color-mist-text)]">
-                            {copy.emailConfirmTitle}
-                          </p>
-                          <p className="mt-2.5 text-[12px] leading-[1.55] text-[var(--color-mist-text)]/90">
-                            {copy.emailConfirmBody}
-                          </p>
-                          <p className="mt-2.5 text-[11px] leading-snug text-[var(--color-mist-text)]/55">
-                            {copy.emailConfirmSpam}
-                          </p>
-                        </div>
+                      {successMsg ? (
+                        <p className="rounded-lg border border-emerald-900/10 bg-emerald-500/10 px-2.5 py-1.5 text-[11px] leading-snug text-emerald-950/78">
+                          {successMsg}
+                        </p>
                       ) : null}
                       <div className={authFormRow}>
                         <span className={authFormLabelSpacerClass} aria-hidden="true" />
                         <button
                           type="button"
                           disabled={busy || !envOk}
-                          onClick={handleEmailAuth}
+                          onClick={() => handleSendLoginCode()}
                           className="inline-flex h-10 w-full items-center justify-center rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white/92 disabled:opacity-55"
                         >
-                          {mode === 'sign-in' ? copy.primarySignIn : copy.primarySignUp}
+                          {copy.sendLoginCode}
                         </button>
                       </div>
-                    </div>
-
-                    <div className="mt-6 flex flex-col items-center gap-2">
-                      <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-mist-text)]/38">
-                        {copy.oauthDivider}
+                    </>
+                  ) : (
+                    <>
+                      <p className="m-0 text-[12px] leading-relaxed text-[var(--color-mist-text)]/68">
+                        {copy.loginCodeSentBody}
+                        {otpEmail ? <span className="font-semibold text-[var(--color-mist-text)]/86"> {otpEmail}</span> : null}
                       </p>
                       <button
                         type="button"
-                        disabled={busy || !envOk}
-                        onClick={handleGoogle}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/18 px-3 py-1.5 text-[12px] font-medium text-[var(--color-mist-text)]/72 transition-colors hover:bg-white/30 hover:text-[var(--color-mist-text)]/88 disabled:opacity-55"
+                        className={`${forgotLinkClass} self-start`}
+                        onClick={() => {
+                          setAuthStep('email');
+                          setOtpToken('');
+                          setErrorMsg(null);
+                        }}
                       >
-                        {copy.oauthGoogle}
+                        {copy.changeEmail}
                       </button>
-                    </div>
-                  </div>
-                </>
-              )}
+                      <label className={authFormRow}>
+                        <span className={authFormLabelClass}>{copy.codeFieldLabel}</span>
+                        <input
+                          type="text"
+                          name="login-code"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          value={otpToken}
+                          onChange={ev => setOtpToken(ev.target.value)}
+                          className={inputClass}
+                        />
+                      </label>
+                      {errorMsg ? (
+                        <p className="rounded-lg border border-amber-900/15 bg-amber-500/12 px-2.5 py-1.5 text-[11px] leading-snug text-amber-950/85">
+                          {errorMsg}
+                        </p>
+                      ) : null}
+                      <div className={authFormRow}>
+                        <span className={authFormLabelSpacerClass} aria-hidden="true" />
+                        <button
+                          type="button"
+                          disabled={busy || !envOk}
+                          onClick={handleVerifyLoginCode}
+                          className="inline-flex h-10 w-full items-center justify-center rounded-2xl bg-white/80 px-4 text-[13px] font-semibold text-[var(--color-mist-text)] shadow-sm transition-colors hover:bg-white/92 disabled:opacity-55"
+                        >
+                          {copy.verifyAndContinue}
+                        </button>
+                      </div>
+                      <div className="flex justify-center pt-0.5">
+                        <button
+                          type="button"
+                          className={forgotLinkClass}
+                          disabled={busy || !envOk || resendSecondsLeft > 0}
+                          onClick={() => handleSendLoginCode(true)}
+                        >
+                          {resendSecondsLeft > 0 ? `${copy.resendLoginCode} (${resendSecondsLeft}s)` : copy.resendLoginCode}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className="mt-6 flex flex-col items-center gap-2">
+                  <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-mist-text)]/38">
+                    {copy.oauthDivider}
+                  </p>
+                  <button
+                    type="button"
+                    disabled={busy || !envOk}
+                    onClick={handleGoogle}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/18 px-3 py-1.5 text-[12px] font-medium text-[var(--color-mist-text)]/72 transition-colors hover:bg-white/30 hover:text-[var(--color-mist-text)]/88 disabled:opacity-55"
+                  >
+                    {copy.oauthGoogle}
+                  </button>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
