@@ -1,7 +1,10 @@
 import type {Handler, HandlerEvent, HandlerResponse} from '@netlify/functions';
+import {createHash} from 'crypto';
 import {createSupabaseServiceClient} from './_shared/supabase-service';
+import {revokeStoredAppleToken} from './_shared/apple-sign-in';
 
 const APP_DATA_TABLES = ['user_favorites', 'user_recently_played', 'user_membership'] as const;
+const RETAINED_PAYMENT_TABLES = ['membership_orders', 'membership_google_play_purchases'] as const;
 
 const corsHeaders: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +15,10 @@ const corsHeaders: Record<string, string> = {
 type DeleteStep =
   | {table: (typeof APP_DATA_TABLES)[number]; status: 'deleted'; count: number | null}
   | {table: (typeof APP_DATA_TABLES)[number]; status: 'skipped_missing_table'};
+
+type RetainedPaymentStep =
+  | {table: (typeof RETAINED_PAYMENT_TABLES)[number]; status: 'anonymized'; count: number | null}
+  | {table: (typeof RETAINED_PAYMENT_TABLES)[number]; status: 'skipped_missing_table'};
 
 type DeleteAccountDebug = {
   hasAuthHeader: boolean;
@@ -77,10 +84,46 @@ function logLine(fields: Record<string, unknown>) {
   console.log('[delete-account]', JSON.stringify(safe));
 }
 
+function deletionHash(userId: string): string {
+  const salt = process.env.ACCOUNT_DELETION_HASH_SALT?.trim() || 'aurasounds-account-deletion-v1';
+  return createHash('sha256').update(`${salt}:${userId}`).digest('hex');
+}
+
 function isMissingTableError(error: {code?: string | null; message?: string | null}): boolean {
   const code = error.code != null ? String(error.code) : '';
   const message = error.message ?? '';
   return code === '42P01' || code === 'PGRST205' || /relation .* does not exist/i.test(message);
+}
+
+async function anonymizeRetainedPaymentRows(
+  supabase: NonNullable<ReturnType<typeof createSupabaseServiceClient>>,
+  table: (typeof RETAINED_PAYMENT_TABLES)[number],
+  userId: string,
+  deletedUserHash: string,
+): Promise<RetainedPaymentStep> {
+  const {error, count} = await supabase
+    .from(table)
+    .update(
+      {
+        user_id: null,
+        deleted_user_hash: deletedUserHash,
+        account_deleted_at: new Date().toISOString(),
+      },
+      {count: 'exact'},
+    )
+    .eq('user_id', userId);
+
+  if (error) {
+    if (isMissingTableError(error)) {
+      return {table, status: 'skipped_missing_table'};
+    }
+    throw Object.assign(new Error(error.message), {
+      table,
+      code: error.code != null ? String(error.code) : null,
+    });
+  }
+
+  return {table, status: 'anonymized', count: count ?? null};
 }
 
 async function deleteAppRows(
@@ -126,10 +169,9 @@ function baseDebug(partial: Partial<DeleteAccountDebug> = {}): DeleteAccountDebu
  * is derived from the verified JWT, never from request body input. Payment and
  * order records are deliberately retained for legal/accounting/fraud history.
  *
- * Auth is soft-deleted instead of hard-deleted because retained payment rows
- * may carry foreign keys to auth.users. Supabase soft delete obfuscates the
- * auth account and is not reversible, while preserving required transaction
- * references.
+ * Hard delete requires `supabase/account-deletion-hard-delete-compat.sql`:
+ * retained transaction tables must allow user_id to be nulled / SET NULL before
+ * the auth user row is physically removed.
  */
 export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
   if (event.httpMethod === 'OPTIONS') {
@@ -189,7 +231,40 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   }
 
   const userId = userRes.data.user.id;
+  const deletedUserHash = deletionHash(userId);
   const deleted: DeleteStep[] = [];
+  const retainedPaymentRows: RetainedPaymentStep[] = [];
+  const appleRevocation = await revokeStoredAppleToken(supabase, userId);
+
+  try {
+    for (const table of RETAINED_PAYMENT_TABLES) {
+      retainedPaymentRows.push(
+        await anonymizeRetainedPaymentRows(supabase, table, userId, deletedUserHash),
+      );
+    }
+  } catch (err) {
+    const e = err as Error & {table?: string; code?: string | null};
+    console.error('[delete-account] retained payment anonymization failed', {
+      stage: 'retained_payment_anonymize_failed',
+      table: e.table ?? null,
+      code: e.code ?? null,
+      message: e.message,
+    });
+    logLine({stage: 'retained_payment_anonymize_failed', ok: false, table: e.table ?? null});
+    return fail(
+      503,
+      'RETAINED_PAYMENT_ANONYMIZE_FAILED',
+      'Retained payment records could not be detached from the account. Confirm the hard-delete compatibility SQL migration has been applied.',
+      baseDebug({
+        hasAuthHeader: true,
+        authValid: true,
+        deletionAttempted: true,
+        errorStage: 'retained_payment_anonymize_failed',
+        errorMessage: e.message,
+        supabaseErrorCode: e.code ?? null,
+      }),
+    );
+  }
 
   try {
     for (const table of APP_DATA_TABLES) {
@@ -219,7 +294,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     );
   }
 
-  const authDelete = await supabase.auth.admin.deleteUser(userId, true);
+  const authDelete = await supabase.auth.admin.deleteUser(userId);
   if (authDelete.error) {
     logLine({stage: 'auth_delete_failed', ok: false});
     return fail(
@@ -243,12 +318,19 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   logLine({stage: 'ok', ok: true, deletedTables: deleted.length});
   return json(200, {
     ok: true,
-    authDeletionMode: 'soft_delete',
+    authDeletionMode: 'hard_delete',
     deleted,
+    retainedPaymentRows,
     retained: [
       'Payment and order records are retained as required for legal, accounting, fraud-prevention, and subscription reconciliation purposes.',
       'External App Store, Google Play, Stripe, ZPAY, and marketplace transaction records are not deleted by this app endpoint.',
     ],
-    appleCredentialRevocation: 'not_available_from_current_mobile_sign_in_flow',
+    appleCredentialRevocation: appleRevocation.status,
+    ...(appleRevocation.status === 'not_configured'
+      ? {appleCredentialRevocationMissingEnv: appleRevocation.missingEnv}
+      : {}),
+    ...(appleRevocation.status === 'failed'
+      ? {appleCredentialRevocationError: appleRevocation.message}
+      : {}),
   });
 };
