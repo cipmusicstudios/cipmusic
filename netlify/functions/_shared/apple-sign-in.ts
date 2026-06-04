@@ -4,6 +4,8 @@ import type {SupabaseClient} from '@supabase/supabase-js';
 const TOKEN_URL = 'https://appleid.apple.com/auth/token';
 const REVOKE_URL = 'https://appleid.apple.com/auth/revoke';
 const TOKEN_TABLE = 'apple_sign_in_tokens';
+const SECRET_TABLE = 'server_secrets';
+const APPLE_PRIVATE_KEY_SECRET_NAME = 'apple_sign_in_private_key';
 
 type SupabaseServiceClient = SupabaseClient;
 
@@ -20,11 +22,10 @@ export type AppleTokenRevocationResult =
   | {status: 'skipped_missing_table'}
   | {status: 'failed'; message: string};
 
-function readAppleEnv(): {
+function readAppleIdentifiers(): {
   clientId: string;
   teamId: string;
   keyId: string;
-  privateKey: string;
   missing: string[];
 } {
   const clientId =
@@ -33,17 +34,49 @@ function readAppleEnv(): {
     '';
   const teamId = process.env.APPLE_SIGN_IN_TEAM_ID?.trim() || process.env.APPLE_TEAM_ID?.trim() || '';
   const keyId = process.env.APPLE_SIGN_IN_KEY_ID?.trim() || process.env.APPLE_KEY_ID?.trim() || '';
-  const privateKeyRaw =
-    process.env.APPLE_SIGN_IN_PRIVATE_KEY?.trim() || process.env.APPLE_PRIVATE_KEY?.trim() || '';
-  const privateKey = privateKeyRaw.replace(/\\n/g, '\n');
 
   const missing: string[] = [];
   if (!clientId) missing.push('APPLE_SIGN_IN_CLIENT_ID');
   if (!teamId) missing.push('APPLE_SIGN_IN_TEAM_ID');
   if (!keyId) missing.push('APPLE_SIGN_IN_KEY_ID');
-  if (!privateKey) missing.push('APPLE_SIGN_IN_PRIVATE_KEY');
 
-  return {clientId, teamId, keyId, privateKey, missing};
+  return {clientId, teamId, keyId, missing};
+}
+
+async function readApplePrivateKey(
+  supabase: SupabaseServiceClient,
+): Promise<{privateKey: string; missing: string[]; message?: string}> {
+  const {data, error} = await supabase
+    .from(SECRET_TABLE)
+    .select('secret_value')
+    .eq('name', APPLE_PRIVATE_KEY_SECRET_NAME)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    if (isMissingTableError(error)) {
+      return {
+        privateKey: '',
+        missing: ['APPLE_SIGN_IN_PRIVATE_KEY_SECRET'],
+        message: 'Apple Sign in private key secret table is missing.',
+      };
+    }
+    return {
+      privateKey: '',
+      missing: ['APPLE_SIGN_IN_PRIVATE_KEY_SECRET'],
+      message: 'Apple Sign in private key could not be loaded.',
+    };
+  }
+
+  const raw =
+    data && typeof (data as {secret_value?: unknown}).secret_value === 'string'
+      ? (data as {secret_value: string}).secret_value.trim()
+      : '';
+  const privateKey = raw.replace(/\\n/g, '\n');
+  if (!privateKey) {
+    return {privateKey: '', missing: ['APPLE_SIGN_IN_PRIVATE_KEY_SECRET']};
+  }
+  return {privateKey, missing: []};
 }
 
 function base64Url(input: string | Buffer): string {
@@ -54,10 +87,19 @@ function base64Url(input: string | Buffer): string {
     .replace(/\//g, '_');
 }
 
-function createAppleClientSecret(): {clientId: string; clientSecret: string; missingEnv: string[]} {
-  const env = readAppleEnv();
-  if (env.missing.length > 0) {
-    return {clientId: env.clientId, clientSecret: '', missingEnv: env.missing};
+async function createAppleClientSecret(
+  supabase: SupabaseServiceClient,
+): Promise<{clientId: string; clientSecret: string; missingEnv: string[]; message?: string}> {
+  const env = readAppleIdentifiers();
+  const key = await readApplePrivateKey(supabase);
+  const missingEnv = [...env.missing, ...key.missing];
+  if (missingEnv.length > 0) {
+    return {
+      clientId: env.clientId,
+      clientSecret: '',
+      missingEnv,
+      ...(key.message ? {message: key.message} : {}),
+    };
   }
 
   const now = Math.floor(Date.now() / 1000);
@@ -75,7 +117,7 @@ function createAppleClientSecret(): {clientId: string; clientSecret: string; mis
   const signer = createSign('SHA256');
   signer.update(signingInput);
   signer.end();
-  const signature = base64Url(signer.sign(env.privateKey));
+  const signature = base64Url(signer.sign(key.privateKey));
   return {clientId: env.clientId, clientSecret: `${signingInput}.${signature}`, missingEnv: []};
 }
 
@@ -120,10 +162,13 @@ async function applePost(
 }
 
 async function exchangeAuthorizationCode(
+  supabase: SupabaseServiceClient,
   authorizationCode: string,
 ): Promise<{ok: true; refreshToken: string | null} | {ok: false; message: string; missingEnv?: string[]}> {
-  const {clientId, clientSecret, missingEnv} = createAppleClientSecret();
-  if (missingEnv.length > 0) return {ok: false, message: 'Apple Sign in env is incomplete.', missingEnv};
+  const {clientId, clientSecret, missingEnv, message} = await createAppleClientSecret(supabase);
+  if (missingEnv.length > 0) {
+    return {ok: false, message: message ?? 'Apple Sign in server credentials are incomplete.', missingEnv};
+  }
 
   const exchanged = await applePost(TOKEN_URL, {
     client_id: clientId,
@@ -139,10 +184,13 @@ async function exchangeAuthorizationCode(
 }
 
 async function revokeRefreshToken(
+  supabase: SupabaseServiceClient,
   refreshToken: string,
 ): Promise<{ok: true} | {ok: false; message: string; missingEnv?: string[]}> {
-  const {clientId, clientSecret, missingEnv} = createAppleClientSecret();
-  if (missingEnv.length > 0) return {ok: false, message: 'Apple Sign in env is incomplete.', missingEnv};
+  const {clientId, clientSecret, missingEnv, message} = await createAppleClientSecret(supabase);
+  if (missingEnv.length > 0) {
+    return {ok: false, message: message ?? 'Apple Sign in server credentials are incomplete.', missingEnv};
+  }
 
   const revoked = await applePost(REVOKE_URL, {
     client_id: clientId,
@@ -158,7 +206,7 @@ export async function storeAppleAuthorizationCode(
   supabase: SupabaseServiceClient,
   input: {userId: string; authorizationCode: string; appleUserId?: string | null},
 ): Promise<AppleTokenStoreResult> {
-  const exchanged = await exchangeAuthorizationCode(input.authorizationCode);
+  const exchanged = await exchangeAuthorizationCode(supabase, input.authorizationCode);
   if (exchanged.ok === false) {
     if (exchanged.missingEnv?.length) {
       return {status: 'not_configured', missingEnv: exchanged.missingEnv};
@@ -205,7 +253,7 @@ export async function revokeStoredAppleToken(
       : null;
   if (!refreshToken) return {status: 'not_found'};
 
-  const revoked = await revokeRefreshToken(refreshToken);
+  const revoked = await revokeRefreshToken(supabase, refreshToken);
   if (revoked.ok === false) {
     if (revoked.missingEnv?.length) {
       return {status: 'not_configured', missingEnv: revoked.missingEnv};
