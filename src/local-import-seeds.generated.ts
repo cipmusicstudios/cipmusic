@@ -1,37 +1,5 @@
 export const LOCAL_IMPORT_SEEDS = [
   {
-    "id": "local_爱琴海",
-    "slug": "爱琴海",
-    "audioFile": "audio.mp3",
-    "musicxmlFile": "score.musicxml",
-    "midiFile": "performance.mid",
-    "titleOverride": "爱琴海"
-  },
-  {
-    "id": "local_摆脱地心引力",
-    "slug": "摆脱地心引力",
-    "audioFile": "audio.mp3",
-    "musicxmlFile": "score.musicxml",
-    "midiFile": "performance.mid",
-    "titleOverride": "摆脱地心引力"
-  },
-  {
-    "id": "local_恋人",
-    "slug": "恋人",
-    "audioFile": "audio.mp3",
-    "musicxmlFile": "score.musicxml",
-    "midiFile": "performance.mid",
-    "titleOverride": "恋人"
-  },
-  {
-    "id": "local_一个人想着一个人",
-    "slug": "一个人想着一个人",
-    "audioFile": "audio.mp3",
-    "musicxmlFile": "score.musicxml",
-    "midiFile": "performance.mid",
-    "titleOverride": "一个人想着一个人"
-  },
-  {
     "id": "local_beauty_and_a_beat",
     "slug": "beauty and a beat",
     "audioFile": "audio.mp3",
@@ -48,12 +16,20 @@ export const LOCAL_IMPORT_SEEDS = [
     "titleOverride": "BonBon Girls"
   },
   {
-    "id": "local_falling_you_都智文_曾可妮",
-    "slug": "falling you（都智文 曾可妮）",
+    "id": "local_Curious",
+    "slug": "Curious",
     "audioFile": "audio.mp3",
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
-    "titleOverride": "falling you（都智文 曾可妮）"
+    "titleOverride": "Curious"
+  },
+  {
+    "id": "local_Dai_Dai",
+    "slug": "Dai Dai",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Dai Dai"
   },
   {
     "id": "local_falling_you_刘耀文",
@@ -62,6 +38,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
     "titleOverride": "falling you（刘耀文）"
+  },
+  {
+    "id": "local_falling_you_都智文_曾可妮",
+    "slug": "falling you（都智文 曾可妮）",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "falling you（都智文 曾可妮）"
   },
   {
     "id": "local_heavy_serenade",
@@ -102,5 +86,61 @@ export const LOCAL_IMPORT_SEEDS = [
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
     "titleOverride": "Top5"
+  },
+  {
+    "id": "local_一个人想着一个人",
+    "slug": "一个人想着一个人",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "一个人想着一个人"
+  },
+  {
+    "id": "local_万里",
+    "slug": "万里",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "万里"
+  },
+  {
+    "id": "local_恋人",
+    "slug": "恋人",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "恋人"
+  },
+  {
+    "id": "local_摆脱地心引力",
+    "slug": "摆脱地心引力",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "摆脱地心引力"
+  },
+  {
+    "id": "local_爱琴海",
+    "slug": "爱琴海",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "爱琴海"
+  },
+  {
+    "id": "local_玻璃",
+    "slug": "玻璃",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "玻璃"
+  },
+  {
+    "id": "local_雨爱",
+    "slug": "雨爱",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "雨爱"
   }
 ] as const;

@@ -4,6 +4,181 @@
   "chunkIndex": 2,
   "tracks": [
     {
+      "id": "55fdda06-fbd6-4801-8497-82ff0b1933bc",
+      "title": "Bubble gum",
+      "displayTitle": "Bubble gum",
+      "originalArtist": "NewJeans",
+      "canonicalArtistId": "newjeans",
+      "canonicalArtistDisplayName": "NewJeans",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/bf/68/ca/bf68ca64-4acd-543f-bc78-455f11f06105/196922889738_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/bubble-gum/audio.mp3",
+      "duration": "03:19",
+      "durationSeconds": 199,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "bubble gum",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=qDmAv48qYos",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "qDmAv48qYos",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/168428",
+      "linkStatus": "linked",
+      "artists": {
+        "zhHans": "NewJeans",
+        "zhHant": "NewJeans",
+        "en": "NewJeans"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:14:37.965958+00:00",
+      "youtubeSortIndex": 206,
+      "youtubePublishedAt": "2024-04-30T12:00:00.000Z",
+      "listSortPublishedAtMs": 1714478400000,
+      "listSortPublishedAt": "2024-04-30T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "bc1c23a3-190c-4904-a0d2-36c129ecafa6",
+      "title": "奇迹时刻",
+      "displayTitle": "奇迹时刻",
+      "originalArtist": "周深",
+      "canonicalArtistId": "zhou-shen",
+      "canonicalArtistDisplayName": "周深",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music/91/76/f1/mzi.vfjedubh.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f5fe57e76c/audio.mp3",
+      "duration": "03:30",
+      "durationSeconds": 210,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "奇迹时刻",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=bKpZ_M3qY6U",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "bKpZ_M3qY6U",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/167913",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "奇迹时刻",
+        "en": "Qi Ji Shi Ke"
+      },
+      "artists": {
+        "zhHans": "周深",
+        "zhHant": "周深",
+        "en": "Zhou Shen"
+      },
+      "workProjectKey": "honor-of-kings",
+      "supabaseCreatedAt": "2026-04-14T02:39:15.423385+00:00",
+      "youtubeSortIndex": 207,
+      "youtubePublishedAt": "2024-04-27T12:00:00.000Z",
+      "listSortPublishedAtMs": 1714219200000,
+      "listSortPublishedAt": "2024-04-27T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "c25dfd45-9a48-4fbe-a85d-538c31d2670c",
+      "title": "Psychic",
+      "displayTitle": "Psychic",
+      "originalArtist": "张艺兴",
+      "canonicalArtistId": "lay-zhang",
+      "canonicalArtistDisplayName": "张艺兴",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/0f/a5/20/0fa520b7-6e71-3827-594d-575e97526e4c/5021732282415.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/psychic/audio.mp3",
+      "duration": "02:24",
+      "durationSeconds": 144,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Psychic",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=1IUZlkIAcwg",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "1IUZlkIAcwg",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/167688",
+      "linkStatus": "linked",
+      "artists": {
+        "zhHans": "张艺兴",
+        "zhHant": "張藝興",
+        "en": "Lay Zhang"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:31:26.193658+00:00",
+      "youtubeSortIndex": 208,
+      "youtubePublishedAt": "2024-04-25T12:00:00.000Z",
+      "listSortPublishedAtMs": 1714046400000,
+      "listSortPublishedAt": "2024-04-25T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "e30348e9-47ab-4de5-a381-89299daefeff",
+      "title": "Lucky Girl Syndrome",
+      "displayTitle": "Lucky Girl Syndrome",
+      "originalArtist": "ILLIT",
+      "canonicalArtistId": "illit",
+      "canonicalArtistDisplayName": "ILLIT",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3e/49/1e/3e491e43-4961-21ab-2abe-37fb1c0feb40/196922879227_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/lucky-girl-syndrome/audio.mp3",
+      "duration": "02:22",
+      "durationSeconds": 142,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Lucky Girl Syndrome",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=5-PKhFzuGjI",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "5-PKhFzuGjI",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/167191",
+      "linkStatus": "linked",
+      "artists": {
+        "zhHans": "ILLIT",
+        "zhHant": "ILLIT",
+        "en": "ILLIT"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:29:53.290101+00:00",
+      "youtubeSortIndex": 209,
+      "youtubePublishedAt": "2024-04-23T12:00:00.000Z",
+      "listSortPublishedAtMs": 1713873600000,
+      "listSortPublishedAt": "2024-04-23T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "f2e91b7b-90d9-4b19-96d9-54c8c44efbfb",
       "title": "5:20AM",
       "displayTitle": "5:20AM",
@@ -4161,185 +4336,6 @@
       "youtubePublishedAt": "2023-06-18T12:00:00.000Z",
       "listSortPublishedAtMs": 1687089600000,
       "listSortPublishedAt": "2023-06-18T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "5f7506ca-d32e-433e-9abe-9ba2819d76c4",
-      "title": "Let me in",
-      "displayTitle": "Let me in",
-      "originalArtist": "EXO",
-      "canonicalArtistId": "exo",
-      "canonicalArtistDisplayName": "EXO",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/27/40/34/274034b3-42d9-ba59-b22c-dc4f57672ee0/886446799513.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/let-me-in/audio.mp3",
-      "duration": "03:24",
-      "durationSeconds": 204,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "let me in",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=AnrqB6q4HNk",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "AnrqB6q4HNk",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/113591",
-      "linkStatus": "linked",
-      "artists": {
-        "zhHans": "EXO",
-        "zhHant": "EXO",
-        "en": "EXO"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:29:15.185186+00:00",
-      "youtubeSortIndex": 315,
-      "youtubePublishedAt": "2023-06-15T12:00:00.000Z",
-      "listSortPublishedAtMs": 1686830400000,
-      "listSortPublishedAt": "2023-06-15T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "e7596de6-e168-461a-a2eb-237bbe60ac18",
-      "title": "我会等",
-      "displayTitle": "我会等",
-      "originalArtist": "承桓",
-      "canonicalArtistId": "cheng-huan",
-      "canonicalArtistDisplayName": "承桓",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/5c/33/cd/5c33cded-2fd8-f83c-e959-bb1e0ed89783/cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-eb5d15b931/audio.mp3",
-      "duration": "03:17",
-      "durationSeconds": 197,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "我会等",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=cPn2K0mgmJ0",
-      "youtubeVideoTitle": "承桓 《我会等》钢琴版 Piano Cover | Piano by CIP Music",
-      "youtubeVideoId": "cPn2K0mgmJ0",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/113349",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "我会等",
-        "en": "Wo Hui Deng"
-      },
-      "artists": {
-        "zhHans": "承桓",
-        "zhHant": "承桓",
-        "en": "Cheng Huan"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:41:19.020106+00:00",
-      "youtubeSortIndex": 316,
-      "youtubePublishedAt": "2023-06-13T12:00:00.000Z",
-      "listSortPublishedAtMs": 1686657600000,
-      "listSortPublishedAt": "2023-06-13T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "0270ad68-23c0-4212-9ee4-f8009bf78b30",
-      "title": "听悲伤的情歌",
-      "displayTitle": "听悲伤的情歌",
-      "originalArtist": "苏星婕",
-      "canonicalArtistId": "su-xing-jie",
-      "canonicalArtistDisplayName": "苏星婕",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/2e/e8/46/2ee846a8-2d86-2355-0892-8b373469014d/cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-d73f8dc569/audio.mp3",
-      "duration": "03:20",
-      "durationSeconds": 200,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "听悲伤的情歌",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=sHIwRpKPRFI",
-      "youtubeVideoTitle": "苏星婕 Su Xingjie 《听悲伤的情歌》钢琴版 Piano Cover | Piano by CIP Music",
-      "youtubeVideoId": "sHIwRpKPRFI",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/113115",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "听悲伤的情歌",
-        "en": "Ting Bei Shang De Qing Ge"
-      },
-      "artists": {
-        "zhHans": "苏星婕",
-        "zhHant": "蘇星婕",
-        "en": "Su Xingjie"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:38:26.031622+00:00",
-      "youtubeSortIndex": 317,
-      "youtubePublishedAt": "2023-06-11T12:00:00.000Z",
-      "listSortPublishedAtMs": 1686484800000,
-      "listSortPublishedAt": "2023-06-11T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "f6959061-8d9d-4561-b35d-ab32b94aaef6",
-      "title": "Calling",
-      "displayTitle": "Calling",
-      "originalArtist": "Metro Boomin",
-      "canonicalArtistId": "metro-boomin",
-      "canonicalArtistDisplayName": "Metro Boomin",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "欧美流行"
-      ],
-      "categoryKeys": [
-        "western"
-      ],
-      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2736ed9aef791159496b286179f",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/calling/audio.mp3",
-      "duration": "02:07",
-      "durationSeconds": 127,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "calling",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=4JEl8MA5T7E",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "4JEl8MA5T7E",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/112976",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Calling"
-      },
-      "artists": {
-        "zhHans": "Metro Boomin",
-        "zhHant": "Metro Boomin",
-        "en": "Metro Boomin"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:14:58.16632+00:00",
-      "youtubeSortIndex": 318,
-      "youtubePublishedAt": "2023-06-09T12:00:00.000Z",
-      "listSortPublishedAtMs": 1686312000000,
-      "listSortPublishedAt": "2023-06-09T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

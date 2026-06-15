@@ -4,6 +4,193 @@
   "chunkIndex": 1,
   "tracks": [
     {
+      "id": "971475eb-9206-489f-8026-9e5d8cc10c3a",
+      "title": "春天对花所做的事",
+      "displayTitle": "春天对花所做的事",
+      "originalArtist": "恋与深空",
+      "canonicalArtistId": "love-and-deepspace",
+      "canonicalArtistDisplayName": "恋与深空",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "source_attribution_love_and_deepspace"
+      ],
+      "tags": [
+        "华语流行",
+        "游戏"
+      ],
+      "categoryKeys": [
+        "cpop",
+        "game"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/b5/6a/85/b56a8579-c2d8-d647-5039-5472f813e05b/cover.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-67f84ac008/audio.mp3",
+      "duration": "03:56",
+      "durationSeconds": 236,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "春天对花所做的事",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=XHCQo2aArGo",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "XHCQo2aArGo",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/282546",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "春天对花所做的事",
+        "en": "Spring and Flowers"
+      },
+      "artists": {
+        "zhHans": "恋与深空",
+        "zhHant": "戀與深空",
+        "en": "Love and Deepspace"
+      },
+      "workProjectKey": "love-and-deepspace",
+      "supabaseCreatedAt": "2026-04-14T02:42:47.839992+00:00",
+      "youtubeSortIndex": 98,
+      "youtubePublishedAt": "2025-05-09T12:00:00.000Z",
+      "listSortPublishedAtMs": 1746792000000,
+      "listSortPublishedAt": "2025-05-09T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "c4d6ff07-663b-4aa8-b82d-3c3359b21f6e",
+      "title": "全世界我最美",
+      "displayTitle": "全世界我最美",
+      "originalArtist": "时代少年团",
+      "canonicalArtistId": "tnt",
+      "canonicalArtistDisplayName": "时代少年团",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2738e66278e9363ccb7a7f91eb8",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f177908a42/audio.mp3",
+      "duration": "03:11",
+      "durationSeconds": 191,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "全世界我最美",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=uLBoe5Y2jFY",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "uLBoe5Y2jFY",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/281690",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "全世界我最美",
+        "en": "Quan Shi Jie Wo Zui Mei"
+      },
+      "artists": {
+        "zhHans": "时代少年团",
+        "zhHant": "時代少年團",
+        "en": "Teens In Times"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:37:06.81543+00:00",
+      "youtubeSortIndex": 99,
+      "youtubePublishedAt": "2025-05-06T12:00:00.000Z",
+      "listSortPublishedAtMs": 1746532800000,
+      "listSortPublishedAt": "2025-05-06T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "f6455e6c-a0a4-49b3-9937-b37e53d6bf7a",
+      "title": "泪桥",
+      "displayTitle": "泪桥",
+      "originalArtist": "伍佰",
+      "canonicalArtistId": "wu-bai",
+      "canonicalArtistDisplayName": "伍佰",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music6/v4/50/bc/47/50bc4768-ebd1-7324-0faf-79897a18a22b/iTunes.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-7ccdee3daf/audio.mp3",
+      "duration": "03:43",
+      "durationSeconds": 223,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "泪桥",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=OmqQcKoeQzU",
+      "youtubeVideoTitle": "伍佰《泪桥》钢琴版 Wu Bai 'Tear Bridge' Piano Cover | Piano by CIP Music",
+      "youtubeVideoId": "OmqQcKoeQzU",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/280721",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "泪桥",
+        "en": "Lei Qiao"
+      },
+      "artists": {
+        "zhHans": "伍佰",
+        "zhHant": "伍佰",
+        "en": "Wu Bai"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:43:46.26896+00:00",
+      "youtubeSortIndex": 100,
+      "youtubePublishedAt": "2025-05-02T12:00:00.000Z",
+      "listSortPublishedAtMs": 1746187200000,
+      "listSortPublishedAt": "2025-05-02T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "9c2f23c7-c5ce-43ee-9858-4aa413845492",
+      "title": "遇见",
+      "displayTitle": "遇见",
+      "originalArtist": "孙燕姿",
+      "canonicalArtistId": "stefanie-sun",
+      "canonicalArtistDisplayName": "孙燕姿",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/89/94/5f/89945f98-114b-b665-926a-c1f547a07e88/825646522392.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-9fbfb7abc5/audio.mp3",
+      "duration": "03:27",
+      "durationSeconds": 207,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "遇见",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=IE8FnPs-nCI",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "IE8FnPs-nCI",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/280008",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "遇见",
+        "en": "Yu Jian"
+      },
+      "artists": {
+        "zhHans": "孙燕姿",
+        "zhHant": "孫燕姿",
+        "en": "Stefanie Sun"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:47:23.330599+00:00",
+      "youtubeSortIndex": 101,
+      "youtubePublishedAt": "2025-04-29T12:00:00.000Z",
+      "listSortPublishedAtMs": 1745928000000,
+      "listSortPublishedAt": "2025-04-29T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "b0f76914-113f-4a13-baa3-78e7fe0b72cb",
       "title": "芥",
       "displayTitle": "芥",
@@ -4147,181 +4334,6 @@
       "youtubePublishedAt": "2024-05-01T12:00:00.000Z",
       "listSortPublishedAtMs": 1714564800000,
       "listSortPublishedAt": "2024-05-01T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "55fdda06-fbd6-4801-8497-82ff0b1933bc",
-      "title": "Bubble gum",
-      "displayTitle": "Bubble gum",
-      "originalArtist": "NewJeans",
-      "canonicalArtistId": "newjeans",
-      "canonicalArtistDisplayName": "NewJeans",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/bf/68/ca/bf68ca64-4acd-543f-bc78-455f11f06105/196922889738_Cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/bubble-gum/audio.mp3",
-      "duration": "03:19",
-      "durationSeconds": 199,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "bubble gum",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=qDmAv48qYos",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "qDmAv48qYos",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/168428",
-      "linkStatus": "linked",
-      "artists": {
-        "zhHans": "NewJeans",
-        "zhHant": "NewJeans",
-        "en": "NewJeans"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:14:37.965958+00:00",
-      "youtubeSortIndex": 206,
-      "youtubePublishedAt": "2024-04-30T12:00:00.000Z",
-      "listSortPublishedAtMs": 1714478400000,
-      "listSortPublishedAt": "2024-04-30T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "bc1c23a3-190c-4904-a0d2-36c129ecafa6",
-      "title": "奇迹时刻",
-      "displayTitle": "奇迹时刻",
-      "originalArtist": "周深",
-      "canonicalArtistId": "zhou-shen",
-      "canonicalArtistDisplayName": "周深",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行",
-        "游戏"
-      ],
-      "categoryKeys": [
-        "cpop",
-        "game"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music/91/76/f1/mzi.vfjedubh.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f5fe57e76c/audio.mp3",
-      "duration": "03:30",
-      "durationSeconds": 210,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "奇迹时刻",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=bKpZ_M3qY6U",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "bKpZ_M3qY6U",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/167913",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "奇迹时刻",
-        "en": "Qi Ji Shi Ke"
-      },
-      "artists": {
-        "zhHans": "周深",
-        "zhHant": "周深",
-        "en": "Zhou Shen"
-      },
-      "workProjectKey": "honor-of-kings",
-      "supabaseCreatedAt": "2026-04-14T02:39:15.423385+00:00",
-      "youtubeSortIndex": 207,
-      "youtubePublishedAt": "2024-04-27T12:00:00.000Z",
-      "listSortPublishedAtMs": 1714219200000,
-      "listSortPublishedAt": "2024-04-27T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "c25dfd45-9a48-4fbe-a85d-538c31d2670c",
-      "title": "Psychic",
-      "displayTitle": "Psychic",
-      "originalArtist": "张艺兴",
-      "canonicalArtistId": "lay-zhang",
-      "canonicalArtistDisplayName": "张艺兴",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/0f/a5/20/0fa520b7-6e71-3827-594d-575e97526e4c/5021732282415.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/psychic/audio.mp3",
-      "duration": "02:24",
-      "durationSeconds": 144,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "Psychic",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=1IUZlkIAcwg",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "1IUZlkIAcwg",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/167688",
-      "linkStatus": "linked",
-      "artists": {
-        "zhHans": "张艺兴",
-        "zhHant": "張藝興",
-        "en": "Lay Zhang"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:31:26.193658+00:00",
-      "youtubeSortIndex": 208,
-      "youtubePublishedAt": "2024-04-25T12:00:00.000Z",
-      "listSortPublishedAtMs": 1714046400000,
-      "listSortPublishedAt": "2024-04-25T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "e30348e9-47ab-4de5-a381-89299daefeff",
-      "title": "Lucky Girl Syndrome",
-      "displayTitle": "Lucky Girl Syndrome",
-      "originalArtist": "ILLIT",
-      "canonicalArtistId": "illit",
-      "canonicalArtistDisplayName": "ILLIT",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/3e/49/1e/3e491e43-4961-21ab-2abe-37fb1c0feb40/196922879227_Cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/lucky-girl-syndrome/audio.mp3",
-      "duration": "02:22",
-      "durationSeconds": 142,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "Lucky Girl Syndrome",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=5-PKhFzuGjI",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "5-PKhFzuGjI",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/167191",
-      "linkStatus": "linked",
-      "artists": {
-        "zhHans": "ILLIT",
-        "zhHant": "ILLIT",
-        "en": "ILLIT"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:29:53.290101+00:00",
-      "youtubeSortIndex": 209,
-      "youtubePublishedAt": "2024-04-23T12:00:00.000Z",
-      "listSortPublishedAtMs": 1713873600000,
-      "listSortPublishedAt": "2024-04-23T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

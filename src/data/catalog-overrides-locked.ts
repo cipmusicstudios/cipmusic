@@ -3290,6 +3290,133 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     artistReviewStatus: "ok",
     matchedVideoTitle: "ZEROBASEONE — TOP 5（用户指定 YouTube / Bilibili / Sheet）"
   },
+  "雨爱": {
+    title: "雨爱",
+    displayTitle: "雨爱",
+    titles: {
+      zhHans: "雨爱",
+      zhHant: "雨愛",
+      en: "Rain Love"
+    },
+    artist: "杨丞琳",
+    artists: {
+      zhHans: "杨丞琳",
+      zhHant: "楊丞琳",
+      en: "Rainie Yang"
+    },
+    category: "华语流行",
+    categoryTags: [
+      "华语流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=Hi0kcaaI3kE",
+      video: "https://www.youtube.com/watch?v=Hi0kcaaI3kE",
+      bilibili: "https://www.bilibili.com/video/BV1GZVW6ZEQA",
+      sheet: "https://www.mymusic5.com/cipmusic/386856"
+    },
+    coverUrl: "https://i.scdn.co/image/ab67616d0000b2737781cc488fb3aeca4a1c5a5c",
+    canonicalArtistId: "rainie-yang",
+    canonicalArtistDisplayName: "杨丞琳",
+    artistReviewStatus: "ok",
+    listSortPublishedAtMs: 5006000001000,
+    matchedVideoTitle: "杨丞琳 / Rainie Yang - 雨爱（用户指定 YouTube / Bilibili / Sheet）"
+  },
+  "Curious": {
+    title: "Curious",
+    displayTitle: "Curious",
+    titles: {
+      zhHans: "Curious",
+      zhHant: "Curious",
+      en: "Curious"
+    },
+    artist: "AND2BLE",
+    artists: {
+      zhHans: "AND2BLE",
+      zhHant: "AND2BLE",
+      en: "AND2BLE"
+    },
+    category: "韩流流行",
+    categoryTags: [
+      "韩流流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=w12a4falTTU",
+      video: "https://www.youtube.com/watch?v=w12a4falTTU",
+      bilibili: "https://www.bilibili.com/video/BV1fcVy64Egp",
+      sheet: "https://www.mymusic5.com/cipmusic/390160"
+    },
+    coverUrl: "https://i.scdn.co/image/ab67616d0000b273bb8ae8f14991473e2e848963",
+    canonicalArtistId: "and2ble",
+    canonicalArtistDisplayName: "AND2BLE",
+    artistReviewStatus: "ok",
+    listSortPublishedAtMs: 5006000002000,
+    matchedVideoTitle: "AND2BLE - Curious（用户指定 YouTube / Bilibili / Sheet）"
+  },
+  "玻璃": {
+    title: "玻璃",
+    displayTitle: "玻璃",
+    titles: {
+      zhHans: "玻璃",
+      zhHant: "玻璃",
+      en: "Glass"
+    },
+    artist: "汤令山",
+    artists: {
+      zhHans: "汤令山",
+      zhHant: "湯令山",
+      en: "Gareth.T"
+    },
+    category: "华语流行",
+    categoryTags: [
+      "华语流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=U__8-HOruhg",
+      video: "https://www.youtube.com/watch?v=U__8-HOruhg",
+      bilibili: "https://www.bilibili.com/video/BV1ZE716BEEe",
+      sheet: "https://www.mymusic5.com/cipmusic/429658"
+    },
+    coverUrl: "https://i.scdn.co/image/ab67616d0000b273d6e4227850346a74a114c0f7",
+    canonicalArtistId: "gareth-t",
+    canonicalArtistDisplayName: "汤令山",
+    artistReviewStatus: "ok",
+    listSortPublishedAtMs: 5006000003000,
+    matchedVideoTitle: "汤令山 / Gareth.T - 玻璃（用户指定 YouTube / Bilibili / Sheet）"
+  },
+  "Dai Dai": {
+    title: "Dai Dai",
+    displayTitle: "Dai Dai",
+    titles: {
+      zhHans: "Dai Dai",
+      zhHant: "Dai Dai",
+      en: "Dai Dai"
+    },
+    artist: "Shakira, Burna Boy",
+    artists: {
+      zhHans: "夏奇拉、Burna Boy",
+      zhHant: "夏奇拉、Burna Boy",
+      en: "Shakira, Burna Boy"
+    },
+    category: "欧美流行",
+    categoryTags: [
+      "欧美流行"
+    ],
+    links: {
+      youtube: "https://www.youtube.com/watch?v=GGREaYFmdr0",
+      video: "https://www.youtube.com/watch?v=GGREaYFmdr0",
+      bilibili: "https://www.bilibili.com/video/BV1jLVN6yEnw",
+      sheet: "https://www.mymusic5.com/cipmusic/386283"
+    },
+    coverUrl: "https://i.scdn.co/image/ab67616d0000b27303cadf1b3fe324c1dc710ed4",
+    canonicalArtistId: "shakira",
+    coCanonicalArtistIds: [
+      "burna-boy"
+    ],
+    canonicalArtistDisplayName: "Shakira, Burna Boy",
+    artistReviewStatus: "ok",
+    listSortPublishedAtMs: 5006000004000,
+    matchedVideoTitle: "Shakira, Burna Boy - Dai Dai（用户指定 YouTube / Bilibili / Sheet）"
+  },
 
 };
 

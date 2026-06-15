@@ -4,6 +4,193 @@
   "chunkIndex": 0,
   "tracks": [
     {
+      "id": "5b6e9538-b0b2-4b57-9ec4-f3c7ee207097",
+      "title": "Dai Dai",
+      "displayTitle": "Dai Dai",
+      "originalArtist": "Shakira, Burna Boy",
+      "canonicalArtistId": "shakira",
+      "coCanonicalArtistIds": [
+        "burna-boy"
+      ],
+      "canonicalArtistDisplayName": "Shakira, Burna Boy",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b27303cadf1b3fe324c1dc710ed4",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/dai-dai-shakira-burna-boy/audio.mp3",
+      "duration": "03:42",
+      "durationSeconds": 222,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Dai Dai",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=GGREaYFmdr0",
+      "youtubeVideoTitle": "Shakira, Burna Boy - Dai Dai（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "GGREaYFmdr0",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1jLVN6yEnw",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/386283",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Dai Dai",
+        "zhHant": "Dai Dai",
+        "en": "Dai Dai"
+      },
+      "artists": {
+        "zhHans": "夏奇拉、Burna Boy",
+        "zhHant": "夏奇拉、Burna Boy",
+        "en": "Shakira, Burna Boy"
+      },
+      "supabaseCreatedAt": "2026-06-15T16:52:24.394963+00:00",
+      "listSortPublishedAtMs": 5006000004000,
+      "listSortPublishedAt": "2128-08-19T19:33:24.000Z",
+      "listSortSource": "catalog_override"
+    },
+    {
+      "id": "40bbfbfd-392f-4581-b304-106991477188",
+      "title": "玻璃",
+      "displayTitle": "玻璃",
+      "originalArtist": "汤令山",
+      "canonicalArtistId": "gareth-t",
+      "canonicalArtistDisplayName": "汤令山",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273d6e4227850346a74a114c0f7",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-9d90a6e5e8-track-0f6921e183/audio.mp3",
+      "duration": "03:08",
+      "durationSeconds": 188,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "玻璃",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=U__8-HOruhg",
+      "youtubeVideoTitle": "汤令山 / Gareth.T - 玻璃（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "U__8-HOruhg",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1ZE716BEEe",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/429658",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "玻璃",
+        "zhHant": "玻璃",
+        "en": "Glass"
+      },
+      "artists": {
+        "zhHans": "汤令山",
+        "zhHant": "湯令山",
+        "en": "Gareth.T"
+      },
+      "supabaseCreatedAt": "2026-06-15T16:52:27.555363+00:00",
+      "listSortPublishedAtMs": 5006000003000,
+      "listSortPublishedAt": "2128-08-19T19:33:23.000Z",
+      "listSortSource": "catalog_override"
+    },
+    {
+      "id": "8e191d27-5693-48af-bf4f-00f65c3e49bc",
+      "title": "Curious",
+      "displayTitle": "Curious",
+      "originalArtist": "AND2BLE",
+      "canonicalArtistId": "and2ble",
+      "canonicalArtistDisplayName": "AND2BLE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273bb8ae8f14991473e2e848963",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/curious-and2ble/audio.mp3",
+      "duration": "02:56",
+      "durationSeconds": 176,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Curious",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=w12a4falTTU",
+      "youtubeVideoTitle": "AND2BLE - Curious（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "w12a4falTTU",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1fcVy64Egp",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/390160",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Curious",
+        "zhHant": "Curious",
+        "en": "Curious"
+      },
+      "artists": {
+        "zhHans": "AND2BLE",
+        "zhHant": "AND2BLE",
+        "en": "AND2BLE"
+      },
+      "supabaseCreatedAt": "2026-06-15T16:52:20.107792+00:00",
+      "listSortPublishedAtMs": 5006000002000,
+      "listSortPublishedAt": "2128-08-19T19:33:22.000Z",
+      "listSortSource": "catalog_override"
+    },
+    {
+      "id": "a68e63ae-6524-4a73-82ec-ca4217507f64",
+      "title": "雨爱",
+      "displayTitle": "雨爱",
+      "originalArtist": "杨丞琳",
+      "canonicalArtistId": "rainie-yang",
+      "canonicalArtistDisplayName": "杨丞琳",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2737781cc488fb3aeca4a1c5a5c",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f018371afc-track-14dfbbcbc9/audio.mp3",
+      "duration": "03:57",
+      "durationSeconds": 237,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "雨爱",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=Hi0kcaaI3kE",
+      "youtubeVideoTitle": "杨丞琳 / Rainie Yang - 雨爱（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "Hi0kcaaI3kE",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1GZVW6ZEQA",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/386856",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "雨爱",
+        "zhHant": "雨愛",
+        "en": "Rain Love"
+      },
+      "artists": {
+        "zhHans": "杨丞琳",
+        "zhHant": "楊丞琳",
+        "en": "Rainie Yang"
+      },
+      "supabaseCreatedAt": "2026-06-15T16:52:30.708657+00:00",
+      "listSortPublishedAtMs": 5006000001000,
+      "listSortPublishedAt": "2128-08-19T19:33:21.000Z",
+      "listSortSource": "catalog_override"
+    },
+    {
       "id": "b9367595-6f78-4926-9f32-2fa903b48258",
       "title": "TOP 5",
       "displayTitle": "TOP 5",
@@ -1745,7 +1932,7 @@
       "displayTitle": "Try Everything",
       "originalArtist": "Shakira",
       "canonicalArtistId": "shakira",
-      "canonicalArtistDisplayName": "Shakira",
+      "canonicalArtistDisplayName": "夏奇拉",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
         "priority_explicit_artist_in_haystack"
@@ -1770,8 +1957,8 @@
       "sheetUrl": "https://mymusic5.com/cipmusic/343965",
       "linkStatus": "linked",
       "artists": {
-        "zhHans": "Shakira",
-        "zhHant": "Shakira",
+        "zhHans": "夏奇拉",
+        "zhHant": "夏奇拉",
         "en": "Shakira"
       },
       "supabaseCreatedAt": "2026-04-14T02:33:31.273771+00:00",
@@ -1838,7 +2025,7 @@
       "displayTitle": "Zoo",
       "originalArtist": "Shakira",
       "canonicalArtistId": "shakira",
-      "canonicalArtistDisplayName": "Shakira",
+      "canonicalArtistDisplayName": "夏奇拉",
       "artistReviewStatus": "ok",
       "artistResolutionNotes": [
         "priority_explicit_artist_in_haystack"
@@ -1866,8 +2053,8 @@
         "en": "Zoo"
       },
       "artists": {
-        "zhHans": "Shakira",
-        "zhHant": "Shakira",
+        "zhHans": "夏奇拉",
+        "zhHant": "夏奇拉",
         "en": "Shakira"
       },
       "supabaseCreatedAt": "2026-04-14T02:34:19.402719+00:00",
@@ -4163,193 +4350,6 @@
       "youtubePublishedAt": "2025-05-13T12:00:00.000Z",
       "listSortPublishedAtMs": 1747137600000,
       "listSortPublishedAt": "2025-05-13T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "971475eb-9206-489f-8026-9e5d8cc10c3a",
-      "title": "春天对花所做的事",
-      "displayTitle": "春天对花所做的事",
-      "originalArtist": "恋与深空",
-      "canonicalArtistId": "love-and-deepspace",
-      "canonicalArtistDisplayName": "恋与深空",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "source_attribution_love_and_deepspace"
-      ],
-      "tags": [
-        "华语流行",
-        "游戏"
-      ],
-      "categoryKeys": [
-        "cpop",
-        "game"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/b5/6a/85/b56a8579-c2d8-d647-5039-5472f813e05b/cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-67f84ac008/audio.mp3",
-      "duration": "03:56",
-      "durationSeconds": 236,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "春天对花所做的事",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=XHCQo2aArGo",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "XHCQo2aArGo",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/282546",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "春天对花所做的事",
-        "en": "Spring and Flowers"
-      },
-      "artists": {
-        "zhHans": "恋与深空",
-        "zhHant": "戀與深空",
-        "en": "Love and Deepspace"
-      },
-      "workProjectKey": "love-and-deepspace",
-      "supabaseCreatedAt": "2026-04-14T02:42:47.839992+00:00",
-      "youtubeSortIndex": 98,
-      "youtubePublishedAt": "2025-05-09T12:00:00.000Z",
-      "listSortPublishedAtMs": 1746792000000,
-      "listSortPublishedAt": "2025-05-09T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "c4d6ff07-663b-4aa8-b82d-3c3359b21f6e",
-      "title": "全世界我最美",
-      "displayTitle": "全世界我最美",
-      "originalArtist": "时代少年团",
-      "canonicalArtistId": "tnt",
-      "canonicalArtistDisplayName": "时代少年团",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2738e66278e9363ccb7a7f91eb8",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f177908a42/audio.mp3",
-      "duration": "03:11",
-      "durationSeconds": 191,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "全世界我最美",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=uLBoe5Y2jFY",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "uLBoe5Y2jFY",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/281690",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "全世界我最美",
-        "en": "Quan Shi Jie Wo Zui Mei"
-      },
-      "artists": {
-        "zhHans": "时代少年团",
-        "zhHant": "時代少年團",
-        "en": "Teens In Times"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:37:06.81543+00:00",
-      "youtubeSortIndex": 99,
-      "youtubePublishedAt": "2025-05-06T12:00:00.000Z",
-      "listSortPublishedAtMs": 1746532800000,
-      "listSortPublishedAt": "2025-05-06T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "f6455e6c-a0a4-49b3-9937-b37e53d6bf7a",
-      "title": "泪桥",
-      "displayTitle": "泪桥",
-      "originalArtist": "伍佰",
-      "canonicalArtistId": "wu-bai",
-      "canonicalArtistDisplayName": "伍佰",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music6/v4/50/bc/47/50bc4768-ebd1-7324-0faf-79897a18a22b/iTunes.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-7ccdee3daf/audio.mp3",
-      "duration": "03:43",
-      "durationSeconds": 223,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "泪桥",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=OmqQcKoeQzU",
-      "youtubeVideoTitle": "伍佰《泪桥》钢琴版 Wu Bai 'Tear Bridge' Piano Cover | Piano by CIP Music",
-      "youtubeVideoId": "OmqQcKoeQzU",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/280721",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "泪桥",
-        "en": "Lei Qiao"
-      },
-      "artists": {
-        "zhHans": "伍佰",
-        "zhHant": "伍佰",
-        "en": "Wu Bai"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:43:46.26896+00:00",
-      "youtubeSortIndex": 100,
-      "youtubePublishedAt": "2025-05-02T12:00:00.000Z",
-      "listSortPublishedAtMs": 1746187200000,
-      "listSortPublishedAt": "2025-05-02T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "9c2f23c7-c5ce-43ee-9858-4aa413845492",
-      "title": "遇见",
-      "displayTitle": "遇见",
-      "originalArtist": "孙燕姿",
-      "canonicalArtistId": "stefanie-sun",
-      "canonicalArtistDisplayName": "孙燕姿",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/89/94/5f/89945f98-114b-b665-926a-c1f547a07e88/825646522392.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-9fbfb7abc5/audio.mp3",
-      "duration": "03:27",
-      "durationSeconds": 207,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "遇见",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=IE8FnPs-nCI",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "IE8FnPs-nCI",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/280008",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "遇见",
-        "en": "Yu Jian"
-      },
-      "artists": {
-        "zhHans": "孙燕姿",
-        "zhHant": "孫燕姿",
-        "en": "Stefanie Sun"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:47:23.330599+00:00",
-      "youtubeSortIndex": 101,
-      "youtubePublishedAt": "2025-04-29T12:00:00.000Z",
-      "listSortPublishedAtMs": 1745928000000,
-      "listSortPublishedAt": "2025-04-29T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

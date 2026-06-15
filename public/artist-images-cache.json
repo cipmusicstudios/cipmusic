@@ -1015,5 +1015,41 @@
     "matchedName": "指田郁也",
     "searchQuery": "Fumiya Sashida",
     "imageKind": "artist_photo"
+  },
+  "rainie-yang": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/2023fdab5ee8b607973b39c4b7dc52c5/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-06-15T16:54:41.935Z",
+    "matchedName": "Rainie Yang",
+    "searchQuery": "Rainie Yang",
+    "imageKind": "artist_photo"
+  },
+  "and2ble": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/e91fa729423fb7dbdf10aac67a575fa2/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-06-15T16:54:43.049Z",
+    "matchedName": "AND2BLE",
+    "searchQuery": "AND2BLE",
+    "imageKind": "group_photo"
+  },
+  "gareth-t": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/6b11d03d773a8da28b40d73efb14da80/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-06-15T16:54:44.926Z",
+    "matchedName": "Gareth.T",
+    "searchQuery": "Gareth.T",
+    "imageKind": "artist_photo"
+  },
+  "burna-boy": {
+    "url": "https://cdn-images.dzcdn.net/images/artist/ad15b7f03325752d60db9e4d39c079ae/1000x1000-000000-80-0-0.jpg",
+    "source": "deezer",
+    "confidence": 0.98,
+    "attemptedAt": "2026-06-15T16:54:45.978Z",
+    "matchedName": "Burna Boy",
+    "searchQuery": "Burna Boy",
+    "imageKind": "artist_photo"
   }
 }

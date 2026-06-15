@@ -305,7 +305,8 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'billie-eilish': { id: 'billie-eilish', names: { zhHans: 'Billie Eilish', en: 'Billie Eilish' }, type: 'solo', nationality: 'en' },
   'alan-walker': { id: 'alan-walker', names: { zhHans: 'Alan Walker', en: 'Alan Walker' }, type: 'solo', nationality: 'en' },
   'taylor-swift': { id: 'taylor-swift', names: { zhHans: 'Taylor Swift', en: 'Taylor Swift' }, type: 'solo', nationality: 'en' },
-  'shakira': { id: 'shakira', names: { zhHans: 'Shakira', en: 'Shakira' }, type: 'solo', nationality: 'en' },
+  'shakira': { id: 'shakira', names: { zhHans: '夏奇拉', zhHant: '夏奇拉', en: 'Shakira' }, type: 'solo', nationality: 'en' },
+  'burna-boy': { id: 'burna-boy', names: { zhHans: 'Burna Boy', zhHant: 'Burna Boy', en: 'Burna Boy' }, type: 'solo', nationality: 'en' },
 
   // Extra Western (batch 2)
   'christina-perri': { id: 'christina-perri', names: { zhHans: 'Christina Perri', en: 'Christina Perri' }, type: 'solo', nationality: 'en' },
@@ -327,6 +328,9 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'a-soul': { id: 'a-soul', names: { zhHans: 'A-SOUL', en: 'A-SOUL' }, type: 'group', nationality: 'zh' },
   'nicky-lee': { id: 'nicky-lee', names: { zhHans: '李玖哲', zhHant: '李玖哲', en: 'Nicky Lee' }, type: 'solo', nationality: 'zh' },
   'penny-tai': { id: 'penny-tai', names: { zhHans: '戴佩妮', en: 'Penny Tai' }, type: 'solo', nationality: 'zh' },
+  'rainie-yang': { id: 'rainie-yang', names: { zhHans: '杨丞琳', zhHant: '楊丞琳', en: 'Rainie Yang' }, type: 'solo', nationality: 'zh' },
+  'gareth-t': { id: 'gareth-t', names: { zhHans: '汤令山', zhHant: '湯令山', en: 'Gareth.T' }, type: 'solo', nationality: 'zh' },
+  'and2ble': { id: 'and2ble', names: { zhHans: 'AND2BLE', zhHant: 'AND2BLE', en: 'AND2BLE' }, type: 'group', nationality: 'kr' },
 
   // Japanese extra
   'honeyworks': { id: 'honeyworks', names: { zhHans: 'HoneyWorks', en: 'HoneyWorks' }, type: 'group', nationality: 'jp' },

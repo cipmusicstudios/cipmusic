@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-05-24T18:42:21.174Z",
+  "generatedAt": "2026-06-15T17:26:55.266Z",
   "artists": [
     {
       "canonicalArtistId": "tnt",
@@ -1105,6 +1105,25 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "shakira",
+      "displayName": "夏奇拉",
+      "songCount": 3,
+      "songIds": [
+        "5b6e9538-b0b2-4b57-9ec4-f3c7ee207097",
+        "5a5b9c6d-e16e-4e53-99ce-a9ba800d2405",
+        "d860817a-d373-48ac-b9fc-e7bcd33c28e3"
+      ],
+      "sampleOriginalArtists": [
+        "Shakira, Burna Boy",
+        "Shakira"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/69c569506a8ff6ab0edfecbd1adf94b0/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "honkai-star-rail",
       "displayName": "崩坏：星穹铁道",
       "songCount": 3,
@@ -1412,23 +1431,6 @@
       "artistImageSource": "deezer_artist_search_saja_boys",
       "artistImageConfidence": 0.92,
       "artistImageKind": "group_photo"
-    },
-    {
-      "canonicalArtistId": "shakira",
-      "displayName": "Shakira",
-      "songCount": 2,
-      "songIds": [
-        "5a5b9c6d-e16e-4e53-99ce-a9ba800d2405",
-        "d860817a-d373-48ac-b9fc-e7bcd33c28e3"
-      ],
-      "sampleOriginalArtists": [
-        "Shakira"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/69c569506a8ff6ab0edfecbd1adf94b0/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "taylor-swift",
@@ -1940,6 +1942,22 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "and2ble",
+      "displayName": "AND2BLE",
+      "songCount": 1,
+      "songIds": [
+        "8e191d27-5693-48af-bf4f-00f65c3e49bc"
+      ],
+      "sampleOriginalArtists": [
+        "AND2BLE"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/e91fa729423fb7dbdf10aac67a575fa2/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "group_photo"
+    },
+    {
       "canonicalArtistId": "review/bb229f9a-fdf9-4adb-a188-5bb82c559f84",
       "displayName": "ASMRZ TANAKA",
       "songCount": 1,
@@ -2034,6 +2052,22 @@
       "artistImageSource": null,
       "artistImageConfidence": null,
       "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "burna-boy",
+      "displayName": "Burna Boy",
+      "songCount": 1,
+      "songIds": [
+        "5b6e9538-b0b2-4b57-9ec4-f3c7ee207097"
+      ],
+      "sampleOriginalArtists": [
+        "Shakira, Burna Boy"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/ad15b7f03325752d60db9e4d39c079ae/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "by2",
@@ -3428,6 +3462,22 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "rainie-yang",
+      "displayName": "杨丞琳",
+      "songCount": 1,
+      "songIds": [
+        "a68e63ae-6524-4a73-82ec-ca4217507f64"
+      ],
+      "sampleOriginalArtists": [
+        "杨丞琳"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/2023fdab5ee8b607973b39c4b7dc52c5/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
+    },
+    {
       "canonicalArtistId": "review/yang-kun",
       "displayName": "杨坤",
       "songCount": 1,
@@ -3522,6 +3572,22 @@
       "artistImageSource": null,
       "artistImageConfidence": null,
       "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "gareth-t",
+      "displayName": "汤令山",
+      "songCount": 1,
+      "songIds": [
+        "40bbfbfd-392f-4581-b304-106991477188"
+      ],
+      "sampleOriginalArtists": [
+        "汤令山"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/6b11d03d773a8da28b40d73efb14da80/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "artist_photo"
     },
     {
       "canonicalArtistId": "hiroyuki-sawano",
