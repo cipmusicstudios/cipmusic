@@ -4,6 +4,94 @@
   "chunkIndex": 2,
   "tracks": [
     {
+      "id": "cbcbb766-9f37-4bb7-b09f-98962a50bb5d",
+      "title": "永不熄灭的火焰",
+      "displayTitle": "永不熄灭的火焰",
+      "originalArtist": "华晨宇",
+      "canonicalArtistId": "hua-chen-yu",
+      "canonicalArtistDisplayName": "华晨宇",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002RboOs308qSq.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f9f84cccf1/audio.mp3",
+      "duration": "05:41",
+      "durationSeconds": 341,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "永不熄灭的火焰",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=2y7mC-jsw14",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "2y7mC-jsw14",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/169108",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "永不熄灭的火焰",
+        "en": "Yong Bu Xi Mie De Huo Yan"
+      },
+      "artists": {
+        "zhHans": "华晨宇",
+        "zhHant": "華晨宇",
+        "en": "Hua Chenyu"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:43:43.113656+00:00",
+      "youtubeSortIndex": 204,
+      "youtubePublishedAt": "2024-05-04T12:00:00.000Z",
+      "listSortPublishedAtMs": 1714824000000,
+      "listSortPublishedAt": "2024-05-04T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "9906ef22-84db-43df-9134-ac0f7f05d873",
+      "title": "Maestro",
+      "displayTitle": "Maestro",
+      "originalArtist": "SEVENTEEN",
+      "canonicalArtistId": "seventeen",
+      "canonicalArtistDisplayName": "SEVENTEEN",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f0/69/16/f0691679-835f-8b9b-5baa-292b7e49423f/196922894992_Cover.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/maestro/audio.mp3",
+      "duration": "03:19",
+      "durationSeconds": 199,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "maestro",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=93laLwxZ8Lk",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "93laLwxZ8Lk",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/168544",
+      "linkStatus": "linked",
+      "artists": {
+        "zhHans": "SEVENTEEN",
+        "zhHant": "SEVENTEEN",
+        "en": "SEVENTEEN"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:29:58.731081+00:00",
+      "youtubeSortIndex": 205,
+      "youtubePublishedAt": "2024-05-01T12:00:00.000Z",
+      "listSortPublishedAtMs": 1714564800000,
+      "listSortPublishedAt": "2024-05-01T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "55fdda06-fbd6-4801-8497-82ff0b1933bc",
       "title": "Bubble gum",
       "displayTitle": "Bubble gum",
@@ -4245,97 +4333,6 @@
       "youtubePublishedAt": "2023-06-24T12:00:00.000Z",
       "listSortPublishedAtMs": 1687608000000,
       "listSortPublishedAt": "2023-06-24T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "f5f68b4f-430a-467a-8296-63d2c1c5ce08",
-      "title": "Eyes for you",
-      "displayTitle": "Eyes for you",
-      "originalArtist": "时代少年团 贺峻霖",
-      "canonicalArtistId": "he-jun-lin",
-      "canonicalArtistDisplayName": "贺峻霖",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2733c2d1e7534cfa8829fc4b3e4",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/eyes-for-you/audio.mp3",
-      "duration": "03:44",
-      "durationSeconds": 224,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "eyes for you",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=hLtkmTV5t8c",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "hLtkmTV5t8c",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/114578",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Eyes For You"
-      },
-      "artists": {
-        "zhHans": "贺峻霖",
-        "zhHant": "賀峻霖",
-        "en": "He Junlin"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:25:49.128556+00:00",
-      "youtubeSortIndex": 312,
-      "youtubePublishedAt": "2023-06-22T12:00:00.000Z",
-      "listSortPublishedAtMs": 1687435200000,
-      "listSortPublishedAt": "2023-06-22T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "8f8397dd-cc6a-43b3-86d0-1b3fea843b11",
-      "title": "崇拜",
-      "displayTitle": "崇拜",
-      "originalArtist": "薛之谦",
-      "canonicalArtistId": "joker-xue",
-      "canonicalArtistDisplayName": "薛之谦",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://i.scdn.co/image/ab67616d0000b273e29b1aac27a53927da783a52",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f926028f66/audio.mp3",
-      "duration": "04:57",
-      "durationSeconds": 297,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "崇拜",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=zLzlPWGtL5c",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "zLzlPWGtL5c",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/113882",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "崇拜",
-        "en": "Chong Bai"
-      },
-      "artists": {
-        "zhHans": "薛之谦",
-        "zhHant": "薛之謙",
-        "en": "Joker Xue"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:40:22.482115+00:00",
-      "youtubeSortIndex": 314,
-      "youtubePublishedAt": "2023-06-18T12:00:00.000Z",
-      "listSortPublishedAtMs": 1687089600000,
-      "listSortPublishedAt": "2023-06-18T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

@@ -4,6 +4,96 @@
   "chunkIndex": 1,
   "tracks": [
     {
+      "id": "25349319-a16a-4628-900f-db645bfcc630",
+      "title": "Messy",
+      "displayTitle": "Messy",
+      "originalArtist": "ROS",
+      "canonicalArtistId": "rose",
+      "coCanonicalArtistIds": [
+        "blackpink"
+      ],
+      "canonicalArtistDisplayName": "Rosé",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "remote_messy_rosé",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3f/12/c6/3f12c666-79bc-88a2-e6b7-ace94a925a52/075678595561.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/messy/audio.mp3",
+      "duration": "02:56",
+      "durationSeconds": 176,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "messy",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=uDGdnATwqj8",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "uDGdnATwqj8",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/287262",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Messy"
+      },
+      "artists": {},
+      "supabaseCreatedAt": "2026-04-14T02:30:20.640872+00:00",
+      "youtubeSortIndex": 96,
+      "youtubePublishedAt": "2025-05-16T12:00:00.000Z",
+      "listSortPublishedAtMs": 1747396800000,
+      "listSortPublishedAt": "2025-05-16T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "83754ace-4d6e-4a43-ba7c-ca17393250b9",
+      "title": "Girlfriend",
+      "displayTitle": "Girlfriend",
+      "originalArtist": "I-DLE",
+      "canonicalArtistId": "i-dle",
+      "canonicalArtistDisplayName": "I-DLE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273dcda0178cb863ce4ded9481b",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/girlfriend/audio.mp3",
+      "duration": "02:42",
+      "durationSeconds": 162,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Girlfriend",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=DnFRnBxK8Uw",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "DnFRnBxK8Uw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://mymusic.st/cipmusic/285952",
+      "linkStatus": "linked",
+      "titles": {
+        "en": "Girlfriend"
+      },
+      "artists": {
+        "zhHans": "I-DLE",
+        "zhHant": "I-DLE",
+        "en": "I-DLE"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:27:28.383851+00:00",
+      "youtubeSortIndex": 97,
+      "youtubePublishedAt": "2025-05-13T12:00:00.000Z",
+      "listSortPublishedAtMs": 1747137600000,
+      "listSortPublishedAt": "2025-05-13T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "971475eb-9206-489f-8026-9e5d8cc10c3a",
       "title": "春天对花所做的事",
       "displayTitle": "春天对花所做的事",
@@ -4246,94 +4336,6 @@
       "youtubePublishedAt": "2024-05-05T12:00:00.000Z",
       "listSortPublishedAtMs": 1714910400000,
       "listSortPublishedAt": "2024-05-05T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "cbcbb766-9f37-4bb7-b09f-98962a50bb5d",
-      "title": "永不熄灭的火焰",
-      "displayTitle": "永不熄灭的火焰",
-      "originalArtist": "华晨宇",
-      "canonicalArtistId": "hua-chen-yu",
-      "canonicalArtistDisplayName": "华晨宇",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "华语流行"
-      ],
-      "categoryKeys": [
-        "cpop"
-      ],
-      "coverUrl": "https://y.gtimg.cn/music/photo_new/T002R500x500M000002RboOs308qSq.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-f9f84cccf1/audio.mp3",
-      "duration": "05:41",
-      "durationSeconds": 341,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "永不熄灭的火焰",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=2y7mC-jsw14",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "2y7mC-jsw14",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/169108",
-      "linkStatus": "linked",
-      "titles": {
-        "zhHans": "永不熄灭的火焰",
-        "en": "Yong Bu Xi Mie De Huo Yan"
-      },
-      "artists": {
-        "zhHans": "华晨宇",
-        "zhHant": "華晨宇",
-        "en": "Hua Chenyu"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:43:43.113656+00:00",
-      "youtubeSortIndex": 204,
-      "youtubePublishedAt": "2024-05-04T12:00:00.000Z",
-      "listSortPublishedAtMs": 1714824000000,
-      "listSortPublishedAt": "2024-05-04T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "9906ef22-84db-43df-9134-ac0f7f05d873",
-      "title": "Maestro",
-      "displayTitle": "Maestro",
-      "originalArtist": "SEVENTEEN",
-      "canonicalArtistId": "seventeen",
-      "canonicalArtistDisplayName": "SEVENTEEN",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f0/69/16/f0691679-835f-8b9b-5baa-292b7e49423f/196922894992_Cover.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/maestro/audio.mp3",
-      "duration": "03:19",
-      "durationSeconds": 199,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "maestro",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=93laLwxZ8Lk",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "93laLwxZ8Lk",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/168544",
-      "linkStatus": "linked",
-      "artists": {
-        "zhHans": "SEVENTEEN",
-        "zhHant": "SEVENTEEN",
-        "en": "SEVENTEEN"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:29:58.731081+00:00",
-      "youtubeSortIndex": 205,
-      "youtubePublishedAt": "2024-05-01T12:00:00.000Z",
-      "listSortPublishedAtMs": 1714564800000,
-      "listSortPublishedAt": "2024-05-01T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

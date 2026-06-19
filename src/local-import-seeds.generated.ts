@@ -16,6 +16,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "titleOverride": "BonBon Girls"
   },
   {
+    "id": "local_Crow",
+    "slug": "Crow",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Crow"
+  },
+  {
     "id": "local_Curious",
     "slug": "Curious",
     "audioFile": "audio.mp3",
@@ -30,6 +38,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
     "titleOverride": "Dai Dai"
+  },
+  {
+    "id": "local_DNA",
+    "slug": "DNA",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "DNA"
   },
   {
     "id": "local_falling_you_刘耀文",
@@ -62,6 +78,14 @@ export const LOCAL_IMPORT_SEEDS = [
     "musicxmlFile": "score.musicxml",
     "midiFile": "performance.mid",
     "titleOverride": "It's me"
+  },
+  {
+    "id": "local_remote_catalog_e2e_test_20260615_001",
+    "slug": "remote-catalog-e2e-test-20260615-001",
+    "audioFile": "audio.mp3",
+    "musicxmlFile": "score.musicxml",
+    "midiFile": "performance.mid",
+    "titleOverride": "Remote Catalog E2e Test 20260615 001"
   },
   {
     "id": "local_someone_to_love",

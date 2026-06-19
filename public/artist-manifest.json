@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-15T17:26:55.266Z",
+  "generatedAt": "2026-06-19T17:34:03.120Z",
   "artists": [
     {
       "canonicalArtistId": "tnt",
@@ -197,6 +197,37 @@
       "artistImageKind": "artist_photo"
     },
     {
+      "canonicalArtistId": "i-dle",
+      "displayName": "I-DLE",
+      "songCount": 13,
+      "songIds": [
+        "2ee89ce6-3a0c-4549-b6df-aad8293c3777",
+        "c3cd6a64-aefe-405e-a0d2-2af9cdc5e230",
+        "83754ace-4d6e-4a43-ba7c-ca17393250b9",
+        "69ea7269-7c9c-49c9-b7e2-0c4bc50d2d6c",
+        "533967c4-bb07-40c5-b7a3-cf2ee70b2fbd",
+        "cb1d17b0-cc92-48a2-a73f-27e75859a9e8",
+        "79323e53-9ae3-4be9-aa7a-d04ffd804a07",
+        "20202774-efab-48f6-9bf3-9a0b85c8fe1c",
+        "d8d03970-9e42-4231-982d-4b8de6646bd5",
+        "18b888d6-6738-42bb-ae73-16ac2ef1254e",
+        "4e7919bf-98f7-403e-87ea-3a7cf20eca2c",
+        "4d1fe713-1b55-4ada-a5b3-9f05963a6f51",
+        "35ad35d0-618f-47b2-987d-adfa03379f99"
+      ],
+      "sampleOriginalArtists": [
+        "I-DLE",
+        "Minnie",
+        "宋雨琦",
+        "赵美延"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/0b381aacaf9b4c4c1b60664431c815bf/1000x1000-000000-80-0-0.jpg",
+      "artistImageSource": "deezer",
+      "artistImageConfidence": 0.98,
+      "artistImageKind": "group_photo"
+    },
+    {
       "canonicalArtistId": "zerobaseone",
       "displayName": "ZEROBASEONE",
       "songCount": 13,
@@ -257,36 +288,6 @@
       "artistImageSource": "deezer",
       "artistImageConfidence": 0.98,
       "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "i-dle",
-      "displayName": "I-DLE",
-      "songCount": 12,
-      "songIds": [
-        "c3cd6a64-aefe-405e-a0d2-2af9cdc5e230",
-        "83754ace-4d6e-4a43-ba7c-ca17393250b9",
-        "69ea7269-7c9c-49c9-b7e2-0c4bc50d2d6c",
-        "533967c4-bb07-40c5-b7a3-cf2ee70b2fbd",
-        "cb1d17b0-cc92-48a2-a73f-27e75859a9e8",
-        "79323e53-9ae3-4be9-aa7a-d04ffd804a07",
-        "20202774-efab-48f6-9bf3-9a0b85c8fe1c",
-        "d8d03970-9e42-4231-982d-4b8de6646bd5",
-        "18b888d6-6738-42bb-ae73-16ac2ef1254e",
-        "4e7919bf-98f7-403e-87ea-3a7cf20eca2c",
-        "4d1fe713-1b55-4ada-a5b3-9f05963a6f51",
-        "35ad35d0-618f-47b2-987d-adfa03379f99"
-      ],
-      "sampleOriginalArtists": [
-        "I-DLE",
-        "Minnie",
-        "宋雨琦",
-        "赵美延"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": "https://cdn-images.dzcdn.net/images/artist/0b381aacaf9b4c4c1b60664431c815bf/1000x1000-000000-80-0-0.jpg",
-      "artistImageSource": "deezer",
-      "artistImageConfidence": 0.98,
-      "artistImageKind": "group_photo"
     },
     {
       "canonicalArtistId": "blackpink",
@@ -1958,6 +1959,22 @@
       "artistImageKind": "group_photo"
     },
     {
+      "canonicalArtistId": "andrea-bocelli",
+      "displayName": "Andrea Bocelli",
+      "songCount": 1,
+      "songIds": [
+        "6d1d351a-b3a6-457f-a945-995271b33035"
+      ],
+      "sampleOriginalArtists": [
+        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "review/bb229f9a-fdf9-4adb-a188-5bb82c559f84",
       "displayName": "ASMRZ TANAKA",
       "songCount": 1,
@@ -2150,6 +2167,22 @@
       "artistImageKind": null
     },
     {
+      "canonicalArtistId": "david-guetta",
+      "displayName": "David Guetta",
+      "songCount": 1,
+      "songIds": [
+        "6d1d351a-b3a6-457f-a945-995271b33035"
+      ],
+      "sampleOriginalArtists": [
+        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
       "canonicalArtistId": "review/40b6fac8-146b-4f8f-9b86-264f713f1a87",
       "displayName": "Deadpool",
       "songCount": 1,
@@ -2190,6 +2223,22 @@
       ],
       "sampleOriginalArtists": [
         "Ed Sheeran"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
+    },
+    {
+      "canonicalArtistId": "ejae",
+      "displayName": "EJAE",
+      "songCount": 1,
+      "songIds": [
+        "6d1d351a-b3a6-457f-a945-995271b33035"
+      ],
+      "sampleOriginalArtists": [
+        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": null,
@@ -2340,6 +2389,22 @@
       "artistImageSource": "deezer_artist_search",
       "artistImageConfidence": 0.92,
       "artistImageKind": "artist_photo"
+    },
+    {
+      "canonicalArtistId": "megan-thee-stallion",
+      "displayName": "Megan Thee Stallion",
+      "songCount": 1,
+      "songIds": [
+        "6d1d351a-b3a6-457f-a945-995271b33035"
+      ],
+      "sampleOriginalArtists": [
+        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
+      ],
+      "reviewStatus": "ok",
+      "artistImageUrl": null,
+      "artistImageSource": null,
+      "artistImageConfidence": null,
+      "artistImageKind": null
     },
     {
       "canonicalArtistId": "metro-boomin",

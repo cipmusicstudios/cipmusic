@@ -4,6 +4,105 @@
   "chunkIndex": 0,
   "tracks": [
     {
+      "id": "6d1d351a-b3a6-457f-a945-995271b33035",
+      "title": "DNA",
+      "displayTitle": "DNA",
+      "originalArtist": "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion",
+      "canonicalArtistId": "andrea-bocelli",
+      "coCanonicalArtistIds": [
+        "david-guetta",
+        "ejae",
+        "megan-thee-stallion"
+      ],
+      "canonicalArtistDisplayName": "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "欧美流行"
+      ],
+      "categoryKeys": [
+        "western"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b2739c62340f99a122f333417a4a",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/dna-andrea-bocelli-david-guetta-ejae-megan-thee-stallion/audio.mp3",
+      "duration": "03:24",
+      "durationSeconds": 204,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "DNA",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=xzPQ4YlgdWY",
+      "youtubeVideoTitle": "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion - DNA (More Than A Game)（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "xzPQ4YlgdWY",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1VwjV6TEph",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/442484",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "DNA",
+        "zhHant": "DNA",
+        "en": "DNA (More Than A Game)"
+      },
+      "artists": {
+        "zhHans": "Andrea Bocelli、David Guetta、EJAE、Megan Thee Stallion",
+        "zhHant": "Andrea Bocelli、David Guetta、EJAE、Megan Thee Stallion",
+        "en": "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
+      },
+      "supabaseCreatedAt": "2026-06-19T17:33:06.858782+00:00",
+      "listSortPublishedAtMs": 5006000006000,
+      "listSortPublishedAt": "2128-08-19T19:33:26.000Z",
+      "listSortSource": "catalog_override"
+    },
+    {
+      "id": "2ee89ce6-3a0c-4549-b6df-aad8293c3777",
+      "title": "Crow",
+      "displayTitle": "Crow",
+      "originalArtist": "I-DLE",
+      "canonicalArtistId": "i-dle",
+      "canonicalArtistDisplayName": "I-DLE",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack",
+        "catalog_override_canonical"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://i.scdn.co/image/ab67616d0000b27361704fc49debfb58bfb7e074",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/crow-i-dle/audio.mp3",
+      "duration": "03:04",
+      "durationSeconds": 184,
+      "hasPracticeMode": true,
+      "importSource": "remote",
+      "slug": "Crow",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=7T9dKTSBgls",
+      "youtubeVideoTitle": "I-DLE - Crow（用户指定 YouTube / Bilibili / Sheet）",
+      "youtubeVideoId": "7T9dKTSBgls",
+      "bilibiliVideoUrl": "https://www.bilibili.com/video/BV1fjjz6QE7F",
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/446403",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "Crow",
+        "zhHant": "Crow",
+        "en": "Crow"
+      },
+      "artists": {
+        "zhHans": "I-DLE",
+        "zhHant": "I-DLE",
+        "en": "I-DLE"
+      },
+      "supabaseCreatedAt": "2026-06-19T17:33:03.809175+00:00",
+      "youtubeSortIndex": 162,
+      "youtubePublishedAt": "2024-09-26T12:00:00.000Z",
+      "listSortPublishedAtMs": 5006000005000,
+      "listSortPublishedAt": "2128-08-19T19:33:25.000Z",
+      "listSortSource": "catalog_override"
+    },
+    {
       "id": "5b6e9538-b0b2-4b57-9ec4-f3c7ee207097",
       "title": "Dai Dai",
       "displayTitle": "Dai Dai",
@@ -4260,96 +4359,6 @@
       "youtubePublishedAt": "2025-05-20T12:00:00.000Z",
       "listSortPublishedAtMs": 1747742400000,
       "listSortPublishedAt": "2025-05-20T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "25349319-a16a-4628-900f-db645bfcc630",
-      "title": "Messy",
-      "displayTitle": "Messy",
-      "originalArtist": "ROS",
-      "canonicalArtistId": "rose",
-      "coCanonicalArtistIds": [
-        "blackpink"
-      ],
-      "canonicalArtistDisplayName": "Rosé",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "remote_messy_rosé",
-        "catalog_override_canonical"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/3f/12/c6/3f12c666-79bc-88a2-e6b7-ace94a925a52/075678595561.jpg/600x600bb.jpg",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/messy/audio.mp3",
-      "duration": "02:56",
-      "durationSeconds": 176,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "messy",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=uDGdnATwqj8",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "uDGdnATwqj8",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/287262",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Messy"
-      },
-      "artists": {},
-      "supabaseCreatedAt": "2026-04-14T02:30:20.640872+00:00",
-      "youtubeSortIndex": 96,
-      "youtubePublishedAt": "2025-05-16T12:00:00.000Z",
-      "listSortPublishedAtMs": 1747396800000,
-      "listSortPublishedAt": "2025-05-16T12:00:00.000Z",
-      "listSortSource": "youtube_published"
-    },
-    {
-      "id": "83754ace-4d6e-4a43-ba7c-ca17393250b9",
-      "title": "Girlfriend",
-      "displayTitle": "Girlfriend",
-      "originalArtist": "I-DLE",
-      "canonicalArtistId": "i-dle",
-      "canonicalArtistDisplayName": "I-DLE",
-      "artistReviewStatus": "ok",
-      "artistResolutionNotes": [
-        "priority_explicit_artist_in_haystack"
-      ],
-      "tags": [
-        "韩流流行"
-      ],
-      "categoryKeys": [
-        "kpop"
-      ],
-      "coverUrl": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273dcda0178cb863ce4ded9481b",
-      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/girlfriend/audio.mp3",
-      "duration": "02:42",
-      "durationSeconds": 162,
-      "hasPracticeMode": true,
-      "importSource": "remote",
-      "slug": "Girlfriend",
-      "youtubeVideoUrl": "https://www.youtube.com/watch?v=DnFRnBxK8Uw",
-      "youtubeVideoTitle": null,
-      "youtubeVideoId": "DnFRnBxK8Uw",
-      "bilibiliVideoUrl": null,
-      "sheetUrl": "https://mymusic.st/cipmusic/285952",
-      "linkStatus": "linked",
-      "titles": {
-        "en": "Girlfriend"
-      },
-      "artists": {
-        "zhHans": "I-DLE",
-        "zhHant": "I-DLE",
-        "en": "I-DLE"
-      },
-      "supabaseCreatedAt": "2026-04-14T02:27:28.383851+00:00",
-      "youtubeSortIndex": 97,
-      "youtubePublishedAt": "2025-05-13T12:00:00.000Z",
-      "listSortPublishedAtMs": 1747137600000,
-      "listSortPublishedAt": "2025-05-13T12:00:00.000Z",
       "listSortSource": "youtube_published"
     }
   ]

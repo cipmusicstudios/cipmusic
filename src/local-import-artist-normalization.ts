@@ -307,6 +307,10 @@ export const ARTIST_DICTIONARY: Record<string, NormalizedArtist> = {
   'taylor-swift': { id: 'taylor-swift', names: { zhHans: 'Taylor Swift', en: 'Taylor Swift' }, type: 'solo', nationality: 'en' },
   'shakira': { id: 'shakira', names: { zhHans: '夏奇拉', zhHant: '夏奇拉', en: 'Shakira' }, type: 'solo', nationality: 'en' },
   'burna-boy': { id: 'burna-boy', names: { zhHans: 'Burna Boy', zhHant: 'Burna Boy', en: 'Burna Boy' }, type: 'solo', nationality: 'en' },
+  'andrea-bocelli': { id: 'andrea-bocelli', names: { zhHans: 'Andrea Bocelli', zhHant: 'Andrea Bocelli', en: 'Andrea Bocelli' }, type: 'solo', nationality: 'en' },
+  'david-guetta': { id: 'david-guetta', names: { zhHans: 'David Guetta', zhHant: 'David Guetta', en: 'David Guetta' }, type: 'solo', nationality: 'en' },
+  'ejae': { id: 'ejae', names: { zhHans: 'EJAE', zhHant: 'EJAE', en: 'EJAE' }, type: 'solo', nationality: 'en' },
+  'megan-thee-stallion': { id: 'megan-thee-stallion', names: { zhHans: 'Megan Thee Stallion', zhHant: 'Megan Thee Stallion', en: 'Megan Thee Stallion' }, type: 'solo', nationality: 'en' },
 
   // Extra Western (batch 2)
   'christina-perri': { id: 'christina-perri', names: { zhHans: 'Christina Perri', en: 'Christina Perri' }, type: 'solo', nationality: 'en' },

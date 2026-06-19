@@ -4,6 +4,94 @@
   "chunkIndex": 5,
   "tracks": [
     {
+      "id": "fb98ee50-b410-4097-b452-689926c948b4",
+      "title": "疯人公园",
+      "displayTitle": "疯人公园",
+      "originalArtist": "《疯人公园 》钢琴版 王源",
+      "canonicalArtistId": "wang-yuan",
+      "canonicalArtistDisplayName": "王源",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "华语流行"
+      ],
+      "categoryKeys": [
+        "cpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/81/72/3f/81723fe1-26f9-60f9-eac8-dc446e248115/6941808002718.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/track-d9da4be1e3/audio.mp3",
+      "duration": "02:41",
+      "durationSeconds": 161,
+      "hasPracticeMode": false,
+      "importSource": "remote",
+      "slug": "疯人公园",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=nZWaUhpfsFE",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "nZWaUhpfsFE",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": "https://www.mymusic5.com/cipmusic/359491",
+      "linkStatus": "linked",
+      "titles": {
+        "zhHans": "疯人公园",
+        "en": "Feng Ren Gong Yuan"
+      },
+      "artists": {
+        "zhHans": "王源",
+        "zhHant": "王源",
+        "en": "Roy Wang"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:44:47.390239+00:00",
+      "youtubeSortIndex": 568,
+      "youtubePublishedAt": "2021-08-23T12:00:00.000Z",
+      "listSortPublishedAtMs": 1629720000000,
+      "listSortPublishedAt": "2021-08-23T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
+      "id": "bdf45d6a-7c17-4d89-b17f-c182ffb99fb0",
+      "title": "The eve",
+      "displayTitle": "The eve",
+      "originalArtist": "EXO",
+      "canonicalArtistId": "exo",
+      "canonicalArtistDisplayName": "EXO",
+      "artistReviewStatus": "ok",
+      "artistResolutionNotes": [
+        "priority_explicit_artist_in_haystack"
+      ],
+      "tags": [
+        "韩流流行"
+      ],
+      "categoryKeys": [
+        "kpop"
+      ],
+      "coverUrl": "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/e0/e6/45/e0e6457b-98c2-e86a-158f-63f234e62ed7/EXO_04_THE_WAR_DC_KOREAN_Ver.jpg/600x600bb.jpg",
+      "mp3Url": "https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/songs/songs/the-eve/audio.mp3",
+      "duration": "03:08",
+      "durationSeconds": 188,
+      "hasPracticeMode": false,
+      "importSource": "remote",
+      "slug": "the eve",
+      "youtubeVideoUrl": "https://www.youtube.com/watch?v=JBRJ-ZMVMjw",
+      "youtubeVideoTitle": null,
+      "youtubeVideoId": "JBRJ-ZMVMjw",
+      "bilibiliVideoUrl": null,
+      "sheetUrl": null,
+      "linkStatus": "missingSheet",
+      "artists": {
+        "zhHans": "EXO",
+        "zhHant": "EXO",
+        "en": "EXO"
+      },
+      "supabaseCreatedAt": "2026-04-14T02:33:16.184646+00:00",
+      "youtubeSortIndex": 569,
+      "youtubePublishedAt": "2021-08-21T12:00:00.000Z",
+      "listSortPublishedAtMs": 1629547200000,
+      "listSortPublishedAt": "2021-08-21T12:00:00.000Z",
+      "listSortSource": "youtube_published"
+    },
+    {
       "id": "ee191538-8ffd-4e2d-8f8e-b727b867ce35",
       "title": "HOME",
       "displayTitle": "HOME",

@@ -1,9 +1,9 @@
 {
   "version": 5,
   "kind": "catalog",
-  "generatedAt": "2026-06-15T17:26:55.266Z",
+  "generatedAt": "2026-06-19T17:34:03.120Z",
   "assetBaseUrl": "",
-  "trackTotal": 560,
+  "trackTotal": 562,
   "chunks": [
     {
       "path": "songs-manifest-chunk-0.json",
@@ -27,7 +27,7 @@
     },
     {
       "path": "songs-manifest-chunk-5.json",
-      "count": 80
+      "count": 82
     }
   ]
 }

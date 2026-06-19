@@ -2132,5 +2132,65 @@ export const LOCAL_IMPORT_METADATA_OVERRIDES: Record<string, LocalImportMetadata
     },
     matchedVideoTitle: "Shakira, Burna Boy - Dai Dai（用户指定 YouTube / Bilibili / Sheet）"
   },
+  "DNA": {
+    title: "DNA",
+    displayTitle: "DNA",
+    titles: {
+      zhHans: "DNA",
+      zhHant: "DNA",
+      en: "DNA (More Than A Game)"
+    },
+    artist: "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion",
+    artists: {
+      zhHans: "Andrea Bocelli、David Guetta、EJAE、Megan Thee Stallion",
+      zhHant: "Andrea Bocelli、David Guetta、EJAE、Megan Thee Stallion",
+      en: "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
+    },
+    category: "欧美流行",
+    categoryTags: [
+      "欧美流行"
+    ],
+    cover: "https://i.scdn.co/image/ab67616d0000b2739c62340f99a122f333417a4a",
+    officialLinks: {
+      spotify: "https://open.spotify.com/track/40qwbrvCXsiOPh9xOupCMp?si=735830f50bb346ea"
+    },
+    links: {
+      youtube: "https://www.youtube.com/watch?v=xzPQ4YlgdWY",
+      video: "https://www.youtube.com/watch?v=xzPQ4YlgdWY",
+      bilibili: "https://www.bilibili.com/video/BV1VwjV6TEph",
+      sheet: "https://www.mymusic5.com/cipmusic/442484"
+    },
+    matchedVideoTitle: "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion - DNA (More Than A Game)（用户指定 YouTube / Bilibili / Sheet）"
+  },
+  "Crow": {
+    title: "Crow",
+    displayTitle: "Crow",
+    titles: {
+      zhHans: "Crow",
+      zhHant: "Crow",
+      en: "Crow"
+    },
+    artist: "I-DLE",
+    artists: {
+      zhHans: "I-DLE",
+      zhHant: "I-DLE",
+      en: "I-DLE"
+    },
+    category: "韩流流行",
+    categoryTags: [
+      "韩流流行"
+    ],
+    cover: "https://i.scdn.co/image/ab67616d0000b27361704fc49debfb58bfb7e074",
+    officialLinks: {
+      spotify: "https://open.spotify.com/track/4mZc0r3NFubFbe9xMOkZGJ?si=a9dda2314d3f41cd"
+    },
+    links: {
+      youtube: "https://www.youtube.com/watch?v=7T9dKTSBgls",
+      video: "https://www.youtube.com/watch?v=7T9dKTSBgls",
+      bilibili: "https://www.bilibili.com/video/BV1fjjz6QE7F",
+      sheet: "https://www.mymusic5.com/cipmusic/446403"
+    },
+    matchedVideoTitle: "I-DLE - Crow（用户指定 YouTube / Bilibili / Sheet）"
+  },
 
 };
