@@ -16,6 +16,7 @@
       ],
       "canonicalArtistDisplayName": "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion",
       "artistReviewStatus": "ok",
+      "excludeFromArtistIndex": true,
       "artistResolutionNotes": [
         "priority_explicit_artist_in_haystack",
         "catalog_override_canonical"

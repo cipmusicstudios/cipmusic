@@ -50,6 +50,8 @@ export type TrackMetadata = {
     coCanonicalArtistIds?: string[];
     canonicalArtistDisplayName?: string;
     artistReviewStatus?: 'ok' | 'needsReview' | 'unknown';
+    /** Song still displays its artist string, but does not create/populate artist pages. */
+    excludeFromArtistIndex?: boolean;
     category?: string;
     categories?: {
       primary: string;

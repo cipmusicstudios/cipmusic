@@ -68,6 +68,7 @@ export function getMergedCatalogOverride(
     coCanonicalArtistIds: b.coCanonicalArtistIds ?? a.coCanonicalArtistIds,
     canonicalArtistDisplayName: b.canonicalArtistDisplayName ?? a.canonicalArtistDisplayName,
     artistReviewStatus: b.artistReviewStatus ?? a.artistReviewStatus,
+    excludeFromArtistIndex: b.excludeFromArtistIndex ?? a.excludeFromArtistIndex,
     links: mergeCatalogLinks(a.links, b.links),
     listSortPublishedAtMs: b.listSortPublishedAtMs ?? a.listSortPublishedAtMs,
   };
@@ -101,6 +102,7 @@ export function applyCatalogOverridesToTrack(track: Track): Track {
   }
   if (ov.workProjectKey) nextDisplay.workProjectKey = ov.workProjectKey;
   if (ov.coverUrl) nextDisplay.cover = ov.coverUrl;
+  if (ov.excludeFromArtistIndex != null) nextDisplay.excludeFromArtistIndex = ov.excludeFromArtistIndex;
 
   if (ov.links) {
     const L = ov.links;

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-19T17:34:03.120Z",
+  "generatedAt": "2026-06-19T18:10:31.688Z",
   "artists": [
     {
       "canonicalArtistId": "tnt",
@@ -1959,22 +1959,6 @@
       "artistImageKind": "group_photo"
     },
     {
-      "canonicalArtistId": "andrea-bocelli",
-      "displayName": "Andrea Bocelli",
-      "songCount": 1,
-      "songIds": [
-        "6d1d351a-b3a6-457f-a945-995271b33035"
-      ],
-      "sampleOriginalArtists": [
-        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
-    },
-    {
       "canonicalArtistId": "review/bb229f9a-fdf9-4adb-a188-5bb82c559f84",
       "displayName": "ASMRZ TANAKA",
       "songCount": 1,
@@ -2167,22 +2151,6 @@
       "artistImageKind": null
     },
     {
-      "canonicalArtistId": "david-guetta",
-      "displayName": "David Guetta",
-      "songCount": 1,
-      "songIds": [
-        "6d1d351a-b3a6-457f-a945-995271b33035"
-      ],
-      "sampleOriginalArtists": [
-        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
-    },
-    {
       "canonicalArtistId": "review/40b6fac8-146b-4f8f-9b86-264f713f1a87",
       "displayName": "Deadpool",
       "songCount": 1,
@@ -2223,22 +2191,6 @@
       ],
       "sampleOriginalArtists": [
         "Ed Sheeran"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
-    },
-    {
-      "canonicalArtistId": "ejae",
-      "displayName": "EJAE",
-      "songCount": 1,
-      "songIds": [
-        "6d1d351a-b3a6-457f-a945-995271b33035"
-      ],
-      "sampleOriginalArtists": [
-        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
       ],
       "reviewStatus": "ok",
       "artistImageUrl": null,
@@ -2389,22 +2341,6 @@
       "artistImageSource": "deezer_artist_search",
       "artistImageConfidence": 0.92,
       "artistImageKind": "artist_photo"
-    },
-    {
-      "canonicalArtistId": "megan-thee-stallion",
-      "displayName": "Megan Thee Stallion",
-      "songCount": 1,
-      "songIds": [
-        "6d1d351a-b3a6-457f-a945-995271b33035"
-      ],
-      "sampleOriginalArtists": [
-        "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion"
-      ],
-      "reviewStatus": "ok",
-      "artistImageUrl": null,
-      "artistImageSource": null,
-      "artistImageConfidence": null,
-      "artistImageKind": null
     },
     {
       "canonicalArtistId": "metro-boomin",

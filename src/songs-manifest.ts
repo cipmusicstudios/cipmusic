@@ -141,6 +141,8 @@ export type SongManifestEntry = {
   coCanonicalArtistIds?: string[];
   canonicalArtistDisplayName?: string;
   artistReviewStatus?: ArtistReviewStatus;
+  /** Song card keeps its artist string, but artist index/detail aggregation skips this track. */
+  excludeFromArtistIndex?: boolean;
   artistResolutionNotes?: string[];
   /** Multi-label: language + 影视/动漫/游戏/纯音乐 等可并存 */
   tags: string[];
@@ -505,6 +507,7 @@ export function ensureCanonicalOnEntry(entry: SongManifestEntry): Required<
     canonicalArtistId: merged.canonicalArtistId,
     canonicalArtistDisplayName: merged.canonicalArtistDisplayName,
     artistReviewStatus: merged.artistReviewStatus,
+    excludeFromArtistIndex: cov?.excludeFromArtistIndex ?? entry.excludeFromArtistIndex,
     artistResolutionNotes: merged.notes.length ? merged.notes : entry.artistResolutionNotes,
     coCanonicalArtistIds: merged.coCanonicalArtistIds ?? entry.coCanonicalArtistIds,
     workProjectKey,
@@ -569,6 +572,7 @@ export function mergeCanonicalIntoTrack(track: Track): Track {
         coCanonicalArtistIds: resolution.coCanonicalArtistIds,
         canonicalArtistDisplayName: resolution.canonicalArtistDisplayName,
         artistReviewStatus: resolution.artistReviewStatus,
+        excludeFromArtistIndex: cov?.excludeFromArtistIndex ?? base.metadata.display.excludeFromArtistIndex,
         category: primaryCategory,
         categories: {
           ...base.metadata.display.categories,
@@ -659,6 +663,7 @@ export function manifestEntryToTrack(entry: SongManifestEntry): Track {
         coCanonicalArtistIds: e.coCanonicalArtistIds,
         canonicalArtistDisplayName: e.canonicalArtistDisplayName,
         artistReviewStatus: e.artistReviewStatus,
+        excludeFromArtistIndex: e.excludeFromArtistIndex,
         workProjectKey: e.workProjectKey,
         category: categoryPrimary,
         categories: {
@@ -804,6 +809,7 @@ export function trackToManifestEntry(track: Track, assetBaseUrl: string): SongMa
     coCanonicalArtistIds: resolution.coCanonicalArtistIds,
     canonicalArtistDisplayName: resolution.canonicalArtistDisplayName,
     artistReviewStatus: resolution.artistReviewStatus,
+    excludeFromArtistIndex: locked.metadata.display.excludeFromArtistIndex,
     artistResolutionNotes: resolution.notes.length ? resolution.notes : undefined,
     tags: finalTags,
     categoryKeys,
@@ -858,6 +864,7 @@ export function buildArtistManifestFromSongs(entries: SongManifestEntry[], gener
   const byId = new Map<string, { songIds: string[]; samples: Set<string>; review: ArtistReviewStatus }>();
 
   for (const e of full) {
+    if (e.excludeFromArtistIndex) continue;
     const bucketIds = workProjectAugmentedArtistBucketIds(
       e.canonicalArtistId,
       e.coCanonicalArtistIds,

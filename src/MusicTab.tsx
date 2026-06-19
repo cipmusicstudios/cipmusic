@@ -1019,7 +1019,9 @@ export const MusicTab = memo(function MusicTab({
     return tracks.map(track => {
       const primary = track.canonicalArtistId || track.metadata.display.canonicalArtistId;
       const co = track.coCanonicalArtistIds ?? track.metadata.display.coCanonicalArtistIds ?? [];
-      const artistIds = workProjectAugmentedArtistBucketIds(primary, co, getWorkProjectKey(track));
+      const artistIds = track.metadata.display.excludeFromArtistIndex
+        ? []
+        : workProjectAugmentedArtistBucketIds(primary, co, getWorkProjectKey(track));
       return {
         track,
         titleN: trackTitleSearchNormalized(track),
@@ -1033,6 +1035,7 @@ export const MusicTab = memo(function MusicTab({
   const { artistsMap, artists } = useMemo(() => {
     const map = new Map<string, ArtistCard>();
     tracks.forEach(trk => {
+      if (trk.metadata.display.excludeFromArtistIndex) return;
       const primary = trk.canonicalArtistId || trk.metadata.display.canonicalArtistId;
       const co = trk.coCanonicalArtistIds ?? trk.metadata.display.coCanonicalArtistIds ?? [];
       const bucketIds = workProjectAugmentedArtistBucketIds(primary, co, getWorkProjectKey(trk));

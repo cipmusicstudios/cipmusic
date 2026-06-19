@@ -3450,6 +3450,7 @@ export const CATALOG_OVERRIDES_BY_SLUG: Record<string, CatalogOverride> = {
     ],
     canonicalArtistDisplayName: "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion",
     artistReviewStatus: "ok",
+    excludeFromArtistIndex: true,
     listSortPublishedAtMs: 5006000006000,
     matchedVideoTitle: "Andrea Bocelli, David Guetta, EJAE, Megan Thee Stallion - DNA (More Than A Game)（用户指定 YouTube / Bilibili / Sheet）"
   },

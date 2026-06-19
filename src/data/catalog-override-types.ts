@@ -46,6 +46,11 @@ export type CatalogOverride = {
   coCanonicalArtistIds?: string[];
   canonicalArtistDisplayName?: string;
   artistReviewStatus?: 'ok' | 'needsReview' | 'unknown';
+  /**
+   * Keep the full artist string on song cards/details, but do not let this
+   * track create or populate artist index/detail buckets.
+   */
+  excludeFromArtistIndex?: boolean;
   /** 锁定封面 URL（非音频资源） */
   coverUrl?: string;
   /**
