@@ -8,6 +8,13 @@
   to = "/index.html"
   status = 200
 
+# China Android store review: serve a crawler-readable Chinese privacy policy
+# at the exact extensionless URL required by OPPO, Xiaomi, vivo, Honor, etc.
+[[redirects]]
+  from = "/privacy-cn"
+  to = "/privacy-cn.html"
+  status = 200
+
 # SPA fallback：直接打开 /settings、/music、/focus 等前端路由时回落到 index.html。
 # Netlify 处理优先级：静态文件（dist/assets、*.json、*.html、ambience/、salamander/ 等）
 # 与 /.netlify/functions/* 保留路径都先于 [[redirects]] 命中，所以这条 catch-all
