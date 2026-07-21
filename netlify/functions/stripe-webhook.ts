@@ -41,7 +41,20 @@ function rawBody(event: HandlerEvent): string {
 
 function stripeClient(): Stripe | null {
   const key = process.env.STRIPE_SECRET_KEY?.trim();
-  return key ? new Stripe(key) : null;
+  return key?.startsWith('sk_live_') ? new Stripe(key) : null;
+}
+
+/**
+ * Production uses a dedicated Live endpoint secret. STRIPE_WEBHOOK_SECRET is
+ * retained only as a temporary deployment-migration fallback and must never
+ * contain the Sandbox endpoint secret.
+ */
+function liveSigningSecret(): string | null {
+  return (
+    process.env.STRIPE_WEBHOOK_SECRET_LIVE?.trim() ||
+    process.env.STRIPE_WEBHOOK_SECRET?.trim() ||
+    null
+  );
 }
 
 function stringId(value: string | Stripe.Customer | Stripe.Subscription | Stripe.Price | null | undefined): string | null {
@@ -361,12 +374,12 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     return textResponse(405, 'method_not_allowed');
   }
 
-  const signingSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
+  const signingSecret = liveSigningSecret();
   const signature = event.headers['stripe-signature'] || event.headers['Stripe-Signature'];
   const stripe = stripeClient();
 
   if (!stripe || !signingSecret) {
-    console.error('[stripe-webhook] missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET');
+    console.error('[stripe-webhook] missing live Stripe key or signing secret');
     return textResponse(500, 'config_error');
   }
 
@@ -379,9 +392,26 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   try {
     stripeEvent = stripe.webhooks.constructEvent(rawBody(event), signature, signingSecret);
   } catch (error) {
-    console.warn('[stripe-webhook] signature verification failed', error);
+    console.warn('[stripe-webhook] signature verification failed', {
+      errorName: error instanceof Error ? error.name : 'unknown_error',
+    });
     return textResponse(400, 'invalid_signature');
   }
+
+  if (!stripeEvent.livemode) {
+    console.warn('[stripe-webhook] rejected non-live event', {
+      eventId: stripeEvent.id,
+      eventType: stripeEvent.type,
+      livemode: stripeEvent.livemode,
+    });
+    return textResponse(403, 'test_event_rejected_by_live_endpoint');
+  }
+
+  console.log('[stripe-webhook] accepted live event', {
+    eventId: stripeEvent.id,
+    eventType: stripeEvent.type,
+    livemode: stripeEvent.livemode,
+  });
 
   try {
     switch (stripeEvent.type) {

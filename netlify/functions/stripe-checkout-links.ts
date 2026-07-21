@@ -18,6 +18,21 @@ export const handler: Handler = async () => {
     process.env.VITE_STRIPE_CHECKOUT_YEARLY_URL?.trim() ||
     '';
 
+  // The Live links exist only in Netlify's production context. A preview or
+  // branch deploy therefore fails closed without relying on CONTEXT, which is
+  // a build-time variable and is not guaranteed in the Functions runtime.
+  if (!monthly || !yearly) {
+    return {
+      statusCode: 503,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-store',
+      },
+      body: JSON.stringify({error: 'stripe_checkout_unavailable_in_non_production'}),
+    };
+  }
+
   return {
     statusCode: 200,
     headers: {

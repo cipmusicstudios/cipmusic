@@ -51,10 +51,19 @@
 | 变量名 | 用途 |
 |--------|------|
 | `STRIPE_SECRET_KEY` | Stripe SDK 密钥（`stripe-webhook` 等） |
-| `STRIPE_WEBHOOK_SECRET` | 校验 webhook 签名 |
+| `STRIPE_WEBHOOK_SECRET_LIVE` | Production Live endpoint signing secret（首选） |
+| `STRIPE_WEBHOOK_SECRET` | Live signing secret 的迁移期兼容回退；不得放 Sandbox secret，迁移完成后移除 |
+| `STRIPE_WEBHOOK_SECRET_SANDBOX` | 独立 Sandbox endpoint signing secret；仅用于 `stripe-webhook-sandbox` |
 | `STRIPE_CHECKOUT_MONTHLY_URL` | Payment Link（`stripe-checkout-links` 优先读取） |
 | `STRIPE_CHECKOUT_YEARLY_URL` | 同上 |
 | `VITE_STRIPE_CHECKOUT_*_URL` | Functions 内 fallback 名称（与上同名值） |
+
+**环境隔离要求**
+
+- Production：`sk_live_`、Live Payment Links、`STRIPE_WEBHOOK_SECRET_LIVE`、production Supabase；`stripe-webhook` 验签后只接受 `livemode=true`。
+- Sandbox webhook：使用 `stripe-webhook-sandbox` + `STRIPE_WEBHOOK_SECRET_SANDBOX`；只验签和记录脱敏摘要，明确不写 `user_membership`。
+- Deploy Preview / Branch Deploy：没有独立 staging Stripe + Supabase 时，不得继承 `STRIPE_SECRET_KEY`、`SUPABASE_SERVICE_ROLE_KEY` 或 Live Payment Links；缺少独立 Payment Links 时，`stripe-checkout-links` 返回 unavailable。
+- Live 与 Sandbox endpoint secret 不可互换。两者即使指向同一域名，也必须使用不同 Function URL 和不同 signing secret。
 
 ### ZPay
 
