@@ -334,6 +334,7 @@ export const en = {
     primarySignUp: 'Send login code',
     oauthDivider: 'Or continue with',
     oauthGoogle: 'Google',
+    oauthApple: 'Continue with Apple',
     closeAriaLabel: 'Close',
     invalidEmailOrPassword: 'Invalid email or login code.',
     emailNotConfirmed: 'Please verify your email code before continuing.',

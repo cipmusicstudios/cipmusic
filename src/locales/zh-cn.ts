@@ -370,6 +370,7 @@ export const zhCN = {
     primarySignUp: '发送登录验证码',
     oauthDivider: '或继续使用',
     oauthGoogle: 'Google',
+    oauthApple: '通过 Apple 继续',
     closeAriaLabel: '关闭',
     invalidEmailOrPassword: '邮箱或登录验证码不正确。',
     emailNotConfirmed: '请先完成邮箱验证码验证，再继续。',
