@@ -15,6 +15,7 @@ export type SupabaseAuthModalCopy = {
   primarySignUp: string;
   oauthDivider: string;
   oauthGoogle: string;
+  oauthApple: string;
   closeAriaLabel: string;
   invalidEmailOrPassword: string;
   emailNotConfirmed: string;
@@ -136,6 +137,7 @@ const defaultAuthCopy: SupabaseAuthModalCopy = {
   primarySignUp: 'Send login code',
   oauthDivider: 'Or continue with',
   oauthGoogle: 'Google',
+  oauthApple: 'Continue with Apple',
   closeAriaLabel: 'Close',
   invalidEmailOrPassword: 'Invalid email or login code.',
   emailNotConfirmed: 'Please verify your email code before continuing.',
@@ -385,6 +387,25 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
     })();
   };
 
+  const handleApple = () => {
+    if (!envOk) return;
+    void (async () => {
+      setErrorMsg(null);
+      setSuccessMsg(null);
+      const {error} = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {redirectTo: window.location.origin},
+      });
+      if (error) {
+        const code =
+          'code' in error && typeof (error as {code?: string}).code === 'string'
+            ? (error as {code?: string}).code!
+            : undefined;
+        setErrorMsg(localizeAuthErrorMessage(error.message, code, copy));
+      }
+    })();
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -529,14 +550,27 @@ export function SupabaseAuthModal({open, mode, onClose, onSuccess, onModeChange,
                   <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--color-mist-text)]/38">
                     {copy.oauthDivider}
                   </p>
-                  <button
-                    type="button"
-                    disabled={busy || !envOk}
-                    onClick={handleGoogle}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/18 px-3 py-1.5 text-[12px] font-medium text-[var(--color-mist-text)]/72 transition-colors hover:bg-white/30 hover:text-[var(--color-mist-text)]/88 disabled:opacity-55"
-                  >
-                    {copy.oauthGoogle}
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      disabled={busy || !envOk}
+                      onClick={handleApple}
+                      className="inline-flex min-h-8 items-center gap-2 rounded-full bg-black px-4 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-black/80 disabled:opacity-55"
+                    >
+                      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current">
+                        <path d="M17.05 12.54c-.03-3.1 2.53-4.61 2.65-4.68a5.69 5.69 0 0 0-4.48-2.42c-1.88-.2-3.7 1.13-4.66 1.13-.98 0-2.46-1.11-4.06-1.08a5.94 5.94 0 0 0-5 3.05c-2.16 3.74-.55 9.24 1.52 12.26 1.04 1.48 2.25 3.14 3.85 3.08 1.56-.06 2.14-.99 4.02-.99 1.86 0 2.41.99 4.03.95 1.68-.02 2.73-1.49 3.73-2.98a12.2 12.2 0 0 0 1.7-3.45 5.34 5.34 0 0 1-3.3-4.87ZM14 3.45A5.42 5.42 0 0 0 15.24-.44a5.53 5.53 0 0 0-3.58 1.85 5.16 5.16 0 0 0-1.28 3.74A4.58 4.58 0 0 0 14 3.45Z" />
+                      </svg>
+                      {copy.oauthApple}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy || !envOk}
+                      onClick={handleGoogle}
+                      className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/30 bg-white/18 px-3 py-1.5 text-[12px] font-medium text-[var(--color-mist-text)]/72 transition-colors hover:bg-white/30 hover:text-[var(--color-mist-text)]/88 disabled:opacity-55"
+                    >
+                      {copy.oauthGoogle}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

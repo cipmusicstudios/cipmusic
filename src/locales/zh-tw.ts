@@ -328,6 +328,7 @@ export const zhTW = {
     primarySignUp: '寄送登入驗證碼',
     oauthDivider: '或繼續使用',
     oauthGoogle: 'Google',
+    oauthApple: '透過 Apple 繼續',
     closeAriaLabel: '關閉',
     invalidEmailOrPassword: '電子信箱或登入驗證碼不正確。',
     emailNotConfirmed: '請先完成電子信箱驗證碼驗證，再繼續。',
