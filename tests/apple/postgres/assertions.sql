@@ -10,7 +10,7 @@ end $$;
 select test_assert.ok(to_regprocedure('extensions.digest(text,text)') is not null, 'extensions.digest signature');
 select test_assert.ok(encode(extensions.digest(concat_ws('|',
   'production','fixture-original','fixture-current','com.cipmusic.aurasounds.premium.monthly.v2',
-  '22099193','','active','true','2030-01-02T03:04:05.006Z','true','server_api_status'
+  '22099193','active','true','2030-01-02T03:04:05.006Z','true'
 ), 'sha256'), 'hex') = :'expected_status_fingerprint', 'TypeScript/PostgreSQL status fingerprint mismatch');
 select test_assert.ok((select note = 'untouched' from public.apple_phase1a_baseline_sentinel where id = 1), 'baseline changed');
 select test_assert.ok((select count(*) = 0 from public.user_membership), 'user_membership changed');
@@ -87,7 +87,8 @@ insert into auth.users(id) values
  ('10000000-0000-4000-8000-000000000002'),
  ('10000000-0000-4000-8000-000000000003'),
  ('10000000-0000-4000-8000-000000000004'),
- ('10000000-0000-4000-8000-000000000005');
+ ('10000000-0000-4000-8000-000000000005'),
+ ('10000000-0000-4000-8000-000000000006');
 
 create function test_assert.token_hash(value uuid) returns text
 language sql immutable security definer set search_path=pg_catalog,extensions as $$
@@ -132,10 +133,10 @@ declare
 begin
   v_current_hash := coalesce(p_current_hash, encode(extensions.digest(concat_ws('|',
     p_environment::text, p_original_transaction_id, coalesce(p_current_transaction_id, p_transaction_id),
-    p_current_product, '22099193', coalesce(v_token_hash, ''), p_current_status,
+    p_current_product, '22099193', p_current_status,
     p_current_grant::text,
     coalesce(to_char(v_expires at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), ''),
-    'true', p_status_source
+    'true'
   ), 'sha256'), 'hex'));
   return query select * from public.billing_record_app_store_transaction(
     p_user, p_environment, p_environment, p_transaction_id, p_original_transaction_id,
@@ -401,6 +402,136 @@ select * from test_assert.record_tx(
 reset role;
 select test_assert.ok((select current_state_quality='quarantined' and not source_grants_premium
   from public.app_store_entitlements where original_transaction_id='conflict-original'), 'fake reconciliation unlocked quarantine');
+
+-- Observation source and token presence are not authorization-state fingerprint inputs.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','source-forward-a','source-forward',
+  '2026-04-10T00:00:00Z','2026-04-10T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-11T00:00:00Z',true,'purchase',false,
+  null,null,null,'recorded','source-current',null,'verified',null,'server_api_status'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','source-forward-b','source-forward',
+  '2026-04-10T00:00:01Z','2026-04-10T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-11T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','source-current',null,'verified',null,'reconciliation'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','source-reverse-a','source-reverse',
+  '2026-04-10T00:00:00Z','2026-04-10T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-11T00:00:00Z',true,'purchase',false,
+  null,null,null,'recorded','source-current',null,'verified',null,'reconciliation'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','source-reverse-b','source-reverse',
+  '2026-04-10T00:00:01Z','2026-04-10T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-11T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','source-current',null,'verified',null,'server_api_status'
+);
+select test_assert.ok((select bool_and(current_state_quality='verified' and source_grants_premium
+  and conflicting_status_fingerprint is null and status_source='server_api_status') from public.app_store_entitlements
+  where original_transaction_id in ('source-forward','source-reverse')), 'audit source change altered authorization state');
+select test_assert.ok((
+  select jsonb_build_object('status',a.normalized_status,'grant',a.source_grants_premium,'expiry',a.expires_at,
+    'product',a.product_id,'latest',a.latest_transaction_id,'quality',a.current_state_quality)
+    = jsonb_build_object('status',b.normalized_status,'grant',b.source_grants_premium,'expiry',b.expires_at,
+    'product',b.product_id,'latest',b.latest_transaction_id,'quality',b.current_state_quality)
+  from public.app_store_entitlements a cross join public.app_store_entitlements b
+  where a.original_transaction_id='source-forward' and b.original_transaction_id='source-reverse'
+), 'source-only A/B entitlement result differs');
+select test_assert.ok((
+  select jsonb_build_object('source',a.source,'environment',a.source_environment,'plan',a.plan,'product',a.product_id,
+    'status',a.status,'validity',a.validity,'until',a.valid_until,'grant',a.source_grants_premium,
+    'quality',a.current_state_quality,'version',a.source_version_at)
+    = jsonb_build_object('source',b.source,'environment',b.source_environment,'plan',b.plan,'product',b.product_id,
+    'status',b.status,'validity',b.validity,'until',b.valid_until,'grant',b.source_grants_premium,
+    'quality',b.current_state_quality,'version',b.source_version_at)
+  from public.billing_entitlements_v2 a cross join public.billing_entitlements_v2 b
+  where a.external_entitlement_id='source-forward' and b.external_entitlement_id='source-reverse'
+), 'source-only A/B billing result differs');
+
+-- Binding evidence is independent: missing hashes preserve/fill evidence, differing hashes hard-quarantine.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-preserve-a','token-preserve',
+  '2026-04-20T00:00:00Z','2026-04-20T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-21T00:00:00Z',true,'purchase',false,
+  null,null,null,'recorded','token-preserve-current'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-preserve-b','token-preserve',
+  '2026-04-20T00:00:01Z','2026-04-20T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-21T00:00:00Z',false,'restore',false,
+  null,null,null,'recorded','token-preserve-current'
+);
+select test_assert.ok((select app_account_token_hash=test_assert.token_hash('10000000-0000-4000-8000-000000000003')
+  and current_state_quality='verified' and source_grants_premium from public.app_store_entitlements
+  where original_transaction_id='token-preserve'), 'incoming NULL erased verified binding hash');
+
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-fill-a','token-fill',
+  '2026-04-21T00:00:00Z','2026-04-21T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-22T00:00:00Z',false,'legacy_claim',true,
+  null,null,null,'recorded','token-fill-current'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-fill-b','token-fill',
+  '2026-04-21T00:00:01Z','2026-04-21T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-22T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','token-fill-current'
+);
+select test_assert.ok((select app_account_token_hash=test_assert.token_hash('10000000-0000-4000-8000-000000000003')
+  and binding_state='claimed' and current_state_quality='verified' from public.app_store_entitlements
+  where original_transaction_id='token-fill'), 'verified binding hash was not filled');
+
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-conflict-a1','token-conflict-one',
+  '2026-04-22T00:00:00Z','2026-04-22T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-23T00:00:00Z',true,'purchase',false,
+  null,null,null,'recorded','token-conflict-current'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000006','production','token-conflict-b1','token-conflict-one',
+  '2026-04-22T00:00:01Z','2026-04-22T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-23T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','token-conflict-current'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000006','production','token-conflict-b2','token-conflict-two',
+  '2026-04-22T00:00:00Z','2026-04-22T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-23T00:00:00Z',true,'purchase',false,
+  null,null,null,'recorded','token-conflict-current'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-conflict-a2','token-conflict-two',
+  '2026-04-22T00:00:01Z','2026-04-22T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-23T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','token-conflict-current'
+);
+select test_assert.ok((select count(*)=2 and bool_and(current_state_quality='quarantined'
+  and normalized_status='unknown' and not source_grants_premium and app_account_token_hash is null
+  and binding_conflict_hash_low=least(test_assert.token_hash('10000000-0000-4000-8000-000000000003'),test_assert.token_hash('10000000-0000-4000-8000-000000000006'))
+  and binding_conflict_hash_high=greatest(test_assert.token_hash('10000000-0000-4000-8000-000000000003'),test_assert.token_hash('10000000-0000-4000-8000-000000000006')))
+  from public.app_store_entitlements where original_transaction_id in ('token-conflict-one','token-conflict-two')),
+  'binding hash conflict was not canonical fail-closed');
+select test_assert.ok((select count(*)=2 and bool_and(not source_grants_premium and current_state_quality='quarantined'
+  and status='unknown' and valid_until is null) from public.billing_entitlements_v2
+  where external_entitlement_id in ('token-conflict-one','token-conflict-two')), 'binding conflict billing projection grants');
+select test_assert.ok((select not currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000003') where external_entitlement_id='token-conflict-one'),
+  'binding conflict dynamic entitlement grants');
+select test_assert.ok((select user_id='10000000-0000-4000-8000-000000000003' and binding_state='claimed'
+  from public.app_store_entitlements where original_transaction_id='token-conflict-one'), 'binding conflict changed original binding');
+select test_assert.ok((select user_id='10000000-0000-4000-8000-000000000006' and binding_state='claimed'
+  from public.app_store_entitlements where original_transaction_id='token-conflict-two'), 'reverse binding conflict changed original binding');
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','token-conflict-reconcile','token-conflict-one',
+  '2026-04-22T00:00:02Z','2026-04-22T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-23T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','token-conflict-current',null,'verified',null,'reconciliation'
+);
+select test_assert.ok((select current_state_quality='quarantined' and not source_grants_premium
+  and binding_conflict_hash_low is not null from public.app_store_entitlements
+  where original_transaction_id='token-conflict-one'), 'generic reconciliation cleared binding conflict');
 
 -- Strictly newer transaction evidence resolves through the ordinary verified path.
 select * from test_assert.record_tx(

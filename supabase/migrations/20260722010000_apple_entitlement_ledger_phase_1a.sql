@@ -115,6 +115,8 @@ create table public.app_store_entitlements (
   binding_state public.app_store_binding_state not null default 'unclaimed',
   claimed_at timestamptz null,
   app_account_token_hash text null check (app_account_token_hash ~ '^[0-9a-f]{64}$'),
+  binding_conflict_hash_low text null check (binding_conflict_hash_low ~ '^[0-9a-f]{64}$'),
+  binding_conflict_hash_high text null check (binding_conflict_hash_high ~ '^[0-9a-f]{64}$'),
   claim_method text null check (claim_method in ('purchase', 'restore', 'legacy_claim')),
   claim_evidence_hash text null check (claim_evidence_hash ~ '^[0-9a-f]{64}$'),
   product_id text not null,
@@ -156,9 +158,15 @@ create table public.app_store_entitlements (
     )
   ),
   constraint app_store_entitlements_quarantine_shape check (
-    (current_state_quality = 'verified' and conflicting_status_fingerprint is null)
+    (current_state_quality = 'verified' and conflicting_status_fingerprint is null
+      and binding_conflict_hash_low is null and binding_conflict_hash_high is null)
     or (current_state_quality = 'quarantined' and source_grants_premium = false
-      and conflicting_status_fingerprint is not null)
+      and (conflicting_status_fingerprint is not null or binding_conflict_hash_low is not null))
+  ),
+  constraint app_store_entitlements_binding_conflict_shape check (
+    (binding_conflict_hash_low is null and binding_conflict_hash_high is null)
+    or (binding_conflict_hash_low is not null and binding_conflict_hash_high is not null
+      and binding_conflict_hash_low < binding_conflict_hash_high)
   ),
   unique (environment, original_transaction_id),
   unique (id, environment, original_transaction_id)
@@ -500,6 +508,7 @@ declare
   v_newer_evidence boolean := false;
   v_incoming_quality public.app_store_current_state_quality;
   v_status_source public.app_store_status_source;
+  v_token_conflict boolean := false;
 begin
   if not coalesce((
     select apple_verification_enabled and apple_ledger_write_enabled
@@ -565,12 +574,10 @@ begin
     p_current_transaction_id,
     p_current_product_id,
     p_current_subscription_group_id,
-    coalesce(p_current_app_account_token_hash, ''),
     p_current_normalized_status,
     p_current_grants_premium::text,
     coalesce(to_char(p_current_expires_at at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), ''),
-    coalesce(p_current_auto_renew::text, ''),
-    p_status_source
+    coalesce(p_current_auto_renew::text, '')
   ), 'sha256'), 'hex');
   if (v_incoming_quality = 'verified' and p_conflicting_status_fingerprint is not null)
      or (v_incoming_quality = 'quarantined' and (
@@ -632,7 +639,11 @@ begin
   for update;
 
   if found then
-    if v_ent.binding_state = 'claimed' and v_ent.user_id is distinct from p_user_id then
+    v_token_conflict := v_ent.app_account_token_hash is not null
+      and p_current_app_account_token_hash is not null
+      and v_ent.app_account_token_hash <> p_current_app_account_token_hash;
+    if not v_token_conflict
+       and v_ent.binding_state = 'claimed' and v_ent.user_id is distinct from p_user_id then
       raise exception using errcode = '23505', message = 'APP_STORE_ALREADY_BOUND';
     elsif v_ent.binding_state in ('account_deleted', 'transferred', 'fraud_locked') then
       raise exception using errcode = '23505', message = 'APP_STORE_BINDING_BLOCKED';
@@ -675,7 +686,9 @@ begin
     v_binding := case when v_ent.binding_state = 'claimed' then 'claimed' else 'unclaimed' end;
     v_applied := true;
   else
-    if v_ent.binding_state = 'unclaimed' then
+    if v_token_conflict then
+      v_binding := case when v_ent.binding_state = 'claimed' then 'already_claimed' else 'unclaimed' end;
+    elsif v_ent.binding_state = 'unclaimed' then
       if not v_claim_allowed then
         v_binding := 'unclaimed';
       else
@@ -690,7 +703,34 @@ begin
       v_binding := 'already_claimed';
     end if;
 
-    if v_same_evidence and v_ent.current_state_quality = 'verified'
+    if v_token_conflict or v_ent.binding_conflict_hash_low is not null then
+      update public.app_store_entitlements set
+        app_account_token_hash = null,
+        binding_conflict_hash_low = least(
+          coalesce(binding_conflict_hash_low, v_ent.app_account_token_hash, p_current_app_account_token_hash),
+          coalesce(binding_conflict_hash_high, v_ent.app_account_token_hash, p_current_app_account_token_hash),
+          coalesce(p_current_app_account_token_hash, binding_conflict_hash_low, binding_conflict_hash_high)
+        ),
+        binding_conflict_hash_high = greatest(
+          coalesce(binding_conflict_hash_low, v_ent.app_account_token_hash, p_current_app_account_token_hash),
+          coalesce(binding_conflict_hash_high, v_ent.app_account_token_hash, p_current_app_account_token_hash),
+          coalesce(p_current_app_account_token_hash, binding_conflict_hash_low, binding_conflict_hash_high)
+        ),
+        normalized_status = 'unknown', source_grants_premium = false, expires_at = null,
+        auto_renew = null,
+        product_id = least(product_id, p_current_product_id),
+        latest_transaction_id = least(latest_transaction_id, p_current_transaction_id),
+        status_observed_at = greatest(status_observed_at, p_status_observed_at),
+        last_verified_at = greatest(last_verified_at, p_status_observed_at),
+        status_fingerprint = least(status_fingerprint, p_status_fingerprint),
+        conflicting_status_fingerprint = case
+          when status_fingerprint = p_status_fingerprint then conflicting_status_fingerprint
+          else greatest(status_fingerprint, p_status_fingerprint,
+            coalesce(conflicting_status_fingerprint, p_status_fingerprint)) end,
+        status_source = least(status_source, v_status_source), current_state_quality = 'quarantined'
+      where id = v_ent.id returning * into v_ent;
+      v_applied := true;
+    elsif v_same_evidence and v_ent.current_state_quality = 'verified'
        and v_incoming_quality = 'verified'
        and v_ent.product_id = p_current_product_id
        and v_ent.latest_transaction_id = p_current_transaction_id
@@ -710,6 +750,7 @@ begin
         status_fingerprint = case when p_current_normalized_status = 'expired'
           then p_status_fingerprint else status_fingerprint end,
         conflicting_status_fingerprint = null, current_state_quality = 'verified',
+        status_source = least(status_source, v_status_source),
         latest_effective_at = greatest(coalesce(p_current_expires_at, p_transaction_evidence_signed_at), p_transaction_evidence_signed_at)
       where id = v_ent.id returning * into v_ent;
       v_applied := true;
@@ -723,9 +764,7 @@ begin
         auto_renew = null,
         product_id = least(product_id, p_current_product_id),
         latest_transaction_id = least(latest_transaction_id, p_current_transaction_id),
-        app_account_token_hash = case
-          when app_account_token_hash is null or p_current_app_account_token_hash is null then null
-          else least(app_account_token_hash, p_current_app_account_token_hash) end,
+        app_account_token_hash = coalesce(app_account_token_hash, p_current_app_account_token_hash),
         status_observed_at = greatest(status_observed_at, p_status_observed_at),
         last_verified_at = greatest(last_verified_at, p_status_observed_at),
         status_fingerprint = least(status_fingerprint, p_status_fingerprint,
@@ -734,11 +773,13 @@ begin
         conflicting_status_fingerprint = greatest(status_fingerprint, p_status_fingerprint,
           coalesce(conflicting_status_fingerprint, p_status_fingerprint),
           coalesce(p_conflicting_status_fingerprint, p_status_fingerprint)),
-        status_source = v_status_source, current_state_quality = 'quarantined'
+        status_source = least(status_source, v_status_source), current_state_quality = 'quarantined'
       where id = v_ent.id returning * into v_ent;
       v_applied := true;
     elsif v_same_evidence then
       update public.app_store_entitlements set
+        app_account_token_hash = coalesce(app_account_token_hash, p_current_app_account_token_hash),
+        status_source = least(status_source, v_status_source),
         status_observed_at = greatest(status_observed_at, p_status_observed_at),
         last_verified_at = greatest(last_verified_at, p_status_observed_at)
       where id = v_ent.id returning * into v_ent;

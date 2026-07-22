@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {OfficialAppleCurrentStatusProvider} from '../../netlify/functions/_shared/apple/current-status';
+import {currentStatusFingerprint, OfficialAppleCurrentStatusProvider} from '../../netlify/functions/_shared/apple/current-status';
 import {summarizeTransaction} from '../../netlify/functions/_shared/apple/transaction';
 import {AppleServiceError, type AppleVerifier} from '../../netlify/functions/_shared/apple/types';
 
@@ -63,6 +63,19 @@ test('verified current active status grants only until its current expiry', asyn
   assert.equal(current.currentStateQuality, 'verified');
 });
 
+test('status source and binding hash are excluded from the authorization fingerprint', () => {
+  const value = {
+    environment: 'production' as const, originalTransactionId: 'original', latestTransactionId: 'current-tx',
+    productId: 'com.cipmusic.aurasounds.premium.monthly.v2', subscriptionGroupId: '22099193',
+    appAccountTokenHash: null, normalizedStatus: 'active' as const, grantsPremium: true,
+    expiresAt: '2030-01-02T03:04:05.006Z', autoRenew: true,
+    transactionEvidenceSignedAt: '2030-01-01T00:00:00.000Z', renewalEvidenceSignedAt: null,
+    statusSource: 'server_api_status' as const,
+  };
+  assert.equal(currentStatusFingerprint(value), currentStatusFingerprint({...value,
+    statusSource: 'reconciliation', appAccountTokenHash: 'f'.repeat(64)}));
+});
+
 test('duplicate identical current entries are idempotently deduplicated', async () => {
   const facts = summarizeTransaction(oldTransaction, 'production', null);
   const duplicated = response(1);
@@ -70,6 +83,32 @@ test('duplicate identical current entries are idempotently deduplicated', async 
   const provider = new OfficialAppleCurrentStatusProvider(config, makeVerifier(Date.now() + 86_400_000),
     () => ({getAllSubscriptionStatuses: async () => duplicated}));
   assert.equal((await provider.lookupCurrentStatus(facts, 'production')).currentStateQuality, 'verified');
+});
+
+test('current status prefers verified non-null binding evidence over a missing token', async () => {
+  const facts = summarizeTransaction(oldTransaction, 'production', null);
+  const mixed = response(1);
+  mixed.data[0].lastTransactions.push({...mixed.data[0].lastTransactions[0], signedTransactionInfo: 'with-token'});
+  const verifier = makeVerifier(Date.now() + 86_400_000);
+  verifier.verifyTransaction = async value => ({...currentTransaction(Date.now() + 86_400_000),
+    appAccountToken: value === 'with-token' ? '10000000-0000-4000-8000-000000000001' : undefined});
+  const provider = new OfficialAppleCurrentStatusProvider(config, verifier,
+    () => ({getAllSubscriptionStatuses: async () => mixed}));
+  assert.match((await provider.lookupCurrentStatus(facts, 'production')).appAccountTokenHash ?? '', /^[0-9a-f]{64}$/);
+});
+
+test('current status fails closed on two different non-null binding hashes', async () => {
+  const facts = summarizeTransaction(oldTransaction, 'production', null);
+  const mixed = response(1);
+  mixed.data[0].lastTransactions[0].signedTransactionInfo = 'token-a';
+  mixed.data[0].lastTransactions.push({...mixed.data[0].lastTransactions[0], signedTransactionInfo: 'token-b'});
+  const verifier = makeVerifier(Date.now() + 86_400_000);
+  verifier.verifyTransaction = async value => ({...currentTransaction(Date.now() + 86_400_000),
+    appAccountToken: value === 'token-a'
+      ? '10000000-0000-4000-8000-000000000001' : '10000000-0000-4000-8000-000000000002'});
+  const provider = new OfficialAppleCurrentStatusProvider(config, verifier,
+    () => ({getAllSubscriptionStatuses: async () => mixed}));
+  await assert.rejects(provider.lookupCurrentStatus(facts, 'production'), AppleServiceError);
 });
 
 test('same evidence with different status is quarantined and cannot grant', async () => {

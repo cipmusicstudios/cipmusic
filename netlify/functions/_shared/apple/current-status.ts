@@ -21,9 +21,8 @@ export function currentStatusFingerprint(value: Omit<CurrentEntitlementStatus,
   'statusObservedAt' | 'statusFingerprint' | 'conflictingStatusFingerprint' | 'currentStateQuality'>): string {
   return sha256([
     value.environment, value.originalTransactionId, value.latestTransactionId, value.productId,
-    value.subscriptionGroupId, value.appAccountTokenHash ?? '', value.normalizedStatus,
-    String(value.grantsPremium), value.expiresAt ?? '', value.autoRenew == null ? '' : String(value.autoRenew),
-    value.statusSource,
+    value.subscriptionGroupId, value.normalizedStatus, String(value.grantsPremium),
+    value.expiresAt ?? '', value.autoRenew == null ? '' : String(value.autoRenew),
   ].join('|'));
 }
 
@@ -112,16 +111,19 @@ export class OfficialAppleCurrentStatusProvider implements AppleCurrentStatusPro
     }
     if (!candidates.length) throw new AppleServiceError('CURRENT_STATUS_REQUIRED', 503);
     const unique = [...new Map(candidates.map(value => [
-      `${value.transactionEvidenceSignedAt}|${value.renewalEvidenceSignedAt ?? ''}|${value.statusFingerprint}`, value,
+      `${value.transactionEvidenceSignedAt}|${value.renewalEvidenceSignedAt ?? ''}|${value.statusFingerprint}|${value.appAccountTokenHash ?? ''}`, value,
     ])).values()];
     unique.sort((a, b) => {
       const transactionOrder = b.transactionEvidenceSignedAt.localeCompare(a.transactionEvidenceSignedAt);
       return transactionOrder || (b.renewalEvidenceSignedAt ?? '').localeCompare(a.renewalEvidenceSignedAt ?? '');
     });
-    const latest = unique[0];
+    const latestEvidence = unique[0];
     const sameEvidence = unique.filter(value =>
-      value.transactionEvidenceSignedAt === latest.transactionEvidenceSignedAt
-      && value.renewalEvidenceSignedAt === latest.renewalEvidenceSignedAt);
+      value.transactionEvidenceSignedAt === latestEvidence.transactionEvidenceSignedAt
+      && value.renewalEvidenceSignedAt === latestEvidence.renewalEvidenceSignedAt);
+    const bindingHashes = new Set(sameEvidence.flatMap(value => value.appAccountTokenHash ? [value.appAccountTokenHash] : []));
+    if (bindingHashes.size > 1) throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
+    const latest = sameEvidence.find(value => value.appAccountTokenHash != null) ?? latestEvidence;
     const conflicting = sameEvidence.find(value => value.statusFingerprint !== latest.statusFingerprint);
     if (conflicting) {
       const fingerprints = [latest.statusFingerprint, conflicting.statusFingerprint].sort();

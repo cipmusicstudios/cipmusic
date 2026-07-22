@@ -51,6 +51,9 @@ test('binding, replay, ordering, sandbox and deletion invariants are explicit', 
   assert.match(sql, /foreign key \(entitlement_id, environment, original_transaction_id\)/i);
   assert.doesNotMatch(sql, /app_account_token uuid/i);
   assert.match(sql, /app_account_token_hash text/i);
+  assert.match(sql, /binding_conflict_hash_low text/i);
+  assert.match(sql, /binding_conflict_hash_high text/i);
+  assert.match(sql, /binding_conflict_hash_low < binding_conflict_hash_high/i);
   assert.match(sql, /status = 'prepared'/);
   assert.match(sql, /delete from public\.billing_entitlements_v2[\s\S]*source = 'apple'/i);
 });

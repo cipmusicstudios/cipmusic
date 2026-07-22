@@ -60,8 +60,17 @@ The same signed evidence and fingerprint is idempotent and only refreshes observ
 evidence with a different fingerprint moves the chain to `quarantined`, stores a canonical pair of conflicting
 fingerprints, and makes the Apple source fail closed regardless of arrival order. Only a strictly newer transaction
 or renewal signed-evidence version may clear quarantine. `status_source` is audit metadata only; even a caller that
-submits `reconciliation` cannot unlock equal evidence. The HTTP request returns
+submits `reconciliation` cannot unlock equal evidence. It is excluded from the status fingerprint and may only
+refresh observation/audit metadata. The HTTP request returns
 `CURRENT_STATE_QUARANTINED`; transaction facts remain auditable.
+
+The status fingerprint covers environment, original/current transaction chain, product, subscription group,
+normalized status, grant decision, expiry, and auto-renew. It deliberately excludes observation source and
+`app_account_token_hash`: binding evidence is checked independently. A missing incoming token hash never erases a
+verified stored hash; a verified non-null hash may fill a previously null value after the normal user-binding checks.
+Two different non-null hashes create a persistent fail-closed binding quarantine. The uncontested hash column is
+cleared only in that hard-conflict state, while the canonical sorted pair is retained in dedicated non-reversible
+hash fields. Generic ledger calls, including `reconciliation`, cannot clear that binding conflict.
 
 A same-evidence active/canceled-active/billing-retry snapshot may deterministically become expired without
 quarantine only after its already-persisted verified expiry reaches server `statement_timestamp()`, and only when
