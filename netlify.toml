@@ -2,6 +2,18 @@
   publish = "dist"
   command = "npm run build"
 
+[context.deploy-preview]
+  command = "npm run build:preview"
+
+[context.deploy-preview.environment]
+  VITE_MANIFEST_MODE = "committed-preview-snapshot"
+
+[context.branch-deploy]
+  command = "npm run build:preview"
+
+[context.branch-deploy.environment]
+  VITE_MANIFEST_MODE = "committed-preview-snapshot"
+
 # SPA: email password-recovery deep link must serve index.html
 [[redirects]]
   from = "/reset-password"

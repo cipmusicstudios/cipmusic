@@ -113,6 +113,9 @@ const translations: Record<string, any> = {
   '繁體中文': zhTW
 };
 
+const usesCommittedPreviewManifest =
+  import.meta.env.VITE_MANIFEST_MODE === 'committed-preview-snapshot';
+
 const defaultTrack: Track = {
   id: 'golden_piano',
   title: 'Golden',
@@ -124,8 +127,10 @@ const defaultTrack: Track = {
   coverUrl: 'https://picsum.photos/seed/golden/100/100',
   youtubeUrl: 'https://www.youtube.com/watch?v=Z_00MYjo0-Q',
   sheetUrl: 'https://www.mymusic5.com/cipmusic/309097',
-  midiUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
-  practiceEnabled: true,
+  midiUrl: usesCommittedPreviewManifest
+    ? undefined
+    : 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
+  practiceEnabled: !usesCommittedPreviewManifest,
   metadata: {
     identity: {
       id: 'golden_piano',
@@ -147,9 +152,11 @@ const defaultTrack: Track = {
     },
     assets: {
       audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/music/Golden-piano.mp3',
-      midiUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
-      hasPracticeAssets: true,
-      practiceEnabled: true,
+      midiUrl: usesCommittedPreviewManifest
+        ? undefined
+        : 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
+      hasPracticeAssets: !usesCommittedPreviewManifest,
+      practiceEnabled: !usesCommittedPreviewManifest,
       durationLabel: '03:12',
     },
     links: {
@@ -928,6 +935,10 @@ export default function App() {
         }
         setIsLoadingTracks(false);
       }
+
+      // Preview and branch deploys are intentionally pinned to the reviewed snapshot.
+      // Do not let public Supabase hydration silently replace it at runtime.
+      if (usesCommittedPreviewManifest) return;
 
       const loadRemoteSongsWhenIdle = () => {
         if (cancelled) return;
@@ -1890,6 +1901,16 @@ export default function App() {
         scene={activeScene}
         lightweight={lightweightPracticeMode || !homeBackgroundVideoEnabled}
       />
+
+      {usesCommittedPreviewManifest && (
+        <div
+          data-no-home-click="preview-catalog-banner"
+          className="pointer-events-none fixed inset-x-0 top-0 z-[210] bg-amber-950/90 px-3 py-1.5 text-center text-[11px] font-medium tracking-wide text-amber-100 shadow-sm backdrop-blur-sm"
+          role="status"
+        >
+          Preview catalog snapshot — data may not match the latest production catalog.
+        </div>
+      )}
 
       {!practiceIsolatedMode && (
         <>
