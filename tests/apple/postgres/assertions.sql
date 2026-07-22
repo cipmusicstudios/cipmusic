@@ -739,6 +739,117 @@ do $$ begin
   end;
 end $$;
 
+-- Every persisted transaction fact is immutable on replay. Each named case
+-- independently proves the RPC error and the complete ledger/projection state.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000002','production','immutable-matrix-tx','immutable-matrix-original',
+  '2026-06-10T00:00:00Z','2026-06-10T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-06-11T00:00:00Z',true,'purchase',false,
+  repeat('6',64)
+);
+
+create function test_assert.assert_immutable_replay(p_case text, p_field text, p_expected_error text)
+returns void language plpgsql security definer set search_path=pg_catalog,test_assert,extensions,public as $$
+declare
+  v_tx_before jsonb;
+  v_ent_before jsonb;
+  v_projection_before jsonb;
+  v_tx_count bigint;
+  v_ent_count bigint;
+  v_projection_count bigint;
+  v_product text := 'com.cipmusic.aurasounds.premium.monthly.v2';
+  v_group text := '22099193';
+  v_token text := test_assert.token_hash('10000000-0000-4000-8000-000000000002');
+  v_purchase timestamptz := '2026-06-09T00:00:00Z';
+  v_expiry timestamptz := '2026-07-10T00:00:00Z';
+  v_signed timestamptz := '2026-06-10T00:00:00Z';
+  v_revocation_date timestamptz := null;
+  v_revocation_reason integer := null;
+  v_status text := 'recorded';
+  v_summary text := repeat('6',64);
+begin
+  select to_jsonb(t) into strict v_tx_before from public.app_store_transactions t
+    where environment='production' and transaction_id='immutable-matrix-tx';
+  select to_jsonb(e) into strict v_ent_before from public.app_store_entitlements e
+    where environment='production' and original_transaction_id='immutable-matrix-original';
+  select to_jsonb(b) into strict v_projection_before from public.billing_entitlements_v2 b
+    where source='apple' and source_environment='production' and external_entitlement_id='immutable-matrix-original';
+  select count(*) into v_tx_count from public.app_store_transactions;
+  select count(*) into v_ent_count from public.app_store_entitlements;
+  select count(*) into v_projection_count from public.billing_entitlements_v2;
+
+  case p_field
+    when 'product_id' then v_product := 'com.cipmusic.aurasounds.premium.yearly.v2';
+    when 'subscription_group_id' then v_group := 'different-group';
+    when 'app_account_token_hash' then v_token := repeat('7',64);
+    when 'purchase_date' then v_purchase := v_purchase + interval '1 second';
+    when 'expires_date' then v_expiry := v_expiry + interval '1 second';
+    when 'signed_date' then v_signed := v_signed + interval '1 second';
+    when 'revocation_date' then v_revocation_date := '2026-06-10T00:00:01Z';
+    when 'revocation_reason' then v_revocation_reason := 1;
+    when 'transaction_status' then v_status := 'revoked';
+    when 'summary_hash' then v_summary := repeat('8',64);
+    else raise exception 'ASSERTION_FAILED: unknown immutable replay case %', p_case;
+  end case;
+
+  begin
+    perform * from public.billing_record_app_store_transaction(
+      '10000000-0000-4000-8000-000000000002','production','production',
+      'immutable-matrix-tx','immutable-matrix-original',v_product,v_group,v_token,
+      v_purchase,v_expiry,v_signed,v_revocation_date,v_revocation_reason,
+      'PURCHASE','PURCHASED',v_status,v_summary,'purchase',false,
+      'immutable-matrix-tx','com.cipmusic.aurasounds.premium.monthly.v2','22099193',
+      test_assert.token_hash('10000000-0000-4000-8000-000000000002'),
+      'active',true,'2099-06-11T00:00:00Z',true,
+      '2026-06-10T00:00:00Z',null,statement_timestamp(),
+      (select status_fingerprint from public.app_store_entitlements
+        where environment='production' and original_transaction_id='immutable-matrix-original'),
+      null,'server_api_status','verified'
+    );
+    raise exception 'ASSERTION_FAILED: % replay succeeded', p_case;
+  exception when unique_violation or invalid_parameter_value then
+    perform test_assert.ok(sqlerrm=p_expected_error, p_case||' returned unstable replay error');
+  end;
+
+  perform test_assert.ok((select to_jsonb(t)=v_tx_before from public.app_store_transactions t
+    where environment='production' and transaction_id='immutable-matrix-tx'), p_case||' changed transaction row');
+  perform test_assert.ok((select to_jsonb(e)=v_ent_before from public.app_store_entitlements e
+    where environment='production' and original_transaction_id='immutable-matrix-original'), p_case||' changed entitlement state');
+  perform test_assert.ok((select to_jsonb(b)=v_projection_before from public.billing_entitlements_v2 b
+    where source='apple' and source_environment='production' and external_entitlement_id='immutable-matrix-original'), p_case||' changed billing projection');
+  perform test_assert.ok((select count(*) from public.app_store_transactions)=v_tx_count, p_case||' added transaction');
+  perform test_assert.ok((select count(*) from public.app_store_entitlements)=v_ent_count, p_case||' added entitlement');
+  perform test_assert.ok((select count(*) from public.billing_entitlements_v2)=v_projection_count, p_case||' added projection');
+  perform test_assert.ok((select source_grants_premium and status='active' from public.billing_entitlements_v2
+    where source='apple' and source_environment='production' and external_entitlement_id='immutable-matrix-original'),
+    p_case||' changed valid premium');
+end $$;
+
+select test_assert.assert_immutable_replay('immutable product_id','product_id','TRANSACTION_CHAIN_MISMATCH');
+select test_assert.assert_immutable_replay('immutable subscription_group_id','subscription_group_id','APP_STORE_SUBSCRIPTION_GROUP_MISMATCH');
+select test_assert.assert_immutable_replay('immutable app_account_token_hash','app_account_token_hash','APP_ACCOUNT_TOKEN_MISMATCH');
+select test_assert.assert_immutable_replay('immutable purchase_date','purchase_date','TRANSACTION_REPLAY_MISMATCH');
+select test_assert.assert_immutable_replay('immutable expires_date','expires_date','TRANSACTION_REPLAY_MISMATCH');
+select test_assert.assert_immutable_replay('immutable signed_date','signed_date','TRANSACTION_REPLAY_MISMATCH');
+select test_assert.assert_immutable_replay('immutable revocation_date','revocation_date','TRANSACTION_REPLAY_MISMATCH');
+select test_assert.assert_immutable_replay('immutable revocation_reason','revocation_reason','TRANSACTION_REPLAY_MISMATCH');
+select test_assert.assert_immutable_replay('immutable transaction_status','transaction_status','TRANSACTION_REPLAY_MISMATCH');
+select test_assert.assert_immutable_replay('immutable summary_hash','summary_hash','TRANSACTION_REPLAY_MISMATCH');
+
+-- Positive control: a byte-for-byte identical transaction replay is idempotent.
+select test_assert.ok((select transaction_duplicate and not applied_as_latest from test_assert.record_tx(
+    '10000000-0000-4000-8000-000000000002','production','immutable-matrix-tx','immutable-matrix-original',
+    '2026-06-10T00:00:00Z','2026-06-10T00:00:00Z','active',true,
+    'com.cipmusic.aurasounds.premium.monthly.v2','2099-06-11T00:00:00Z',true,'purchase',false,
+    repeat('6',64)
+  )), 'identical replay was not idempotent');
+select test_assert.ok((select count(*)=1 from public.app_store_transactions
+  where environment='production' and transaction_id='immutable-matrix-tx'), 'identical replay transaction count');
+select test_assert.ok((select count(*)=1 from public.app_store_entitlements
+  where environment='production' and original_transaction_id='immutable-matrix-original'), 'identical replay entitlement count');
+select test_assert.ok((select count(*)=1 from public.billing_entitlements_v2
+  where source='apple' and source_environment='production' and external_entitlement_id='immutable-matrix-original'), 'identical replay projection count');
+
 do $$
 declare v_wrong uuid;
 begin

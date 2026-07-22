@@ -12,7 +12,9 @@ insert into auth.users(id) values
  ('40000000-0000-4000-8000-000000000001'),
  ('40000000-0000-4000-8000-000000000002'),
  ('40000000-0000-4000-8000-000000000003'),
- ('40000000-0000-4000-8000-000000000004');
+ ('40000000-0000-4000-8000-000000000004'),
+ ('40000000-0000-4000-8000-000000000005'),
+ ('40000000-0000-4000-8000-000000000006');
 SQL
 
 first_log="$APPLE_PG_LOG_DIR/concurrency-first.log"
@@ -226,5 +228,119 @@ select test_assert.ok(
  'deletion-notification concurrency'
 );
 SQL
+
+# Different deletion request IDs for one user serialize to one prepared flow.
+# Run twice with the request start order reversed so request identity cannot
+# influence the final user-level fence or deletion cleanup.
+run_deletion_request_race() {
+  local user_id="$1"
+  local transaction_id="$2"
+  local original_id="$3"
+  local first_request="$4"
+  local second_request="$5"
+  local case_name="$6"
+  local first_log="$APPLE_PG_LOG_DIR/${case_name}-first.log"
+  local second_log="$APPLE_PG_LOG_DIR/${case_name}-second.log"
+  local post_fence_log="$APPLE_PG_LOG_DIR/${case_name}-post-fence.log"
+
+  run_psql -q -v user_id="$user_id" -v transaction_id="$transaction_id" -v original_id="$original_id" <<'SQL'
+select * from test_assert.record_tx(
+ :'user_id'::uuid,'production',:'transaction_id',:'original_id',now(),now(),'active',true);
+SQL
+
+  run_psql -q -v user_id="$user_id" -v request_id="$first_request" >"$first_log" 2>&1 <<'SQL' &
+begin;
+set local statement_timeout = '10s';
+select * from public.billing_prepare_account_deletion(:'user_id'::uuid, :'request_id'::uuid);
+select pg_sleep(1);
+commit;
+SQL
+  local first_pid=$!
+  sleep 0.15
+
+  set +e
+  run_psql -q -v user_id="$user_id" -v request_id="$second_request" >"$second_log" 2>&1 <<'SQL'
+set statement_timeout = '10s';
+select * from public.billing_prepare_account_deletion(:'user_id'::uuid, :'request_id'::uuid);
+SQL
+  local second_rc=$?
+  set -e
+  wait "$first_pid"
+
+  if [[ "$second_rc" -eq 0 ]] || ! grep -q 'ACCOUNT_DELETION_ALREADY_PREPARED' "$second_log"; then
+    echo "Different-request deletion race did not return the stable conflict; logs: $APPLE_PG_LOG_DIR" >&2
+    exit 1
+  fi
+
+  run_psql -q \
+    -v user_id="$user_id" -v transaction_id="$transaction_id" -v original_id="$original_id" \
+    -v first_request="$first_request" -v second_request="$second_request" -v case_name="$case_name" <<'SQL'
+select test_assert.ok(
+  (select count(*)=1 from public.billing_account_deletion_requests
+    where user_hash=encode(extensions.digest('cipmusic:deleted-user:v1:'||lower(:'user_id'),'sha256'),'hex')),
+  :'case_name'||' persisted multiple deletion requests'
+);
+select test_assert.ok(
+  exists(select 1 from public.billing_account_deletion_requests
+    where request_id=:'first_request'::uuid and status='prepared' and user_id is null
+      and apple_entitlements_processed=1)
+  and not exists(select 1 from public.billing_account_deletion_requests where request_id=:'second_request'::uuid),
+  :'case_name'||' request winner/conflict state'
+);
+select test_assert.ok(
+  (select count(*)=1 from public.billing_account_deletion_fences
+    where user_hash=encode(extensions.digest('cipmusic:deleted-user:v1:'||lower(:'user_id'),'sha256'),'hex')
+      and request_id=:'first_request'::uuid),
+  :'case_name'||' user fence count'
+);
+select test_assert.ok(
+  (select binding_state='account_deleted' and user_id is null and not source_grants_premium
+    from public.app_store_entitlements where environment='production' and original_transaction_id=:'original_id')
+  and (select count(*)=1 from public.app_store_binding_tombstones
+    where environment='production' and original_transaction_id=:'original_id'
+      and deletion_request_id=:'first_request'::uuid)
+  and not exists(select 1 from public.billing_entitlements_v2
+    where source='apple' and source_environment='production' and external_entitlement_id=:'original_id'),
+  :'case_name'||' deletion cleanup state'
+);
+select test_assert.ok(
+  not exists(select 1 from public.app_store_entitlements where original_transaction_id=:'original_id' and user_id is not null)
+  and not exists(select 1 from public.billing_entitlements_v2 where external_entitlement_id=:'original_id' and user_id is not null)
+  and not exists(select 1 from public.billing_account_deletion_requests where request_id=:'first_request'::uuid and user_id is not null),
+  :'case_name'||' residual user foreign key'
+);
+SQL
+
+  set +e
+  run_psql -q -v user_id="$user_id" -v transaction_id="$transaction_id" -v original_id="$original_id" >"$post_fence_log" 2>&1 <<'SQL'
+select * from test_assert.record_tx(
+  :'user_id'::uuid,'production',:'transaction_id'||'-after-fence',:'original_id'||'-after-fence',
+  now()+interval '1 second',now()+interval '1 second','active',true);
+SQL
+  local post_fence_rc=$?
+  set -e
+  if [[ "$post_fence_rc" -eq 0 ]] || ! grep -q 'ACCOUNT_DELETION_FENCED' "$post_fence_log"; then
+    echo "Post-fence chain claim did not return the stable fence error; logs: $APPLE_PG_LOG_DIR" >&2
+    exit 1
+  fi
+
+  run_psql -q -v transaction_id="$transaction_id" -v original_id="$original_id" -v case_name="$case_name" <<'SQL'
+select test_assert.ok(
+  not exists(select 1 from public.app_store_transactions where transaction_id=:'transaction_id'||'-after-fence')
+  and not exists(select 1 from public.app_store_entitlements where original_transaction_id=:'original_id'||'-after-fence')
+  and not exists(select 1 from public.billing_entitlements_v2 where external_entitlement_id=:'original_id'||'-after-fence'),
+  :'case_name'||' post-fence side effects'
+);
+SQL
+}
+
+run_deletion_request_race \
+  '40000000-0000-4000-8000-000000000005' 'delete-request-order-a-tx' 'delete-request-order-a-original' \
+  '40000000-0000-4000-8000-000000000041' '40000000-0000-4000-8000-000000000042' \
+  'deletion-request-order-a'
+run_deletion_request_race \
+  '40000000-0000-4000-8000-000000000006' 'delete-request-order-b-tx' 'delete-request-order-b-original' \
+  '40000000-0000-4000-8000-000000000052' '40000000-0000-4000-8000-000000000051' \
+  'deletion-request-order-b'
 
 echo "Concurrency checks passed"
