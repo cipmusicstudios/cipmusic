@@ -34,6 +34,15 @@ function scanTree(dir, needle) {
   return hits;
 }
 
+const sentinelVariants = [
+  sentinel,
+  sentinel.toLowerCase(),
+  sentinel.toUpperCase(),
+  encodeURIComponent(sentinel),
+  Buffer.from(sentinel).toString('base64'),
+  [...sentinel].map(char => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`).join(''),
+];
+
 function scanPreviewArtifacts(dir) {
   const failures = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -73,7 +82,9 @@ assert.match(netlifyConfig, /\[build\][\s\S]*?command = "npm run build"/);
 for (const context of ['deploy-preview', 'branch-deploy']) {
   assert.match(netlifyConfig, new RegExp(`\\[context\\.${context}\\][\\s\\S]*?command = "npm run build:preview"`));
   assert.match(netlifyConfig, new RegExp(`\\[context\\.${context}\\.environment\\][\\s\\S]*?VITE_MANIFEST_MODE = "committed-preview-snapshot"`));
+  assert.match(netlifyConfig, new RegExp(`\\[context\\.${context}\\.environment\\][\\s\\S]*?VITE_DEPLOY_CONTEXT = "${context}"`));
 }
+assert.match(netlifyConfig, /\[context\.production\.environment\][\s\S]*?VITE_DEPLOY_CONTEXT = "production"[\s\S]*?VITE_MANIFEST_MODE = "production-generated"/);
 
 const sourceHashes = manifestHashes(path.join(root, 'public'));
 for (const context of ['deploy-preview', 'branch-deploy']) {
@@ -82,9 +93,11 @@ for (const context of ['deploy-preview', 'branch-deploy']) {
   delete env.SUPABASE_URL;
   env.VITE_SUPABASE_URL = 'https://forbidden-preview.invalid';
   env.CONTEXT = context;
+  env.VITE_DEPLOY_CONTEXT = context;
   env.NETLIFY = 'true';
   env.MANIFEST_SOURCE = 'production';
   env.SUPABASE_SERVICE_ROLE_KEY = sentinel;
+  env.FAIL_IF_PRODUCTION_MANIFEST_BUILDER_RUNS = '1';
   env.VITE_MANIFEST_MODE = 'committed-preview-snapshot';
   env.NODE_OPTIONS = `${env.NODE_OPTIONS ? `${env.NODE_OPTIONS} ` : ''}--require=${JSON.stringify(preload)}`;
   const run = spawnSync('npm', ['run', 'build:preview'], { cwd: root, env, encoding: 'utf8' });
@@ -93,7 +106,10 @@ for (const context of ['deploy-preview', 'branch-deploy']) {
   assert.doesNotMatch(output, /build-songs-manifest|build:manifest|SUPABASE_SERVICE_ROLE_KEY|FORBIDDEN_PREVIEW_SENTINEL/);
   assert.deepEqual(manifestHashes(path.join(root, 'public')), sourceHashes, `${context} changed the committed snapshot`);
   assert.deepEqual(manifestHashes(path.join(root, 'dist')), sourceHashes, `${context} dist manifest differs from committed snapshot`);
-  assert.deepEqual(scanTree(path.join(root, 'dist'), sentinel), [], `${context} emitted the service-role sentinel`);
+  for (const variant of sentinelVariants) {
+    assert.doesNotMatch(output, new RegExp(variant.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'));
+    assert.deepEqual(scanTree(path.join(root, 'dist'), variant), [], `${context} emitted an encoded service-role sentinel`);
+  }
   assert.deepEqual(scanPreviewArtifacts(path.join(root, 'dist')), [], `${context} emitted private or credential data`);
   assert.match(fs.readFileSync(path.join(root, 'dist', 'index.html'), 'utf8'), /assets\/index-/);
   assert.ok(
@@ -102,6 +118,9 @@ for (const context of ['deploy-preview', 'branch-deploy']) {
     ),
     `${context} did not render the snapshot disclosure`,
   );
+  const appSource = fs.readFileSync(path.join(root, 'src', 'App.tsx'), 'utf8');
+  assert.match(appSource, /usesCommittedPreviewManifest && !immersiveMode/);
+  assert.doesNotMatch(appSource, /preview-catalog-banner[\s\S]{0,300}\bfixed\b/);
   console.log(`[preview-build] ${context}: isolated snapshot build passed`);
 }
 
@@ -110,7 +129,8 @@ const productionEnv = {
   CONTEXT: 'production',
   NETLIFY: 'true',
   MANIFEST_SOURCE: 'production',
-  VITE_MANIFEST_MODE: 'committed-preview-snapshot',
+  VITE_DEPLOY_CONTEXT: 'production',
+  VITE_MANIFEST_MODE: 'production-generated',
 };
 delete productionEnv.SUPABASE_SERVICE_ROLE_KEY;
 delete productionEnv.SUPABASE_URL;
@@ -122,3 +142,30 @@ assert.match(productionOutput, /build:manifest/);
 assert.match(productionOutput, /Missing Supabase service-role env vars for production manifest build/);
 assert.doesNotMatch(productionOutput, /committed-preview-snapshot/);
 console.log('[preview-build] production missing-credential fail-closed regression passed');
+
+const invalidProduction = spawnSync('npm', ['run', 'build'], {
+  cwd: root,
+  env: {
+    ...productionEnv,
+    VITE_MANIFEST_MODE: 'committed-preview-snapshot',
+    VITE_SUPABASE_URL: 'https://nonproduction-contract-test.invalid',
+    SUPABASE_SERVICE_ROLE_KEY: 'NONSECRET_PRESENT_CREDENTIAL_CANARY',
+    FAIL_IF_PRODUCTION_MANIFEST_BUILDER_RUNS: '1',
+  },
+  encoding: 'utf8',
+});
+const invalidOutput = `${invalidProduction.stdout || ''}\n${invalidProduction.stderr || ''}`;
+assert.notEqual(invalidProduction.status, 0);
+assert.match(invalidOutput, /invalid deploy context\/manifest mode combination/);
+assert.doesNotMatch(invalidOutput, /Production manifest builder canary triggered/);
+console.log('[preview-build] production preview-mode misconfiguration rejected before builder');
+
+const canaryProduction = spawnSync('npm', ['run', 'build'], {
+  cwd: root,
+  env: { ...productionEnv, FAIL_IF_PRODUCTION_MANIFEST_BUILDER_RUNS: '1' },
+  encoding: 'utf8',
+});
+const canaryOutput = `${canaryProduction.stdout || ''}\n${canaryProduction.stderr || ''}`;
+assert.notEqual(canaryProduction.status, 0);
+assert.match(canaryOutput, /Production manifest builder canary triggered/);
+console.log('[preview-build] production builder canary control passed');

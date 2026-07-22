@@ -8,158 +8,164 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_ROOT = path.resolve(SCRIPT_DIR, '..');
 const CATALOG_NAME = 'songs-manifest.json';
 const CHUNK_NAME = /^songs-manifest-chunk-(\d+)\.json$/;
-const ALLOWED_HTTPS_HOSTS = new Set([
-  'cdn-images.dzcdn.net',
-  'encrypted-tbn0.gstatic.com',
-  'hngtwkayovuxhiqustsa.supabase.co',
-  'i.scdn.co',
-  'image-cdn-ak.spotifycdn.com',
-  'image-cdn-fa.spotifycdn.com',
-  'img.youtube.com',
-  'is1-ssl.mzstatic.com',
-  'mymusic.st',
-  'mymusic5.com',
-  'www.bilibili.com',
-  'www.mymusic5.com',
-  'www.mymusicfive.com',
-  'www.mymusicsheet.com',
-  'www.youtube.com',
-  'y.gtimg.cn',
-  'youtube.com',
+const MAX_SNAPSHOT_AGE_MS = 90 * 24 * 60 * 60 * 1000;
+
+const CATALOG_FIELDS = new Set(['version', 'kind', 'generatedAt', 'assetBaseUrl', 'trackTotal', 'chunks']);
+const CATALOG_CHUNK_FIELDS = new Set(['path', 'count']);
+const CHUNK_FIELDS = new Set(['version', 'kind', 'chunkIndex', 'tracks']);
+const TRACK_FIELDS = new Set([
+  'artistResolutionNotes', 'artistReviewStatus', 'artists', 'bilibiliVideoUrl',
+  'canonicalArtistDisplayName', 'canonicalArtistId', 'categoryKeys', 'coCanonicalArtistIds',
+  'coverUrl', 'displayTitle', 'duration', 'durationSeconds', 'excludeFromArtistIndex',
+  'hasPracticeMode', 'id', 'importSource', 'linkStatus', 'listSortPublishedAt',
+  'listSortPublishedAtMs', 'listSortSource', 'mp3Url', 'originalArtist', 'sheetUrl',
+  'slug', 'supabaseCreatedAt', 'tags', 'title', 'titles', 'workProjectKey',
+  'youtubePublishedAt', 'youtubeSortIndex', 'youtubeVideoId', 'youtubeVideoTitle',
+  'youtubeVideoUrl',
 ]);
-const FORBIDDEN_FIELD = /(?:midi|music_?xml|xml_path|receipt|jws|service_?role|private_?key|token_?hash)/i;
+const LOCALIZED_FIELDS = new Set(['en', 'zhHans', 'zhHant']);
+const URL_HOSTS = {
+  mp3Url: new Set(['hngtwkayovuxhiqustsa.supabase.co']),
+  coverUrl: new Set([
+    'cdn-images.dzcdn.net', 'encrypted-tbn0.gstatic.com', 'i.scdn.co',
+    'image-cdn-ak.spotifycdn.com', 'image-cdn-fa.spotifycdn.com', 'img.youtube.com',
+    'is1-ssl.mzstatic.com', 'y.gtimg.cn',
+  ]),
+  youtubeVideoUrl: new Set(['youtube.com', 'www.youtube.com']),
+  bilibiliVideoUrl: new Set(['www.bilibili.com']),
+  sheetUrl: new Set(['mymusic.st', 'mymusic5.com', 'www.mymusic5.com', 'www.mymusicfive.com', 'www.mymusicsheet.com']),
+};
+const SIGNED_QUERY_KEY = /^(?:token|access_token|signature|sig|expires|expiry|policy|key-pair-id|googleaccessid|x-amz-.+|x-goog-.+)$/i;
 const FORBIDDEN_RAW = [
   /SUPABASE_SERVICE_ROLE_KEY/i,
   /service[_-]?role/i,
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
   /\beyJ[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\b/,
-  /(?:x-amz-signature|x-amz-credential|x-amz-security-token|signature|sig|token|policy|key-pair-id)\s*[=:]/i,
   /\.(?:mid|midi|musicxml|mxl)(?:[?"'\s]|$)/i,
   /\/storage\/v1\/object\/(?:sign|authenticated|private)\//i,
 ];
 
-function fail(message) {
-  throw new Error(`[preview-manifest] ${message}`);
+function fail(message) { throw new Error(`[preview-manifest] ${message}`); }
+
+function ensurePlainObject(value, label) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) fail(`${label}: expected object`);
 }
 
-function readJson(filePath, label) {
-  if (!fs.existsSync(filePath)) fail(`${label} is missing: ${path.basename(filePath)}`);
-  let raw;
-  try {
-    raw = fs.readFileSync(filePath, 'utf8');
-  } catch (error) {
-    fail(`${label} cannot be read: ${error.message}`);
-  }
-  try {
-    return { raw, value: JSON.parse(raw) };
-  } catch {
-    fail(`${label} is not valid JSON: ${path.basename(filePath)}`);
-  }
+function rejectUnknownFields(value, allowed, label) {
+  ensurePlainObject(value, label);
+  for (const key of Object.keys(value)) if (!allowed.has(key)) fail(`${label}.${key}: unknown field`);
 }
 
 function requireString(value, label) {
-  if (typeof value !== 'string' || value.trim() === '') fail(`${label} must be a non-empty string`);
+  if (typeof value !== 'string' || value.trim() === '') fail(`${label}: expected non-empty string`);
 }
 
-function inspectValue(value, location) {
-  if (Array.isArray(value)) {
-    value.forEach((item, index) => inspectValue(item, `${location}[${index}]`));
-    return;
-  }
-  if (!value || typeof value !== 'object') return;
-  for (const [key, nested] of Object.entries(value)) {
-    if (FORBIDDEN_FIELD.test(key)) fail(`forbidden field ${key} at ${location}`);
-    if (typeof nested === 'string' && /^https?:\/\//i.test(nested)) {
-      let url;
-      try {
-        url = new URL(nested);
-      } catch {
-        fail(`invalid URL at ${location}.${key}`);
-      }
-      if (url.protocol !== 'https:') fail(`non-HTTPS URL at ${location}.${key}`);
-      if (!ALLOWED_HTTPS_HOSTS.has(url.hostname)) fail(`URL host is not allowlisted at ${location}.${key}`);
-      for (const queryKey of url.searchParams.keys()) {
-        if (/^(?:token|signature|sig|policy|key-pair-id|x-amz-.+|expires)$/i.test(queryKey)) {
-          fail(`signed or credentialed URL at ${location}.${key}`);
-        }
-      }
-      if (/\/storage\/v1\/object\/(?:sign|authenticated|private)\//i.test(url.pathname)) {
-        fail(`private storage URL at ${location}.${key}`);
-      }
-      if (url.hostname.endsWith('.supabase.co') && !url.pathname.startsWith('/storage/v1/object/public/')) {
-        fail(`non-public Supabase URL at ${location}.${key}`);
-      }
-    }
-    inspectValue(nested, `${location}.${key}`);
-  }
+function ensureSafeRegularFile(filePath, snapshotRoot, label) {
+  let stat;
+  try { stat = fs.lstatSync(filePath); } catch { fail(`${label}: missing file`); }
+  if (stat.isSymbolicLink()) fail(`${label}: symbolic link is not allowed`);
+  if (!stat.isFile()) fail(`${label}: expected regular file`);
+  const real = fs.realpathSync(filePath);
+  const prefix = `${snapshotRoot}${path.sep}`;
+  if (!real.startsWith(prefix)) fail(`${label}: file escapes snapshot root`);
+  return real;
+}
+
+function readJson(filePath, snapshotRoot, label) {
+  const safePath = ensureSafeRegularFile(filePath, snapshotRoot, label);
+  const raw = fs.readFileSync(safePath, 'utf8');
+  try { return { raw, value: JSON.parse(raw) }; }
+  catch { fail(`${label}: invalid JSON`); }
 }
 
 function inspectRaw(raw, label) {
-  for (const pattern of FORBIDDEN_RAW) {
-    if (pattern.test(raw)) fail(`${label} contains forbidden private or credential-shaped content`);
-  }
+  for (const pattern of FORBIDDEN_RAW) if (pattern.test(raw)) fail(`${label}: forbidden private or credential-shaped content`);
 }
 
-function validateTrack(track, location, ids) {
-  if (!track || typeof track !== 'object' || Array.isArray(track)) fail(`${location} must be an object`);
-  for (const field of ['id', 'title', 'displayTitle', 'originalArtist', 'coverUrl', 'mp3Url', 'duration']) {
-    requireString(track[field], `${location}.${field}`);
-  }
-  if (!Array.isArray(track.tags) || !track.tags.every(item => typeof item === 'string')) fail(`${location}.tags must be a string array`);
-  if (!Array.isArray(track.categoryKeys) || !track.categoryKeys.every(item => typeof item === 'string')) fail(`${location}.categoryKeys must be a string array`);
-  if (typeof track.hasPracticeMode !== 'boolean') fail(`${location}.hasPracticeMode must be boolean`);
-  if (track.importSource !== 'local' && track.importSource !== 'remote') fail(`${location}.importSource is invalid`);
-  if (ids.has(track.id)) fail(`duplicate track id: ${track.id}`);
-  ids.add(track.id);
-  inspectValue(track, location);
+function validatePublicUrl(value, field, location, { required = false } = {}) {
+  if (value == null && !required) return;
+  if (typeof value !== 'string' || value.length === 0) fail(`${location}.${field}: expected ${required ? 'non-empty string' : 'string or null'}`);
+  if (value.startsWith('//')) fail(`${location}.${field}: protocol-relative URL is not allowed`);
+  let url;
+  try { url = new URL(value); } catch { fail(`${location}.${field}: invalid absolute URL`); }
+  if (url.protocol !== 'https:') fail(`${location}.${field}: HTTPS is required`);
+  if (url.username || url.password) fail(`${location}.${field}: URL credentials are not allowed`);
+  if (url.port && url.port !== '443') fail(`${location}.${field}: non-default port is not allowed`);
+  if (!URL_HOSTS[field].has(url.hostname)) fail(`${location}.${field}: hostname is not allowlisted`);
+  for (const key of url.searchParams.keys()) if (SIGNED_QUERY_KEY.test(key)) fail(`${location}.${field}: signed or temporary query is not allowed`);
+  if (/\/storage\/v1\/object\/(?:sign|authenticated|private)\//i.test(url.pathname)) fail(`${location}.${field}: private storage path is not allowed`);
+  if (field === 'mp3Url' && !url.pathname.startsWith('/storage/v1/object/public/')) fail(`${location}.${field}: public storage path is required`);
 }
 
-export function validatePreviewManifest({ root = DEFAULT_ROOT } = {}) {
+function validateLocalized(value, label) {
+  if (value == null) return;
+  rejectUnknownFields(value, LOCALIZED_FIELDS, label);
+  for (const [key, text] of Object.entries(value)) if (typeof text !== 'string') fail(`${label}.${key}: expected string`);
+}
+
+function validateTrack(track, location, ids, slugs) {
+  rejectUnknownFields(track, TRACK_FIELDS, location);
+  for (const field of ['id', 'title', 'displayTitle', 'originalArtist', 'duration', 'slug']) requireString(track[field], `${location}.${field}`);
+  if (track.id !== track.id.trim() || track.id.length > 200) fail(`${location}.id: invalid identifier`);
+  if (track.slug !== track.slug.trim() || track.slug.length > 240 || /[\u0000-\u001f\u007f/\\?#]/u.test(track.slug)) fail(`${location}.slug: invalid slug`);
+  if (ids.has(track.id)) fail(`${location}.id: duplicate identifier`);
+  if (slugs.has(track.slug)) fail(`${location}.slug: duplicate slug`);
+  ids.add(track.id); slugs.add(track.slug);
+  for (const field of ['tags', 'categoryKeys']) if (!Array.isArray(track[field]) || !track[field].every(item => typeof item === 'string')) fail(`${location}.${field}: expected string array`);
+  for (const field of ['artistResolutionNotes', 'coCanonicalArtistIds']) if (track[field] != null && (!Array.isArray(track[field]) || !track[field].every(item => typeof item === 'string'))) fail(`${location}.${field}: expected string array or null`);
+  if (typeof track.hasPracticeMode !== 'boolean') fail(`${location}.hasPracticeMode: expected boolean`);
+  if (track.importSource !== 'local' && track.importSource !== 'remote') fail(`${location}.importSource: invalid value`);
+  validateLocalized(track.titles, `${location}.titles`);
+  validateLocalized(track.artists, `${location}.artists`);
+  validatePublicUrl(track.mp3Url, 'mp3Url', location, { required: true });
+  validatePublicUrl(track.coverUrl, 'coverUrl', location, { required: true });
+  for (const field of ['youtubeVideoUrl', 'bilibiliVideoUrl', 'sheetUrl']) validatePublicUrl(track[field], field, location);
+}
+
+export function validatePreviewManifest({ root = DEFAULT_ROOT, now = Date.now() } = {}) {
   const publicDir = path.join(root, 'public');
-  const catalogPath = path.join(publicDir, CATALOG_NAME);
-  const catalogFile = readJson(catalogPath, 'catalog');
+  let publicStat;
+  try { publicStat = fs.lstatSync(publicDir); } catch { fail('snapshot root: missing public directory'); }
+  if (publicStat.isSymbolicLink()) fail('snapshot root: symbolic link is not allowed');
+  if (!publicStat.isDirectory()) fail('snapshot root: expected directory');
+  const snapshotRoot = fs.realpathSync(publicDir);
+  const catalogFile = readJson(path.join(publicDir, CATALOG_NAME), snapshotRoot, 'catalog');
   inspectRaw(catalogFile.raw, 'catalog');
   const catalog = catalogFile.value;
-  if (!catalog || typeof catalog !== 'object' || Array.isArray(catalog)) fail('catalog must be an object');
-  if (catalog.kind !== 'catalog') fail('catalog.kind must be catalog');
-  if (!Number.isInteger(catalog.version) || catalog.version < 1) fail('catalog.version must be a positive integer');
+  rejectUnknownFields(catalog, CATALOG_FIELDS, 'catalog');
+  if (catalog.kind !== 'catalog') fail('catalog.kind: expected catalog');
+  if (!Number.isInteger(catalog.version) || catalog.version < 1) fail('catalog.version: expected positive integer');
+  if (catalog.assetBaseUrl !== '') fail('catalog.assetBaseUrl: Preview snapshot requires self-contained absolute track URLs');
   requireString(catalog.generatedAt, 'catalog.generatedAt');
   const generatedAtMs = Date.parse(catalog.generatedAt);
-  if (!Number.isFinite(generatedAtMs) || new Date(generatedAtMs).toISOString() !== catalog.generatedAt) fail('catalog.generatedAt must be canonical ISO-8601');
-  if (generatedAtMs > Date.now() + 300_000) fail('catalog.generatedAt cannot be in the future');
-  if (!Number.isInteger(catalog.trackTotal) || catalog.trackTotal < 1) fail('catalog.trackTotal must be a positive integer');
-  if (!Array.isArray(catalog.chunks) || catalog.chunks.length < 1) fail('catalog.chunks must be non-empty');
-  inspectValue(catalog, 'catalog');
+  if (!Number.isFinite(generatedAtMs) || new Date(generatedAtMs).toISOString() !== catalog.generatedAt) fail('catalog.generatedAt: expected canonical ISO-8601');
+  if (generatedAtMs > now + 300_000) fail('catalog.generatedAt: future timestamp');
+  if (now - generatedAtMs > MAX_SNAPSHOT_AGE_MS) fail('catalog.generatedAt: snapshot exceeds 90-day freshness policy');
+  if (!Number.isInteger(catalog.trackTotal) || catalog.trackTotal < 1) fail('catalog.trackTotal: expected positive integer');
+  if (!Array.isArray(catalog.chunks) || catalog.chunks.length < 1) fail('catalog.chunks: expected non-empty array');
 
-  const ids = new Set();
-  const referencedChunks = new Set();
+  const ids = new Set(), slugs = new Set(), referencedChunks = new Set();
   let trackTotal = 0;
-  catalog.chunks.forEach((chunk, index) => {
-    if (!chunk || typeof chunk !== 'object' || Array.isArray(chunk)) fail(`catalog.chunks[${index}] must be an object`);
-    requireString(chunk.path, `catalog.chunks[${index}].path`);
-    const match = CHUNK_NAME.exec(chunk.path);
-    if (!match || Number(match[1]) !== index || path.basename(chunk.path) !== chunk.path) fail(`catalog.chunks[${index}].path is invalid`);
-    if (referencedChunks.has(chunk.path)) fail(`duplicate chunk path: ${chunk.path}`);
-    referencedChunks.add(chunk.path);
-    if (!Number.isInteger(chunk.count) || chunk.count < 1) fail(`catalog.chunks[${index}].count must be positive`);
-    const chunkPath = path.join(publicDir, chunk.path);
-    const chunkFile = readJson(chunkPath, `chunk ${index}`);
-    inspectRaw(chunkFile.raw, `chunk ${index}`);
-    const chunkJson = chunkFile.value;
-    if (!chunkJson || chunkJson.kind !== 'chunk' || chunkJson.version !== catalog.version || chunkJson.chunkIndex !== index || !Array.isArray(chunkJson.tracks)) {
-      fail(`chunk ${index} schema does not match catalog`);
-    }
-    if (chunkJson.tracks.length !== chunk.count) fail(`chunk ${index} count does not match catalog`);
-    chunkJson.tracks.forEach((track, trackIndex) => validateTrack(track, `chunk[${index}].tracks[${trackIndex}]`, ids));
-    trackTotal += chunkJson.tracks.length;
+  catalog.chunks.forEach((descriptor, index) => {
+    rejectUnknownFields(descriptor, CATALOG_CHUNK_FIELDS, `catalog.chunks[${index}]`);
+    requireString(descriptor.path, `catalog.chunks[${index}].path`);
+    const match = CHUNK_NAME.exec(descriptor.path);
+    if (!match || Number(match[1]) !== index || path.basename(descriptor.path) !== descriptor.path) fail(`catalog.chunks[${index}].path: invalid chunk path`);
+    if (referencedChunks.has(descriptor.path)) fail(`catalog.chunks[${index}].path: duplicate chunk path`);
+    referencedChunks.add(descriptor.path);
+    if (!Number.isInteger(descriptor.count) || descriptor.count < 1) fail(`catalog.chunks[${index}].count: expected positive integer`);
+    const chunkFile = readJson(path.join(publicDir, descriptor.path), snapshotRoot, `chunk[${index}]`);
+    inspectRaw(chunkFile.raw, `chunk[${index}]`);
+    const chunk = chunkFile.value;
+    rejectUnknownFields(chunk, CHUNK_FIELDS, `chunk[${index}]`);
+    if (chunk.kind !== 'chunk' || chunk.version !== catalog.version || chunk.chunkIndex !== index || !Array.isArray(chunk.tracks)) fail(`chunk[${index}]: schema does not match catalog`);
+    if (chunk.tracks.length !== descriptor.count) fail(`chunk[${index}].tracks: count does not match catalog`);
+    chunk.tracks.forEach((track, trackIndex) => validateTrack(track, `chunk[${index}].tracks[${trackIndex}]`, ids, slugs));
+    trackTotal += chunk.tracks.length;
   });
-
-  const diskChunks = fs.readdirSync(publicDir).filter(name => CHUNK_NAME.test(name)).sort();
-  if (diskChunks.length !== referencedChunks.size || diskChunks.some(name => !referencedChunks.has(name))) {
-    fail('public manifest chunk files do not exactly match the catalog');
-  }
-  if (trackTotal !== catalog.trackTotal || ids.size !== catalog.trackTotal) fail('catalog.trackTotal does not match unique tracks');
-
+  const diskChunks = fs.readdirSync(publicDir).filter(name => CHUNK_NAME.test(name));
+  if (diskChunks.length !== referencedChunks.size || diskChunks.some(name => !referencedChunks.has(name))) fail('catalog.chunks: files do not exactly match catalog');
+  if (trackTotal !== catalog.trackTotal || ids.size !== catalog.trackTotal || slugs.size !== catalog.trackTotal) fail('catalog.trackTotal: does not match unique tracks');
   return { version: catalog.version, generatedAt: catalog.generatedAt, trackTotal, chunkTotal: catalog.chunks.length };
 }
 

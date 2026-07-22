@@ -58,6 +58,11 @@ import { writebackListSortFields } from './writeback-list-sort.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '..');
+
+if (process.env.FAIL_IF_PRODUCTION_MANIFEST_BUILDER_RUNS === '1') {
+  throw new Error('Production manifest builder canary triggered.');
+}
+
 dotenv.config({ path: path.join(projectRoot, '.env') });
 dotenv.config({ path: path.join(projectRoot, '.env.local') });
 

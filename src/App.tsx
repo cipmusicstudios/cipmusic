@@ -114,7 +114,9 @@ const translations: Record<string, any> = {
 };
 
 const usesCommittedPreviewManifest =
-  import.meta.env.VITE_MANIFEST_MODE === 'committed-preview-snapshot';
+  import.meta.env.VITE_MANIFEST_MODE === 'committed-preview-snapshot' &&
+  (import.meta.env.VITE_DEPLOY_CONTEXT === 'deploy-preview' ||
+    import.meta.env.VITE_DEPLOY_CONTEXT === 'branch-deploy');
 
 const defaultTrack: Track = {
   id: 'golden_piano',
@@ -1902,10 +1904,10 @@ export default function App() {
         lightweight={lightweightPracticeMode || !homeBackgroundVideoEnabled}
       />
 
-      {usesCommittedPreviewManifest && (
+      {usesCommittedPreviewManifest && !immersiveMode && (
         <div
           data-no-home-click="preview-catalog-banner"
-          className="pointer-events-none fixed inset-x-0 top-0 z-[210] bg-amber-950/90 px-3 py-1.5 text-center text-[11px] font-medium tracking-wide text-amber-100 shadow-sm backdrop-blur-sm"
+          className="relative z-[210] w-full flex-none bg-amber-950/90 px-3 py-1.5 text-center text-[11px] font-medium leading-snug tracking-wide text-amber-100 shadow-sm backdrop-blur-sm"
           role="status"
         >
           Preview catalog snapshot — data may not match the latest production catalog.
@@ -1924,6 +1926,7 @@ export default function App() {
             immersiveMode={immersiveMode}
             onEnterImmersive={() => setImmersiveMode(true)}
             immersiveEntryHidden={showPracticePanel}
+            previewBannerVisible={usesCommittedPreviewManifest && !immersiveMode}
           />
 
           <main
@@ -2299,6 +2302,7 @@ const TopNav = memo(function TopNav({
   immersiveMode = false,
   onEnterImmersive,
   immersiveEntryHidden = false,
+  previewBannerVisible = false,
 }: {
   activeView: View,
   setActiveView: (v: View) => void,
@@ -2309,6 +2313,7 @@ const TopNav = memo(function TopNav({
   immersiveMode?: boolean,
   onEnterImmersive: () => void,
   immersiveEntryHidden?: boolean,
+  previewBannerVisible?: boolean,
 }) {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const normalizeSearchText = (value: unknown) => {
@@ -2336,7 +2341,7 @@ const TopNav = memo(function TopNav({
   return (
     <header
       data-no-home-click="topnav"
-      className={`topnav-header fixed top-6 left-0 right-0 z-50 flex justify-center px-0 pointer-events-none transition-all duration-300 ease-out ${
+      className={`topnav-header fixed ${previewBannerVisible ? 'top-14' : 'top-6'} left-0 right-0 z-50 flex justify-center px-0 pointer-events-none transition-all duration-300 ease-out ${
         immersiveMode ? 'opacity-0 -translate-y-[120%]' : ''
       }`}
       aria-hidden={immersiveMode}
