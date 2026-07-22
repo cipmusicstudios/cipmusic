@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": false,
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": [
+    "netlify/functions/_shared/apple/**/*.ts",
+    "netlify/functions/_shared/supabase-service.ts",
+    "netlify/functions/verify-app-store-transaction.ts",
+    "netlify/functions/app-store-notifications-v2.ts",
+    "netlify/functions/app-store-notifications-v2-sandbox.ts",
+    "tests/apple/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
