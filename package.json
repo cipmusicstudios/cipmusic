@@ -40,6 +40,7 @@
     "typecheck:apple": "tsc -p tsconfig.functions.json --noEmit",
     "test:apple": "tsx --test tests/apple/*.test.ts",
     "test:apple:postgres": "bash scripts/test-apple-postgres-integration.sh",
+    "test:apple:readiness:pg17": "bash scripts/test-apple-production-readiness-pg17.sh",
     "build:apple": "node scripts/build-apple-functions.mjs",
     "generate:local-imports": "node scripts/generate-local-import-seeds.mjs",
     "import:songs": "tsx scripts/import-new-songs.ts",

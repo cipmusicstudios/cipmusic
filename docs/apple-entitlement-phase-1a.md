@@ -2,6 +2,11 @@
 
 Local implementation only. The migration is a review draft and must not be applied as part of phase 1A.
 
+Production migration preparation, backup options, preflight/postflight SQL, and
+the fail-closed down migration are documented in
+`docs/apple-entitlement-production-readiness.md`. That runbook does not authorize
+Production execution or feature enablement.
+
 ## Safety boundaries
 
 - All runtime controls default to disabled/off and are read only through a service-role RPC.
