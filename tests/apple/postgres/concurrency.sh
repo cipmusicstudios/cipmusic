@@ -184,7 +184,7 @@ SQL
 delete_claim_rc=$?
 set -e
 wait "$delete_pid"
-if [[ "$delete_claim_rc" -eq 0 ]] || ! grep -Eq 'APP_STORE_BINDING_(TOMBSTONED|BLOCKED)' "$APPLE_PG_LOG_DIR/concurrency-delete-claim.log"; then
+if [[ "$delete_claim_rc" -eq 0 ]] || ! grep -Eq 'APP_STORE_BINDING_(TOMBSTONED|BLOCKED)|ACCOUNT_DELETION_FENCED' "$APPLE_PG_LOG_DIR/concurrency-delete-claim.log"; then
   echo "Deletion/claim race was not blocked; logs: $APPLE_PG_LOG_DIR" >&2
   exit 1
 fi

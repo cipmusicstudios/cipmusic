@@ -26,7 +26,7 @@ begin
     foreach table_name in array array[
       'billing_runtime_controls','app_store_entitlements','app_store_transactions',
       'app_store_notification_events','app_store_binding_tombstones',
-      'billing_entitlements_v2','billing_account_deletion_requests'
+      'billing_entitlements_v2','billing_account_deletion_requests','billing_account_deletion_fences'
     ] loop
       foreach command in array array['SELECT','INSERT','UPDATE','DELETE'] loop
         perform test_assert.ok(not has_table_privilege(role_name, 'public.'||table_name, command), role_name||' has '||command||' on '||table_name);
@@ -36,7 +36,7 @@ begin
   foreach table_name in array array[
     'billing_runtime_controls','app_store_entitlements','app_store_transactions',
     'app_store_notification_events','app_store_binding_tombstones',
-    'billing_entitlements_v2','billing_account_deletion_requests'
+    'billing_entitlements_v2','billing_account_deletion_requests','billing_account_deletion_fences'
   ] loop
     perform test_assert.ok(not has_table_privilege('service_role', 'public.'||table_name, 'SELECT,INSERT,UPDATE,DELETE'), 'service_role direct DML on '||table_name);
   end loop;
@@ -276,12 +276,12 @@ select test_assert.ok((select binding_state='unclaimed' and user_id is null from
 
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000001','production','tx-002','original-001',
-  now()+interval '1 second',now()+interval '1 second','active',true,'com.cipmusic.aurasounds.premium.monthly.v2',null,false,'legacy_claim',true
+  '2099-06-01T00:00:01Z','2099-06-01T00:00:01Z','active',true,'com.cipmusic.aurasounds.premium.monthly.v2',null,false,'legacy_claim',true
 );
 select test_assert.ok((select binding_state='claimed' and user_id='10000000-0000-4000-8000-000000000001' from public.app_store_entitlements where original_transaction_id='original-001'), 'claim failed');
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000001','production','tx-002','original-001',
-  now()+interval '1 second',now()+interval '1 second','active',true,'com.cipmusic.aurasounds.premium.monthly.v2',null,false,'legacy_claim',true
+  '2099-06-01T00:00:01Z','2099-06-01T00:00:01Z','active',true,'com.cipmusic.aurasounds.premium.monthly.v2',null,false,'legacy_claim',true
 );
 
 do $$ begin
@@ -296,7 +296,7 @@ do $$ begin
   begin
     perform * from test_assert.record_tx(
       '10000000-0000-4000-8000-000000000001','production','tx-002','original-001',
-      now()+interval '1 second',now()+interval '1 second','active',true,'com.cipmusic.aurasounds.premium.monthly.v2',null,false,'legacy_claim',true,
+      '2099-06-01T00:00:01Z','2099-06-01T00:00:01Z','active',true,'com.cipmusic.aurasounds.premium.monthly.v2',null,false,'legacy_claim',true,
       repeat('9',64));
     raise exception 'ASSERTION_FAILED: replay mismatch succeeded';
   exception when unique_violation then
@@ -319,13 +319,13 @@ end $$;
 -- A newer signed-evidence snapshot wins; an older transaction fact cannot alter it.
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000001','production','tx-new','original-001',
-  now()+interval '10 seconds',now()+interval '10 seconds','active',true,
+  '2100-01-01T00:00:10Z','2100-01-01T00:00:10Z','active',true,
   'com.cipmusic.aurasounds.premium.yearly.v2'
 );
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000001','production','tx-old','original-001',
-  now()-interval '1 day',now()-interval '1 day','expired',false,
-  'com.cipmusic.aurasounds.premium.monthly.v2',now()-interval '1 hour',true,'restore'
+  '2099-12-01T00:00:00Z','2099-12-01T00:00:00Z','expired',false,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-12-01T00:00:00Z',true,'restore'
 );
 select test_assert.ok((select latest_transaction_id='tx-new' and normalized_status='active'
   from public.app_store_entitlements where original_transaction_id='original-001'), 'old state overwrote new');
@@ -683,6 +683,62 @@ do $$ begin
 end $$;
 
 -- The three-column FK rejects cross-chain entitlement references.
+-- A transaction identity is validated before any second-chain side effect.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000002','production','identity-tx','identity-original-a',
+  '2026-06-01T00:00:00Z','2026-06-01T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-06-02T00:00:00Z',true,'purchase',false,
+  repeat('9',64)
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000002','production','identity-tx','identity-original-a',
+  '2026-06-01T00:00:00Z','2026-06-01T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-06-02T00:00:00Z',true,'purchase',false,
+  repeat('9',64)
+);
+select test_assert.ok((select count(*)=1 from public.app_store_transactions where transaction_id='identity-tx'), 'safe duplicate transaction count');
+do $$ begin
+  begin
+    perform * from test_assert.record_tx(
+      '10000000-0000-4000-8000-000000000002','production','identity-tx','identity-original-b',
+      '2026-06-01T00:00:00Z','2026-06-01T00:00:00Z','active',true,
+      'com.cipmusic.aurasounds.premium.monthly.v2','2099-06-02T00:00:00Z',true,'purchase',false,
+      repeat('9',64));
+    raise exception 'ASSERTION_FAILED: transaction crossed original chain';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='TRANSACTION_CHAIN_MISMATCH','wrong cross-chain error');
+  end;
+end $$;
+select test_assert.ok(
+  not exists(select 1 from public.app_store_entitlements where original_transaction_id='identity-original-b')
+  and (select count(*)=1 from public.billing_entitlements_v2 where external_entitlement_id in ('identity-original-a','identity-original-b')),
+  'cross-chain duplicate left side effects'
+);
+do $$ begin
+  begin
+    perform * from test_assert.record_tx(
+      '10000000-0000-4000-8000-000000000002','production','identity-tx','identity-original-c',
+      '2026-06-01T00:00:00Z','2026-06-01T00:00:00Z','active',true,
+      'com.cipmusic.aurasounds.premium.monthly.v2','2099-06-02T00:00:00Z',true,'purchase',false,
+      repeat('a',64));
+    raise exception 'ASSERTION_FAILED: changed-summary transaction crossed original chain';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='TRANSACTION_CHAIN_MISMATCH','wrong changed-summary cross-chain error');
+  end;
+end $$;
+do $$ begin
+  begin
+    perform * from test_assert.record_tx(
+      '10000000-0000-4000-8000-000000000002','production','identity-tx','identity-original-a',
+      '2026-06-01T00:00:00Z','2026-06-01T00:00:00Z','active',true,
+      'com.cipmusic.aurasounds.premium.yearly.v2','2099-06-02T00:00:00Z',true,'purchase',false,
+      repeat('9',64),null,'com.cipmusic.aurasounds.premium.yearly.v2');
+    raise exception 'ASSERTION_FAILED: transaction immutable product changed';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='TRANSACTION_CHAIN_MISMATCH','wrong immutable product error');
+  end;
+end $$;
+
 do $$
 declare v_wrong uuid;
 begin
@@ -731,6 +787,23 @@ delete from auth.users where id='10000000-0000-4000-8000-000000000001';
 
 select * from public.billing_prepare_account_deletion('10000000-0000-4000-8000-000000000005','30000000-0000-4000-8000-000000000005');
 select test_assert.ok((select apple_entitlements_processed=0 and user_id is null from public.billing_account_deletion_requests where request_id='30000000-0000-4000-8000-000000000005'), 'zero-entitlement prepare');
+select test_assert.ok(exists(select 1 from public.billing_account_deletion_fences where request_id='30000000-0000-4000-8000-000000000005'), 'zero-entitlement fence missing');
+do $$ begin
+  begin
+    perform * from test_assert.record_tx(
+      '10000000-0000-4000-8000-000000000005','production','fenced-new-tx','fenced-new-original',
+      now(),now(),'active',true);
+    raise exception 'ASSERTION_FAILED: fenced user claimed new chain';
+  exception when object_not_in_prerequisite_state then
+    perform test_assert.ok(sqlerrm='ACCOUNT_DELETION_FENCED','wrong deletion fence error');
+  end;
+end $$;
+select test_assert.ok(
+  not exists(select 1 from public.app_store_entitlements where original_transaction_id='fenced-new-original')
+  and not exists(select 1 from public.billing_entitlements_v2 where external_entitlement_id='fenced-new-original'),
+  'fenced claim left side effects'
+);
+select * from public.billing_prepare_account_deletion('10000000-0000-4000-8000-000000000005','30000000-0000-4000-8000-000000000005');
 do $$ begin
   begin
     perform * from public.billing_prepare_account_deletion('10000000-0000-4000-8000-000000000004','30000000-0000-4000-8000-000000000005');
@@ -770,8 +843,11 @@ do $$ begin
       '10000000-0000-4000-8000-000000000003','production','tx-after-delete','original-rollback',
       now()+interval '1 day',now()+interval '1 day','active',true);
     raise exception 'ASSERTION_FAILED: tombstone claim succeeded';
-  exception when unique_violation then
-    perform test_assert.ok(sqlerrm='APP_STORE_BINDING_TOMBSTONED','wrong tombstone error');
+  exception when unique_violation or object_not_in_prerequisite_state then
+    perform test_assert.ok(
+      sqlerrm in ('APP_STORE_BINDING_TOMBSTONED', 'ACCOUNT_DELETION_FENCED'),
+      'wrong tombstone/fence error'
+    );
   end;
 end $$;
 
@@ -802,5 +878,9 @@ select test_assert.ok(not exists (
   where r.user_id='10000000-0000-4000-8000-000000000003'
      or encode(uuid_send(r.user_id),'hex')=replace('10000000-0000-4000-8000-000000000003','-','')
 ), 'raw UUID binary remains in deletion request');
+select test_assert.ok(not exists (
+  select 1 from public.billing_account_deletion_fences f
+  where row_to_json(f)::text like '%10000000-0000-4000-8000-000000000003%'
+), 'raw UUID remains in deletion fence');
 
 select test_assert.ok((select count(*)=0 from public.user_membership), 'membership write detected');

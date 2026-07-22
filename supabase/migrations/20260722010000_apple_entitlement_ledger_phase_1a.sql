@@ -18,6 +18,7 @@ begin
     'app_store_binding_tombstones',
     'billing_entitlements_v2',
     'billing_account_deletion_requests',
+    'billing_account_deletion_fences',
     'billing_runtime_controls'
   ] loop
     if to_regclass('public.' || v_name) is not null then
@@ -320,6 +321,17 @@ create table public.billing_account_deletion_requests (
   updated_at timestamptz not null default now()
 );
 
+-- Hash-only fence retained across the prepare -> Auth deletion retry window.
+-- The ledger derives the same hash from the authenticated user UUID while the
+-- raw UUID remains available, but the fence itself never persists that UUID.
+create table public.billing_account_deletion_fences (
+  user_hash text primary key check (user_hash ~ '^[0-9a-f]{64}$'),
+  request_id uuid not null unique
+    references public.billing_account_deletion_requests(request_id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 alter table public.app_store_binding_tombstones
   add constraint app_store_binding_tombstones_deletion_request_fk
   foreign key (deletion_request_id)
@@ -338,6 +350,9 @@ for each row execute function public.billing_v2_set_updated_at();
 create trigger billing_account_deletion_requests_set_updated_at
 before update on public.billing_account_deletion_requests
 for each row execute function public.billing_v2_set_updated_at();
+create trigger billing_account_deletion_fences_set_updated_at
+before update on public.billing_account_deletion_fences
+for each row execute function public.billing_v2_set_updated_at();
 
 alter table public.billing_runtime_controls enable row level security;
 alter table public.app_store_entitlements enable row level security;
@@ -346,6 +361,7 @@ alter table public.app_store_notification_events enable row level security;
 alter table public.app_store_binding_tombstones enable row level security;
 alter table public.billing_entitlements_v2 enable row level security;
 alter table public.billing_account_deletion_requests enable row level security;
+alter table public.billing_account_deletion_fences enable row level security;
 
 revoke all on public.billing_runtime_controls from public, anon, authenticated;
 revoke all on public.app_store_entitlements from public, anon, authenticated;
@@ -354,6 +370,7 @@ revoke all on public.app_store_notification_events from public, anon, authentica
 revoke all on public.app_store_binding_tombstones from public, anon, authenticated;
 revoke all on public.billing_entitlements_v2 from public, anon, authenticated;
 revoke all on public.billing_account_deletion_requests from public, anon, authenticated;
+revoke all on public.billing_account_deletion_fences from public, anon, authenticated;
 revoke all on public.billing_runtime_controls from service_role;
 revoke all on public.app_store_entitlements from service_role;
 revoke all on public.app_store_transactions from service_role;
@@ -361,6 +378,7 @@ revoke all on public.app_store_notification_events from service_role;
 revoke all on public.app_store_binding_tombstones from service_role;
 revoke all on public.billing_entitlements_v2 from service_role;
 revoke all on public.billing_account_deletion_requests from service_role;
+revoke all on public.billing_account_deletion_fences from service_role;
 
 create function public.billing_get_runtime_controls()
 returns table (
@@ -496,9 +514,10 @@ set search_path = pg_catalog, public
 as $function$
 declare
   v_ent public.app_store_entitlements%rowtype;
+  v_existing_tx public.app_store_transactions%rowtype;
   v_tx_id uuid;
   v_tx_inserted boolean;
-  v_existing_tx_hash text;
+  v_tx_preexisting boolean := false;
   v_applied boolean := false;
   v_binding text;
   v_expected_token_hash text;
@@ -509,6 +528,7 @@ declare
   v_incoming_quality public.app_store_current_state_quality;
   v_status_source public.app_store_status_source;
   v_token_conflict boolean := false;
+  v_user_hash text;
 begin
   if not coalesce((
     select apple_verification_enabled and apple_ledger_write_enabled
@@ -623,6 +643,53 @@ begin
     raise exception using errcode = '22023', message = 'INVALID_PREMIUM_GRANT';
   end if;
 
+  v_user_hash := encode(extensions.digest(
+    'cipmusic:deleted-user:v1:' || lower(p_user_id::text), 'sha256'
+  ), 'hex');
+
+  -- Global lock order for Apple ledger writes:
+  --   1. user deletion advisory lock (when a user is present)
+  --   2. transaction advisory/row lock
+  --   3. original-chain advisory lock
+  --   4. entitlement row lock
+  -- Notification inbox writes use only their isolated notification namespace.
+  perform pg_advisory_xact_lock(
+    hashtextextended('cipmusic:billing:account-deletion:' || lower(p_user_id::text), 0)
+  );
+  if exists (
+    select 1 from public.billing_account_deletion_fences where user_hash = v_user_hash
+  ) then
+    raise exception using errcode = '55000', message = 'ACCOUNT_DELETION_FENCED';
+  end if;
+
+  perform pg_advisory_xact_lock(
+    hashtextextended('cipmusic:billing:apple:transaction:' || p_payload_environment::text || ':' || p_transaction_id, 0)
+  );
+  select * into v_existing_tx
+  from public.app_store_transactions
+  where environment = p_payload_environment and transaction_id = p_transaction_id
+  for update;
+  v_tx_preexisting := found;
+  if v_tx_preexisting then
+    if v_existing_tx.original_transaction_id <> p_original_transaction_id
+       or v_existing_tx.product_id <> p_product_id
+       or v_existing_tx.subscription_group_id <> p_subscription_group_id
+       or v_existing_tx.app_account_token_hash is distinct from p_app_account_token_hash then
+      raise exception using errcode = '23505', message = 'TRANSACTION_CHAIN_MISMATCH';
+    end if;
+    if v_existing_tx.purchase_date is distinct from p_purchase_date
+       or v_existing_tx.expires_date is distinct from p_expires_date
+       or v_existing_tx.signed_date <> p_signed_date
+       or v_existing_tx.revocation_date is distinct from p_revocation_date
+       or v_existing_tx.revocation_reason is distinct from p_revocation_reason
+       or v_existing_tx.transaction_reason is distinct from p_transaction_reason
+       or v_existing_tx.ownership_type is distinct from p_ownership_type
+       or v_existing_tx.transaction_status <> p_transaction_status
+       or v_existing_tx.summary_hash <> p_summary_hash then
+      raise exception using errcode = '23505', message = 'TRANSACTION_REPLAY_MISMATCH';
+    end if;
+  end if;
+
   perform pg_advisory_xact_lock(
     hashtextextended('cipmusic:billing:apple:original:' || p_payload_environment::text || ':' || p_original_transaction_id, 0)
   );
@@ -637,6 +704,10 @@ begin
   select * into v_ent from public.app_store_entitlements
   where environment = p_payload_environment and original_transaction_id = p_original_transaction_id
   for update;
+
+  if v_tx_preexisting and (not found or v_ent.id <> v_existing_tx.entitlement_id) then
+    raise exception using errcode = '23505', message = 'TRANSACTION_CHAIN_MISMATCH';
+  end if;
 
   if found then
     v_token_conflict := v_ent.app_account_token_hash is not null
@@ -806,26 +877,21 @@ begin
     end if;
   end if;
 
-  insert into public.app_store_transactions (
-    entitlement_id, environment, transaction_id, original_transaction_id, product_id,
-    subscription_group_id, app_account_token_hash, purchase_date, expires_date, signed_date,
-    revocation_date, revocation_reason, transaction_reason, ownership_type,
-    transaction_status, summary_hash
-  ) values (
-    v_ent.id, p_payload_environment, p_transaction_id, p_original_transaction_id, p_product_id,
-    p_subscription_group_id, p_app_account_token_hash, p_purchase_date, p_expires_date, p_signed_date,
-    p_revocation_date, p_revocation_reason, p_transaction_reason, p_ownership_type,
-    p_transaction_status, p_summary_hash
-  ) on conflict (environment, transaction_id) do nothing
-  returning id into v_tx_id;
-  v_tx_inserted := v_tx_id is not null;
-  if not v_tx_inserted then
-    select summary_hash into v_existing_tx_hash
-    from public.app_store_transactions
-    where environment = p_payload_environment and transaction_id = p_transaction_id;
-    if v_existing_tx_hash <> p_summary_hash then
-      raise exception using errcode = '23505', message = 'TRANSACTION_REPLAY_MISMATCH';
-    end if;
+  if v_tx_preexisting then
+    v_tx_inserted := false;
+  else
+    insert into public.app_store_transactions (
+      entitlement_id, environment, transaction_id, original_transaction_id, product_id,
+      subscription_group_id, app_account_token_hash, purchase_date, expires_date, signed_date,
+      revocation_date, revocation_reason, transaction_reason, ownership_type,
+      transaction_status, summary_hash
+    ) values (
+      v_ent.id, p_payload_environment, p_transaction_id, p_original_transaction_id, p_product_id,
+      p_subscription_group_id, p_app_account_token_hash, p_purchase_date, p_expires_date, p_signed_date,
+      p_revocation_date, p_revocation_reason, p_transaction_reason, p_ownership_type,
+      p_transaction_status, p_summary_hash
+    ) returning id into v_tx_id;
+    v_tx_inserted := true;
   end if;
 
   if v_ent.binding_state = 'claimed' then
@@ -868,22 +934,33 @@ begin
     'cipmusic:deleted-user:v1:' || lower(p_user_id::text), 'sha256'
   ), 'hex');
   perform pg_advisory_xact_lock(
-    hashtextextended('cipmusic:billing:account-deletion:' || p_user_id::text, 0)
+    hashtextextended('cipmusic:billing:account-deletion:' || lower(p_user_id::text), 0)
   );
+  -- Deletion uses the same first lock as ledger writes. The hash-only fence is
+  -- committed before this transaction releases that lock, so a later ledger
+  -- writer can never pass the fence check and attach a new chain.
   select * into v_existing from public.billing_account_deletion_requests
   where billing_account_deletion_requests.request_id = p_request_id for update;
   if found then
     if v_existing.user_hash <> v_hash then
       raise exception using errcode = '22023', message = 'DELETION_REQUEST_USER_MISMATCH';
     end if;
-    if v_existing.status = 'prepared' then
-      return query select v_existing.request_id, v_existing.status, v_existing.apple_entitlements_processed;
-      return;
-    end if;
   else
     insert into public.billing_account_deletion_requests(request_id, user_id, user_hash, status)
     values (p_request_id, p_user_id, v_hash, 'preparing');
   end if;
+
+  begin
+    insert into public.billing_account_deletion_fences(user_hash, request_id)
+    values (v_hash, p_request_id);
+  exception when unique_violation then
+    if not exists (
+      select 1 from public.billing_account_deletion_fences f
+      where f.user_hash = v_hash and f.request_id = p_request_id
+    ) then
+      raise exception using errcode = '23505', message = 'ACCOUNT_DELETION_ALREADY_PREPARED';
+    end if;
+  end;
 
   perform 1 from public.app_store_entitlements where user_id = p_user_id for update;
   insert into public.app_store_binding_tombstones (
@@ -902,7 +979,8 @@ begin
   get diagnostics v_count = row_count;
 
   update public.billing_account_deletion_requests set
-    status = 'prepared', user_id = null, apple_entitlements_processed = v_count,
+    status = 'prepared', user_id = null,
+    apple_entitlements_processed = greatest(billing_account_deletion_requests.apple_entitlements_processed, v_count),
     prepared_at = now(), error_code = null
   where billing_account_deletion_requests.request_id = p_request_id
   returning * into v_existing;

@@ -9,7 +9,7 @@ test('migration contains required ledgers and no user_membership write', () => {
   assert.match(sql, /commit;\s*$/i);
   for (const name of ['app_store_entitlements', 'app_store_transactions', 'app_store_notification_events',
     'app_store_binding_tombstones', 'billing_entitlements_v2', 'billing_account_deletion_requests',
-    'billing_runtime_controls']) assert.match(sql, new RegExp(`create table public\\.${name}`));
+    'billing_account_deletion_fences', 'billing_runtime_controls']) assert.match(sql, new RegExp(`create table public\\.${name}`));
   assert.doesNotMatch(sql, /(insert\s+into|update|delete\s+from)\s+public\.user_membership/i);
   assert.doesNotMatch(sql, /revoke all on all tables in schema public/i);
 });
@@ -30,7 +30,8 @@ test('binding, replay, ordering, sandbox and deletion invariants are explicit', 
   assert.match(sql, /on delete restrict/i);
   assert.match(sql, /APP_STORE_ALREADY_BOUND/);
   assert.match(sql, /APP_STORE_BINDING_TOMBSTONED/);
-  assert.match(sql, /on conflict \(environment, transaction_id\) do nothing/i);
+  assert.match(sql, /TRANSACTION_CHAIN_MISMATCH/);
+  assert.match(sql, /cipmusic:billing:apple:transaction:/);
   assert.match(sql, /NOTIFICATION_REPLAY_MISMATCH/);
   assert.match(sql, /then 'ignored_unknown'/);
   assert.match(sql, /then 'orphan'/);
@@ -55,6 +56,8 @@ test('binding, replay, ordering, sandbox and deletion invariants are explicit', 
   assert.match(sql, /binding_conflict_hash_high text/i);
   assert.match(sql, /binding_conflict_hash_low < binding_conflict_hash_high/i);
   assert.match(sql, /status = 'prepared'/);
+  assert.match(sql, /ACCOUNT_DELETION_FENCED/);
+  assert.match(sql, /create table public\.billing_account_deletion_fences/i);
   assert.match(sql, /delete from public\.billing_entitlements_v2[\s\S]*source = 'apple'/i);
 });
 
