@@ -56,6 +56,47 @@ select test_assert.ok(
 );
 SQL
 
+# Ordinary and caller-labelled reconciliation writes racing on equal evidence cannot unlock quarantine.
+run_psql -q <<'SQL'
+select * from test_assert.record_tx(
+ '40000000-0000-4000-8000-000000000001','production','reconcile-seed-a','reconcile-race-original',
+ '2026-05-01T00:00:00Z','2026-05-01T00:00:00Z','active',true,
+ 'com.cipmusic.aurasounds.premium.monthly.v2','2099-05-02T00:00:00Z',true,'purchase',false,
+ null,null,null,'recorded','reconcile-current');
+select * from test_assert.record_tx(
+ '40000000-0000-4000-8000-000000000001','production','reconcile-seed-b','reconcile-race-original',
+ '2026-05-01T00:00:01Z','2026-05-01T00:00:00Z','expired',false,
+ 'com.cipmusic.aurasounds.premium.monthly.v2','2099-05-02T00:00:00Z',true,'restore',false,
+ null,null,null,'recorded','reconcile-current');
+SQL
+run_psql -q >"$APPLE_PG_LOG_DIR/concurrency-reconcile-ordinary.log" 2>&1 <<'SQL' &
+select * from test_assert.record_tx(
+ '40000000-0000-4000-8000-000000000001','production','reconcile-race-ordinary','reconcile-race-original',
+ '2026-05-01T00:00:02Z','2026-05-01T00:00:00Z','active',true,
+ 'com.cipmusic.aurasounds.premium.monthly.v2','2099-05-02T00:00:00Z',true,'restore',false,
+ null,null,null,'recorded','reconcile-current');
+SQL
+reconcile_ordinary_pid=$!
+run_psql -q >"$APPLE_PG_LOG_DIR/concurrency-reconcile-labelled.log" 2>&1 <<'SQL' &
+select * from test_assert.record_tx(
+ '40000000-0000-4000-8000-000000000001','production','reconcile-race-labelled','reconcile-race-original',
+ '2026-05-01T00:00:03Z','2026-05-01T00:00:00Z','active',true,
+ 'com.cipmusic.aurasounds.premium.monthly.v2','2099-05-02T00:00:00Z',true,'restore',false,
+ null,null,null,'recorded','reconcile-current',null,'verified',null,'reconciliation');
+SQL
+reconcile_labelled_pid=$!
+wait "$reconcile_ordinary_pid" "$reconcile_labelled_pid"
+run_psql -q <<'SQL'
+select test_assert.ok(
+ (select current_state_quality='quarantined' and normalized_status='unknown'
+   and not source_grants_premium and expires_at is null
+   from public.app_store_entitlements where original_transaction_id='reconcile-race-original')
+ and (select not currently_grants_premium from public.billing_get_current_entitlement_status(
+   '40000000-0000-4000-8000-000000000001') where external_entitlement_id='reconcile-race-original'),
+ 'concurrent caller-labelled reconciliation unlocked quarantine'
+);
+SQL
+
 # Independent subscription chains for the same user must not share an advisory lock.
 run_psql -q >"$APPLE_PG_LOG_DIR/concurrency-independent-a.log" 2>&1 <<'SQL' &
 select * from test_assert.record_tx(

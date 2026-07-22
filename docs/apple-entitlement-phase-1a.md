@@ -58,9 +58,15 @@ fingerprint. Observation time never resolves conflicting status snapshots by its
 
 The same signed evidence and fingerprint is idempotent and only refreshes observation metadata. The same signed
 evidence with a different fingerprint moves the chain to `quarantined`, stores a canonical pair of conflicting
-fingerprints, and makes the Apple source fail closed regardless of arrival order. Only newer signed evidence or an
-explicit future reconciliation source may clear quarantine. The HTTP request returns
+fingerprints, and makes the Apple source fail closed regardless of arrival order. Only a strictly newer transaction
+or renewal signed-evidence version may clear quarantine. `status_source` is audit metadata only; even a caller that
+submits `reconciliation` cannot unlock equal evidence. The HTTP request returns
 `CURRENT_STATE_QUARANTINED`; transaction facts remain auditable.
+
+A same-evidence active/canceled-active/billing-retry snapshot may deterministically become expired without
+quarantine only after its already-persisted verified expiry reaches server `statement_timestamp()`, and only when
+product, current transaction, chain, expiry, and auto-renew evidence still match. Premature expiry, revocation,
+product changes, or other contradictions remain quarantined.
 
 Stored `source_grants_premium` means only that the verified source snapshot was eligible when written. It is not a
 current membership decision. `billing_get_current_entitlement_status` is the sole phase-1A read boundary and

@@ -17,7 +17,7 @@ type CurrentStatusApiFactory = (environment: AppleEnvironment) => CurrentStatusA
 
 const iso = (value?: number): string | null => value == null ? null : new Date(value).toISOString();
 
-function fingerprint(value: Omit<CurrentEntitlementStatus,
+export function currentStatusFingerprint(value: Omit<CurrentEntitlementStatus,
   'statusObservedAt' | 'statusFingerprint' | 'conflictingStatusFingerprint' | 'currentStateQuality'>): string {
   return sha256([
     value.environment, value.originalTransactionId, value.latestTransactionId, value.productId,
@@ -106,7 +106,7 @@ export class OfficialAppleCurrentStatusProvider implements AppleCurrentStatusPro
           statusSource: 'server_api_status' as const,
         };
         candidates.push({...stableEvidence, statusObservedAt: observedAt,
-          statusFingerprint: fingerprint(stableEvidence), conflictingStatusFingerprint: null,
+          statusFingerprint: currentStatusFingerprint(stableEvidence), conflictingStatusFingerprint: null,
           currentStateQuality: 'verified'});
       }
     }

@@ -690,18 +690,26 @@ begin
       v_binding := 'already_claimed';
     end if;
 
-    if v_same_evidence and v_ent.current_state_quality = 'quarantined'
-       and v_status_source = 'reconciliation' and v_incoming_quality = 'verified' then
+    if v_same_evidence and v_ent.current_state_quality = 'verified'
+       and v_incoming_quality = 'verified'
+       and v_ent.product_id = p_current_product_id
+       and v_ent.latest_transaction_id = p_current_transaction_id
+       and v_ent.expires_at is not distinct from p_current_expires_at
+       and v_ent.auto_renew is not distinct from p_current_auto_renew
+       and v_ent.expires_at is not null and v_ent.expires_at <= statement_timestamp()
+       and (
+         (v_ent.normalized_status in ('active', 'canceled_active', 'billing_retry')
+           and p_current_normalized_status = 'expired')
+         or (v_ent.normalized_status = 'expired'
+           and p_current_normalized_status in ('active', 'canceled_active', 'billing_retry'))
+       ) then
       update public.app_store_entitlements set
-        endpoint_environment = p_endpoint_environment,
-        app_account_token_hash = coalesce(app_account_token_hash, p_current_app_account_token_hash),
-        product_id = p_current_product_id, subscription_group_id = p_current_subscription_group_id,
-        normalized_status = p_current_normalized_status,
-        source_grants_premium = p_current_grants_premium, expires_at = p_current_expires_at,
-        auto_renew = p_current_auto_renew, latest_transaction_id = p_current_transaction_id,
-        status_observed_at = p_status_observed_at, last_verified_at = p_status_observed_at,
-        status_fingerprint = p_status_fingerprint, conflicting_status_fingerprint = null,
-        status_source = v_status_source, current_state_quality = 'verified',
+        normalized_status = 'expired', source_grants_premium = false,
+        status_observed_at = greatest(status_observed_at, p_status_observed_at),
+        last_verified_at = greatest(last_verified_at, p_status_observed_at),
+        status_fingerprint = case when p_current_normalized_status = 'expired'
+          then p_status_fingerprint else status_fingerprint end,
+        conflicting_status_fingerprint = null, current_state_quality = 'verified',
         latest_effective_at = greatest(coalesce(p_current_expires_at, p_transaction_evidence_signed_at), p_transaction_evidence_signed_at)
       where id = v_ent.id returning * into v_ent;
       v_applied := true;
@@ -712,7 +720,13 @@ begin
     ) then
       update public.app_store_entitlements set
         normalized_status = 'unknown', source_grants_premium = false, expires_at = null,
-        auto_renew = null, status_observed_at = greatest(status_observed_at, p_status_observed_at),
+        auto_renew = null,
+        product_id = least(product_id, p_current_product_id),
+        latest_transaction_id = least(latest_transaction_id, p_current_transaction_id),
+        app_account_token_hash = case
+          when app_account_token_hash is null or p_current_app_account_token_hash is null then null
+          else least(app_account_token_hash, p_current_app_account_token_hash) end,
+        status_observed_at = greatest(status_observed_at, p_status_observed_at),
         last_verified_at = greatest(last_verified_at, p_status_observed_at),
         status_fingerprint = least(status_fingerprint, p_status_fingerprint,
           coalesce(conflicting_status_fingerprint, p_status_fingerprint),
