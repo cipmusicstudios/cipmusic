@@ -26,6 +26,13 @@
     "dev:authing-smoke": "vite --port=3001 --host=0.0.0.0 --open /authing-smoke.html",
     "dev:artist-audit": "vite --port=3001 --host=0.0.0.0 --open /audit.html",
     "build": "vite build",
+    "build:preview": "node scripts/validate-build-context.mjs && npm run validate:preview-manifest && vite build",
+    "validate:preview-manifest": "node scripts/validate-preview-manifest.mjs",
+    "test:preview-manifest": "node --test scripts/validate-preview-manifest.test.mjs",
+    "test:preview-build-isolation": "node scripts/test-preview-build-isolation.mjs",
+    "test:preview-build-context": "node --test scripts/validate-build-context.test.mjs",
+    "test:preview-network-hook": "node scripts/test-deny-preview-network.mjs",
+    "test:typescript-diff": "node scripts/test-typescript-error-diff.mjs",
     "preview": "vite preview",
     "preview:latest": "vite build && vite preview --host 0.0.0.0 --port 4173",
     "clean": "rm -rf dist",
@@ -73,7 +80,7 @@
     "cover:pilot:batch28:sync": "npm run cover:pilot:batch28 && npm run build:manifest",
     "cover:pilot:batch28:release": "npm run cover:pilot:batch28 && npm run build:manifest && npm run build",
     "export:missing-sheet-tsv": "node scripts/export-missing-sheet-tsv.mjs",
-    "prebuild": "MANIFEST_METADATA_ONLY=1 npm run build:manifest"
+    "prebuild": "node scripts/validate-build-context.mjs && MANIFEST_METADATA_ONLY=1 npm run build:manifest"
   },
   "dependencies": {
     "@authing/guard": "^5.3.9",

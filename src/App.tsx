@@ -113,6 +113,11 @@ const translations: Record<string, any> = {
   '繁體中文': zhTW
 };
 
+const usesCommittedPreviewManifest =
+  import.meta.env.VITE_MANIFEST_MODE === 'committed-preview-snapshot' &&
+  (import.meta.env.VITE_DEPLOY_CONTEXT === 'deploy-preview' ||
+    import.meta.env.VITE_DEPLOY_CONTEXT === 'branch-deploy');
+
 const defaultTrack: Track = {
   id: 'golden_piano',
   title: 'Golden',
@@ -124,8 +129,10 @@ const defaultTrack: Track = {
   coverUrl: 'https://picsum.photos/seed/golden/100/100',
   youtubeUrl: 'https://www.youtube.com/watch?v=Z_00MYjo0-Q',
   sheetUrl: 'https://www.mymusic5.com/cipmusic/309097',
-  midiUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
-  practiceEnabled: true,
+  midiUrl: usesCommittedPreviewManifest
+    ? undefined
+    : 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
+  practiceEnabled: !usesCommittedPreviewManifest,
   metadata: {
     identity: {
       id: 'golden_piano',
@@ -147,9 +154,11 @@ const defaultTrack: Track = {
     },
     assets: {
       audioUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/music/Golden-piano.mp3',
-      midiUrl: 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
-      hasPracticeAssets: true,
-      practiceEnabled: true,
+      midiUrl: usesCommittedPreviewManifest
+        ? undefined
+        : 'https://hngtwkayovuxhiqustsa.supabase.co/storage/v1/object/public/midi/golden-piano.midi',
+      hasPracticeAssets: !usesCommittedPreviewManifest,
+      practiceEnabled: !usesCommittedPreviewManifest,
       durationLabel: '03:12',
     },
     links: {
@@ -928,6 +937,10 @@ export default function App() {
         }
         setIsLoadingTracks(false);
       }
+
+      // Preview and branch deploys are intentionally pinned to the reviewed snapshot.
+      // Do not let public Supabase hydration silently replace it at runtime.
+      if (usesCommittedPreviewManifest) return;
 
       const loadRemoteSongsWhenIdle = () => {
         if (cancelled) return;
@@ -1891,6 +1904,16 @@ export default function App() {
         lightweight={lightweightPracticeMode || !homeBackgroundVideoEnabled}
       />
 
+      {usesCommittedPreviewManifest && !immersiveMode && (
+        <div
+          data-no-home-click="preview-catalog-banner"
+          className="relative z-[210] w-full flex-none bg-amber-950/90 px-3 py-1.5 text-center text-[11px] font-medium leading-snug tracking-wide text-amber-100 shadow-sm backdrop-blur-sm"
+          role="status"
+        >
+          Preview catalog snapshot — data may not match the latest production catalog.
+        </div>
+      )}
+
       {!practiceIsolatedMode && (
         <>
           <TopNav
@@ -1903,6 +1926,7 @@ export default function App() {
             immersiveMode={immersiveMode}
             onEnterImmersive={() => setImmersiveMode(true)}
             immersiveEntryHidden={showPracticePanel}
+            previewBannerVisible={usesCommittedPreviewManifest && !immersiveMode}
           />
 
           <main
@@ -2278,6 +2302,7 @@ const TopNav = memo(function TopNav({
   immersiveMode = false,
   onEnterImmersive,
   immersiveEntryHidden = false,
+  previewBannerVisible = false,
 }: {
   activeView: View,
   setActiveView: (v: View) => void,
@@ -2288,6 +2313,7 @@ const TopNav = memo(function TopNav({
   immersiveMode?: boolean,
   onEnterImmersive: () => void,
   immersiveEntryHidden?: boolean,
+  previewBannerVisible?: boolean,
 }) {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const normalizeSearchText = (value: unknown) => {
@@ -2315,7 +2341,7 @@ const TopNav = memo(function TopNav({
   return (
     <header
       data-no-home-click="topnav"
-      className={`topnav-header fixed top-6 left-0 right-0 z-50 flex justify-center px-0 pointer-events-none transition-all duration-300 ease-out ${
+      className={`topnav-header fixed ${previewBannerVisible ? 'top-14' : 'top-6'} left-0 right-0 z-50 flex justify-center px-0 pointer-events-none transition-all duration-300 ease-out ${
         immersiveMode ? 'opacity-0 -translate-y-[120%]' : ''
       }`}
       aria-hidden={immersiveMode}
