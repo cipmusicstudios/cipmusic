@@ -1,4 +1,5 @@
 node_modules/
+.apple-function-build/
 build/
 dist/
 coverage/

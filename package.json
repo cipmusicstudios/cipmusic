@@ -30,6 +30,10 @@
     "preview:latest": "vite build && vite preview --host 0.0.0.0 --port 4173",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "typecheck:apple": "tsc -p tsconfig.functions.json --noEmit",
+    "test:apple": "tsx --test tests/apple/*.test.ts",
+    "test:apple:postgres": "bash scripts/test-apple-postgres-integration.sh",
+    "build:apple": "node scripts/build-apple-functions.mjs",
     "generate:local-imports": "node scripts/generate-local-import-seeds.mjs",
     "import:songs": "tsx scripts/import-new-songs.ts",
     "import:songs:dry-run": "tsx scripts/import-new-songs.ts --dry-run",
@@ -76,6 +80,7 @@
     "prebuild": "MANIFEST_METADATA_ONLY=1 npm run build:manifest"
   },
   "dependencies": {
+    "@apple/app-store-server-library": "3.1.0",
     "@authing/guard": "^5.3.9",
     "@aws-sdk/client-s3": "^3.1038.0",
     "@aws-sdk/s3-request-presigner": "^3.1038.0",
