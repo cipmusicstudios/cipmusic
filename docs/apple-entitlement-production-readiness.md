@@ -27,27 +27,36 @@ controls are disabled/off. It contains no statement that reads or writes
 ## Approved down migration
 
 - Path: `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql`
-- SHA-256: `f39475023b273358941dcb4615850abd90e095fd89d2af3efac0f3dcb6ef9851`
+- SHA-256: `ebac9bbad6630c2dd49bbcbc5aeb3c65697ea9f817e577771935feb7720400e5`
 
 The down migration is a fail-closed recovery tool, not an automatic rollback.
 It first takes `ACCESS EXCLUSIVE` locks on all eight Phase 1A tables and
 `public.user_membership`, then performs every safety read and DROP under those
 locks. A five-second lock timeout aborts the entire transaction on contention.
-It requires the acknowledgement returned by rollback preflight, rechecks the
-exact frozen manifest, pristine controls and empty business tables, and uses no
-`CASCADE`.
+It requires a fresh rollback-preflight record created in the same backend and
+explicit transaction, plus the operator's transaction-local never-enabled
+attestation. It rechecks the exact frozen manifest, pristine controls and empty
+business tables, and uses no `CASCADE`.
 
 The canonical manifest implementation is
 `supabase/verification/20260722010000_apple_entitlement_manifest.sql` (file
-SHA-256 `5eafdf412f8725f4b02b5314d8eb3ed25c882d3fcb261f9a050710795edca56c`).
+SHA-256 `11d3dc4620e19a76252d048678aeec17f8c6fe6214fd059383c2f628ee6f3120`).
 Generate it only on PostgreSQL 17 after applying the frozen up migration, with
 the migration owner as `current_user`, by loading that file and selecting
 `pg_temp.phase1a_manifest_sha256()`. The reviewed manifest SHA-256 is
-`f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a`.
+`8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e`.
 It stable-sorts and records enum labels/order; complete column properties;
 constraint and index deparses; function definition/body, owner, execution
 properties, search path and ACL; trigger definitions/enabled state; table owner,
 persistence, RLS/force-RLS/options/ACL; and policies. OIDs are excluded.
+
+Manifest format v2 records function metadata and `pg_proc.prosrc` separately,
+instead of hashing `pg_get_functiondef` presentation whitespace. The remaining
+official deparsers are implemented by `ruleutils.c`; PostgreSQL's immutable
+`REL_17_6` and `REL_17_10` tags have the identical reviewed source SHA-256
+`f1017456a03b2ca194dc964c55476223d224ecc1ba73b7a60204657f7d7b5f23`.
+Their sole `format_type.c` delta is unrelated `oidvectortypes()` input
+validation. Run `npm run test:apple:manifest:pg17-minor` to recheck this evidence.
 
 ## Complete object manifest and dependency order
 
@@ -317,14 +326,17 @@ After commit:
 1. Freeze all later rollout actions and confirm flags remain off.
 2. Run rollback preflight. `ROLLBACK_UNSAFE` means preserve evidence and use a
    restore or reviewed forward fix. `ROLLBACK_REQUIRES_MANUAL_REVIEW` means stop.
-3. Only `ROLLBACK_SAFE` yields the acknowledgement accepted by the down
-   migration. It is not a secret or authentication/security boundary. It binds
-   operation type, migration version, frozen up SHA, current database name and
-   frozen manifest SHA; a token from another database or schema is rejected.
-   Authorization still depends on the database role. Safety comes from exact
-   manifest identity, empty/data evidence, external flag-history proof, locks,
-   bounded timeouts and the single transaction.
-4. Run the down migration with the approval token in the same database session.
+3. Start one explicit transaction and run rollback preflight in it. The
+   preflight creates a random execution ID in an `ON COMMIT DROP` temp table and
+   binds it to backend PID, transaction ID, database, operation, migration/up
+   SHA, manifest SHA, result and generation time. It expires after ten minutes.
+4. Only for `ROLLBACK_SAFE`, explicitly run
+   `SET LOCAL app.phase1a_never_enabled_attested = 'true'`, then include the down
+   file without committing or changing sessions. The attestation is not a
+   secret, database fact, authentication mechanism, or authorization boundary;
+   it records completion of the external never-enabled review. Commit/rollback,
+   another session/database, stale/copied IDs and old tokens cannot supply the
+   required temp record.
 5. Verify all Phase 1A objects are absent and legacy membership/payment objects
    are unchanged.
 6. Only after schema verification succeeds, run the supported command:

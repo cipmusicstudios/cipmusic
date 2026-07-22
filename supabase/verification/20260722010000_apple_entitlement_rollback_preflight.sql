@@ -1,10 +1,25 @@
 \set ON_ERROR_STOP on
 \ir 20260722010000_apple_entitlement_manifest.sql
 
--- Read-only decision report. A SAFE result additionally requires the operator
--- to provide external_flag_history_verified=1 after reviewing immutable
--- deployment/runtime evidence. PostgreSQL statistics are resettable evidence,
--- not an audit log; without that attestation this report returns MANUAL_REVIEW.
+-- Must run inside the same explicit transaction and database session as down.
+-- ON COMMIT DROP prevents reuse in another transaction or connection.
+create temporary table phase1a_rollback_preflight_attestation (
+  preflight_id uuid primary key,
+  generated_at timestamptz not null,
+  backend_pid integer not null,
+  transaction_id text not null,
+  database_name text not null,
+  operation_type text not null,
+  migration_version text not null,
+  up_sha text not null,
+  manifest_sha text not null,
+  rollback_result text not null,
+  external_history_attested boolean not null
+) on commit drop;
+
+-- A SAFE result additionally requires external_flag_history_verified=1 after
+-- reviewing immutable deployment/runtime evidence. This is a process
+-- attestation, not a database fact, authentication boundary, or secret.
 \if :{?external_flag_history_verified}
 \else
   \set external_flag_history_verified 0
@@ -35,7 +50,7 @@ with target_tables(name) as (
 ), evidence as (
   select
     pg_temp.phase1a_manifest_sha256() manifest_sha,
-    'f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a'::text expected_manifest_sha,
+    '8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e'::text expected_manifest_sha,
     coalesce((select sum(row_count) from counts),-1) business_rows,
     c.row_count controls_rows,
     coalesce((xpath('//*[local-name()="singleton"]/text()',c.value))[1]::text::boolean,false) singleton,
@@ -69,10 +84,20 @@ with target_tables(name) as (
       then 'ROLLBACK_REQUIRES_MANUAL_REVIEW'
     else 'ROLLBACK_SAFE' end rollback_result
   from evidence
+), recorded as (
+  insert into pg_temp.phase1a_rollback_preflight_attestation
+    (preflight_id,generated_at,backend_pid,transaction_id,database_name,
+     operation_type,migration_version,up_sha,manifest_sha,rollback_result,
+     external_history_attested)
+  select extensions.gen_random_uuid(),clock_timestamp(),pg_backend_pid(),
+    pg_current_xact_id()::text,current_database(),'phase_1a_down','20260722010000',
+    '5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4',
+    expected_manifest_sha,rollback_result,external_flag_history_verified
+  from decision returning *
+), configured as (
+  select set_config('app.phase1a_rollback_preflight_id',preflight_id::text,true)
+  from recorded
 )
-select rollback_result,
-  case when rollback_result='ROLLBACK_SAFE' then format(
-    'PHASE1A_DOWN_ACK|version=20260722010000|up_sha=5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4|database=%s|manifest_sha=%s',
-    current_database(),expected_manifest_sha) end approval_token,
-  to_jsonb(decision)-'rollback_result' as evidence
-from decision;
+select r.rollback_result,r.preflight_id,r.generated_at,
+  to_jsonb(d)-'rollback_result' as evidence
+from recorded r cross join configured c cross join decision d;

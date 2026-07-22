@@ -12,6 +12,10 @@ postflight, rollback preflight, and the down guard. The rollback locks every
 Phase 1A table plus `user_membership` before checking state. A SAFE decision
 also requires external immutable proof that flags were never enabled; mutable
 controls and resettable PostgreSQL statistics alone can never supply that proof.
+Rollback preflight and down must execute in one explicit transaction and backend;
+the preflight record is temporary, random, ten-minute bounded, and dropped on
+commit. The operator's `SET LOCAL` never-enabled attestation documents process
+completion only—it is not a secret, database fact, or authorization boundary.
 
 ## Safety boundaries
 

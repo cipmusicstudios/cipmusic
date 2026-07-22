@@ -143,7 +143,7 @@ with expected_tables(name) as (
     ('migration_history_schema', s.migration_history_schema_exists, 'supabase_migrations schema must exist'),
     ('migration_history_table', s.migration_history_table_exists, 'schema_migrations table must exist'),
     ('migration_history_structure', s.migration_history_structure_valid, 'version text/varchar column required'),
-    ('migration_history_readable', s.migration_history_readable, 'SELECT privilege required'),
+    ('migration_history_unreadable', s.migration_history_readable, 'SELECT privilege required'),
     ('target_version_absent', coalesce(s.migration_history_count=0,false), coalesce(s.migration_history_count::text,'unavailable')),
     ('no_long_transactions', s.long_transactions=0, s.long_transactions::text),
     ('no_lock_waiters', s.lock_waiters=0, s.lock_waiters::text),

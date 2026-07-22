@@ -19,9 +19,9 @@ migration, Netlify setting, Apple setting, or feature flag was used.
 - Frozen up migration SHA-256:
   `5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4`
 - Fail-closed down migration SHA-256:
-  `f39475023b273358941dcb4615850abd90e095fd89d2af3efac0f3dcb6ef9851`
+  `ebac9bbad6630c2dd49bbcbc5aeb3c65697ea9f817e577771935feb7720400e5`
 - Frozen normalized catalog manifest SHA-256:
-  `f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a`
+  `8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e`
 
 The lifecycle results below apply to these exact artifacts. The frozen up
 migration remained identical to `origin/main`.
@@ -46,7 +46,7 @@ POSTGRES_BIN=/opt/homebrew/opt/postgresql@17/bin \
 | Postflight: RLS, policies, grants and runtime defaults | PASS |
 | All Phase 1A data tables initially empty | PASS |
 | Rollback preflight on pristine installation | `ROLLBACK_SAFE` |
-| Down migration with SHA-bound approval | PASS |
+| Down migration with same-session/transaction temp attestation | PASS |
 | All Phase 1A objects removed | PASS |
 | Synthetic membership/payment objects preserved | PASS |
 | Up migration after down/history repair simulation | PASS |
@@ -56,12 +56,15 @@ POSTGRES_BIN=/opt/homebrew/opt/postgresql@17/bin \
 | Enabled verification flag blocks rollback preflight | `ROLLBACK_UNSAFE` |
 | Down migration independently rejects changed controls | PASS |
 | Existing RPC/RLS/replay/idempotency/concurrency suite on PG17 | PASS |
-| Missing/schema-less/malformed/already-applied history | four explicit `NO_GO` results |
+| Missing schema/table, malformed, unreadable, malformed+unreadable, already-applied history | six explicit `NO_GO` results |
 | Exact manifest drift matrix | column, constraint, index, function body/security/search path, trigger, ACL, force-RLS, policy rejected |
-| Approval binding negatives | missing, old format, wrong database/up SHA/manifest rejected |
+| Attestation binding negatives | missing/external/stale/old format, wrong database/up SHA/manifest rejected |
+| Attestation lifetime/isolation | copied ID, commit, new session and real second database rejected |
 | Historical flag ambiguity and stats reset | never `ROLLBACK_SAFE` |
 | Dual-session races | rollback-first ledger/control/membership writes blocked; writer-first down timed out atomically |
-| Canonical legacy payment data fingerprints | stable through up/down/failed-down/up; intentional mutation detected |
+| Per-table payment count + full-row fingerprints | stable through up/down/failed-down/up/concurrency; INSERT/UPDATE/DELETE detected |
+| Failed-down full preservation | exact manifest, all Phase 1A rows/tables/controls and legacy payment snapshots retained |
+| PG17.6/17.10 deparser compatibility | official `ruleutils.c` identical; unrelated `format_type.c` delta verified |
 
 Lifecycle result:
 
@@ -69,10 +72,13 @@ Lifecycle result:
 PASS: preflight -> up -> postflight -> rollback preflight -> down -> up -> postflight
 PASS: data-present rollback rejected
 PASS: feature-flag rollback rejected
-PASS: frozen manifest drift matrix and approval binding rejected
-PASS: migration-history NO_GO matrix and flag-history ambiguity
+PASS: frozen manifest drift matrix and transaction-local attestation binding rejected
+PASS: migration-history NO_GO matrix including real unreadable role
+PASS: flag-history/stats-reset ambiguity and restored-current-value down rejected
+PASS: cross-transaction/session/database and stale/copied attestation rejected
 PASS: dual-session rollback races A-D
-PASS: synthetic user_membership/Stripe-ZPay/Google Play objects preserved
+PASS: per-table user_membership/Stripe-ZPay/Google Play counts and fingerprints preserved
+PASS: payment INSERT/UPDATE/DELETE and failed-down full preservation assertions
 PASS: existing RPC/RLS/idempotency/concurrency suite
 ```
 
@@ -80,7 +86,7 @@ PASS: existing RPC/RLS/idempotency/concurrency suite
 
 - Reported up duration: `<1s` (shell timer rounded to `0s`)
 - Reported down duration: `<1s` (shell timer rounded to `0s`)
-- Complete readiness suite: `28s`
+- Complete readiness suite: `33s`
 - Expected negative tests produced bounded lock timeouts; no deadlock or partial
   DDL occurred.
 - Both up and down executed as explicit transactions.

@@ -13,23 +13,23 @@
 -- reviewed forward fix instead.
 --
 -- DATA-PRESERVATION WARNING: this file deliberately has no CASCADE and will not
--- delete Supabase migration history. Run the read-only rollback preflight first,
--- then set the exact session approval token it returns. After a successful down,
+-- delete Supabase migration history. Run rollback preflight and down in one
+-- explicit transaction, with an explicit LOCAL never-enabled attestation.
+-- After a successful down,
 -- use the supported Supabase CLI migration-repair workflow to mark version
 -- 20260722010000 reverted; never hand-delete a migration-history row.
 --
 -- Required before execution:
+--   BEGIN;
 --   \i supabase/verification/20260722010000_apple_entitlement_rollback_preflight.sql
---   The token printed by rollback preflight is an acknowledgement, not an
---   authentication boundary. It binds operation, database, up SHA and manifest.
+--   SET LOCAL app.phase1a_never_enabled_attested = 'true';
+--   \i supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql
 --
 -- Required after execution:
 --   run the rollback verification in the PG17 readiness harness, verify all
 --   Phase 1A objects are absent, then repair migration history with Supabase CLI.
 
 \ir ../verification/20260722010000_apple_entitlement_manifest.sql
-
-begin;
 
 set local lock_timeout = '5s';
 set local statement_timeout = '5min';
@@ -53,16 +53,41 @@ declare
   v_name text;
   v_count bigint;
   v_runtime public.billing_runtime_controls%rowtype;
+  v_attestation record;
 begin
-  if current_setting('app.phase1a_rollback_approval', true) is distinct from
-    format('PHASE1A_DOWN_ACK|version=20260722010000|up_sha=5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4|database=%s|manifest_sha=f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a',current_database())
-  then
+  if to_regclass('pg_temp.phase1a_rollback_preflight_attestation') is null then
     raise exception using errcode = '55000',
-      message = 'PHASE1A_ROLLBACK_APPROVAL_REQUIRED';
+      message = 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED';
+  end if;
+
+  select * into v_attestation
+  from pg_temp.phase1a_rollback_preflight_attestation
+  where preflight_id::text=current_setting('app.phase1a_rollback_preflight_id',true);
+
+  if not found then
+    raise exception using errcode='55000',
+      message='PHASE1A_ROLLBACK_ATTESTATION_INVALID_OR_EXPIRED';
+  end if;
+
+  if v_attestation.backend_pid<>pg_backend_pid()
+    or v_attestation.transaction_id<>pg_current_xact_id()::text
+    or v_attestation.database_name<>current_database()
+    or v_attestation.operation_type<>'phase_1a_down'
+    or v_attestation.migration_version<>'20260722010000'
+    or v_attestation.up_sha<>'5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4'
+    or v_attestation.manifest_sha<>'8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e'
+    or v_attestation.rollback_result<>'ROLLBACK_SAFE'
+    or not v_attestation.external_history_attested
+    or v_attestation.generated_at < clock_timestamp()-interval '10 minutes'
+    or v_attestation.generated_at > clock_timestamp()+interval '5 seconds'
+    or current_setting('app.phase1a_never_enabled_attested',true) is distinct from 'true'
+  then
+    raise exception using errcode='55000',
+      message='PHASE1A_ROLLBACK_ATTESTATION_INVALID_OR_EXPIRED';
   end if;
 
   if pg_temp.phase1a_manifest_sha256() is distinct from
-    'f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a'
+    '8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e'
   then
     raise exception using errcode='55000', message='PHASE1A_MANIFEST_MISMATCH';
   end if;

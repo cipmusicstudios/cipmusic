@@ -84,10 +84,13 @@ with target_tables(name) as (
     'owner',case when p.proowner=(select oid from pg_roles where rolname=current_user)
       then '@migration_owner' else pg_get_userbyid(p.proowner) end,
     'language',l.lanname,'result',pg_get_function_result(p.oid),
+    'arguments',pg_get_function_arguments(p.oid),
+    'identity_arguments',pg_get_function_identity_arguments(p.oid),
     'kind',p.prokind,'volatility',p.provolatile,'parallel',p.proparallel,
     'strict',p.proisstrict,'security_definer',p.prosecdef,'leakproof',p.proleakproof,
+    'cost',p.procost,'rows',p.prorows,'returns_set',p.proretset,
+    'source',p.prosrc,'binary',p.probin,
     'config',coalesce((select jsonb_agg(x order by x) from unnest(p.proconfig) x),'[]'::jsonb),
-    'definition',pg_get_functiondef(p.oid),
     'acl',coalesce((select jsonb_agg(jsonb_build_object(
       'grantee',case when a.grantee=0 then 'PUBLIC' when a.grantee=p.proowner then '@migration_owner' else pg_get_userbyid(a.grantee) end,
       'grantor',case when a.grantor=p.proowner then '@migration_owner' else pg_get_userbyid(a.grantor) end,
@@ -118,7 +121,7 @@ with target_tables(name) as (
   ) order by tt.name,p.polname), '[]'::jsonb) value
   from target_tables tt join pg_policy p on p.polrelid=to_regclass('public.'||tt.name)
 )
-select jsonb_build_object('format','cipmusic-phase1a-pg17-v1','enums',e.value,
+select jsonb_build_object('format','cipmusic-phase1a-pg17-v2','enums',e.value,
   'tables',t.value,'columns',c.value,'constraints',k.value,'indexes',i.value,
   'functions',f.value,'triggers',g.value,'policies',p.value)
 from enums e cross join tables t cross join columns c cross join constraints k
