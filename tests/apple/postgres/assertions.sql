@@ -449,6 +449,21 @@ select test_assert.ok((
   from public.billing_entitlements_v2 a cross join public.billing_entitlements_v2 b
   where a.external_entitlement_id='source-forward' and b.external_entitlement_id='source-reverse'
 ), 'source-only A/B billing result differs');
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','source-state-a','source-state-conflict',
+  '2026-04-12T00:00:00Z','2026-04-12T00:00:00Z','active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-13T00:00:00Z',true,'purchase',false,
+  null,null,null,'recorded','source-state-current',null,'verified',null,'server_api_status'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','source-state-b','source-state-conflict',
+  '2026-04-12T00:00:01Z','2026-04-12T00:00:00Z','revoked',false,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-04-13T00:00:00Z',true,'restore',false,
+  null,null,null,'recorded','source-state-current',null,'verified',null,'reconciliation'
+);
+select test_assert.ok((select current_state_quality='quarantined' and normalized_status='unknown'
+  and not source_grants_premium from public.app_store_entitlements
+  where original_transaction_id='source-state-conflict'), 'different source masked a true status conflict');
 
 -- Binding evidence is independent: missing hashes preserve/fill evidence, differing hashes hard-quarantine.
 select * from test_assert.record_tx(
