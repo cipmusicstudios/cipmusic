@@ -1,7 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import type {JWSTransactionDecodedPayload} from '@apple/app-store-server-library';
-import {APPLE_PRODUCTS, APPLE_SUBSCRIPTION_GROUP_ID, AppleServiceError, type AppleEnvironment, type AppleNormalizedStatus, type TransactionSummary} from './types';
-import {sha256} from './redaction';
+import {APPLE_PRODUCTS, APPLE_SUBSCRIPTION_GROUP_ID, AppleServiceError, type AppleEnvironment, type TransactionSummary} from './types';
+import {appAccountTokenHash, sha256} from './redaction';
 
 const iso = (value?: number): string | null => value == null ? null : new Date(value).toISOString();
 
@@ -30,13 +30,8 @@ export function summarizeTransaction(
   if (tx.appAccountToken && expectedUserId && tx.appAccountToken.toLowerCase() !== expectedUserId.toLowerCase()) {
     throw new AppleServiceError('APP_ACCOUNT_TOKEN_MISMATCH', 409);
   }
-  const revoked = tx.revocationDate != null;
-  // Derive persisted semantics from signed fields only. Using wall-clock time here
-  // would give the same immutable transaction a different replay hash after expiry.
-  const expired = tx.expiresDate != null && tx.expiresDate <= tx.signedDate;
-  const normalizedStatus: AppleNormalizedStatus = revoked ? 'refunded' : tx.isUpgraded ? 'upgraded' : expired ? 'expired' : 'active';
-  const grantsPremium = environment === 'production' && !revoked && !tx.isUpgraded
-    && Boolean(tx.expiresDate && tx.expiresDate > tx.signedDate);
+  const transactionStatus: TransactionSummary['transactionStatus'] = tx.revocationDate != null
+    ? 'revoked' : tx.isUpgraded ? 'upgraded' : 'recorded';
   const summaryWithoutHash = {
     environment, transactionId: tx.transactionId, originalTransactionId: tx.originalTransactionId,
     productId: tx.productId, subscriptionGroupId: tx.subscriptionGroupIdentifier,
@@ -45,9 +40,14 @@ export function summarizeTransaction(
     revocationReason: typeof tx.revocationReason === 'number' ? tx.revocationReason : null,
     transactionReason: tx.transactionReason ? String(tx.transactionReason) : null,
     ownershipType: tx.inAppOwnershipType ? String(tx.inAppOwnershipType) : null,
-    normalizedStatus, grantsPremium,
+    transactionStatus,
   };
   return {...summaryWithoutHash, summaryHash: sha256(JSON.stringify(summaryWithoutHash))};
+}
+
+
+export function hashAppAccountToken(value: string | null): string | null {
+  return value ? appAccountTokenHash(value) : null;
 }
 
 export function assertTransactionRequestMatch(

@@ -107,7 +107,9 @@ create table public.app_store_entitlements (
   user_id uuid null references auth.users(id) on delete restrict,
   binding_state public.app_store_binding_state not null default 'unclaimed',
   claimed_at timestamptz null,
-  app_account_token uuid null,
+  app_account_token_hash text null check (app_account_token_hash ~ '^[0-9a-f]{64}$'),
+  claim_method text null check (claim_method in ('purchase', 'restore', 'legacy_claim')),
+  claim_evidence_hash text null check (claim_evidence_hash ~ '^[0-9a-f]{64}$'),
   product_id text not null,
   subscription_group_id text not null,
   normalized_status text not null check (normalized_status in (
@@ -121,6 +123,7 @@ create table public.app_store_entitlements (
   latest_signed_date timestamptz not null,
   latest_effective_at timestamptz not null,
   latest_notification_uuid uuid null,
+  current_status_hash text not null check (current_status_hash ~ '^[0-9a-f]{64}$'),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint app_store_entitlements_environment_match
@@ -134,7 +137,14 @@ create table public.app_store_entitlements (
   constraint app_store_entitlements_sandbox_grant check (
     environment = 'production' or grants_premium = false
   ),
-  unique (environment, original_transaction_id)
+  constraint app_store_entitlements_grant_status check (
+    not grants_premium or normalized_status in ('active', 'grace_period', 'canceled_active')
+  ),
+  constraint app_store_entitlements_grant_expiry check (
+    not grants_premium or (expires_at is not null and expires_at > transaction_timestamp())
+  ),
+  unique (environment, original_transaction_id),
+  unique (id, environment, original_transaction_id)
 );
 
 create index app_store_entitlements_user_idx
@@ -144,13 +154,13 @@ create index app_store_entitlements_status_idx
 
 create table public.app_store_transactions (
   id uuid primary key default gen_random_uuid(),
-  entitlement_id uuid not null references public.app_store_entitlements(id) on delete restrict,
+  entitlement_id uuid not null,
   environment public.app_store_environment not null,
   transaction_id text not null,
   original_transaction_id text not null,
   product_id text not null,
   subscription_group_id text not null,
-  app_account_token uuid null,
+  app_account_token_hash text null check (app_account_token_hash ~ '^[0-9a-f]{64}$'),
   purchase_date timestamptz null,
   expires_date timestamptz null,
   signed_date timestamptz not null,
@@ -158,13 +168,13 @@ create table public.app_store_transactions (
   revocation_reason integer null,
   transaction_reason text null,
   ownership_type text null,
-  normalized_status text not null,
+  transaction_status text not null check (transaction_status in ('recorded', 'revoked', 'upgraded')),
   summary_hash text not null check (summary_hash ~ '^[0-9a-f]{64}$'),
   received_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   unique (environment, transaction_id),
-  foreign key (environment, original_transaction_id)
-    references public.app_store_entitlements(environment, original_transaction_id)
+  foreign key (entitlement_id, environment, original_transaction_id)
+    references public.app_store_entitlements(id, environment, original_transaction_id)
     on delete restrict
 );
 
@@ -216,6 +226,7 @@ create table public.billing_entitlements_v2 (
   source_environment public.app_store_environment null,
   external_entitlement_id text not null,
   plan text not null default 'premium',
+  product_id text null,
   status text not null check (status in ('active', 'inactive', 'revoked', 'expired')),
   validity public.billing_entitlement_validity not null default 'bounded',
   valid_until timestamptz null,
@@ -380,7 +391,7 @@ create function public.billing_record_app_store_transaction(
   p_original_transaction_id text,
   p_product_id text,
   p_subscription_group_id text,
-  p_app_account_token uuid,
+  p_app_account_token_hash text,
   p_purchase_date timestamptz,
   p_expires_date timestamptz,
   p_signed_date timestamptz,
@@ -388,13 +399,28 @@ create function public.billing_record_app_store_transaction(
   p_revocation_reason integer,
   p_transaction_reason text,
   p_ownership_type text,
-  p_normalized_status text,
-  p_grants_premium boolean,
-  p_auto_renew boolean,
+  p_transaction_status text,
   p_summary_hash text,
-  p_allow_legacy_claim boolean default false
+  p_claim_intent text,
+  p_legacy_claim_confirmed boolean,
+  p_current_transaction_id text,
+  p_current_product_id text,
+  p_current_subscription_group_id text,
+  p_current_app_account_token_hash text,
+  p_current_normalized_status text,
+  p_current_grants_premium boolean,
+  p_current_expires_at timestamptz,
+  p_current_auto_renew boolean,
+  p_current_source_signed_date timestamptz,
+  p_current_evidence_hash text
 )
-returns table (entitlement_id uuid, binding_result text, transaction_duplicate boolean, applied_as_latest boolean)
+returns table (
+  entitlement_id uuid,
+  binding_result text,
+  transaction_duplicate boolean,
+  applied_as_latest boolean,
+  current_state_ambiguous boolean
+)
 language plpgsql
 security definer
 set search_path = pg_catalog, public
@@ -406,6 +432,10 @@ declare
   v_existing_tx_hash text;
   v_applied boolean := false;
   v_binding text;
+  v_ambiguous boolean := false;
+  v_expected_token_hash text;
+  v_claim_allowed boolean := false;
+  v_current_state_hash text;
 begin
   if not coalesce((
     select apple_verification_enabled and apple_ledger_write_enabled
@@ -416,6 +446,9 @@ begin
   if p_endpoint_environment <> p_payload_environment then
     raise exception using errcode = '22023', message = 'APP_STORE_ENVIRONMENT_MISMATCH';
   end if;
+  if p_user_id is null then
+    raise exception using errcode = '22023', message = 'AUTHENTICATED_USER_REQUIRED';
+  end if;
   if p_product_id not in (
     'com.cipmusic.aurasounds.premium.monthly.v2',
     'com.cipmusic.aurasounds.premium.yearly.v2'
@@ -425,21 +458,79 @@ begin
   if p_subscription_group_id <> '22099193' then
     raise exception using errcode = '22023', message = 'APP_STORE_SUBSCRIPTION_GROUP_MISMATCH';
   end if;
-  if p_user_id is not null and p_app_account_token is not null and p_app_account_token <> p_user_id then
-    raise exception using errcode = '22023', message = 'APP_ACCOUNT_TOKEN_MISMATCH';
-  end if;
-  if p_payload_environment = 'sandbox' and p_grants_premium then
-    raise exception using errcode = '22023', message = 'SANDBOX_PRODUCTION_GRANT_FORBIDDEN';
-  end if;
-  if p_grants_premium and (
-    p_payload_environment <> 'production'
-    or p_normalized_status not in ('active', 'grace_period', 'billing_retry', 'canceled_active')
-    or p_expires_date is null
+  if p_current_product_id not in (
+    'com.cipmusic.aurasounds.premium.monthly.v2',
+    'com.cipmusic.aurasounds.premium.yearly.v2'
   ) then
-    raise exception using errcode = '22023', message = 'INVALID_PREMIUM_GRANT';
+    raise exception using errcode = '22023', message = 'APP_STORE_PRODUCT_MISMATCH';
+  end if;
+  if p_current_subscription_group_id <> '22099193' then
+    raise exception using errcode = '22023', message = 'APP_STORE_SUBSCRIPTION_GROUP_MISMATCH';
+  end if;
+  if p_transaction_status not in ('recorded', 'revoked', 'upgraded') then
+    raise exception using errcode = '22023', message = 'INVALID_TRANSACTION_STATUS';
+  end if;
+  if p_current_normalized_status not in (
+    'active', 'expired', 'grace_period', 'billing_retry', 'revoked', 'refunded',
+    'upgraded', 'downgraded', 'canceled_active', 'unknown'
+  ) then
+    raise exception using errcode = '22023', message = 'CURRENT_STATUS_INVALID';
+  end if;
+  if p_claim_intent not in ('purchase', 'restore', 'legacy_claim') then
+    raise exception using errcode = '22023', message = 'CLAIM_INTENT_REQUIRED';
   end if;
   if p_summary_hash !~ '^[0-9a-f]{64}$' then
     raise exception using errcode = '22023', message = 'INVALID_SUMMARY_HASH';
+  end if;
+  if p_current_evidence_hash !~ '^[0-9a-f]{64}$'
+     or (p_app_account_token_hash is not null and p_app_account_token_hash !~ '^[0-9a-f]{64}$')
+     or (p_current_app_account_token_hash is not null and p_current_app_account_token_hash !~ '^[0-9a-f]{64}$') then
+    raise exception using errcode = '22023', message = 'INVALID_EVIDENCE_HASH';
+  end if;
+  v_current_state_hash := encode(extensions.digest(concat_ws('|',
+    p_payload_environment::text,
+    p_original_transaction_id,
+    p_current_transaction_id,
+    p_current_product_id,
+    p_current_subscription_group_id,
+    coalesce(p_current_app_account_token_hash, ''),
+    p_current_normalized_status,
+    p_current_grants_premium::text,
+    coalesce(extract(epoch from p_current_expires_at)::text, ''),
+    coalesce(p_current_auto_renew::text, ''),
+    extract(epoch from p_current_source_signed_date)::text
+  ), 'sha256'), 'hex');
+
+  v_expected_token_hash := encode(
+    extensions.digest('cipmusic:app-account-token:v1:' || lower(p_user_id::text), 'sha256'), 'hex'
+  );
+  if (p_app_account_token_hash is not null and p_app_account_token_hash <> v_expected_token_hash)
+     or (p_current_app_account_token_hash is not null and p_current_app_account_token_hash <> v_expected_token_hash) then
+    raise exception using errcode = '22023', message = 'APP_ACCOUNT_TOKEN_MISMATCH';
+  end if;
+  if p_claim_intent = 'legacy_claim' then
+    if not p_legacy_claim_confirmed then
+      raise exception using errcode = '22023', message = 'LEGACY_CLAIM_CONFIRMATION_REQUIRED';
+    end if;
+    if p_app_account_token_hash is not null or p_current_app_account_token_hash is not null
+       or not p_current_grants_premium then
+      raise exception using errcode = '22023', message = 'LEGACY_CLAIM_NOT_ALLOWED';
+    end if;
+    v_claim_allowed := true;
+  else
+    v_claim_allowed := coalesce(p_current_app_account_token_hash = v_expected_token_hash, false);
+  end if;
+
+  if p_payload_environment = 'sandbox' and p_current_grants_premium then
+    raise exception using errcode = '22023', message = 'SANDBOX_PRODUCTION_GRANT_FORBIDDEN';
+  end if;
+  if p_current_grants_premium and (
+    p_payload_environment <> 'production'
+    or p_current_normalized_status not in ('active', 'grace_period', 'canceled_active')
+    or p_current_expires_at is null
+    or p_current_expires_at <= transaction_timestamp()
+  ) then
+    raise exception using errcode = '22023', message = 'INVALID_PREMIUM_GRANT';
   end if;
 
   perform pg_advisory_xact_lock(
@@ -457,58 +548,76 @@ begin
   where environment = p_payload_environment and original_transaction_id = p_original_transaction_id
   for update;
 
+  if found then
+    if v_ent.binding_state = 'claimed' and v_ent.user_id is distinct from p_user_id then
+      raise exception using errcode = '23505', message = 'APP_STORE_ALREADY_BOUND';
+    elsif v_ent.binding_state in ('account_deleted', 'transferred', 'fraud_locked') then
+      raise exception using errcode = '23505', message = 'APP_STORE_BINDING_BLOCKED';
+    end if;
+    if p_claim_intent = 'legacy_claim' and p_current_source_signed_date < v_ent.latest_signed_date then
+      raise exception using errcode = '22023', message = 'LEGACY_CLAIM_NOT_ALLOWED';
+    end if;
+    if p_current_source_signed_date = v_ent.latest_signed_date
+       and v_current_state_hash <> v_ent.current_status_hash then
+      v_ambiguous := true;
+    end if;
+  end if;
+
   if not found then
     insert into public.app_store_entitlements (
       environment, endpoint_environment, original_transaction_id, user_id, binding_state,
-      claimed_at, app_account_token, product_id, subscription_group_id, normalized_status,
+      claimed_at, app_account_token_hash, claim_method, claim_evidence_hash,
+      product_id, subscription_group_id, normalized_status,
       grants_premium, expires_at, auto_renew, latest_transaction_id,
-      latest_signed_date, latest_effective_at
+      latest_signed_date, latest_effective_at, current_status_hash
     ) values (
       p_payload_environment, p_endpoint_environment, p_original_transaction_id,
-      case when p_user_id is not null and (p_app_account_token = p_user_id or p_allow_legacy_claim) then p_user_id end,
-      case when p_user_id is not null and (p_app_account_token = p_user_id or p_allow_legacy_claim)
-        then 'claimed'::public.app_store_binding_state else 'unclaimed'::public.app_store_binding_state end,
-      case when p_user_id is not null and (p_app_account_token = p_user_id or p_allow_legacy_claim) then now() end,
-      p_app_account_token, p_product_id, p_subscription_group_id, p_normalized_status,
-      p_grants_premium, p_expires_date, p_auto_renew, p_transaction_id,
-      p_signed_date, greatest(coalesce(p_revocation_date, p_expires_date, p_signed_date), p_signed_date)
+      case when v_claim_allowed then p_user_id end,
+      case when v_claim_allowed then 'claimed'::public.app_store_binding_state else 'unclaimed'::public.app_store_binding_state end,
+      case when v_claim_allowed then transaction_timestamp() end,
+      p_current_app_account_token_hash,
+      case when v_claim_allowed then p_claim_intent end,
+      case when v_claim_allowed then p_current_evidence_hash end,
+      p_current_product_id, p_current_subscription_group_id, p_current_normalized_status,
+      p_current_grants_premium, p_current_expires_at, p_current_auto_renew, p_current_transaction_id,
+      p_current_source_signed_date,
+      greatest(coalesce(p_current_expires_at, p_current_source_signed_date), p_current_source_signed_date),
+      v_current_state_hash
     ) returning * into v_ent;
     v_binding := case when v_ent.binding_state = 'claimed' then 'claimed' else 'unclaimed' end;
     v_applied := true;
   else
-    if v_ent.binding_state = 'claimed' and v_ent.user_id <> p_user_id then
-      raise exception using errcode = '23505', message = 'APP_STORE_ALREADY_BOUND';
-    elsif v_ent.binding_state in ('account_deleted', 'transferred', 'fraud_locked') then
-      raise exception using errcode = '23505', message = 'APP_STORE_BINDING_BLOCKED';
+    if v_ambiguous then
+      v_binding := case when v_ent.binding_state = 'claimed' then 'already_claimed' else 'unclaimed' end;
     elsif v_ent.binding_state = 'unclaimed' then
-      if p_user_id is null or not (p_app_account_token = p_user_id or p_allow_legacy_claim) then
+      if not v_claim_allowed then
         v_binding := 'unclaimed';
       else
         update public.app_store_entitlements set
-          user_id = p_user_id, binding_state = 'claimed', claimed_at = now(),
-          app_account_token = coalesce(app_account_token, p_app_account_token)
+          user_id = p_user_id, binding_state = 'claimed', claimed_at = transaction_timestamp(),
+          app_account_token_hash = coalesce(app_account_token_hash, p_current_app_account_token_hash),
+          claim_method = p_claim_intent, claim_evidence_hash = p_current_evidence_hash
         where id = v_ent.id returning * into v_ent;
         v_binding := 'claimed';
       end if;
     else
       v_binding := 'already_claimed';
-      if p_app_account_token is not null and p_app_account_token <> p_user_id then
-        raise exception using errcode = '22023', message = 'APP_ACCOUNT_TOKEN_MISMATCH';
-      end if;
     end if;
 
-    if p_signed_date > v_ent.latest_signed_date then
+    if not v_ambiguous and p_current_source_signed_date > v_ent.latest_signed_date then
       update public.app_store_entitlements set
         endpoint_environment = p_endpoint_environment,
-        product_id = p_product_id,
-        subscription_group_id = p_subscription_group_id,
-        normalized_status = p_normalized_status,
-        grants_premium = p_grants_premium,
-        expires_at = p_expires_date,
-        auto_renew = p_auto_renew,
-        latest_transaction_id = p_transaction_id,
-        latest_signed_date = p_signed_date,
-        latest_effective_at = greatest(coalesce(p_revocation_date, p_expires_date, p_signed_date), p_signed_date)
+        app_account_token_hash = coalesce(app_account_token_hash, p_current_app_account_token_hash),
+        product_id = p_current_product_id,
+        subscription_group_id = p_current_subscription_group_id,
+        normalized_status = p_current_normalized_status,
+        grants_premium = p_current_grants_premium,
+        expires_at = p_current_expires_at,
+        auto_renew = p_current_auto_renew,
+        latest_transaction_id = p_current_transaction_id,
+        latest_signed_date = p_current_source_signed_date,
+        latest_effective_at = greatest(coalesce(p_current_expires_at, p_current_source_signed_date), p_current_source_signed_date),
+        current_status_hash = v_current_state_hash
       where id = v_ent.id returning * into v_ent;
       v_applied := true;
     end if;
@@ -516,14 +625,14 @@ begin
 
   insert into public.app_store_transactions (
     entitlement_id, environment, transaction_id, original_transaction_id, product_id,
-    subscription_group_id, app_account_token, purchase_date, expires_date, signed_date,
+    subscription_group_id, app_account_token_hash, purchase_date, expires_date, signed_date,
     revocation_date, revocation_reason, transaction_reason, ownership_type,
-    normalized_status, summary_hash
+    transaction_status, summary_hash
   ) values (
     v_ent.id, p_payload_environment, p_transaction_id, p_original_transaction_id, p_product_id,
-    p_subscription_group_id, p_app_account_token, p_purchase_date, p_expires_date, p_signed_date,
+    p_subscription_group_id, p_app_account_token_hash, p_purchase_date, p_expires_date, p_signed_date,
     p_revocation_date, p_revocation_reason, p_transaction_reason, p_ownership_type,
-    p_normalized_status, p_summary_hash
+    p_transaction_status, p_summary_hash
   ) on conflict (environment, transaction_id) do nothing
   returning id into v_tx_id;
   v_tx_inserted := v_tx_id is not null;
@@ -536,15 +645,21 @@ begin
     end if;
   end if;
 
-  if v_ent.binding_state = 'claimed' then
+  if v_ent.binding_state = 'claimed' and not v_ambiguous then
     insert into public.billing_entitlements_v2 (
-      user_id, source, source_environment, external_entitlement_id, plan, status,
+      user_id, source, source_environment, external_entitlement_id, plan, product_id, status,
       validity, valid_until, grants_premium, source_version_at
     ) values (
       v_ent.user_id, 'apple', p_payload_environment, p_original_transaction_id, 'premium',
-      case when p_grants_premium then 'active' else 'inactive' end,
-      'bounded', p_expires_date, p_grants_premium, p_signed_date
+      v_ent.product_id, case
+        when v_ent.grants_premium then 'active'
+        when v_ent.normalized_status in ('revoked', 'refunded') then 'revoked'
+        when v_ent.normalized_status = 'expired' then 'expired'
+        else 'inactive'
+      end,
+      'bounded', v_ent.expires_at, v_ent.grants_premium, v_ent.latest_signed_date
     ) on conflict (source, source_environment, external_entitlement_id) do update set
+      product_id = excluded.product_id,
       status = excluded.status,
       valid_until = excluded.valid_until,
       grants_premium = excluded.grants_premium,
@@ -554,7 +669,7 @@ begin
       and public.billing_entitlements_v2.user_id = excluded.user_id;
   end if;
 
-  return query select v_ent.id, v_binding, not v_tx_inserted, v_applied;
+  return query select v_ent.id, v_binding, not v_tx_inserted, v_applied, v_ambiguous;
 end
 $function$;
 
@@ -566,7 +681,9 @@ set search_path = pg_catalog, public
 as $function$
 declare v_existing public.billing_account_deletion_requests%rowtype; v_count integer := 0; v_hash text;
 begin
-  v_hash := encode(extensions.digest(p_user_id::text, 'sha256'), 'hex');
+  v_hash := encode(extensions.digest(
+    'cipmusic:deleted-user:v1:' || lower(p_user_id::text), 'sha256'
+  ), 'hex');
   perform pg_advisory_xact_lock(
     hashtextextended('cipmusic:billing:account-deletion:' || p_user_id::text, 0)
   );
@@ -589,7 +706,7 @@ begin
   insert into public.app_store_binding_tombstones (
     environment, original_transaction_id, prior_user_hash, reason, deletion_request_id
   ) select environment, original_transaction_id,
-      encode(extensions.digest(p_user_id::text, 'sha256'), 'hex'), 'account_deleted', p_request_id
+      v_hash, 'account_deleted', p_request_id
     from public.app_store_entitlements where user_id = p_user_id
   on conflict (environment, original_transaction_id) do nothing;
 
@@ -618,8 +735,9 @@ revoke all on function public.billing_record_app_store_notification(
 ) from public, anon, authenticated;
 revoke all on function public.billing_record_app_store_transaction(
   uuid, public.app_store_environment, public.app_store_environment, text, text, text, text,
-  uuid, timestamptz, timestamptz, timestamptz, timestamptz, integer, text, text, text,
-  boolean, boolean, text, boolean
+  text, timestamptz, timestamptz, timestamptz, timestamptz, integer, text, text, text,
+  text, text, boolean, text, text, text, text, text, boolean, timestamptz, boolean,
+  timestamptz, text
 ) from public, anon, authenticated;
 revoke all on function public.billing_prepare_account_deletion(uuid, uuid)
   from public, anon, authenticated;
@@ -631,8 +749,9 @@ grant execute on function public.billing_record_app_store_notification(
 ) to service_role;
 grant execute on function public.billing_record_app_store_transaction(
   uuid, public.app_store_environment, public.app_store_environment, text, text, text, text,
-  uuid, timestamptz, timestamptz, timestamptz, timestamptz, integer, text, text, text,
-  boolean, boolean, text, boolean
+  text, timestamptz, timestamptz, timestamptz, timestamptz, integer, text, text, text,
+  text, text, boolean, text, text, text, text, text, boolean, timestamptz, boolean,
+  timestamptz, text
 ) to service_role;
 grant execute on function public.billing_prepare_account_deletion(uuid, uuid) to service_role;
 

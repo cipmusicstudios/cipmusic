@@ -42,6 +42,11 @@ export class OfficialAppleVerifier implements AppleVerifier {
     assertAppleJwsHeader(jws);
     return this.verifier(environment).verifyAndDecodeNotification(jws);
   }
+
+  verifyRenewal(jws: string, environment: AppleEnvironment) {
+    assertAppleJwsHeader(jws);
+    return this.verifier(environment).verifyAndDecodeRenewalInfo(jws);
+  }
 }
 
 export class OfficialAppleTransactionLookup implements AppleTransactionLookup {

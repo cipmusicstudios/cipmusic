@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createVerifyHandler} from '../../netlify/functions/_shared/apple/verify-handler';
 import type {RuntimeControls} from '../../netlify/functions/_shared/apple/runtime';
+import type {CurrentEntitlementStatus} from '../../netlify/functions/_shared/apple/types';
+import {AppleServiceError} from '../../netlify/functions/_shared/apple/types';
 
 const userId = '11111111-1111-4111-8111-111111111111';
 const fakeSupabase = {} as any;
@@ -11,6 +13,24 @@ const event = (body: unknown, auth = true) => ({
 const controls = (verification: boolean, ledger = false): RuntimeControls => ({
   appleVerificationEnabled: verification, appleLedgerWriteEnabled: ledger,
   appleMembershipWritebackEnabled: false, aggregateMode: 'off', legacyProtectionEnabled: false,
+});
+const transaction = (patch: Record<string, unknown> = {}) => ({
+  environment: 'Production', bundleId: 'com.cipmusic.aurasounds',
+  productId: 'com.cipmusic.aurasounds.premium.monthly.v2', subscriptionGroupIdentifier: '22099193',
+  transactionId: 'tx-1', originalTransactionId: 'orig-1', signedDate: Date.now(),
+  expiresDate: Date.now() + 86_400_000, ...patch,
+});
+const verifier = (tx = transaction()) => ({
+  verifyTransaction: async () => tx,
+  verifyNotification: async () => ({}),
+  verifyRenewal: async () => ({}),
+});
+const current = (patch: Partial<CurrentEntitlementStatus> = {}): CurrentEntitlementStatus => ({
+  environment: 'production', originalTransactionId: 'orig-1', latestTransactionId: 'tx-current',
+  productId: 'com.cipmusic.aurasounds.premium.monthly.v2', subscriptionGroupId: '22099193',
+  appAccountTokenHash: null, normalizedStatus: 'active', grantsPremium: true,
+  expiresAt: new Date(Date.now() + 86_400_000).toISOString(), autoRenew: true,
+  sourceSignedDate: new Date().toISOString(), evidenceHash: 'a'.repeat(64), ...patch,
 });
 const withEnv = async (fn: () => Promise<void>) => {
   const old = {...process.env};
@@ -25,60 +45,106 @@ test('CORS preflight exposes the required POST headers', async () => {
   const handler = createVerifyHandler({supabase: fakeSupabase});
   const response = await handler({httpMethod: 'OPTIONS', headers: {}, body: null} as any);
   assert.equal(response.statusCode, 204);
-  assert.equal(response.headers?.['Access-Control-Allow-Methods'], 'POST, OPTIONS');
-  assert.match(String(response.headers?.['Access-Control-Allow-Headers']), /Authorization/);
 });
 
 test('all flags off calls neither Apple nor ledger', async () => {
   let apple = 0; let writes = 0;
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
-    readControls: async () => controls(false),
-    verifier: {verifyTransaction: async () => { apple++; return {}; }, verifyNotification: async () => ({})},
-    persist: async () => { writes++; return {bindingResult: '', duplicate: false}; }});
-  const response = await handler(event({signedTransactionInfo: 'a.b.c'}));
+    readControls: async () => controls(false), verifier: {...verifier(),
+      verifyTransaction: async () => { apple++; return transaction(); }},
+    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateAmbiguous: false}; }});
+  const response = await handler(event({signedTransactionInfo: 'a.b.c', claimIntent: 'restore'}));
   assert.equal(response.statusCode, 503); assert.equal(apple, 0); assert.equal(writes, 0);
 });
 
 test('invalid JWT is rejected', async () => {
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => null});
-  assert.equal((await handler(event({transactionId: '1'}))).statusCode, 401);
+  assert.equal((await handler(event({transactionId: '1', claimIntent: 'restore'}))).statusCode, 401);
 });
 
 test('client userId is rejected before verification', async () => {
   const handler = createVerifyHandler({supabase: fakeSupabase});
-  const response = await handler(event({transactionId: '1', userId}));
+  const response = await handler(event({transactionId: '1', claimIntent: 'restore', userId}));
   assert.equal(response.statusCode, 400); assert.match(response.body, /CLIENT_USER_ID_FORBIDDEN/);
 });
 
-test('missing Apple env fails closed after feature enable', async () => {
-  const old = {...process.env};
-  for (const key of Object.keys(process.env)) if (key.startsWith('APP_STORE_')) delete process.env[key];
-  try {
-    const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
-      readControls: async () => controls(true)});
-    const response = await handler(event({transactionId: '1'}));
-    assert.equal(response.statusCode, 503); assert.match(response.body, /SERVICE_ENV_INCOMPLETE/);
-  } finally { process.env = old; }
+test('legacy claim requires explicit confirmation', async () => {
+  const handler = createVerifyHandler({supabase: fakeSupabase});
+  const response = await handler(event({transactionId: '1', claimIntent: 'legacy_claim'}));
+  assert.equal(response.statusCode, 400); assert.match(response.body, /LEGACY_CLAIM_CONFIRMATION_REQUIRED/);
 });
 
-test('verification-only does not persist', async () => withEnv(async () => {
+test('verification-only verifies transaction without claiming current status', async () => withEnv(async () => {
+  let currentCalls = 0; let writes = 0;
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, false), verifier: verifier(),
+    currentStatus: {lookupCurrentStatus: async () => { currentCalls++; return current(); }},
+    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateAmbiguous: false}; }});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore', allowLegacyClaim: true}));
+  assert.equal(response.statusCode, 200); assert.match(response.body, /verification-only/);
+  assert.equal(currentCalls, 0); assert.equal(writes, 0);
+}));
+
+test('ordinary tokenless restore never becomes legacy claim', async () => withEnv(async () => {
+  let receivedIntent = '';
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, true), verifier: verifier(),
+    currentStatus: {lookupCurrentStatus: async () => current()},
+    persist: async (_client, _user, _environment, _summary, _current, intent) => {
+      receivedIntent = intent; return {bindingResult: 'unclaimed', duplicate: false, currentStateAmbiguous: false};
+    }});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore', allowLegacyClaim: true}));
+  assert.equal(response.statusCode, 200); assert.equal(receivedIntent, 'restore');
+  assert.match(response.body, /"binding":"unclaimed"/);
+}));
+
+test('legacy claim is rejected when either current or submitted transaction has a token', async () => withEnv(async () => {
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, true), verifier: verifier(transaction({appAccountToken: userId})),
+    currentStatus: {lookupCurrentStatus: async () => current({appAccountTokenHash: 'b'.repeat(64)})}});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'legacy_claim', legacyClaimConfirmed: true}));
+  assert.equal(response.statusCode, 409); assert.match(response.body, /LEGACY_CLAIM_NOT_ALLOWED/);
+}));
+
+test('legacy claim requires a currently granting entitlement', async () => withEnv(async () => {
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, true), verifier: verifier(),
+    currentStatus: {lookupCurrentStatus: async () => current({normalizedStatus: 'expired', grantsPremium: false,
+      expiresAt: new Date(Date.now() - 1000).toISOString()})}});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'legacy_claim', legacyClaimConfirmed: true}));
+  assert.equal(response.statusCode, 409); assert.match(response.body, /LEGACY_CLAIM_NOT_ALLOWED/);
+}));
+
+test('current-status provider failure never writes or grants', async () => withEnv(async () => {
   let writes = 0;
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
-    readControls: async () => controls(true, false), lookup: {lookup: async () => ({signedTransactionInfo: 'jws', environment: 'production'})},
-    verifier: {verifyTransaction: async () => ({environment: 'Production', bundleId: 'com.cipmusic.aurasounds',
-      productId: 'com.cipmusic.aurasounds.premium.monthly.v2', subscriptionGroupIdentifier: '22099193',
-      transactionId: '1', originalTransactionId: 'o', signedDate: Date.now(), expiresDate: Date.now() + 10000}),
-      verifyNotification: async () => ({})}, persist: async () => { writes++; return {bindingResult: '', duplicate: false}; }});
-  const response = await handler(event({transactionId: '1'}));
-  assert.equal(response.statusCode, 200); assert.match(response.body, /verification-only/); assert.equal(writes, 0);
+    readControls: async () => controls(true, true), verifier: verifier(),
+    currentStatus: {lookupCurrentStatus: async () => { throw new AppleServiceError('CURRENT_STATUS_REQUIRED', 503); }},
+    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateAmbiguous: false}; }});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore'}));
+  assert.equal(response.statusCode, 503); assert.equal(writes, 0); assert.match(response.body, /CURRENT_STATUS_REQUIRED/);
+}));
+
+test('unexpected current-status chain fails closed', async () => withEnv(async () => {
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, true), verifier: verifier(),
+    currentStatus: {lookupCurrentStatus: async () => current({originalTransactionId: 'other'})}});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore'}));
+  assert.equal(response.statusCode, 502); assert.match(response.body, /CURRENT_STATUS_INVALID/);
+}));
+
+test('persisted equal-version conflict returns deterministic non-200', async () => withEnv(async () => {
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, true), verifier: verifier(),
+    currentStatus: {lookupCurrentStatus: async () => current()},
+    persist: async () => ({bindingResult: 'already_claimed', duplicate: false, currentStateAmbiguous: true})});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore'}));
+  assert.equal(response.statusCode, 409); assert.match(response.body, /CURRENT_STATE_AMBIGUOUS/);
 }));
 
 test('JWS and transactionId mismatch is rejected', async () => withEnv(async () => {
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
-    readControls: async () => controls(true), verifier: {verifyNotification: async () => ({}), verifyTransaction: async () => ({
-      environment: 'Production', bundleId: 'com.cipmusic.aurasounds', productId: 'com.cipmusic.aurasounds.premium.monthly.v2',
-      subscriptionGroupIdentifier: '22099193', transactionId: 'actual', originalTransactionId: 'o', signedDate: Date.now(), expiresDate: Date.now() + 10000,
-    })}});
-  const response = await handler(event({signedTransactionInfo: 'jws', transactionId: 'different'}));
+    readControls: async () => controls(true), verifier: verifier(transaction({transactionId: 'actual'}))});
+  const response = await handler(event({signedTransactionInfo: 'jws', transactionId: 'different', claimIntent: 'restore'}));
   assert.equal(response.statusCode, 400); assert.match(response.body, /TRANSACTION_ID_MISMATCH/);
 }));

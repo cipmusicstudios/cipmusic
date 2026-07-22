@@ -4,6 +4,10 @@ export function sha256(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
+export function appAccountTokenHash(value: string): string {
+  return sha256(`cipmusic:app-account-token:v1:${value.toLowerCase()}`);
+}
+
 export function opaqueRef(value: string | null | undefined): string | null {
   return value ? sha256(value).slice(0, 12) : null;
 }

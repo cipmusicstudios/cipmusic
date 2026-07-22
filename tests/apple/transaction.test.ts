@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {summarizeTransaction} from '../../netlify/functions/_shared/apple/transaction';
+import {hashAppAccountToken, summarizeTransaction} from '../../netlify/functions/_shared/apple/transaction';
 
 const future = Date.now() + 86_400_000;
 const base = {
@@ -10,10 +10,11 @@ const base = {
   originalTransactionId: 'orig-1', signedDate: Date.now(), expiresDate: future,
 };
 
-test('valid production transaction grants premium', () => {
+test('valid production JWS produces immutable transaction facts only', () => {
   const summary = summarizeTransaction(base, 'production', null);
-  assert.equal(summary.grantsPremium, true);
-  assert.equal(summary.normalizedStatus, 'active');
+  assert.equal(summary.transactionStatus, 'recorded');
+  assert.equal('grantsPremium' in summary, false);
+  assert.equal('normalizedStatus' in summary, false);
   assert.match(summary.summaryHash, /^[0-9a-f]{64}$/);
 });
 
@@ -35,9 +36,15 @@ test('rejects appAccountToken different from authenticated UUID', () => {
   (error: any) => error.code === 'APP_ACCOUNT_TOKEN_MISMATCH');
 });
 
-test('sandbox never grants production premium', () => {
+test('sandbox transaction facts contain no grant decision', () => {
   const summary = summarizeTransaction({...base, environment: 'Sandbox'}, 'sandbox', null);
-  assert.equal(summary.grantsPremium, false);
+  assert.equal('grantsPremium' in summary, false);
+});
+
+test('appAccountToken privacy hash is domain separated and canonical', () => {
+  assert.equal(hashAppAccountToken('11111111-1111-4111-8111-111111111111'),
+    hashAppAccountToken('11111111-1111-4111-8111-111111111111'.toUpperCase()));
+  assert.match(hashAppAccountToken('11111111-1111-4111-8111-111111111111') ?? '', /^[0-9a-f]{64}$/);
 });
 
 test('summary hash covers every persisted transaction semantic', () => {

@@ -19,7 +19,7 @@ test('notification flags off call neither verifier nor inbox', async () => {
   let verified = 0; let persisted = 0;
   const handler = createNotificationHandler('production', {supabase: fakeSupabase,
     readControls: async () => closed, verifier: {verifyTransaction: async () => ({}),
-      verifyNotification: async () => { verified++; return {}; }},
+      verifyNotification: async () => { verified++; return {}; }, verifyRenewal: async () => ({})},
     persistInbox: async () => { persisted++; return {duplicate: false}; }});
   const response = await handler(event);
   assert.equal(response.statusCode, 503); assert.equal(verified, 0); assert.equal(persisted, 0);
@@ -29,6 +29,7 @@ test('notification environment mismatch is rejected before inbox', async () => {
   installEnv(); let persisted = 0;
   const handler = createNotificationHandler('production', {supabase: fakeSupabase,
     readControls: async () => open, verifier: {verifyTransaction: async () => ({}),
+      verifyRenewal: async () => ({}),
       verifyNotification: async () => ({notificationUUID: '11111111-1111-4111-8111-111111111111',
         notificationType: 'TEST', signedDate: Date.now(), data: {environment: 'Sandbox',
           bundleId: 'com.cipmusic.aurasounds', appAppleId: 6767718789}})},
@@ -41,6 +42,7 @@ test('notification duplicate returns idempotent 200', async () => {
   installEnv();
   const handler = createNotificationHandler('production', {supabase: fakeSupabase,
     readControls: async () => open, verifier: {verifyTransaction: async () => ({}),
+      verifyRenewal: async () => ({}),
       verifyNotification: async () => ({notificationUUID: '11111111-1111-4111-8111-111111111111',
         notificationType: 'TEST', signedDate: Date.now(), data: {environment: 'Production',
           bundleId: 'com.cipmusic.aurasounds', appAppleId: 6767718789}})},

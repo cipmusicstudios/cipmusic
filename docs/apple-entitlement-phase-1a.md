@@ -7,7 +7,8 @@ Local implementation only. The migration is a review draft and must not be appli
 - All runtime controls default to disabled/off and are read only through a service-role RPC.
 - Verification never trusts a client user identifier. The Supabase UUID comes from a verified bearer token.
 - Verification-only mode does not persist and never claims membership synchronization.
-- Ledger mode writes Apple transaction summaries and `billing_entitlements_v2`; it never writes `user_membership`.
+- Ledger mode first obtains a separate current subscription status from App Store Server API, then writes
+  immutable Apple transaction facts and the current entitlement projection. It never writes `user_membership`.
 - Production and Sandbox are fixed by endpoint and checked again against verified Apple payloads and database constraints.
 - Full JWS, signed notification payloads, receipts, Apple API JWTs and private keys are never persisted.
 
@@ -15,12 +16,23 @@ Local implementation only. The migration is a review draft and must not be appli
 
 `POST /.netlify/functions/verify-app-store-transaction`
 
-Request: `{ signedTransactionInfo?: string, transactionId?: string }`. If both are present, the signed JWS is
-verified first and its decoded transaction ID must equal `transactionId`. Any client user ID field is rejected.
+Request: `{ signedTransactionInfo?: string, transactionId?: string, claimIntent, legacyClaimConfirmed? }`, where
+`claimIntent` is `purchase`, `restore`, or `legacy_claim`. If both transaction references are present, the signed
+JWS is verified first and its decoded transaction ID must equal `transactionId`. Any client user ID field is rejected.
+
+The transaction JWS proves immutable transaction facts and locates the original transaction chain; it never by
+itself grants current Premium. Ledger mode additionally requires a verified All Subscription Statuses response.
+If current status cannot be obtained, no entitlement grant or ledger projection is written.
+
+`purchase` and `restore` never enable legacy claim implicitly. `legacy_claim` requires
+`legacyClaimConfirmed=true`, a currently granting Apple status, no appAccountToken in either the submitted or
+current transaction, no existing binding, and no tombstone. An appAccountToken, when present, must hash to the
+authenticated Supabase UUID.
 
 Success modes:
 
-- `verification-only`: Apple data verified; `persisted=false`, `membershipSynced=false`.
+- `verification-only`: transaction JWS verified; current status not queried; `persisted=false`,
+  `currentStatusVerified=false`, `membershipSynced=false`.
 - `ledger-only`: summary persisted; `persisted=true`, `membershipSynced=false`.
 
 Stable error codes include `FEATURE_DISABLED`, `SERVICE_ENV_INCOMPLETE`, `FEATURE_CONFIG_UNAVAILABLE`,
@@ -29,7 +41,21 @@ Stable error codes include `FEATURE_DISABLED`, `SERVICE_ENV_INCOMPLETE`, `FEATUR
 `APPLE_JWS_HEADER_INVALID`, `APPLE_JWS_ALGORITHM_INVALID`, `APPLE_JWS_CERT_CHAIN_INVALID`,
 `TRANSACTION_ID_MISMATCH`, `BUNDLE_ID_MISMATCH`, `PRODUCT_ID_MISMATCH`,
 `SUBSCRIPTION_GROUP_MISMATCH`, `ENVIRONMENT_MISMATCH`, `APP_ACCOUNT_TOKEN_MISMATCH`,
-`SUBSCRIPTION_BOUND_TO_ANOTHER_ACCOUNT`, and `LEDGER_WRITE_FAILED`.
+`SUBSCRIPTION_BOUND_TO_ANOTHER_ACCOUNT`, `CURRENT_STATUS_REQUIRED`, `CURRENT_STATUS_INVALID`,
+`CURRENT_STATE_AMBIGUOUS`, `LEGACY_CLAIM_CONFIRMATION_REQUIRED`, `LEGACY_CLAIM_NOT_ALLOWED`, and
+`LEDGER_WRITE_FAILED`.
+
+## Ledger privacy and ordering
+
+Raw appAccountToken values are never persisted. The ledger stores a domain-separated SHA-256 digest using
+`cipmusic:app-account-token:v1:`. This avoids retaining a Supabase UUID but is not as strong as a secret-key HMAC;
+introducing and rotating a dedicated HMAC secret remains a later hardening option.
+
+`app_store_transactions` uses a three-column foreign key to bind its entitlement ID, environment, and original
+transaction ID to one subscription chain. Current projections are ordered by the verified current-status signed
+date. An equal signed date with a different database-derived state fingerprint is recorded as
+`CURRENT_STATE_AMBIGUOUS`: the transaction fact may be stored, but binding and entitlement projection are not
+changed and the HTTP request returns a deterministic non-2xx response.
 
 ## Notification endpoints
 
