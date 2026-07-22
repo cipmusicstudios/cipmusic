@@ -20,12 +20,14 @@
 --
 -- Required before execution:
 --   \i supabase/verification/20260722010000_apple_entitlement_rollback_preflight.sql
---   SET app.phase1a_rollback_approval =
---     'ROLLBACK_SAFE:5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4';
+--   The token printed by rollback preflight is an acknowledgement, not an
+--   authentication boundary. It binds operation, database, up SHA and manifest.
 --
 -- Required after execution:
 --   run the rollback verification in the PG17 readiness harness, verify all
 --   Phase 1A objects are absent, then repair migration history with Supabase CLI.
+
+\ir ../verification/20260722010000_apple_entitlement_manifest.sql
 
 begin;
 
@@ -33,144 +35,36 @@ set local lock_timeout = '5s';
 set local statement_timeout = '5min';
 set local idle_in_transaction_session_timeout = '2min';
 
+-- Acquire all locks before any safety read. ACCESS EXCLUSIVE blocks concurrent
+-- DML and DDL; lock_timeout makes a writer-first conflict fail the whole tx.
+lock table public.billing_runtime_controls,
+  public.app_store_entitlements,
+  public.app_store_transactions,
+  public.app_store_notification_events,
+  public.app_store_binding_tombstones,
+  public.billing_entitlements_v2,
+  public.billing_account_deletion_requests,
+  public.billing_account_deletion_fences,
+  public.user_membership
+in access exclusive mode;
+
 do $rollback_guard$
 declare
   v_name text;
   v_count bigint;
-  v_owner_mismatch_count integer;
-  v_unexpected_policy_count integer;
-  v_structure_count integer;
   v_runtime public.billing_runtime_controls%rowtype;
 begin
   if current_setting('app.phase1a_rollback_approval', true) is distinct from
-    'ROLLBACK_SAFE:5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4'
+    format('PHASE1A_DOWN_ACK|version=20260722010000|up_sha=5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4|database=%s|manifest_sha=f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a',current_database())
   then
     raise exception using errcode = '55000',
       message = 'PHASE1A_ROLLBACK_APPROVAL_REQUIRED';
   end if;
 
-  foreach v_name in array array[
-    'billing_runtime_controls',
-    'app_store_entitlements',
-    'app_store_transactions',
-    'app_store_notification_events',
-    'app_store_binding_tombstones',
-    'billing_entitlements_v2',
-    'billing_account_deletion_requests',
-    'billing_account_deletion_fences'
-  ] loop
-    if to_regclass('public.' || v_name) is null then
-      raise exception using errcode = '55000',
-        message = format('PHASE1A_OBJECT_MISSING: public.%s', v_name);
-    end if;
-  end loop;
-
-  foreach v_name in array array[
-    'app_store_environment',
-    'app_store_binding_state',
-    'app_store_current_state_quality',
-    'app_store_status_source',
-    'billing_aggregate_mode',
-    'billing_entitlement_validity'
-  ] loop
-    if not exists (
-      select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace
-      where n.nspname = 'public' and t.typname = v_name
-    ) then
-      raise exception using errcode = '55000',
-        message = format('PHASE1A_TYPE_MISSING: public.%s', v_name);
-    end if;
-  end loop;
-
-  select count(*) into v_owner_mismatch_count
-  from pg_class c join pg_namespace n on n.oid = c.relnamespace
-  where n.nspname = 'public'
-    and c.relname = any(array[
-      'billing_runtime_controls', 'app_store_entitlements',
-      'app_store_transactions', 'app_store_notification_events',
-      'app_store_binding_tombstones', 'billing_entitlements_v2',
-      'billing_account_deletion_requests', 'billing_account_deletion_fences'
-    ])
-    and pg_get_userbyid(c.relowner) <> current_user;
-  if v_owner_mismatch_count <> 0 then
-    raise exception using errcode = '55000', message = 'PHASE1A_OWNER_MISMATCH';
-  end if;
-
-  select count(*) into v_unexpected_policy_count
-  from pg_policy p join pg_class c on c.oid = p.polrelid
-  join pg_namespace n on n.oid = c.relnamespace
-  where n.nspname = 'public'
-    and c.relname = any(array[
-      'billing_runtime_controls', 'app_store_entitlements',
-      'app_store_transactions', 'app_store_notification_events',
-      'app_store_binding_tombstones', 'billing_entitlements_v2',
-      'billing_account_deletion_requests', 'billing_account_deletion_fences'
-    ]);
-  if v_unexpected_policy_count <> 0 then
-    raise exception using errcode = '55000', message = 'PHASE1A_UNEXPECTED_POLICIES';
-  end if;
-
-  select count(*) into v_structure_count from (
-    values ('app_store_binding_tombstones',8), ('app_store_entitlements',31),
-      ('app_store_notification_events',16), ('app_store_transactions',19),
-      ('billing_account_deletion_fences',4), ('billing_account_deletion_requests',9),
-      ('billing_entitlements_v2',17), ('billing_runtime_controls',8)
-  ) expected(name,column_count)
-  where expected.column_count=(select count(*) from information_schema.columns c
-    where c.table_schema='public' and c.table_name=expected.name);
-  if v_structure_count <> 8 then
-    raise exception using errcode='55000', message='PHASE1A_COLUMN_SHAPE_MISMATCH';
-  end if;
-
-  select count(*) into v_structure_count from pg_constraint con
-  where con.conrelid in (
-    select c.oid from pg_class c join pg_namespace n on n.oid=c.relnamespace
-    where n.nspname='public' and c.relname=any(array[
-      'billing_runtime_controls','app_store_entitlements','app_store_transactions',
-      'app_store_notification_events','app_store_binding_tombstones','billing_entitlements_v2',
-      'billing_account_deletion_requests','billing_account_deletion_fences']));
-  if v_structure_count <> 55 then
-    raise exception using errcode='55000', message='PHASE1A_CONSTRAINT_SHAPE_MISMATCH';
-  end if;
-
-  select count(*) into v_structure_count from pg_index i
-  where i.indrelid in (
-    select c.oid from pg_class c join pg_namespace n on n.oid=c.relnamespace
-    where n.nspname='public' and c.relname=any(array[
-      'billing_runtime_controls','app_store_entitlements','app_store_transactions',
-      'app_store_notification_events','app_store_binding_tombstones','billing_entitlements_v2',
-      'billing_account_deletion_requests','billing_account_deletion_fences']));
-  if v_structure_count <> 20 then
-    raise exception using errcode='55000', message='PHASE1A_INDEX_SHAPE_MISMATCH';
-  end if;
-
-  select count(*) into v_structure_count from pg_proc p join pg_namespace n on n.oid=p.pronamespace
-  where n.nspname='public' and p.proname=any(array[
-    'billing_v2_set_updated_at','billing_get_runtime_controls',
-    'billing_get_current_entitlement_status','billing_record_app_store_transaction',
-    'billing_record_app_store_notification','billing_prepare_account_deletion'])
-    and pg_get_userbyid(p.proowner)=current_user
-    and coalesce(array_to_string(p.proconfig,','),'') like '%search_path=pg_catalog, public%';
-  if v_structure_count <> 6 then
-    raise exception using errcode='55000', message='PHASE1A_FUNCTION_SHAPE_MISMATCH';
-  end if;
-
-  select count(*) into v_structure_count from pg_trigger t
-  where not t.tgisinternal and t.tgname=any(array[
-    'billing_runtime_controls_set_updated_at','app_store_entitlements_set_updated_at',
-    'app_store_notification_events_set_updated_at','billing_entitlements_v2_set_updated_at',
-    'billing_account_deletion_requests_set_updated_at','billing_account_deletion_fences_set_updated_at']);
-  if v_structure_count <> 6 then
-    raise exception using errcode='55000', message='PHASE1A_TRIGGER_SHAPE_MISMATCH';
-  end if;
-
-  select count(*) into v_structure_count from pg_class c join pg_namespace n on n.oid=c.relnamespace
-  where n.nspname='public' and c.relname=any(array[
-    'billing_runtime_controls','app_store_entitlements','app_store_transactions',
-    'app_store_notification_events','app_store_binding_tombstones','billing_entitlements_v2',
-    'billing_account_deletion_requests','billing_account_deletion_fences']) and c.relrowsecurity;
-  if v_structure_count <> 8 then
-    raise exception using errcode='55000', message='PHASE1A_RLS_SHAPE_MISMATCH';
+  if pg_temp.phase1a_manifest_sha256() is distinct from
+    'f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a'
+  then
+    raise exception using errcode='55000', message='PHASE1A_MANIFEST_MISMATCH';
   end if;
 
   select * into strict v_runtime from public.billing_runtime_controls;

@@ -89,6 +89,13 @@ with expected_tables(name) as (
     count(*) filter (where pid<>pg_backend_pid()) as other_connections,
     count(*) filter (where pid<>pg_backend_pid() and state='active') as other_active_connections
   from pg_stat_activity where datname=current_database()
+), history_catalog as (
+  select
+    exists(select 1 from pg_namespace where nspname='supabase_migrations') schema_exists,
+    to_regclass('supabase_migrations.schema_migrations') is not null table_exists,
+    exists(select 1 from pg_attribute where attrelid=to_regclass('supabase_migrations.schema_migrations')
+      and attname='version' and not attisdropped and atttypid in ('text'::regtype,'varchar'::regtype)) version_column_valid,
+    coalesce(has_table_privilege(current_user,to_regclass('supabase_migrations.schema_migrations'),'SELECT'),false) readable
 ), state as (
   select
     current_database() as database_name,
@@ -107,10 +114,14 @@ with expected_tables(name) as (
     (select count(*) from expected_functions e where exists (
       select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
       where n.nspname='public' and p.proname=e.name)) as conflicting_functions,
-    case when to_regclass('supabase_migrations.schema_migrations') is null then null else
+    h.schema_exists as migration_history_schema_exists,
+    h.table_exists as migration_history_table_exists,
+    h.version_column_valid as migration_history_structure_valid,
+    h.readable as migration_history_readable,
+    case when h.schema_exists and h.table_exists and h.version_column_valid and h.readable then
       ((xpath('//count/text()', query_to_xml(
         $$select count(*) from supabase_migrations.schema_migrations where version='20260722010000'$$,
-        false,true,'')))[1]::text)::bigint end as migration_history_count,
+        false,true,'')))[1]::text)::bigint else null end as migration_history_count,
     m.exists as user_membership_exists, m.row_count as user_membership_rows,
     m.schema_fingerprint as user_membership_schema_fingerprint,
     m.constraints as user_membership_constraints,
@@ -118,7 +129,7 @@ with expected_tables(name) as (
     p.fingerprint as payment_object_fingerprint, p.inventory as payment_object_inventory,
     pf.fingerprint as payment_function_fingerprint, pf.inventory as payment_function_inventory,
     a.*
-  from membership m cross join payment_objects p cross join payment_functions pf cross join activity a
+  from membership m cross join payment_objects p cross join payment_functions pf cross join activity a cross join history_catalog h
 ), checks as (
   select c.* from state s cross join lateral (values
     ('project_ref_attested', s.operator_project_ref='hngtwkayovuxhiqustsa', s.operator_project_ref),
@@ -129,7 +140,11 @@ with expected_tables(name) as (
     ('target_tables_absent', s.conflicting_tables=0, s.conflicting_tables::text),
     ('target_types_absent', s.conflicting_types=0, s.conflicting_types::text),
     ('target_functions_absent', s.conflicting_functions=0, s.conflicting_functions::text),
-    ('migration_history_absent', s.migration_history_count=0, coalesce(s.migration_history_count::text,'history table missing')),
+    ('migration_history_schema', s.migration_history_schema_exists, 'supabase_migrations schema must exist'),
+    ('migration_history_table', s.migration_history_table_exists, 'schema_migrations table must exist'),
+    ('migration_history_structure', s.migration_history_structure_valid, 'version text/varchar column required'),
+    ('migration_history_readable', s.migration_history_readable, 'SELECT privilege required'),
+    ('target_version_absent', coalesce(s.migration_history_count=0,false), coalesce(s.migration_history_count::text,'unavailable')),
     ('no_long_transactions', s.long_transactions=0, s.long_transactions::text),
     ('no_lock_waiters', s.lock_waiters=0, s.lock_waiters::text),
     ('no_active_ddl', s.active_ddl=0, s.active_ddl::text),
@@ -137,10 +152,10 @@ with expected_tables(name) as (
     ('external_apple_flags_off', s.external_apple_flags_off, s.external_apple_flags_off::text)
   ) as c(check_name, passed, detail)
 ), verdict as (
-  select case when bool_and(passed) then 'MIGRATION_PREFLIGHT_GO'
+  select case when bool_and(coalesce(passed,false)) then 'MIGRATION_PREFLIGHT_GO'
     else 'MIGRATION_PREFLIGHT_NO_GO' end as result,
     coalesce(jsonb_agg(jsonb_build_object('check',check_name,'detail',detail)
-      order by check_name) filter (where not passed),'[]'::jsonb) as no_go_reasons
+      order by check_name) filter (where not coalesce(passed,false)),'[]'::jsonb) as no_go_reasons
   from checks
 )
 select v.result, v.no_go_reasons,

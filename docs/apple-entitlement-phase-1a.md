@@ -7,6 +7,12 @@ the fail-closed down migration are documented in
 `docs/apple-entitlement-production-readiness.md`. That runbook does not authorize
 Production execution or feature enablement.
 
+The readiness package now uses one frozen PostgreSQL 17 catalog manifest across
+postflight, rollback preflight, and the down guard. The rollback locks every
+Phase 1A table plus `user_membership` before checking state. A SAFE decision
+also requires external immutable proof that flags were never enabled; mutable
+controls and resettable PostgreSQL statistics alone can never supply that proof.
+
 ## Safety boundaries
 
 - All runtime controls default to disabled/off and are read only through a service-role RPC.

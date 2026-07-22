@@ -27,14 +27,27 @@ controls are disabled/off. It contains no statement that reads or writes
 ## Approved down migration
 
 - Path: `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql`
-- File size: 12,136 bytes
-- Line count: 271
-- SHA-256: `49f278e3360ccc825a54894d631a6ff9ac029a776b9dd668a8c417006987e566`
+- SHA-256: `f39475023b273358941dcb4615850abd90e095fd89d2af3efac0f3dcb6ef9851`
 
 The down migration is a fail-closed recovery tool, not an automatic rollback.
-It requires the SHA-bound approval returned by the read-only rollback preflight,
-rechecks schema shape, ownership, policies, RLS, pristine controls and empty
-business tables, and deliberately uses no `CASCADE`.
+It first takes `ACCESS EXCLUSIVE` locks on all eight Phase 1A tables and
+`public.user_membership`, then performs every safety read and DROP under those
+locks. A five-second lock timeout aborts the entire transaction on contention.
+It requires the acknowledgement returned by rollback preflight, rechecks the
+exact frozen manifest, pristine controls and empty business tables, and uses no
+`CASCADE`.
+
+The canonical manifest implementation is
+`supabase/verification/20260722010000_apple_entitlement_manifest.sql` (file
+SHA-256 `5eafdf412f8725f4b02b5314d8eb3ed25c882d3fcb261f9a050710795edca56c`).
+Generate it only on PostgreSQL 17 after applying the frozen up migration, with
+the migration owner as `current_user`, by loading that file and selecting
+`pg_temp.phase1a_manifest_sha256()`. The reviewed manifest SHA-256 is
+`f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a`.
+It stable-sorts and records enum labels/order; complete column properties;
+constraint and index deparses; function definition/body, owner, execution
+properties, search path and ACL; trigger definitions/enabled state; table owner,
+persistence, RLS/force-RLS/options/ACL; and policies. OIDs are excluded.
 
 ## Complete object manifest and dependency order
 
@@ -304,9 +317,13 @@ After commit:
 1. Freeze all later rollout actions and confirm flags remain off.
 2. Run rollback preflight. `ROLLBACK_UNSAFE` means preserve evidence and use a
    restore or reviewed forward fix. `ROLLBACK_REQUIRES_MANUAL_REVIEW` means stop.
-3. Only `ROLLBACK_SAFE` yields the SHA-bound approval token accepted by the down
-   migration. The down transaction rechecks empty tables, default controls,
-   ownership and policies and uses no `CASCADE`.
+3. Only `ROLLBACK_SAFE` yields the acknowledgement accepted by the down
+   migration. It is not a secret or authentication/security boundary. It binds
+   operation type, migration version, frozen up SHA, current database name and
+   frozen manifest SHA; a token from another database or schema is rejected.
+   Authorization still depends on the database role. Safety comes from exact
+   manifest identity, empty/data evidence, external flag-history proof, locks,
+   bounded timeouts and the single transaction.
 4. Run the down migration with the approval token in the same database session.
 5. Verify all Phase 1A objects are absent and legacy membership/payment objects
    are unchanged.
@@ -320,10 +337,12 @@ After commit:
    list/status verification afterwards.
 
 The current Phase 1A schema has no immutable flag-change audit table. The
-rollback preflight therefore uses current controls, `updated_by`, PostgreSQL
-write statistics, structural checks, and empty tables. Any ambiguous or reset
-statistics must be treated as manual review, never as proof that a flag was never
-enabled.
+rollback report outputs controls `updated_at`/`updated_by`, database
+`stats_reset`, `n_tup_upd`, current flags and business/data evidence. PostgreSQL
+statistics and mutable row fields are not an audit log: missing external proof,
+any reset epoch, or an uncertain relationship between migration time and stats
+is manual review, never SAFE. After any enablement, simple DROP rollback is
+permanently disallowed; use a reviewed forward fix or verified restore.
 
 Official references:
 

@@ -19,7 +19,9 @@ migration, Netlify setting, Apple setting, or feature flag was used.
 - Frozen up migration SHA-256:
   `5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4`
 - Fail-closed down migration SHA-256:
-  `49f278e3360ccc825a54894d631a6ff9ac029a776b9dd668a8c417006987e566`
+  `f39475023b273358941dcb4615850abd90e095fd89d2af3efac0f3dcb6ef9851`
+- Frozen normalized catalog manifest SHA-256:
+  `f2d2208f2b2c20fbe24b1e139a85e462609623b52e7af525063ffa12e4cc3a5a`
 
 The lifecycle results below apply to these exact artifacts. The frozen up
 migration remained identical to `origin/main`.
@@ -54,6 +56,12 @@ POSTGRES_BIN=/opt/homebrew/opt/postgresql@17/bin \
 | Enabled verification flag blocks rollback preflight | `ROLLBACK_UNSAFE` |
 | Down migration independently rejects changed controls | PASS |
 | Existing RPC/RLS/replay/idempotency/concurrency suite on PG17 | PASS |
+| Missing/schema-less/malformed/already-applied history | four explicit `NO_GO` results |
+| Exact manifest drift matrix | column, constraint, index, function body/security/search path, trigger, ACL, force-RLS, policy rejected |
+| Approval binding negatives | missing, old format, wrong database/up SHA/manifest rejected |
+| Historical flag ambiguity and stats reset | never `ROLLBACK_SAFE` |
+| Dual-session races | rollback-first ledger/control/membership writes blocked; writer-first down timed out atomically |
+| Canonical legacy payment data fingerprints | stable through up/down/failed-down/up; intentional mutation detected |
 
 Lifecycle result:
 
@@ -61,6 +69,9 @@ Lifecycle result:
 PASS: preflight -> up -> postflight -> rollback preflight -> down -> up -> postflight
 PASS: data-present rollback rejected
 PASS: feature-flag rollback rejected
+PASS: frozen manifest drift matrix and approval binding rejected
+PASS: migration-history NO_GO matrix and flag-history ambiguity
+PASS: dual-session rollback races A-D
 PASS: synthetic user_membership/Stripe-ZPay/Google Play objects preserved
 PASS: existing RPC/RLS/idempotency/concurrency suite
 ```
@@ -69,9 +80,9 @@ PASS: existing RPC/RLS/idempotency/concurrency suite
 
 - Reported up duration: `<1s` (shell timer rounded to `0s`)
 - Reported down duration: `<1s` (shell timer rounded to `0s`)
-- Complete readiness suite: `10s`
-- No lock timeout, statement timeout, deadlock, blocked waiter, or partial DDL
-  occurred.
+- Complete readiness suite: `28s`
+- Expected negative tests produced bounded lock timeouts; no deadlock or partial
+  DDL occurred.
 - Both up and down executed as explicit transactions.
 - The harness uses `lock_timeout=5s`, `statement_timeout=5min`, and
   `idle_in_transaction_session_timeout=2min` for the down path; the Production
