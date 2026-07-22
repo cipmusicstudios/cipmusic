@@ -44,8 +44,13 @@ export type CurrentEntitlementStatus = {
   grantsPremium: boolean;
   expiresAt: string | null;
   autoRenew: boolean | null;
-  sourceSignedDate: string;
-  evidenceHash: string;
+  transactionEvidenceSignedAt: string;
+  renewalEvidenceSignedAt: string | null;
+  statusObservedAt: string;
+  statusFingerprint: string;
+  conflictingStatusFingerprint: string | null;
+  statusSource: 'server_api_status' | 'notification_projection' | 'reconciliation';
+  currentStateQuality: 'verified' | 'quarantined';
 };
 
 export interface AppleVerifier {

@@ -4,6 +4,7 @@ import {
 import type {AppleConfig} from './config';
 import {toAppleEnvironment} from './config';
 import {appAccountTokenHash, sha256} from './redaction';
+import {normalizeAppleSubscriptionStatus} from './status';
 import {summarizeTransaction} from './transaction';
 import type {
   AppleCurrentStatusProvider, AppleEnvironment, AppleNormalizedStatus,
@@ -15,6 +16,16 @@ type CurrentStatusApi = Pick<AppStoreServerAPIClient, 'getAllSubscriptionStatuse
 type CurrentStatusApiFactory = (environment: AppleEnvironment) => CurrentStatusApi;
 
 const iso = (value?: number): string | null => value == null ? null : new Date(value).toISOString();
+
+function fingerprint(value: Omit<CurrentEntitlementStatus,
+  'statusObservedAt' | 'statusFingerprint' | 'conflictingStatusFingerprint' | 'currentStateQuality'>): string {
+  return sha256([
+    value.environment, value.originalTransactionId, value.latestTransactionId, value.productId,
+    value.subscriptionGroupId, value.appAccountTokenHash ?? '', value.normalizedStatus,
+    String(value.grantsPremium), value.expiresAt ?? '', value.autoRenew == null ? '' : String(value.autoRenew),
+    value.statusSource,
+  ].join('|'));
+}
 
 export class OfficialAppleCurrentStatusProvider implements AppleCurrentStatusProvider {
   constructor(
@@ -35,17 +46,23 @@ export class OfficialAppleCurrentStatusProvider implements AppleCurrentStatusPro
     environment: AppleEnvironment,
   ): Promise<CurrentEntitlementStatus> {
     const response = await this.client(environment).getAllSubscriptionStatuses(transaction.transactionId);
-    if (String(response.environment ?? '').toLowerCase() !== environment
+    if (!response || String(response.environment ?? '').toLowerCase() !== environment
       || response.bundleId !== this.config.bundleId
       || (environment === 'production' && response.appAppleId !== this.config.appId)) {
       throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
     }
 
+    const observedAt = new Date().toISOString();
     const candidates: CurrentEntitlementStatus[] = [];
     for (const group of response.data ?? []) {
       if (group.subscriptionGroupIdentifier !== transaction.subscriptionGroupId) continue;
       for (const item of group.lastTransactions ?? []) {
-        if (item.originalTransactionId !== transaction.originalTransactionId || !item.signedTransactionInfo) continue;
+        if (!item.originalTransactionId || !item.signedTransactionInfo || item.status == null) {
+          throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
+        }
+        if (item.originalTransactionId !== transaction.originalTransactionId) {
+          throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
+        }
         const currentTx = await this.verifier.verifyTransaction(item.signedTransactionInfo, environment);
         const currentFacts = summarizeTransaction(currentTx, environment, null);
         if (currentFacts.originalTransactionId !== transaction.originalTransactionId) {
@@ -59,26 +76,20 @@ export class OfficialAppleCurrentStatusProvider implements AppleCurrentStatusPro
         }
 
         const status = Number(item.status);
-        let normalizedStatus: AppleNormalizedStatus;
-        if (currentTx.revocationDate != null || status === Status.REVOKED) normalizedStatus = 'revoked';
-        else if (currentTx.isUpgraded) normalizedStatus = 'upgraded';
-        else if (status === Status.EXPIRED) normalizedStatus = 'expired';
-        else if (status === Status.BILLING_RETRY) normalizedStatus = 'billing_retry';
-        else if (status === Status.BILLING_GRACE_PERIOD) normalizedStatus = 'grace_period';
-        else if (status === Status.ACTIVE && renewal?.autoRenewStatus === AutoRenewStatus.OFF) normalizedStatus = 'canceled_active';
-        else if (status === Status.ACTIVE) normalizedStatus = 'active';
-        else normalizedStatus = 'unknown';
-
         const expiresAt = status === Status.BILLING_GRACE_PERIOD
           ? iso(renewal?.gracePeriodExpiresDate)
           : currentFacts.expiresDate;
-        const statusCanGrant = ['active', 'grace_period', 'canceled_active'].includes(normalizedStatus);
-        if (statusCanGrant && (expiresAt == null || Date.parse(expiresAt) <= Date.now())) {
+        const normalized = normalizeAppleSubscriptionStatus({
+          status, revoked: currentTx.revocationDate != null, upgraded: currentTx.isUpgraded,
+          expiresAt: currentTx.expiresDate, graceExpiresAt: renewal?.gracePeriodExpiresDate,
+          autoRenewOff: renewal?.autoRenewStatus === AutoRenewStatus.OFF,
+        });
+        const normalizedStatus = normalized.status as AppleNormalizedStatus;
+        if (normalized.grantsPremium && (expiresAt == null || Date.parse(expiresAt) <= Date.now())) {
           throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
         }
-        const grantsPremium = environment === 'production' && statusCanGrant;
-        const sourceSignedDateMs = Math.max(currentTx.signedDate ?? 0, renewal?.signedDate ?? 0);
-        if (!sourceSignedDateMs) throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
+        const grantsPremium = environment === 'production' && normalized.grantsPremium;
+        if (!currentTx.signedDate) throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
         const stableEvidence = {
           environment,
           originalTransactionId: currentFacts.originalTransactionId,
@@ -90,17 +101,33 @@ export class OfficialAppleCurrentStatusProvider implements AppleCurrentStatusPro
           grantsPremium,
           expiresAt,
           autoRenew: renewal?.autoRenewStatus == null ? null : renewal.autoRenewStatus === AutoRenewStatus.ON,
-          sourceSignedDate: new Date(sourceSignedDateMs).toISOString(),
+          transactionEvidenceSignedAt: new Date(currentTx.signedDate).toISOString(),
+          renewalEvidenceSignedAt: renewal?.signedDate ? new Date(renewal.signedDate).toISOString() : null,
+          statusSource: 'server_api_status' as const,
         };
-        candidates.push({...stableEvidence, evidenceHash: sha256(JSON.stringify(stableEvidence))});
+        candidates.push({...stableEvidence, statusObservedAt: observedAt,
+          statusFingerprint: fingerprint(stableEvidence), conflictingStatusFingerprint: null,
+          currentStateQuality: 'verified'});
       }
     }
     if (!candidates.length) throw new AppleServiceError('CURRENT_STATUS_REQUIRED', 503);
-    candidates.sort((a, b) => b.sourceSignedDate.localeCompare(a.sourceSignedDate));
-    const latest = candidates[0];
-    const sameVersion = candidates.filter(value => value.sourceSignedDate === latest.sourceSignedDate);
-    if (sameVersion.some(value => value.evidenceHash !== latest.evidenceHash)) {
-      throw new AppleServiceError('CURRENT_STATE_AMBIGUOUS', 409);
+    const unique = [...new Map(candidates.map(value => [
+      `${value.transactionEvidenceSignedAt}|${value.renewalEvidenceSignedAt ?? ''}|${value.statusFingerprint}`, value,
+    ])).values()];
+    unique.sort((a, b) => {
+      const transactionOrder = b.transactionEvidenceSignedAt.localeCompare(a.transactionEvidenceSignedAt);
+      return transactionOrder || (b.renewalEvidenceSignedAt ?? '').localeCompare(a.renewalEvidenceSignedAt ?? '');
+    });
+    const latest = unique[0];
+    const sameEvidence = unique.filter(value =>
+      value.transactionEvidenceSignedAt === latest.transactionEvidenceSignedAt
+      && value.renewalEvidenceSignedAt === latest.renewalEvidenceSignedAt);
+    const conflicting = sameEvidence.find(value => value.statusFingerprint !== latest.statusFingerprint);
+    if (conflicting) {
+      const fingerprints = [latest.statusFingerprint, conflicting.statusFingerprint].sort();
+      return {...latest, normalizedStatus: 'unknown', grantsPremium: false, expiresAt: null,
+        autoRenew: null, statusFingerprint: fingerprints[0], conflictingStatusFingerprint: fingerprints[1],
+        currentStateQuality: 'quarantined'};
     }
     return latest;
   }

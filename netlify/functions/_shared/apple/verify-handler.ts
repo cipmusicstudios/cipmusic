@@ -80,14 +80,17 @@ export function createVerifyHandler(deps: VerifyDeps) {
         throw new AppleServiceError('CURRENT_STATUS_INVALID', 502);
       }
       if (claimIntent === 'legacy_claim'
-        && (summary.appAccountToken || current.appAccountTokenHash || !current.grantsPremium)) {
+        && (summary.appAccountToken || current.appAccountTokenHash || !current.grantsPremium
+          || current.currentStateQuality !== 'verified')) {
         throw new AppleServiceError('LEGACY_CLAIM_NOT_ALLOWED', 409);
       }
       const result = await (deps.persist ?? writeTransactionLedger)(
         deps.supabase, userId, environment, summary, current,
         claimIntent as ClaimIntent, legacyClaimConfirmed,
       );
-      if (result.currentStateAmbiguous) throw new AppleServiceError('CURRENT_STATE_AMBIGUOUS', 409);
+      if (result.currentStateQuality === 'quarantined') {
+        throw new AppleServiceError('CURRENT_STATE_QUARANTINED', 409);
+      }
       return json(200, {ok: true, mode: 'ledger-only', persisted: true, membershipSynced: false,
         environment: summary.environment, status: current.normalizedStatus,
         binding: result.bindingResult, duplicate: result.duplicate});

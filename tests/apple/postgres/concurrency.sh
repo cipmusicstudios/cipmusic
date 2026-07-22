@@ -88,7 +88,8 @@ run_psql -q >"$APPLE_PG_LOG_DIR/concurrency-idempotent-a.log" 2>&1 <<'SQL' &
 begin;
 select * from test_assert.record_tx(
  '40000000-0000-4000-8000-000000000001','production','same-user-tx','same-user-original',
- '2026-01-01T00:00:01Z','2026-01-01T00:00:01Z','expired',false);
+    '2026-01-01T00:00:01Z','2026-01-01T00:00:01Z','expired',false,
+    'com.cipmusic.aurasounds.premium.monthly.v2','2025-12-31T00:00:01Z');
 select pg_sleep(1);
 commit;
 SQL
@@ -97,7 +98,8 @@ sleep 0.15
 run_psql -q >"$APPLE_PG_LOG_DIR/concurrency-idempotent-b.log" 2>&1 <<'SQL'
 select * from test_assert.record_tx(
  '40000000-0000-4000-8000-000000000001','production','same-user-tx','same-user-original',
- '2026-01-01T00:00:01Z','2026-01-01T00:00:01Z','expired',false);
+    '2026-01-01T00:00:01Z','2026-01-01T00:00:01Z','expired',false,
+    'com.cipmusic.aurasounds.premium.monthly.v2','2025-12-31T00:00:01Z');
 SQL
 wait "$same_pid"
 run_psql -q -c "select test_assert.ok((select count(*)=1 from public.app_store_transactions where transaction_id='same-user-tx'),'same-user duplicate transaction');"
@@ -147,7 +149,7 @@ if [[ "$delete_claim_rc" -eq 0 ]] || ! grep -Eq 'APP_STORE_BINDING_(TOMBSTONED|B
 fi
 run_psql -q <<'SQL'
 select test_assert.ok(
- (select binding_state='account_deleted' and user_id is null and grants_premium=false from public.app_store_entitlements where original_transaction_id='delete-race-original')
+ (select binding_state='account_deleted' and user_id is null and source_grants_premium=false from public.app_store_entitlements where original_transaction_id='delete-race-original')
  and not exists(select 1 from public.billing_entitlements_v2 where external_entitlement_id='delete-race-original'),
  'deletion race final state'
 );

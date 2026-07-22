@@ -42,7 +42,7 @@ Stable error codes include `FEATURE_DISABLED`, `SERVICE_ENV_INCOMPLETE`, `FEATUR
 `TRANSACTION_ID_MISMATCH`, `BUNDLE_ID_MISMATCH`, `PRODUCT_ID_MISMATCH`,
 `SUBSCRIPTION_GROUP_MISMATCH`, `ENVIRONMENT_MISMATCH`, `APP_ACCOUNT_TOKEN_MISMATCH`,
 `SUBSCRIPTION_BOUND_TO_ANOTHER_ACCOUNT`, `CURRENT_STATUS_REQUIRED`, `CURRENT_STATUS_INVALID`,
-`CURRENT_STATE_AMBIGUOUS`, `LEGACY_CLAIM_CONFIRMATION_REQUIRED`, `LEGACY_CLAIM_NOT_ALLOWED`, and
+`CURRENT_STATE_QUARANTINED`, `LEGACY_CLAIM_CONFIRMATION_REQUIRED`, `LEGACY_CLAIM_NOT_ALLOWED`, and
 `LEDGER_WRITE_FAILED`.
 
 ## Ledger privacy and ordering
@@ -52,10 +52,23 @@ Raw appAccountToken values are never persisted. The ledger stores a domain-separ
 introducing and rotating a dedicated HMAC secret remains a later hardening option.
 
 `app_store_transactions` uses a three-column foreign key to bind its entitlement ID, environment, and original
-transaction ID to one subscription chain. Current projections are ordered by the verified current-status signed
-date. An equal signed date with a different database-derived state fingerprint is recorded as
-`CURRENT_STATE_AMBIGUOUS`: the transaction fact may be stored, but binding and entitlement projection are not
-changed and the HTTP request returns a deterministic non-2xx response.
+transaction ID to one subscription chain. Current status stores four separate dimensions: signed transaction
+evidence time, optional signed renewal evidence time, trusted server observation time, and a deterministic status
+fingerprint. Observation time never resolves conflicting status snapshots by itself.
+
+The same signed evidence and fingerprint is idempotent and only refreshes observation metadata. The same signed
+evidence with a different fingerprint moves the chain to `quarantined`, stores a canonical pair of conflicting
+fingerprints, and makes the Apple source fail closed regardless of arrival order. Only newer signed evidence or an
+explicit future reconciliation source may clear quarantine. The HTTP request returns
+`CURRENT_STATE_QUARANTINED`; transaction facts remain auditable.
+
+Stored `source_grants_premium` means only that the verified source snapshot was eligible when written. It is not a
+current membership decision. `billing_get_current_entitlement_status` is the sole phase-1A read boundary and
+dynamically requires a verified, Production, unexpired source. It is service-role-only and never writes
+`user_membership`. Consequently a bounded entitlement becomes false after `valid_until` without another write.
+
+Billing retry uses the same normalization function as Server API status handling: it grants only through the
+verified paid-period expiry. Grace grants only when Apple provides a future grace-period expiry.
 
 ## Notification endpoints
 

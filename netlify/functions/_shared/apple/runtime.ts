@@ -56,7 +56,7 @@ export async function writeTransactionLedger(
   current: CurrentEntitlementStatus,
   claimIntent: ClaimIntent,
   legacyClaimConfirmed: boolean,
-): Promise<{bindingResult: string; duplicate: boolean; currentStateAmbiguous: boolean}> {
+): Promise<{bindingResult: string; duplicate: boolean; currentStateQuality: string}> {
   const {data, error} = await supabase.rpc('billing_record_app_store_transaction', {
     p_user_id: userId,
     p_endpoint_environment: endpointEnvironment,
@@ -85,8 +85,13 @@ export async function writeTransactionLedger(
     p_current_grants_premium: current.grantsPremium,
     p_current_expires_at: current.expiresAt,
     p_current_auto_renew: current.autoRenew,
-    p_current_source_signed_date: current.sourceSignedDate,
-    p_current_evidence_hash: current.evidenceHash,
+    p_transaction_evidence_signed_at: current.transactionEvidenceSignedAt,
+    p_renewal_evidence_signed_at: current.renewalEvidenceSignedAt,
+    p_status_observed_at: current.statusObservedAt,
+    p_status_fingerprint: current.statusFingerprint,
+    p_conflicting_status_fingerprint: current.conflictingStatusFingerprint,
+    p_status_source: current.statusSource,
+    p_current_state_quality: current.currentStateQuality,
   });
   if (error) {
     const message = String(error.message ?? '');
@@ -105,16 +110,16 @@ export async function writeTransactionLedger(
     if (/APPLE_LEDGER_WRITE_DISABLED/.test(message)) {
       throw new AppleServiceError('FEATURE_DISABLED', 503);
     }
-    if (/ENVIRONMENT_MISMATCH|PRODUCT_MISMATCH|SUBSCRIPTION_GROUP_MISMATCH|INVALID_PREMIUM_GRANT|SANDBOX_PRODUCTION_GRANT_FORBIDDEN|CURRENT_STATUS_INVALID/.test(message)) {
+    if (/ENVIRONMENT_MISMATCH|PRODUCT_MISMATCH|SUBSCRIPTION_GROUP_MISMATCH|INVALID_PREMIUM_GRANT|SANDBOX_PRODUCTION_GRANT_FORBIDDEN|CURRENT_STATUS_INVALID|CURRENT_STATUS_FINGERPRINT_MISMATCH/.test(message)) {
       throw new AppleServiceError('VERIFIED_PAYLOAD_REJECTED', 400);
     }
     throw new AppleServiceError('LEDGER_WRITE_FAILED', 503);
   }
   const row = firstRecord(data);
   if (!row || typeof row.binding_result !== 'string' || typeof row.transaction_duplicate !== 'boolean'
-    || typeof row.current_state_ambiguous !== 'boolean') {
+    || !['verified', 'quarantined'].includes(String(row.current_state_quality))) {
     throw new AppleServiceError('LEDGER_RESPONSE_INVALID', 503);
   }
   return {bindingResult: row.binding_result, duplicate: row.transaction_duplicate,
-    currentStateAmbiguous: row.current_state_ambiguous};
+    currentStateQuality: String(row.current_state_quality)};
 }

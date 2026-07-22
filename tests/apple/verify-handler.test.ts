@@ -30,7 +30,10 @@ const current = (patch: Partial<CurrentEntitlementStatus> = {}): CurrentEntitlem
   productId: 'com.cipmusic.aurasounds.premium.monthly.v2', subscriptionGroupId: '22099193',
   appAccountTokenHash: null, normalizedStatus: 'active', grantsPremium: true,
   expiresAt: new Date(Date.now() + 86_400_000).toISOString(), autoRenew: true,
-  sourceSignedDate: new Date().toISOString(), evidenceHash: 'a'.repeat(64), ...patch,
+  transactionEvidenceSignedAt: new Date().toISOString(), renewalEvidenceSignedAt: null,
+  statusObservedAt: new Date().toISOString(), statusFingerprint: 'a'.repeat(64),
+  conflictingStatusFingerprint: null, statusSource: 'server_api_status',
+  currentStateQuality: 'verified', ...patch,
 });
 const withEnv = async (fn: () => Promise<void>) => {
   const old = {...process.env};
@@ -52,7 +55,7 @@ test('all flags off calls neither Apple nor ledger', async () => {
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
     readControls: async () => controls(false), verifier: {...verifier(),
       verifyTransaction: async () => { apple++; return transaction(); }},
-    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateAmbiguous: false}; }});
+    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateQuality: 'verified'}; }});
   const response = await handler(event({signedTransactionInfo: 'a.b.c', claimIntent: 'restore'}));
   assert.equal(response.statusCode, 503); assert.equal(apple, 0); assert.equal(writes, 0);
 });
@@ -79,7 +82,7 @@ test('verification-only verifies transaction without claiming current status', a
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
     readControls: async () => controls(true, false), verifier: verifier(),
     currentStatus: {lookupCurrentStatus: async () => { currentCalls++; return current(); }},
-    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateAmbiguous: false}; }});
+    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateQuality: 'verified'}; }});
   const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore', allowLegacyClaim: true}));
   assert.equal(response.statusCode, 200); assert.match(response.body, /verification-only/);
   assert.equal(currentCalls, 0); assert.equal(writes, 0);
@@ -91,7 +94,7 @@ test('ordinary tokenless restore never becomes legacy claim', async () => withEn
     readControls: async () => controls(true, true), verifier: verifier(),
     currentStatus: {lookupCurrentStatus: async () => current()},
     persist: async (_client, _user, _environment, _summary, _current, intent) => {
-      receivedIntent = intent; return {bindingResult: 'unclaimed', duplicate: false, currentStateAmbiguous: false};
+      receivedIntent = intent; return {bindingResult: 'unclaimed', duplicate: false, currentStateQuality: 'verified'};
     }});
   const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore', allowLegacyClaim: true}));
   assert.equal(response.statusCode, 200); assert.equal(receivedIntent, 'restore');
@@ -120,7 +123,7 @@ test('current-status provider failure never writes or grants', async () => withE
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
     readControls: async () => controls(true, true), verifier: verifier(),
     currentStatus: {lookupCurrentStatus: async () => { throw new AppleServiceError('CURRENT_STATUS_REQUIRED', 503); }},
-    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateAmbiguous: false}; }});
+    persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateQuality: 'verified'}; }});
   const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore'}));
   assert.equal(response.statusCode, 503); assert.equal(writes, 0); assert.match(response.body, /CURRENT_STATUS_REQUIRED/);
 }));
@@ -133,13 +136,13 @@ test('unexpected current-status chain fails closed', async () => withEnv(async (
   assert.equal(response.statusCode, 502); assert.match(response.body, /CURRENT_STATUS_INVALID/);
 }));
 
-test('persisted equal-version conflict returns deterministic non-200', async () => withEnv(async () => {
+test('persisted quarantine returns deterministic non-200', async () => withEnv(async () => {
   const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
     readControls: async () => controls(true, true), verifier: verifier(),
     currentStatus: {lookupCurrentStatus: async () => current()},
-    persist: async () => ({bindingResult: 'already_claimed', duplicate: false, currentStateAmbiguous: true})});
+    persist: async () => ({bindingResult: 'already_claimed', duplicate: false, currentStateQuality: 'quarantined'})});
   const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore'}));
-  assert.equal(response.statusCode, 409); assert.match(response.body, /CURRENT_STATE_AMBIGUOUS/);
+  assert.equal(response.statusCode, 409); assert.match(response.body, /CURRENT_STATE_QUARANTINED/);
 }));
 
 test('JWS and transactionId mismatch is rejected', async () => withEnv(async () => {

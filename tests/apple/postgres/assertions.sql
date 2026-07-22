@@ -41,6 +41,9 @@ end $$;
 select test_assert.ok(not has_function_privilege('anon','public.billing_get_runtime_controls()','EXECUTE'), 'anon controls execute');
 select test_assert.ok(not has_function_privilege('authenticated','public.billing_get_runtime_controls()','EXECUTE'), 'authenticated controls execute');
 select test_assert.ok(has_function_privilege('service_role','public.billing_get_runtime_controls()','EXECUTE'), 'service_role controls execute missing');
+select test_assert.ok(not has_function_privilege('anon','public.billing_get_current_entitlement_status(uuid)','EXECUTE'), 'anon current entitlement execute');
+select test_assert.ok(not has_function_privilege('authenticated','public.billing_get_current_entitlement_status(uuid)','EXECUTE'), 'authenticated current entitlement execute');
+select test_assert.ok(has_function_privilege('service_role','public.billing_get_current_entitlement_status(uuid)','EXECUTE'), 'service current entitlement execute missing');
 
 do $$
 declare fn record;
@@ -49,7 +52,7 @@ begin
     select p.oid, p.proname, p.prosecdef, p.proconfig
     from pg_proc p join pg_namespace n on n.oid=p.pronamespace
     where n.nspname='public' and p.proname in (
-      'billing_get_runtime_controls','billing_record_app_store_transaction',
+      'billing_get_runtime_controls','billing_get_current_entitlement_status','billing_record_app_store_transaction',
       'billing_record_app_store_notification','billing_prepare_account_deletion'
     )
   loop
@@ -88,11 +91,14 @@ create function test_assert.record_tx(
   p_current_hash text default null,
   p_transaction_product text default null,
   p_transaction_status text default 'recorded',
-  p_current_transaction_id text default null
+  p_current_transaction_id text default null,
+  p_renewal_signed_date timestamptz default null,
+  p_current_quality text default 'verified',
+  p_conflicting_hash text default null
 )
 returns table (
   entitlement_id uuid, binding_result text, transaction_duplicate boolean,
-  applied_as_latest boolean, current_state_ambiguous boolean
+  applied_as_latest boolean, current_state_quality public.app_store_current_state_quality
 )
 language plpgsql security definer set search_path=pg_catalog,test_assert,extensions,public as $$
 declare
@@ -102,10 +108,13 @@ declare
   v_product text := coalesce(p_transaction_product, p_current_product);
   v_current_hash text;
 begin
-  v_current_hash := coalesce(p_current_hash, encode(extensions.digest(
-    concat_ws('|', p_environment::text, p_original_transaction_id, p_transaction_id,
-      p_current_product, p_current_status, p_current_grant::text, coalesce(v_expires::text, ''),
-      p_current_signed_date::text), 'sha256'), 'hex'));
+  v_current_hash := coalesce(p_current_hash, encode(extensions.digest(concat_ws('|',
+    p_environment::text, p_original_transaction_id, coalesce(p_current_transaction_id, p_transaction_id),
+    p_current_product, '22099193', coalesce(v_token_hash, ''), p_current_status,
+    p_current_grant::text,
+    coalesce(to_char(v_expires at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'), ''),
+    'true', 'server_api_status'
+  ), 'sha256'), 'hex'));
   return query select * from public.billing_record_app_store_transaction(
     p_user, p_environment, p_environment, p_transaction_id, p_original_transaction_id,
     v_product, '22099193', v_token_hash, p_transaction_signed_date - interval '1 day',
@@ -115,13 +124,15 @@ begin
     coalesce(p_summary_hash, encode(extensions.digest('tx:' || p_transaction_id, 'sha256'), 'hex')),
     p_claim_intent, p_confirmed, coalesce(p_current_transaction_id, p_transaction_id), p_current_product, '22099193',
     v_token_hash, p_current_status, p_current_grant, v_expires, true,
-    p_current_signed_date, v_current_hash
+    p_current_signed_date, p_renewal_signed_date, statement_timestamp(), v_current_hash,
+    p_conflicting_hash, 'server_api_status', p_current_quality
   );
 end $$;
 grant usage on schema test_assert to service_role;
 grant execute on function test_assert.record_tx(
   uuid, public.app_store_environment, text, text, timestamptz, timestamptz, text,
-  boolean, text, timestamptz, boolean, text, boolean, text, text, text, text, text
+  boolean, text, timestamptz, boolean, text, boolean, text, text, text, text, text,
+  timestamptz, text, text
 ) to service_role;
 
 set role service_role;
@@ -136,6 +147,38 @@ do $$ begin
   exception when sqlstate '55000' then null; end;
 end $$;
 reset role;
+
+-- Current entitlement is computed at read time; static source eligibility cannot outlive valid_until.
+insert into public.billing_entitlements_v2(
+  user_id,source,source_environment,external_entitlement_id,status,validity,valid_until,
+  source_grants_premium,current_state_quality,source_version_at,source_observed_at
+) values (
+  '10000000-0000-4000-8000-000000000002','legacy_protection',null,'short-lived','active','bounded',
+  statement_timestamp()+interval '100 milliseconds',true,'verified',now(),now()
+);
+select test_assert.ok((select currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000002') where external_entitlement_id='short-lived'), 'fresh bounded grant denied');
+select pg_sleep(0.15);
+select test_assert.ok((select not currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000002') where external_entitlement_id='short-lived'), 'expired bounded grant remained active');
+insert into public.billing_entitlements_v2(
+  user_id,source,source_environment,external_entitlement_id,status,validity,valid_until,
+  source_grants_premium,current_state_quality,source_version_at,source_observed_at
+) values (
+  '10000000-0000-4000-8000-000000000002','legacy_protection',null,'at-boundary','active','bounded',
+  statement_timestamp(),true,'verified',now(),now()
+);
+select test_assert.ok((select not currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000002') where external_entitlement_id='at-boundary'), 'boundary grant remained active');
+insert into public.billing_entitlements_v2(
+  user_id,source,source_environment,external_entitlement_id,status,validity,valid_until,
+  source_grants_premium,current_state_quality,source_version_at,source_observed_at
+) values (
+  '10000000-0000-4000-8000-000000000002','legacy_protection',null,'lifetime','active','lifetime',
+  null,true,'verified',now(),now()
+);
+select test_assert.ok((select currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000002') where external_entitlement_id='lifetime'), 'lifetime grant denied');
 
 update public.billing_runtime_controls set apple_verification_enabled=true, apple_ledger_write_enabled=true;
 
@@ -208,14 +251,15 @@ do $$ begin
       'com.cipmusic.aurasounds.premium.monthly.v2','22099193',test_assert.token_hash('10000000-0000-4000-8000-000000000002'),
       now(),now()+interval '1 day',now(),null,null,'PURCHASE','PURCHASED','recorded',repeat('4',64),
       'purchase',false,'bad-token','com.cipmusic.aurasounds.premium.monthly.v2','22099193',
-      test_assert.token_hash('10000000-0000-4000-8000-000000000002'),'active',true,now()+interval '1 day',true,now(),repeat('4',64));
+      test_assert.token_hash('10000000-0000-4000-8000-000000000002'),'active',true,now()+interval '1 day',true,
+      now(),null,now(),repeat('4',64),null,'server_api_status','verified');
     raise exception 'ASSERTION_FAILED: token mismatch succeeded';
   exception when invalid_parameter_value then
     perform test_assert.ok(sqlerrm='APP_ACCOUNT_TOKEN_MISMATCH','wrong token error');
   end;
 end $$;
 
--- New current status wins; an old transaction cannot alter the projection.
+-- A newer signed-evidence snapshot wins; an older transaction fact cannot alter it.
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000001','production','tx-new','original-001',
   now()+interval '10 seconds',now()+interval '10 seconds','active',true,
@@ -223,39 +267,59 @@ select * from test_assert.record_tx(
 );
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000001','production','tx-old','original-001',
-  now()-interval '1 day',
-  (select latest_signed_date from public.app_store_entitlements where original_transaction_id='original-001'),
-  'active',true,
-  'com.cipmusic.aurasounds.premium.yearly.v2',
-  (select expires_at from public.app_store_entitlements where original_transaction_id='original-001'),
-  true,'restore',false,null,
-  (select current_status_hash from public.app_store_entitlements where original_transaction_id='original-001'),
-  null,'recorded','tx-new'
+  now()-interval '1 day',now()-interval '1 day','expired',false,
+  'com.cipmusic.aurasounds.premium.monthly.v2',now()-interval '1 hour',true,'restore'
 );
-select test_assert.ok((select latest_transaction_id='tx-new' and normalized_status='active' from public.app_store_entitlements where original_transaction_id='original-001'), 'old state overwrote new');
-select test_assert.ok((select product_id='com.cipmusic.aurasounds.premium.yearly.v2' and grants_premium from public.billing_entitlements_v2 where external_entitlement_id='original-001'), 'billing projection did not use latest entitlement');
+select test_assert.ok((select latest_transaction_id='tx-new' and normalized_status='active'
+  from public.app_store_entitlements where original_transaction_id='original-001'), 'old state overwrote new');
+select test_assert.ok((select product_id='com.cipmusic.aurasounds.premium.yearly.v2' and source_grants_premium
+  from public.billing_entitlements_v2 where external_entitlement_id='original-001'), 'projection did not use locked entitlement');
 
--- Equal current-status version with different state is deterministic ambiguity.
+-- Natural expiry with unchanged signed evidence quarantines the Apple source and fails closed.
 select * from test_assert.record_tx(
-  '10000000-0000-4000-8000-000000000004','production','equal-a','equal-original',
-  now(),date_trunc('second',now()),'active',true
+  '10000000-0000-4000-8000-000000000004','production','natural-active-fact','natural-original',
+  now(),date_trunc('second',now()),'active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2',now()+interval '1 day',true,'purchase',false,
+  null,null,null,'recorded','natural-current'
 );
-select test_assert.ok((select current_state_ambiguous from test_assert.record_tx(
-  '10000000-0000-4000-8000-000000000004','production','equal-b','equal-original',
-  now()+interval '1 second',(select latest_signed_date from public.app_store_entitlements where original_transaction_id='equal-original'),'expired',false
-)), 'equal version conflict not ambiguous');
-select test_assert.ok((select normalized_status='active' and latest_transaction_id='equal-a'
-  from public.app_store_entitlements where original_transaction_id='equal-original'), 'ambiguous state overwrote projection');
-select test_assert.ok((select current_state_ambiguous from test_assert.record_tx(
-  '10000000-0000-4000-8000-000000000004','production','equal-product','equal-original',
-  now()+interval '2 seconds',(select latest_signed_date from public.app_store_entitlements where original_transaction_id='equal-original'),'active',true,
-  'com.cipmusic.aurasounds.premium.yearly.v2'
-)), 'equal version product conflict not ambiguous');
-select test_assert.ok((select current_state_ambiguous from test_assert.record_tx(
-  '10000000-0000-4000-8000-000000000004','production','equal-expiry','equal-original',
-  now()+interval '3 seconds',(select latest_signed_date from public.app_store_entitlements where original_transaction_id='equal-original'),'active',true,
-  'com.cipmusic.aurasounds.premium.monthly.v2',now()+interval '90 days'
-)), 'equal version expiry conflict not ambiguous');
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000004','production','natural-expired-fact','natural-original',
+  now()+interval '1 second',(select transaction_evidence_signed_at from public.app_store_entitlements where original_transaction_id='natural-original'),
+  'expired',false,'com.cipmusic.aurasounds.premium.monthly.v2',now()-interval '1 second',true,'restore',false,
+  null,null,null,'recorded','natural-current'
+);
+select test_assert.ok((select current_state_quality='quarantined' and not source_grants_premium
+  from public.app_store_entitlements where original_transaction_id='natural-original'), 'natural expiry did not quarantine');
+select test_assert.ok((select not currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000004') where external_entitlement_id='natural-original'), 'quarantine still grants');
+
+-- Reverse order produces the same fail-closed quality and canonical fingerprint pair.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000004','production','reverse-expired-fact','reverse-original',
+  now(),date_trunc('second',now()),'expired',false,
+  'com.cipmusic.aurasounds.premium.monthly.v2',now()-interval '1 second',true,'restore',false,
+  null,null,null,'recorded','reverse-current'
+);
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000004','production','reverse-active-fact','reverse-original',
+  now()+interval '1 second',(select transaction_evidence_signed_at from public.app_store_entitlements where original_transaction_id='reverse-original'),
+  'active',true,'com.cipmusic.aurasounds.premium.monthly.v2',now()+interval '1 day',true,'restore',false,
+  null,null,null,'recorded','reverse-current'
+);
+select test_assert.ok((select current_state_quality='quarantined' and not source_grants_premium
+  from public.app_store_entitlements where original_transaction_id='reverse-original'), 'reverse conflict did not quarantine');
+select test_assert.ok((select not currently_grants_premium from public.billing_get_current_entitlement_status(
+  '10000000-0000-4000-8000-000000000004') where external_entitlement_id='reverse-original'), 'reverse quarantine grants');
+
+-- Identical evidence and fingerprint only refreshes observation metadata.
+select test_assert.ok((select current_state_quality='quarantined' from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000004','production','natural-expired-fact','natural-original',
+  now()+interval '1 second',(select transaction_evidence_signed_at from public.app_store_entitlements where original_transaction_id='natural-original'),
+  'unknown',false,'com.cipmusic.aurasounds.premium.monthly.v2',null,true,'restore',false,
+  null,(select status_fingerprint from public.app_store_entitlements where original_transaction_id='natural-original'),
+  null,'recorded','natural-current',null,'quarantined',
+  (select conflicting_status_fingerprint from public.app_store_entitlements where original_transaction_id='natural-original')
+)), 'quarantine idempotency failed');
 
 -- A latest revoked unclaimed chain cannot be claimed by replaying an older transaction.
 select * from test_assert.record_tx(
@@ -276,12 +340,14 @@ end $$;
 select * from test_assert.record_tx(
   '10000000-0000-4000-8000-000000000002','production','older-active-fact','revoked-original',
   now()-interval '10 days',
-  (select latest_signed_date from public.app_store_entitlements where original_transaction_id='revoked-original'),
-  'revoked',false,'com.cipmusic.aurasounds.premium.monthly.v2',now(),false,'restore',false,null,
-  (select current_status_hash from public.app_store_entitlements where original_transaction_id='revoked-original'),
+  (select transaction_evidence_signed_at from public.app_store_entitlements where original_transaction_id='revoked-original'),
+  'revoked',false,'com.cipmusic.aurasounds.premium.monthly.v2',
+  (select expires_at from public.app_store_entitlements where original_transaction_id='revoked-original'),
+  false,'restore',false,null,
+  (select status_fingerprint from public.app_store_entitlements where original_transaction_id='revoked-original'),
   null,'recorded','revoked-current'
 );
-select test_assert.ok((select normalized_status='revoked' and not grants_premium and binding_state='unclaimed'
+select test_assert.ok((select normalized_status='revoked' and not source_grants_premium and binding_state='unclaimed'
   from public.app_store_entitlements where original_transaction_id='revoked-original'), 'old transaction changed revoked projection');
 select test_assert.ok(not exists(select 1 from public.billing_entitlements_v2 where external_entitlement_id='revoked-original'), 'revoked chain projected billing grant');
 
@@ -293,16 +359,8 @@ select * from test_assert.record_tx(
 select test_assert.ok((select count(*)=2 from public.app_store_entitlements where original_transaction_id='original-001'), 'environment isolation');
 do $$ begin
   begin
-    update public.app_store_entitlements set grants_premium=true where environment='sandbox' and original_transaction_id='original-001';
+    update public.app_store_entitlements set source_grants_premium=true where environment='sandbox' and original_transaction_id='original-001';
     raise exception 'ASSERTION_FAILED: sandbox grant check absent';
-  exception when check_violation then null; end;
-end $$;
-
-do $$ begin
-  begin
-    update public.app_store_entitlements set expires_at=transaction_timestamp()-interval '1 second', grants_premium=true
-    where environment='production' and original_transaction_id='equal-original';
-    raise exception 'ASSERTION_FAILED: expired current grant accepted';
   exception when check_violation then null; end;
 end $$;
 
@@ -310,7 +368,7 @@ end $$;
 do $$
 declare v_wrong uuid;
 begin
-  select id into v_wrong from public.app_store_entitlements where original_transaction_id='equal-original';
+  select id into v_wrong from public.app_store_entitlements where original_transaction_id='natural-original';
   begin
     insert into public.app_store_transactions(
       entitlement_id,environment,transaction_id,original_transaction_id,product_id,
