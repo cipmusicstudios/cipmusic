@@ -76,6 +76,12 @@ for (const [field, value] of [['benignExtra', true], ['email', 'person@example.t
   });
 }
 
+test('rejects nested content in a scalar catalog field', t => {
+  const track = validTrack(); track.canonicalArtistId = { email: 'person@example.test' };
+  const { root } = fixture({ tracks: [track] }); cleanup(t, root);
+  assert.throws(() => validate(root), /canonicalArtistId: expected string or null/);
+});
+
 test('rejects duplicate slug across distinct chunks', t => {
   const { root, publicDir } = fixture({ tracks: [validTrack('id-a', 'same')] }); cleanup(t, root);
   const catalogPath = path.join(publicDir, 'songs-manifest.json');

@@ -113,6 +113,15 @@ function validateTrack(track, location, ids, slugs) {
   ids.add(track.id); slugs.add(track.slug);
   for (const field of ['tags', 'categoryKeys']) if (!Array.isArray(track[field]) || !track[field].every(item => typeof item === 'string')) fail(`${location}.${field}: expected string array`);
   for (const field of ['artistResolutionNotes', 'coCanonicalArtistIds']) if (track[field] != null && (!Array.isArray(track[field]) || !track[field].every(item => typeof item === 'string'))) fail(`${location}.${field}: expected string array or null`);
+  for (const field of [
+    'artistReviewStatus', 'canonicalArtistDisplayName', 'canonicalArtistId', 'linkStatus',
+    'listSortPublishedAt', 'listSortSource', 'supabaseCreatedAt', 'workProjectKey',
+    'youtubePublishedAt', 'youtubeVideoId', 'youtubeVideoTitle',
+  ]) if (track[field] != null && typeof track[field] !== 'string') fail(`${location}.${field}: expected string or null`);
+  for (const field of ['durationSeconds', 'listSortPublishedAtMs', 'youtubeSortIndex']) {
+    if (track[field] != null && (typeof track[field] !== 'number' || !Number.isFinite(track[field]))) fail(`${location}.${field}: expected finite number or null`);
+  }
+  if (track.excludeFromArtistIndex != null && typeof track.excludeFromArtistIndex !== 'boolean') fail(`${location}.excludeFromArtistIndex: expected boolean or null`);
   if (typeof track.hasPracticeMode !== 'boolean') fail(`${location}.hasPracticeMode: expected boolean`);
   if (track.importSource !== 'local' && track.importSource !== 'remote') fail(`${location}.importSource: invalid value`);
   validateLocalized(track.titles, `${location}.titles`);
