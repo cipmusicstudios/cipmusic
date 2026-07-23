@@ -6,6 +6,28 @@ migration="$repo_root/supabase/migrations/20260722010000_apple_entitlement_ledge
 aggregate_migration="$repo_root/supabase/migrations/20260723090000_apple_membership_aggregate_read.sql"
 test_root="$repo_root/tests/apple/postgres"
 
+verification_output_matches() {
+  local output="$1"
+  local expected="$2"
+  local -a lines=()
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && lines+=("$line")
+  done <<<"$output"
+  [[ "${#lines[@]}" -eq 1 ]] || return 1
+  [[ "${lines[0]%%$'\t'*}" == "$expected" ]]
+}
+
+require_verification_marker() {
+  local label="$1"
+  local output="$2"
+  local expected="$3"
+  if ! verification_output_matches "$output" "$expected"; then
+    echo "$label returned an unsafe result; expected exactly $expected" >&2
+    printf '%s\n' "$output" >&2
+    return 1
+  fi
+}
+
 find_pg_binary() {
   local name="$1"
   if [[ -n "${POSTGRES_BIN:-}" && -x "$POSTGRES_BIN/$name" ]]; then
@@ -125,6 +147,7 @@ begin
   end if;
   if has_function_privilege('anon', f, 'EXECUTE')
     or has_function_privilege('authenticated', f, 'EXECUTE')
+    or exists (select 1 from aclexplode(coalesce((select proacl from pg_proc where oid=f),acldefault('f',(select proowner from pg_proc where oid=f)))) a where a.grantee=0 and a.privilege_type='EXECUTE')
     or not has_function_privilege('service_role', f, 'EXECUTE') then
     raise exception 'aggregate function grant failed';
   end if;
@@ -150,12 +173,41 @@ fresh_db=apple_phase1a_aggregate_fresh
 fresh_url="postgresql:///$fresh_db?host=$socket_dir&port=55439"
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/aggregate-fresh-bootstrap.log" 2>&1
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/aggregate-fresh-phase1a.log" 2>&1
-"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
-  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql" >"$log_dir/aggregate-preflight.log" 2>&1
+aggregate_preflight_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql")"
+printf '%s\n' "$aggregate_preflight_output" >"$log_dir/aggregate-preflight.log"
+require_verification_marker "Aggregate preflight" "$aggregate_preflight_output" "AGGREGATE_READ_PREFLIGHT_GO"
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-fresh-follow-up.log" 2>&1
 printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-fresh-assertions.log" 2>&1
-"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
-  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql" >"$log_dir/aggregate-postflight.log" 2>&1
+aggregate_postflight_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql")"
+printf '%s\n' "$aggregate_postflight_output" >"$log_dir/aggregate-postflight.log"
+require_verification_marker "Aggregate postflight" "$aggregate_postflight_output" "AGGREGATE_READ_POSTFLIGHT_PASS"
+
+# Verification SQL returns exit 0 for a semantic NO_GO/FAIL row. The harness
+# must still fail closed for those rows, empty output, and ACL drift.
+aggregate_no_go_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql")"
+if verification_output_matches "$aggregate_no_go_output" "AGGREGATE_READ_PREFLIGHT_GO"; then
+  echo "Aggregate preflight NO_GO was accepted" >&2
+  exit 1
+fi
+if verification_output_matches $'AGGREGATE_READ_POSTFLIGHT_FAIL\t[]' "AGGREGATE_READ_POSTFLIGHT_PASS" \
+  || verification_output_matches "" "AGGREGATE_READ_POSTFLIGHT_PASS" \
+  || verification_output_matches $'AGGREGATE_READ_POSTFLIGHT_PASS\t[]\nAGGREGATE_READ_POSTFLIGHT_FAIL\t[]' "AGGREGATE_READ_POSTFLIGHT_PASS"; then
+  echo "Aggregate verification marker parser accepted an unsafe result" >&2
+  exit 1
+fi
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -c \
+  "grant execute on function public.billing_get_current_entitlement_summary(uuid) to public" >"$log_dir/aggregate-public-grant.log" 2>&1
+aggregate_acl_fail_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql")"
+if verification_output_matches "$aggregate_acl_fail_output" "AGGREGATE_READ_POSTFLIGHT_PASS"; then
+  echo "Aggregate postflight accepted PUBLIC execute drift" >&2
+  exit 1
+fi
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -c \
+  "revoke execute on function public.billing_get_current_entitlement_summary(uuid) from public" >"$log_dir/aggregate-public-revoke.log" 2>&1
 
 # Re-applying the follow-up stops without changing the installed function.
 aggregate_before="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"

@@ -14,6 +14,10 @@ with f as (
     ('function_owner',(select pg_get_userbyid(proowner)=:'expected_owner' from f),'approved owner required'),
     ('security_definer',(select prosecdef from f),'must be security definer'),
     ('fixed_search_path',(select coalesce(array_to_string(proconfig,','),'') like '%search_path=pg_catalog, public%' from f),'fixed search_path required'),
+    ('public_revoked',not exists (
+      select 1 from f cross join lateral aclexplode(coalesce(f.proacl,acldefault('f',f.proowner))) a
+      where a.grantee=0 and a.privilege_type='EXECUTE'
+    ),'PUBLIC must not execute'),
     ('anon_revoked',not has_function_privilege('anon','public.billing_get_current_entitlement_summary(uuid)'::regprocedure,'EXECUTE'),'anon must not execute'),
     ('authenticated_revoked',not has_function_privilege('authenticated','public.billing_get_current_entitlement_summary(uuid)'::regprocedure,'EXECUTE'),'authenticated must not execute'),
     ('service_role_granted',has_function_privilege('service_role','public.billing_get_current_entitlement_summary(uuid)'::regprocedure,'EXECUTE'),'service_role must execute')

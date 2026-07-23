@@ -97,7 +97,38 @@ function isAppleEntitlement(value: unknown): value is AppleEntitlement {
  * Phase B1 安全收口：必须 `Authorization: Bearer <supabase_access_token>`。
  * `userId` 仅来自 Supabase 校验通过的 JWT，绝不信任 body.userId，杜绝任意 UUID 枚举他人会员状态。
  */
-type ReadMembershipDeps = { createClient?: typeof createSupabaseServiceClient };
+const APPLE_SUMMARY_RPC_TIMEOUT_MS = 1500;
+
+async function readAppleEntitlements(
+  supabase: ReturnType<typeof createSupabaseServiceClient>,
+  userId: string,
+  timeoutMs = APPLE_SUMMARY_RPC_TIMEOUT_MS,
+): Promise<AppleEntitlement[]> {
+  if (!supabase) return [];
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const rpc = Promise.resolve(
+    supabase.rpc('billing_get_current_entitlement_summary', {p_user_id: userId}),
+  ).then(
+    result => ({kind: 'result' as const, result}),
+    () => ({kind: 'rejected' as const}),
+  );
+  const timeout = new Promise<{kind: 'timeout'}>(resolve => {
+    timer = setTimeout(() => resolve({kind: 'timeout'}), timeoutMs);
+  });
+  try {
+    const settled = await Promise.race([rpc, timeout]);
+    if (settled.kind !== 'result' || settled.result.error) return [];
+    return (Array.isArray(settled.result.data) ? settled.result.data : [])
+      .filter(isAppleEntitlement);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+type ReadMembershipDeps = {
+  createClient?: typeof createSupabaseServiceClient;
+  appleRpcTimeoutMs?: number;
+};
 
 export function createReadMembershipHandler(deps: ReadMembershipDeps = {}): Handler {
   return async (event: HandlerEvent): Promise<HandlerResponse> => {
@@ -199,12 +230,11 @@ export function createReadMembershipHandler(deps: ReadMembershipDeps = {}): Hand
 
   // Phase 1A may deliberately be absent before its approved migration. A missing
   // aggregate RPC must never hide an existing Stripe/ZPay/manual entitlement.
-  const appleResult = await supabase.rpc('billing_get_current_entitlement_summary', {
-    p_user_id: userId,
-  });
-  const appleRows: AppleEntitlement[] = appleResult.error
-    ? []
-    : (Array.isArray(appleResult.data) ? appleResult.data : []).filter(isAppleEntitlement);
+  const appleRows = await readAppleEntitlements(
+    supabase,
+    userId,
+    deps.appleRpcTimeoutMs ?? APPLE_SUMMARY_RPC_TIMEOUT_MS,
+  );
   const aggregate = aggregateMembership(byUserId.data, appleRows);
   logLine({
     stage: 'ok',

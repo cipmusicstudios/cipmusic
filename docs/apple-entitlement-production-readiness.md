@@ -312,24 +312,34 @@ Execution sequence (one approved maintenance window, with a named approved
 `expected_owner` for both security-definer migration steps):
 
 1. Verify backup and recovery evidence.
-2. Run Production preflight and preserve its baseline JSON.
-3. Stop on any NO-GO, long transaction, lock waiter, active DDL, object conflict,
+2. Run the fresh, read-only Production Phase 1A preflight and preserve its
+   baseline JSON. A preflight PASS is evidence only; it is not migration
+   authorization.
+3. **STOP GATE:** after the fresh Phase 1A preflight passes, stop. Do not enter
+   a maintenance window or execute SQL until the user or named responsible
+   approver gives a new, explicit Maintenance Window approval for the exact
+   two-migration set listed here: frozen Phase 1A followed by
+   `20260723090000_apple_membership_aggregate_read.sql`. The preflight must
+   never automatically continue into either migration.
+4. Stop on any NO-GO, long transaction, lock waiter, active DDL, object conflict,
    version mismatch, or unexpected external flag state.
-4. In the migration session use `lock_timeout='5s'`,
+5. In the approved migration session use `lock_timeout='5s'`,
    `statement_timeout='5min'`, and
    `idle_in_transaction_session_timeout='2min'`.
-5. Apply the frozen Phase 1A up migration once through the approved Supabase migration
+6. Apply the frozen Phase 1A up migration once through the approved Supabase migration
    mechanism. Do not split the transaction or manually forge history.
-6. Run the exact Phase 1A postflight with the preserved baseline values.
-7. Require `MIGRATION_POSTFLIGHT_PASS`; otherwise freeze rollout, keep flags off,
+7. Run the exact Phase 1A postflight with the preserved baseline values.
+8. Require `MIGRATION_POSTFLIGHT_PASS`; otherwise stop immediately, freeze
+   rollout, keep every flag off,
    and select a reviewed forward fix or complete backup restore.
-8. Run the read-only aggregate follow-up preflight with `expected_owner`; stop on
+9. Run the read-only aggregate follow-up preflight with `expected_owner`; stop on
    any NO-GO, owner mismatch, pre-existing RPC, or Phase 1A dependency failure.
-9. Apply `20260723090000_apple_membership_aggregate_read.sql` once through the
-   same approved migration mechanism.
-10. Run `20260723090000_apple_membership_aggregate_read_postflight.sql` with the
+10. Apply `20260723090000_apple_membership_aggregate_read.sql` in the same
+    explicitly approved Maintenance Window, once through the same approved
+    migration mechanism.
+11. Run `20260723090000_apple_membership_aggregate_read_postflight.sql` with the
     same `expected_owner`; require `AGGREGATE_READ_POSTFLIGHT_PASS`.
-11. Observe database/Netlify errors, locks, latency, and existing payment/auth
+12. Observe database/Netlify errors, locks, latency, and existing payment/auth
    paths for at least 30 minutes. Keep every Apple flag off.
 
 ### B. Apple verification enablement
