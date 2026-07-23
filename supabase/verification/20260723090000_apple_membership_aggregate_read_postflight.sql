@@ -1,11 +1,17 @@
 \set ON_ERROR_STOP on
 -- Read-only postflight for the aggregate-read follow-up.
+\if :{?expected_owner}
+\else
+  \echo 'ERROR: expected_owner is required'
+  \quit 3
+\endif
 with f as (
   select p.oid,p.proowner,p.prosecdef,p.proconfig,p.proacl
   from pg_proc p where p.oid='public.billing_get_current_entitlement_summary(uuid)'::regprocedure
 ), checks as (
   select * from (values
     ('rpc_exists',(select count(*)=1 from f),'exact uuid RPC signature required'),
+    ('function_owner',(select pg_get_userbyid(proowner)=:'expected_owner' from f),'approved owner required'),
     ('security_definer',(select prosecdef from f),'must be security definer'),
     ('fixed_search_path',(select coalesce(array_to_string(proconfig,','),'') like '%search_path=pg_catalog, public%' from f),'fixed search_path required'),
     ('anon_revoked',not has_function_privilege('anon','public.billing_get_current_entitlement_summary(uuid)'::regprocedure,'EXECUTE'),'anon must not execute'),

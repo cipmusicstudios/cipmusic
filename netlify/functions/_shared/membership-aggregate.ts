@@ -13,17 +13,23 @@ export type AppleEntitlement = {
 
 /**
  * Legacy providers remain authoritative while their explicit status is active.
- * A valid future premium_until is also active; malformed/expired dates fall
- * back to the status instead of silently downgrading an existing member.
+ * A valid future premium_until is also active. A supplied but malformed or
+ * expired date fails closed instead of being revived by a stale status.
  */
 export const activeLegacy = (row: LegacyMembership) => {
   if (!row) return false;
   const status = (row.membership_status ?? '').toLowerCase();
-  const activeStatus = ['active', 'premium', 'stripe_subscription_active', 'stripe_subscription_trialing',
-    'zpay_active', 'manual_active', 'canceled_active'].includes(status);
-  if (!row.premium_until) return activeStatus;
-  const until = Date.parse(row.premium_until);
-  return Number.isFinite(until) && until > Date.now() ? true : activeStatus;
+  // Match remotePremiumEntitled: a supplied date is authoritative. A stale
+  // active status must never revive a parseable expired membership.
+  if (row.premium_until != null && row.premium_until.trim() !== '') {
+    const until = Date.parse(row.premium_until);
+    return Number.isFinite(until) && until > Date.now();
+  }
+  if (status === 'canceled_active') {
+    const periodEnd = row.current_period_end ? Date.parse(row.current_period_end) : NaN;
+    return Number.isFinite(periodEnd) && periodEnd > Date.now();
+  }
+  return ['active', 'premium', 'stripe_subscription_active', 'stripe_subscription_trialing'].includes(status);
 };
 
 export function aggregateMembership(legacy: LegacyMembership, apple: AppleEntitlement[]) {

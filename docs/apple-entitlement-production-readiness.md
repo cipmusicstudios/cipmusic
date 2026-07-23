@@ -293,14 +293,23 @@ maintenance window.
 
 ## Rollout gates
 
-### A. Schema installation only
+### A. Complete Apple entitlement schema installation
 
 Required: frozen up SHA/blob; verified recoverable backup; completed restore
 rehearsal; PG17 readiness suite PASS; approved preflight/postflight and permanent
 down-refusal artifacts;
 low-traffic maintenance window; named executor and reviewer; all flags off.
 
-Execution sequence:
+This is the only complete schema path for the website membership-read closure.
+Phase 1A remains frozen at SHA-256
+`5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4`.
+The required aggregate-read follow-up migration and independently frozen SHA are
+recorded in [apple-membership-aggregate-read-rollout.md](apple-membership-aggregate-read-rollout.md).
+Installing Phase 1A alone is **not** sufficient to enable Apple aggregate/member
+read; keep every Apple flag OFF until both exact postflights pass.
+
+Execution sequence (one approved maintenance window, with a named approved
+`expected_owner` for both security-definer migration steps):
 
 1. Verify backup and recovery evidence.
 2. Run Production preflight and preserve its baseline JSON.
@@ -309,12 +318,18 @@ Execution sequence:
 4. In the migration session use `lock_timeout='5s'`,
    `statement_timeout='5min'`, and
    `idle_in_transaction_session_timeout='2min'`.
-5. Apply the frozen up migration once through the approved Supabase migration
+5. Apply the frozen Phase 1A up migration once through the approved Supabase migration
    mechanism. Do not split the transaction or manually forge history.
-6. Run postflight with the preserved baseline values.
+6. Run the exact Phase 1A postflight with the preserved baseline values.
 7. Require `MIGRATION_POSTFLIGHT_PASS`; otherwise freeze rollout, keep flags off,
    and select a reviewed forward fix or complete backup restore.
-8. Observe database/Netlify errors, locks, latency, and existing payment/auth
+8. Run the read-only aggregate follow-up preflight with `expected_owner`; stop on
+   any NO-GO, owner mismatch, pre-existing RPC, or Phase 1A dependency failure.
+9. Apply `20260723090000_apple_membership_aggregate_read.sql` once through the
+   same approved migration mechanism.
+10. Run `20260723090000_apple_membership_aggregate_read_postflight.sql` with the
+    same `expected_owner`; require `AGGREGATE_READ_POSTFLIGHT_PASS`.
+11. Observe database/Netlify errors, locks, latency, and existing payment/auth
    paths for at least 30 minutes. Keep every Apple flag off.
 
 ### B. Apple verification enablement

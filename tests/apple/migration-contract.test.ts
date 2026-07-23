@@ -70,6 +70,8 @@ test('feature defaults are fail closed', () => {
 
 test('membership aggregate exposes only safe current summary to service role', () => {
   assert.match(aggregateSql, /create function public\.billing_get_current_entitlement_summary\(p_user_id uuid\)/i);
+  assert.match(aggregateSql, /^begin;/im);
+  assert.match(aggregateSql, /commit;\s*$/im);
   assert.match(aggregateSql, /returns table \(environment public\.app_store_environment, currently_grants_premium boolean, valid_until timestamptz\)/i);
   assert.match(aggregateSql, /security definer stable set search_path = pg_catalog, public/i);
   assert.match(aggregateSql, /source_environment = 'production'/i);
@@ -84,7 +86,7 @@ test('aggregate follow-up is a separately frozen, ordered rollout set', () => {
   const rollout = readFileSync('docs/apple-membership-aggregate-read-rollout.md', 'utf8');
   assert.match(rollout, /Phase 1A remains frozen and unchanged/);
   assert.match(rollout, /20260722010000[\s\S]*20260723090000/);
-  assert.match(rollout, /9422e806a711183f75535feb18c17a2650cd636830253c12762253cf4734725d/);
+  assert.match(rollout, /50a195a0b61a616f07e3cc32d6f7a7ba7d0e521ec2dad55713e0abe0865d580d/);
   assert.match(rollout, /forward fix or the verified complete-backup restore/i);
 });
 

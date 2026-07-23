@@ -1,5 +1,10 @@
 \set ON_ERROR_STOP on
 -- Read-only preflight for the aggregate-read follow-up. It does not authorize execution.
+\if :{?expected_owner}
+\else
+  \echo 'ERROR: expected_owner is required'
+  \quit 3
+\endif
 with checks as (
   select * from (values
     ('phase_1a_present', to_regclass('public.billing_entitlements_v2') is not null,
@@ -8,6 +13,8 @@ with checks as (
       'Phase 1A app_store_environment must exist'),
     ('summary_rpc_absent', to_regprocedure('public.billing_get_current_entitlement_summary(uuid)') is null,
       'follow-up RPC must not already exist'),
+    ('approved_owner', current_user=:'expected_owner',
+      'migration executor must match the approved security-definer owner'),
     ('user_membership_present', to_regclass('public.user_membership') is not null,
       'capture legacy membership baseline before migration')
   ) v(check_name, passed, detail)

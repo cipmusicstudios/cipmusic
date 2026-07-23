@@ -119,6 +119,7 @@ do $$
 declare f oid := 'public.billing_get_current_entitlement_summary(uuid)'::regprocedure;
 begin
   if not exists (select 1 from pg_proc where oid=f and prosecdef
+    and pg_get_userbyid(proowner)=current_user
     and coalesce(array_to_string(proconfig, ','),'') like '%search_path=pg_catalog, public%') then
     raise exception 'aggregate function hardening failed';
   end if;
@@ -149,8 +150,41 @@ fresh_db=apple_phase1a_aggregate_fresh
 fresh_url="postgresql:///$fresh_db?host=$socket_dir&port=55439"
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/aggregate-fresh-bootstrap.log" 2>&1
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/aggregate-fresh-phase1a.log" 2>&1
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql" >"$log_dir/aggregate-preflight.log" 2>&1
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-fresh-follow-up.log" 2>&1
 printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-fresh-assertions.log" 2>&1
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql" >"$log_dir/aggregate-postflight.log" 2>&1
+
+# Re-applying the follow-up stops without changing the installed function.
+aggregate_before="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"
+set +e
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-duplicate.log" 2>&1
+aggregate_duplicate_rc=$?
+set -e
+aggregate_after="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"
+if [[ "$aggregate_duplicate_rc" -eq 0 || "$aggregate_before" != "$aggregate_after" ]]; then
+  echo "Aggregate follow-up duplicate behavior failed" >&2
+  exit 1
+fi
+
+# An injected failure before COMMIT leaves no SECURITY DEFINER function or ACL.
+aggregate_rollback_db=apple_aggregate_rollback
+"$PG_CREATEDB" "$aggregate_rollback_db"
+aggregate_rollback_url="postgresql:///$aggregate_rollback_db?host=$socket_dir&port=55439"
+"$PG_PSQL" "$aggregate_rollback_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/aggregate-rollback-bootstrap.log" 2>&1
+"$PG_PSQL" "$aggregate_rollback_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/aggregate-rollback-phase1a.log" 2>&1
+aggregate_failure_migration="$work_dir/aggregate-injected-failure.sql"
+awk '{if ($0 == "commit;") print "select 1 / 0;"; print}' "$aggregate_migration" >"$aggregate_failure_migration"
+set +e
+"$PG_PSQL" "$aggregate_rollback_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_failure_migration" >"$log_dir/aggregate-rollback.log" 2>&1
+aggregate_rollback_rc=$?
+set -e
+if [[ "$aggregate_rollback_rc" -eq 0 || "$($PG_PSQL "$aggregate_rollback_url" -X -Atqc "select to_regprocedure('public.billing_get_current_entitlement_summary(uuid)') is null")" != t ]]; then
+  echo "Aggregate follow-up rollback-on-failure check failed" >&2
+  exit 1
+fi
 
 # Duplicate application must stop before changing the installed schema.
 before_count="$($PG_PSQL "$db_url" -X -Atqc "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public';")"

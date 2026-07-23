@@ -14,7 +14,7 @@ The separately approved follow-up is required before `read-membership` can
 read Apple entitlement summaries:
 
 - `20260723090000_apple_membership_aggregate_read.sql`
-- SHA-256: `9422e806a711183f75535feb18c17a2650cd636830253c12762253cf4734725d`
+- SHA-256: `50a195a0b61a616f07e3cc32d6f7a7ba7d0e521ec2dad55713e0abe0865d580d`
 
 This is a new immutable two-migration set; it does not rewrite or re-label the
 Phase 1A frozen hash. The dependency order is strictly Phase 1A, then the

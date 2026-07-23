@@ -22,7 +22,7 @@ test('sandbox is visible but never grants production Pro', () => {
   assert.equal(membership.appleEnvironment, null);
 });
 
-test('an active legacy Stripe, ZPay, or manual membership is never downgraded', () => {
+test('an active legacy membership with a future expiry is never downgraded', () => {
   for (const membershipStatus of ['active', 'stripe_subscription_active', 'stripe_subscription_trialing', 'zpay_active', 'manual_active', 'premium']) {
     const membership = aggregateMembership(
       {
@@ -38,11 +38,17 @@ test('an active legacy Stripe, ZPay, or manual membership is never downgraded', 
   }
 });
 
-test('legacy active status survives expired, malformed, and absent premium_until', () => {
-  for (const premium_until of [new Date(Date.now() - 86_400_000).toISOString(), 'not-a-date', null]) {
-    const membership = aggregateMembership({premium_until, membership_status: 'manual_active', auto_renew: false, current_period_end: null}, []);
-    assert.equal(membership.isPremium, true, String(premium_until));
+test('parseable expired premium_until is never revived by a stale active status', () => {
+  const yesterday = new Date(Date.now() - 86_400_000).toISOString();
+  for (const membership_status of ['premium', 'active', 'canceled_active']) {
+    assert.equal(aggregateMembership({premium_until: yesterday, membership_status, auto_renew: false, current_period_end: future}, []).isPremium, false);
   }
+});
+
+test('null date uses the existing active-status fallback, while malformed dates fail closed', () => {
+  assert.equal(aggregateMembership({premium_until: null, membership_status: 'active', auto_renew: false, current_period_end: null}, []).isPremium, true);
+  assert.equal(aggregateMembership({premium_until: 'not-a-date', membership_status: 'premium', auto_renew: false, current_period_end: null}, []).isPremium, false);
+  assert.equal(aggregateMembership({premium_until: null, membership_status: 'canceled_active', auto_renew: false, current_period_end: future}, []).isPremium, true);
 });
 
 test('expired legacy status is not revived by an expired date', () => {
@@ -54,12 +60,12 @@ test('an Apple query with no active entitlement cannot overwrite legacy data', (
   const membership = aggregateMembership(
     {
       premium_until: future,
-      membership_status: 'manual_active',
+      membership_status: 'premium',
       auto_renew: false,
       current_period_end: future,
     },
     [],
   );
   assert.equal(membership.isPremium, true);
-  assert.equal(membership.membershipStatus, 'manual_active');
+  assert.equal(membership.membershipStatus, 'premium');
 });
