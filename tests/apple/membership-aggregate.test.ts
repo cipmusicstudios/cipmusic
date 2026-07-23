@@ -23,7 +23,7 @@ test('sandbox is visible but never grants production Pro', () => {
 });
 
 test('an active legacy Stripe, ZPay, or manual membership is never downgraded', () => {
-  for (const membershipStatus of ['active', 'stripe_subscription_active', 'premium']) {
+  for (const membershipStatus of ['active', 'stripe_subscription_active', 'stripe_subscription_trialing', 'zpay_active', 'manual_active', 'premium']) {
     const membership = aggregateMembership(
       {
         premium_until: future,
@@ -36,6 +36,18 @@ test('an active legacy Stripe, ZPay, or manual membership is never downgraded', 
     assert.equal(membership.isPremium, true, membershipStatus);
     assert.equal(membership.source, 'legacy', membershipStatus);
   }
+});
+
+test('legacy active status survives expired, malformed, and absent premium_until', () => {
+  for (const premium_until of [new Date(Date.now() - 86_400_000).toISOString(), 'not-a-date', null]) {
+    const membership = aggregateMembership({premium_until, membership_status: 'manual_active', auto_renew: false, current_period_end: null}, []);
+    assert.equal(membership.isPremium, true, String(premium_until));
+  }
+});
+
+test('expired legacy status is not revived by an expired date', () => {
+  const membership = aggregateMembership({premium_until: new Date(Date.now() - 86_400_000).toISOString(), membership_status: 'expired', auto_renew: false, current_period_end: null}, []);
+  assert.equal(membership.isPremium, false);
 });
 
 test('an Apple query with no active entitlement cannot overwrite legacy data', () => {

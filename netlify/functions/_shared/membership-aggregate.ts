@@ -11,10 +11,19 @@ export type AppleEntitlement = {
   valid_until: string | null;
 };
 
-const activeLegacy = (row: LegacyMembership) => {
+/**
+ * Legacy providers remain authoritative while their explicit status is active.
+ * A valid future premium_until is also active; malformed/expired dates fall
+ * back to the status instead of silently downgrading an existing member.
+ */
+export const activeLegacy = (row: LegacyMembership) => {
   if (!row) return false;
-  if (row.premium_until) return Date.parse(row.premium_until) > Date.now();
-  return ['active', 'premium', 'stripe_subscription_active', 'stripe_subscription_trialing'].includes((row.membership_status ?? '').toLowerCase());
+  const status = (row.membership_status ?? '').toLowerCase();
+  const activeStatus = ['active', 'premium', 'stripe_subscription_active', 'stripe_subscription_trialing',
+    'zpay_active', 'manual_active', 'canceled_active'].includes(status);
+  if (!row.premium_until) return activeStatus;
+  const until = Date.parse(row.premium_until);
+  return Number.isFinite(until) && until > Date.now() ? true : activeStatus;
 };
 
 export function aggregateMembership(legacy: LegacyMembership, apple: AppleEntitlement[]) {
@@ -22,6 +31,7 @@ export function aggregateMembership(legacy: LegacyMembership, apple: AppleEntitl
     apple.find(
       (value) => value.environment === 'production' && value.currently_grants_premium,
     ) ?? null;
+  // Authenticated-user diagnostic only; it never participates in isPremium.
   const sandboxVerified = apple.some((value) => value.environment === 'sandbox');
 
   if (activeLegacy(legacy)) {

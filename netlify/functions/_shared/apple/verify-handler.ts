@@ -71,7 +71,8 @@ export function createVerifyHandler(deps: VerifyDeps) {
       assertTransactionRequestMatch(summary, transactionId || undefined);
 
       if (!controls.appleLedgerWriteEnabled) {
-        return json(200, {ok: true, mode: 'verification-only', persisted: false, membershipSynced: false, membershipReadable: false,
+        return json(200, {ok: true, mode: 'verification-only', persisted: false, membershipSynced: false,
+          productionEntitlementVerified: false, safeToFinishTransaction: false,
           environment: summary.environment, transactionVerified: true, currentStatusVerified: false});
       }
       const currentProvider = deps.currentStatus ?? new OfficialAppleCurrentStatusProvider(config, verifier);
@@ -91,8 +92,12 @@ export function createVerifyHandler(deps: VerifyDeps) {
       if (result.currentStateQuality === 'quarantined') {
         throw new AppleServiceError('CURRENT_STATE_QUARANTINED', 409);
       }
+      const safelyBound = ['claimed', 'already_claimed'].includes(result.bindingResult);
       return json(200, {ok: true, mode: 'ledger-only', persisted: true, membershipSynced: false,
-        membershipReadable: current.environment === 'production' && current.grantsPremium,
+        productionEntitlementVerified: current.environment === 'production' && current.grantsPremium,
+        // This is the sole client acknowledgement contract: the verified current
+        // entitlement is durably persisted and belongs to the authenticated user.
+        safeToFinishTransaction: safelyBound && result.currentStateQuality === 'verified',
         entitlementGrantsProductionPremium: current.environment === 'production' && current.grantsPremium,
         environment: summary.environment, status: current.normalizedStatus,
         transactionVerified: true, currentStatusVerified: true,

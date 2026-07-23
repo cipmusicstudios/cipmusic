@@ -85,6 +85,7 @@ test('verification-only verifies transaction without claiming current status', a
     persist: async () => { writes++; return {bindingResult: '', duplicate: false, currentStateQuality: 'verified'}; }});
   const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore', allowLegacyClaim: true}));
   assert.equal(response.statusCode, 200); assert.match(response.body, /verification-only/);
+  assert.match(response.body, /"safeToFinishTransaction":false/);
   assert.equal(currentCalls, 0); assert.equal(writes, 0);
 }));
 
@@ -99,6 +100,18 @@ test('ordinary tokenless restore never becomes legacy claim', async () => withEn
   const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'restore', allowLegacyClaim: true}));
   assert.equal(response.statusCode, 200); assert.equal(receivedIntent, 'restore');
   assert.match(response.body, /"binding":"unclaimed"/);
+  assert.match(response.body, /"safeToFinishTransaction":false/);
+}));
+
+test('only a persisted verified claimed ledger response is safe to finish', async () => withEnv(async () => {
+  const handler = createVerifyHandler({supabase: fakeSupabase, authenticate: async () => userId,
+    readControls: async () => controls(true, true), verifier: verifier(transaction({appAccountToken: userId})),
+    currentStatus: {lookupCurrentStatus: async () => current({appAccountTokenHash: 'a'.repeat(64)})},
+    persist: async () => ({bindingResult: 'claimed', duplicate: false, currentStateQuality: 'verified'})});
+  const response = await handler(event({signedTransactionInfo: 'jws', claimIntent: 'purchase'}));
+  assert.equal(response.statusCode, 200);
+  assert.match(response.body, /"safeToFinishTransaction":true/);
+  assert.match(response.body, /"productionEntitlementVerified":true/);
 }));
 
 test('legacy claim is rejected when either current or submitted transaction has a token', async () => withEnv(async () => {

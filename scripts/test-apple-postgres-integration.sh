@@ -3,6 +3,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 migration="$repo_root/supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql"
+aggregate_migration="$repo_root/supabase/migrations/20260723090000_apple_membership_aggregate_read.sql"
 test_root="$repo_root/tests/apple/postgres"
 
 find_pg_binary() {
@@ -109,6 +110,47 @@ db_url="postgresql:///$db_name?host=$socket_dir&port=55439"
 
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/bootstrap.log" 2>&1
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/migration-apply.log" 2>&1
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-incremental-apply.log" 2>&1
+
+# The aggregate migration is an ordered Phase 1A follow-up. Verify its actual
+# signature, definer hardening, grants, and production-only summary semantics.
+aggregate_checks="$(cat <<'SQL'
+do $$
+declare f oid := 'public.billing_get_current_entitlement_summary(uuid)'::regprocedure;
+begin
+  if not exists (select 1 from pg_proc where oid=f and prosecdef
+    and coalesce(array_to_string(proconfig, ','),'') like '%search_path=pg_catalog, public%') then
+    raise exception 'aggregate function hardening failed';
+  end if;
+  if has_function_privilege('anon', f, 'EXECUTE')
+    or has_function_privilege('authenticated', f, 'EXECUTE')
+    or not has_function_privilege('service_role', f, 'EXECUTE') then
+    raise exception 'aggregate function grant failed';
+  end if;
+end $$;
+insert into auth.users(id) values ('90000000-0000-4000-8000-000000000001') on conflict do nothing;
+insert into public.billing_entitlements_v2(user_id,source,source_environment,external_entitlement_id,plan,product_id,status,validity,valid_until,source_grants_premium,current_state_quality,source_version_at,source_observed_at)
+values ('90000000-0000-4000-8000-000000000001','apple','production','aggregate-production','premium','com.cipmusic.aurasounds.premium.monthly.v2','active','bounded',statement_timestamp()+interval '30 days',true,'verified',statement_timestamp(),statement_timestamp()),
+('90000000-0000-4000-8000-000000000001','apple','sandbox','aggregate-sandbox','premium','com.cipmusic.aurasounds.premium.monthly.v2','active','bounded',statement_timestamp()+interval '30 days',false,'verified',statement_timestamp(),statement_timestamp());
+do $$
+begin
+  if (select count(*) from public.billing_get_current_entitlement_summary('90000000-0000-4000-8000-000000000001')) <> 2 then raise exception 'aggregate summary rows missing'; end if;
+  if not (select currently_grants_premium from public.billing_get_current_entitlement_summary('90000000-0000-4000-8000-000000000001') where environment='production') then raise exception 'production grant missing'; end if;
+  if (select currently_grants_premium from public.billing_get_current_entitlement_summary('90000000-0000-4000-8000-000000000001') where environment='sandbox') then raise exception 'sandbox granted premium'; end if;
+end $$;
+SQL
+)"
+printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-incremental-assertions.log" 2>&1
+
+# Fresh install is separately exercised so migration ordering cannot be hidden
+# by state from the incremental database above.
+fresh_db=apple_phase1a_aggregate_fresh
+"$PG_CREATEDB" "$fresh_db"
+fresh_url="postgresql:///$fresh_db?host=$socket_dir&port=55439"
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/aggregate-fresh-bootstrap.log" 2>&1
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/aggregate-fresh-phase1a.log" 2>&1
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-fresh-follow-up.log" 2>&1
+printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-fresh-assertions.log" 2>&1
 
 # Duplicate application must stop before changing the installed schema.
 before_count="$($PG_PSQL "$db_url" -X -Atqc "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public';")"

@@ -80,6 +80,14 @@ test('membership aggregate exposes only safe current summary to service role', (
   assert.doesNotMatch(aggregateSql, /transaction_id|signed_transaction|jws/i);
 });
 
+test('aggregate follow-up is a separately frozen, ordered rollout set', () => {
+  const rollout = readFileSync('docs/apple-membership-aggregate-read-rollout.md', 'utf8');
+  assert.match(rollout, /Phase 1A remains frozen and unchanged/);
+  assert.match(rollout, /20260722010000[\s\S]*20260723090000/);
+  assert.match(rollout, /9422e806a711183f75535feb18c17a2650cd636830253c12762253cf4734725d/);
+  assert.match(rollout, /forward fix or the verified complete-backup restore/i);
+});
+
 test('read-membership returns only UI membership fields, never Apple evidence', () => {
   assert.match(readMembership, /select\('premium_until, membership_status, auto_renew, current_period_end'\)/);
   assert.match(readMembership, /billing_get_current_entitlement_summary/);
