@@ -149,7 +149,7 @@ with expected_tables(name) as (
 ), checks as (
   select c.* from inventory i cross join data_state d cross join membership m
   cross join payment_objects p cross join payment_functions pf cross join lateral (values
-    ('frozen_manifest',pg_temp.phase1a_manifest_sha256()='6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1',pg_temp.phase1a_manifest_sha256()),
+    ('frozen_manifest',pg_temp.phase1a_manifest_sha256()='a645fa4cef579279f4ebc8baec380e3a413792b0da2c92c889921c1da7fb27bb',pg_temp.phase1a_manifest_sha256()),
     ('migration_history',i.migration_history_count=1,i.migration_history_count::text),
     ('tables',i.table_count=8,i.table_count::text),
     ('types',i.type_count=6,i.type_count::text),
@@ -179,9 +179,16 @@ with expected_tables(name) as (
     ('payment_objects',p.fingerprint=:'expected_payment_object_fingerprint',p.fingerprint),
     ('payment_functions',pf.fingerprint=:'expected_payment_function_fingerprint',pf.fingerprint)
   ) c(check_name,passed,detail)
+), verdict as (
+  select case when bool_and(coalesce(passed,false)) then 'MIGRATION_POSTFLIGHT_PASS'
+    else 'MIGRATION_POSTFLIGHT_FAIL' end as result,
+    coalesce(jsonb_agg(jsonb_build_object('check',check_name,'detail',detail)
+      order by check_name) filter(where not coalesce(passed,false)),'[]'::jsonb) as failures
+  from checks
 )
-select case when bool_and(coalesce(passed,false)) then 'MIGRATION_POSTFLIGHT_PASS'
-  else 'MIGRATION_POSTFLIGHT_FAIL' end as result,
-  coalesce(jsonb_agg(jsonb_build_object('check',check_name,'detail',detail)
-    order by check_name) filter(where not coalesce(passed,false)),'[]'::jsonb) as failures
-from checks;
+select result,failures,
+  case when result='MIGRATION_POSTFLIGHT_PASS'
+    then 'Observe for 30 minutes with all flags off.'
+    else 'STOP: preserve the schema and evidence; use a reviewed forward fix or restore the verified complete backup.'
+  end as required_action
+from verdict;

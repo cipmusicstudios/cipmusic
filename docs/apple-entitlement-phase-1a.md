@@ -3,21 +3,19 @@
 Local implementation only. The migration is a review draft and must not be applied as part of phase 1A.
 
 Production migration preparation, backup options, preflight/postflight SQL, and
-the fail-closed down migration are documented in
+the post-commit rollback policy are documented in
 `docs/apple-entitlement-production-readiness.md`. That runbook does not authorize
 Production execution or feature enablement.
 
-The readiness package now uses one frozen PostgreSQL 17 catalog manifest across
-postflight, rollback preflight, and the down guard. The rollback locks every
-Phase 1A table plus `user_membership` before checking state. The preflight is
-diagnostic only; temp rows, session GUCs and operator attestations were removed
-as authorization inputs because the down role can forge them. The down guard
-independently requires pristine controls, empty data/heap state, exact manifest,
-original migration-XID continuity, untouched write counters/reset epoch and
-migration history. `ROLLBACK_REQUIRES_MANUAL_REVIEW` can never authorize DROP.
-Manual review may only preserve the schema, select a forward fix, or restore a
-verified backup. Run the approved batch in one psql/backend/transaction; SQL
-Editor split runs and transaction poolers are prohibited.
+Phase 1A supports no post-commit destructive SQL down migration. Before COMMIT,
+an error, timeout, or explicit operator ROLLBACK reverts the frozen up migration's
+single transaction. After COMMIT, keep every flag off and preserve the schema;
+use a reviewed forward fix or restore the verified complete backup. The retained
+down SQL and historical batch paths are permanent fail-closed tripwires that
+always raise `PHASE_1A_POST_COMMIT_DOWN_UNSUPPORTED`. No current database state,
+temporary object, session GUC, token, attestation, or manual approval can unlock
+them. The rollback preflight is now an incident diagnostic only and always emits
+`post_commit_down_supported=false` and `destructive_down_allowed=false`.
 
 ## Safety boundaries
 
@@ -125,15 +123,18 @@ npm run typecheck:apple
 npm run test:apple
 npm run test:apple:postgres
 npm run test:apple:readiness:pg17
-npm run test:apple:manifest:pg17-runtime
+npm run test:apple:manifest:pg17-minor
+POSTGRES_17_10_BIN=/opt/homebrew/opt/postgresql@17/bin \
+  npm run test:apple:manifest:pg17-runtime
 npm run build:apple
 ```
 
-The integration suite requires PostgreSQL 15+; readiness requires PostgreSQL 17,
-and runtime compatibility requires exact 17.6 and 17.10 binary directories.
+The integration suite requires PostgreSQL 15+; readiness requires PostgreSQL 17.
+The runtime gate downloads and checksum-verifies the official 17.6 archive,
+builds an isolated 17.6 server, and compares it with an exact 17.10 binary tree.
 Every harness creates temporary clusters that listen only on Unix sockets. See
 `tests/apple/postgres/README.md` for binary discovery, explicit CI skip behavior,
-cleanup, and retained failure logs.
+cleanup, and the explicit debug-only evidence-retention switch.
 
 The PKI test creates a temporary EC test chain with the Apple certificate OIDs
 required by the official library and validates a real x5c/ES256 signature path.

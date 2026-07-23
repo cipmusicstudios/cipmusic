@@ -52,21 +52,44 @@ data_dir="$work_dir/data"
 socket_dir="$work_dir/socket"
 log_dir="$work_dir/logs"
 mkdir -p "$socket_dir" "$log_dir"
-success=0
 server_started=0
+cleanup_complete=0
 
-cleanup() {
+delete_work_dir() {
+  find "$work_dir" -depth -mindepth 1 -delete
+  rmdir "$work_dir"
+  [[ ! -e "$work_dir" ]]
+}
+
+stop_server() {
+  if ((server_started)); then
+    if "$PG_PG_CTL" -D "$data_dir" -m fast stop >"$log_dir/cleanup-stop.log" 2>&1; then
+      server_started=0
+    else
+      return 1
+    fi
+  fi
+}
+
+cleanup_on_exit() {
   local rc=$?
-  if ((server_started)); then "$PG_PG_CTL" -D "$data_dir" -m fast stop >/dev/null 2>&1 || true; fi
-  if ((success)); then
-    find "$work_dir" -type f -delete 2>/dev/null || true
-    find "$work_dir" -depth -type d -empty -delete 2>/dev/null || true
-  else
-    echo "Apple PostgreSQL integration test failed; sanitized logs retained at: $log_dir" >&2
+  trap - EXIT INT TERM
+  if ((cleanup_complete)); then exit "$rc"; fi
+  local stopped=1
+  if ! stop_server; then rc=1; stopped=0; fi
+  if ((stopped==0)); then
+    echo "ERROR: temporary PostgreSQL server did not stop; retained $work_dir" >&2
+    exit "$rc"
+  fi
+  if [[ "${APPLE_PG_TEST_DEBUG_RETAIN:-0}" == 1 && "$rc" -ne 0 ]]; then
+    echo "DEBUG: retained synthetic PostgreSQL evidence at $work_dir" >&2
+  elif ! delete_work_dir; then
+    echo "ERROR: Apple PostgreSQL integration cleanup failed: $work_dir" >&2
+    rc=1
   fi
   exit "$rc"
 }
-trap cleanup EXIT INT TERM
+trap cleanup_on_exit EXIT INT TERM
 
 "$PG_INITDB" -D "$data_dir" --auth-local=trust --auth-host=reject --no-locale --encoding=UTF8 >"$log_dir/initdb.log" 2>&1
 {
@@ -121,5 +144,9 @@ status_fingerprint="$(cd "$repo_root" && node --import tsx --input-type=module -
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -v expected_status_fingerprint="$status_fingerprint" -f "$test_root/assertions.sql" >"$log_dir/assertions.log" 2>&1
 PSQL="$PG_PSQL" APPLE_PG_URL="$db_url" APPLE_PG_LOG_DIR="$log_dir" bash "$test_root/concurrency.sh" >"$log_dir/concurrency.log" 2>&1
 
-success=1
+stop_server
+delete_work_dir
+cleanup_complete=1
+trap - EXIT INT TERM
 echo "Apple PostgreSQL integration checks passed on PostgreSQL $pg_major (isolated Unix socket)."
+echo 'Apple PostgreSQL integration temporary process, data, socket, and logs removed.'

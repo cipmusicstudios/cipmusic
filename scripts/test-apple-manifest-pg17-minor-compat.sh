@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# PostgreSQL's official REL_17_6 and REL_17_10 tags are immutable review inputs.
-# All pg_get_expr/constraint/index/trigger deparsers used by the manifest live in
-# ruleutils.c. Function bodies are read structurally from pg_proc.prosrc instead
-# of pg_get_functiondef formatting.
+# Supplemental source review only. The live-server runtime harness is the
+# compatibility gate.
 source_root="$(mktemp -d /tmp/cipmusic-pg17-minor.XXXXXX)"
-cleanup() {
-  find "$source_root" -type f -delete 2>/dev/null || true
-  find "$source_root" -depth -type d -empty -delete 2>/dev/null || true
+cleanup_complete=0
+
+delete_source_root() {
+  find "$source_root" -depth -mindepth 1 -delete
+  rmdir "$source_root"
+  [[ ! -e "$source_root" ]]
 }
-trap cleanup EXIT INT TERM
+
+cleanup_on_exit() {
+  local rc=$?
+  trap - EXIT INT TERM
+  if ((cleanup_complete)); then exit "$rc"; fi
+  if [[ "${PG17_MINOR_DEBUG_RETAIN:-0}" == 1 && "$rc" -ne 0 ]]; then
+    echo "DEBUG: retained supplemental source evidence at $source_root" >&2
+  elif ! delete_source_root; then
+    echo "ERROR: supplemental source cleanup failed: $source_root" >&2
+    rc=1
+  fi
+  exit "$rc"
+}
+trap cleanup_on_exit EXIT INT TERM
 
 for tag in REL_17_6 REL_17_10; do
   curl --fail --silent --show-error --location \
@@ -32,13 +46,20 @@ cmp -s "$source_root/ruleutils-REL_17_6.c" "$source_root/ruleutils-REL_17_10.c"
 [[ "$(hash_file "$source_root/format_type-REL_17_6.c")" == "$expected_format_176" ]]
 [[ "$(hash_file "$source_root/format_type-REL_17_10.c")" == "$expected_format_1710" ]]
 
-# The sole format_type.c change is input validation inside oidvectortypes(), not
-# format_type_extended(), which supplies manifest column/function type names.
 format_diff="$source_root/format-type.diff"
-diff -u "$source_root/format_type-REL_17_6.c" "$source_root/format_type-REL_17_10.c" >"$format_diff" || true
+set +e
+diff -u "$source_root/format_type-REL_17_6.c" "$source_root/format_type-REL_17_10.c" >"$format_diff"
+diff_rc=$?
+set -e
+[[ "$diff_rc" == 1 ]]
 grep -q 'check_valid_oidvector(oidArray)' "$format_diff"
 [[ "$(grep -c '^@@' "$format_diff")" == 1 ]]
 grep -q 'oidvectortypes' "$source_root/format_type-REL_17_6.c"
 
+delete_source_root
+cleanup_complete=1
+trap - EXIT INT TERM
+
 echo 'PASS: PostgreSQL REL_17_6/REL_17_10 ruleutils deparser source is identical'
 echo 'PASS: the only format_type source delta is unrelated oidvector input validation'
+echo 'PASS: supplemental source temporary directory removed'

@@ -25,31 +25,31 @@ RLS enablement, grants/revokes, and a singleton runtime-control row whose five
 controls are disabled/off. It contains no statement that reads or writes
 `public.user_membership`, Stripe, Google Play, or ZPay objects.
 
-## Approved down migration
+## Post-commit rollback policy and fail-closed placeholder
 
 - Path: `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql`
-- SHA-256: `00b610ff1308ab3c76a51ef870c76387f2c82bbfdb3b68a80b7437da484f4298`
+- SHA-256: `3dc93a919616ef6f3f237c64d87bf84e7a0844f7bb6ba886d7e46cad6903e7ad`
 
-The down migration is a fail-closed recovery tool, not an automatic rollback.
-It first takes `ACCESS EXCLUSIVE` locks on all eight Phase 1A tables and
-`public.user_membership`, then performs every safety read and DROP under those
-locks. A five-second lock timeout aborts the entire transaction on contention.
-The rollback preflight is diagnostic only. The down file ignores every temp row,
-UUID, PID, transaction ID, token, GUC, and operator assertion. Under lock it
-independently recomputes the exact manifest, empty tables and physical heaps,
-pristine controls, original migration transaction identity (`pg_class.xmin`,
-table `relfrozenxid`, and control-row `xmin`), table-write statistics/reset
-epoch, migration history, and Apple-looking membership data. Anything other
-than database-proven `ROLLBACK_SAFE` aborts; it uses no `CASCADE`.
+Phase 1A supports no destructive SQL down after the up transaction commits.
+Catalog/row XIDs, frozen XIDs, statistics, reset timestamps, empty tables,
+current controls, operator attestations, and restore-generated object state are
+all reconstructable and cannot prove historical non-use. The retained down file
+is only a permanent fail-closed tripwire: it immediately raises
+`PHASE_1A_POST_COMMIT_DOWN_UNSUPPORTED` and performs no lock, DROP, DML, or
+migration-history change. The historical batch path only invokes this tripwire.
+Before COMMIT, PostgreSQL transaction rollback is the sole rollback mechanism.
+After COMMIT, preserve the schema and use a reviewed forward fix or restore the
+verified complete backup.
 
 The canonical manifest implementation is
 `supabase/verification/20260722010000_apple_entitlement_manifest.sql` (file
-SHA-256 `96dd13dceb1bac56e9562153310c25896b0528592ac171d6e3ad596b12d8462c`).
+SHA-256 `d928c9b93feaf93cc21b8dfc6456a7329744609f5270036c0d776fd24845d579`).
 Generate it only on PostgreSQL 17 after applying the frozen up migration, with
 the migration owner as `current_user`, by loading that file and selecting
 `pg_temp.phase1a_manifest_sha256()`. The reviewed manifest SHA-256 is
-`6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1`.
-It stable-sorts and records enum labels/order; complete column properties;
+`a645fa4cef579279f4ebc8baec380e3a413792b0da2c92c889921c1da7fb27bb`.
+It stable-sorts and records enum labels/order, enum owner and every-role type
+ACL; complete column properties and every column-level ACL;
 constraint and index deparses; function definition/body, owner, execution
 properties, search path and every-role ACL; trigger definitions/enabled state;
 table owner, persistence, replica identity/index, RLS/force-RLS/options/every-role
@@ -63,8 +63,12 @@ official deparsers are implemented by `ruleutils.c`; PostgreSQL's immutable
 Their sole `format_type.c` delta is unrelated `oidvectortypes()` input
 validation. That source review is supplemental. The compatibility gate is the
 real two-server runtime comparison in
-`npm run test:apple:manifest:pg17-runtime`, which requires exact 17.6 and 17.10
-binaries and compares both complete JSON and the frozen SHA.
+`npm run test:apple:manifest:pg17-runtime`. It downloads the official 17.6
+archive, requires SHA-256
+`e0630a3600aea27511715563259ec2111cd5f4353a4b040e0be827f94cd7a8b0`,
+records the configure/build inputs, builds a fresh server, queries both live
+servers for `version()`, `server_version`, and `server_version_num`, and compares
+both complete JSON documents and the frozen SHA.
 
 ## Complete object manifest and dependency order
 
@@ -184,11 +188,11 @@ service RPCs are granted to `service_role`. All six functions pin
   `supabase/verification/20260722010000_apple_entitlement_production_preflight.sql`
 - Postflight:
   `supabase/verification/20260722010000_apple_entitlement_postflight.sql`
-- Rollback preflight:
+- Post-commit incident diagnostic (never authorizes down):
   `supabase/verification/20260722010000_apple_entitlement_rollback_preflight.sql`
-- Down migration:
+- Permanent down-refusal placeholder:
   `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql`
-- Approved atomic rollback batch:
+- Historical batch compatibility tripwire:
   `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_approved_batch.sql`
 - PG17 lifecycle harness: `scripts/test-apple-production-readiness-pg17.sh`
 - Real PG17.6/17.10 manifest harness:
@@ -292,7 +296,8 @@ maintenance window.
 ### A. Schema installation only
 
 Required: frozen up SHA/blob; verified recoverable backup; completed restore
-rehearsal; PG17 readiness suite PASS; approved preflight/postflight/down files;
+rehearsal; PG17 readiness suite PASS; approved preflight/postflight and permanent
+down-refusal artifacts;
 low-traffic maintenance window; named executor and reviewer; all flags off.
 
 Execution sequence:
@@ -307,8 +312,8 @@ Execution sequence:
 5. Apply the frozen up migration once through the approved Supabase migration
    mechanism. Do not split the transaction or manually forge history.
 6. Run postflight with the preserved baseline values.
-7. Require `MIGRATION_POSTFLIGHT_PASS`; otherwise freeze rollout and follow the
-   rollback decision tree.
+7. Require `MIGRATION_POSTFLIGHT_PASS`; otherwise freeze rollout, keep flags off,
+   and select a reviewed forward fix or complete backup restore.
 8. Observe database/Netlify errors, locks, latency, and existing payment/auth
    paths for at least 30 minutes. Keep every Apple flag off.
 
@@ -328,56 +333,36 @@ explicit membership-writeback approval; notification inbox/replay/projection
 validation; monitoring and incident rollback. Do not enable writeback or
 Notification V2 merely because schema installation passed.
 
-## Rollback runbook
+## Rollback and incident runbook
 
-Before commit, any migration error or timeout must roll back the up transaction;
-verify that all Phase 1A objects and history remain absent.
+### Up migration has not committed
 
-After commit:
+1. Any SQL error, lock/statement timeout, or explicit operator ROLLBACK must
+   abort the frozen up migration's current transaction.
+2. Verify all eight tables, six enum types, six functions, and migration-history
+   record remain absent. Do not run down SQL.
+3. Preserve the error evidence, stop rollout, correct the cause, and rerun the
+   entire frozen up only after review. Never continue a partial script.
 
-1. Freeze all later rollout actions and confirm flags remain off.
-2. Run rollback preflight. `ROLLBACK_UNSAFE` means preserve evidence and use a
-   restore or reviewed forward fix. `ROLLBACK_REQUIRES_MANUAL_REVIEW` means stop.
-3. Manual review is not an override for the destructive down migration. It can
-   select a forward fix, preserve the schema, or restore a verified backup only.
-4. Execute only the approved batch, through one `psql` process and one backend:
+### Up migration has committed
 
-   ```bash
-   PGPASSFILE=/secure/path/production.pgpass \
-   /opt/homebrew/opt/postgresql@17/bin/psql \
-     "host=... port=... dbname=... user=... sslmode=require" \
-     -v ON_ERROR_STOP=1 \
-     -f supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_approved_batch.sql
-   ```
+1. Freeze rollout and keep every Apple flag disabled.
+2. Preserve all Phase 1A schema, data, controls, and migration history.
+3. The diagnostic may return `NO_POST_COMMIT_DOWN_SUPPORTED`,
+   `FORWARD_FIX_REQUIRED`, or `BACKUP_RESTORE_RECOMMENDED`; every result includes
+   `post_commit_down_supported=false` and `destructive_down_allowed=false`.
+4. Apply a separately reviewed forward fix. If the whole database must return to
+   its pre-migration checkpoint, restore the verified complete backup with named
+   incident-owner approval and explicit acceptance that later transactions will
+   be overwritten.
+5. Never DROP Phase 1A tables/types/functions, never delete migration history,
+   and never use manual review, a token, GUC, current state, or an attestation to
+   authorize SQL down.
 
-   Use a PostgreSQL Direct connection, or a session pooler only after proving
-   single-session continuity. Do not use the Transaction pooler. Do not run
-   preflight and down in separate `psql` processes, sessions, SQL files, or
-   Supabase SQL Editor clicks. Do not use GUI auto-commit. Never assume two SQL
-   Editor executions reuse one backend; if the editor cannot guarantee one
-   batch/backend/explicit transaction, it is prohibited for down execution.
-5. Verify all Phase 1A objects are absent and legacy membership/payment objects
-   are unchanged.
-6. Only after schema verification succeeds, run the supported command:
-
-   ```bash
-   supabase migration repair 20260722010000 --status reverted
-   ```
-
-   This repairs history only; it does not execute the down SQL. Re-run migration
-   list/status verification afterwards.
-
-The current Phase 1A schema has no immutable flag-change audit table. The
-rollback report outputs controls `updated_at`/`updated_by`, database
-`stats_reset`, `n_tup_upd`, current flags and business/data evidence. PostgreSQL
-statistics and mutable fields alone are not an audit log. SAFE additionally
-requires the original migration XID to agree across all eight table catalog
-tuples, every table `relfrozenxid`, and the untouched control row, plus exact
-initial write counters and an unambiguous reset epoch. Missing or contradictory
-evidence is manual review, never SAFE. Manual review is not an override for the
-destructive down migration. After any enablement, simple DROP rollback is
-permanently disallowed; preserve the schema, use a reviewed forward fix, or
-restore a verified backup.
+`supabase migration repair ... --status reverted` is not a normal rollback step.
+It may be considered only after a complete database restore or as a separately
+approved migration-history repair when the physical schema state has already
+been independently established. It must never accompany a Phase 1A DROP path.
 
 Official references:
 

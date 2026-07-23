@@ -8,16 +8,18 @@ The independent logical backup and PostgreSQL 17 restore rehearsal completed
 without a Production write. This satisfies the Phase 1A schema migration backup
 gate, but it is not approval to run the migration.
 
-Related frozen readiness artifacts, neither executed against Production during
-this rehearsal:
+Related readiness artifacts, none executed against Production during this
+rehearsal:
 
 - up migration SHA-256:
   `5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4`;
-- historical down migration SHA-256 at rehearsal time (not current):
-  `49f278e3360ccc825a54894d631a6ff9ac029a776b9dd668a8c417006987e566`;
-- current approved down migration SHA-256 after the third-review fail-closed
-  guard revision (not executed in this historical rehearsal):
-  `00b610ff1308ab3c76a51ef870c76387f2c82bbfdb3b68a80b7437da484f4298`.
+- current permanent post-commit down-refusal placeholder SHA-256:
+  `3dc93a919616ef6f3f237c64d87bf84e7a0844f7bb6ba886d7e46cad6903e7ad`.
+
+Phase 1A no longer supports destructive SQL down after COMMIT. This backup is
+the complete-database recovery path when a reviewed forward fix is insufficient;
+restoration requires incident-owner approval and overwrites changes after the
+backup checkpoint.
 
 ## Connection and safety
 
@@ -174,5 +176,6 @@ this report is the only new repository artifact from the rehearsal.
 Backup admission for Phase 1A is PASS. Migration still requires explicit user
 approval of a maintenance window, confirmation that flags remain off immediately
 before execution, a fresh preflight at that checkpoint, operator readiness for
-postflight and rollback preflight/down procedure, and acceptance that this is a
-point-in-time logical snapshot rather than PITR. No migration was run.
+postflight and forward-fix/complete-restore incident procedures, and acceptance
+that this is a point-in-time logical snapshot rather than PITR. No migration was
+run.

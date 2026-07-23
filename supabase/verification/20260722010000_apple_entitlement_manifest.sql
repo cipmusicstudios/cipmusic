@@ -26,11 +26,22 @@ with target_tables(name) as (
 ), enums as (
   select coalesce(jsonb_agg(jsonb_build_object(
     'name', tt.name,
+    'owner', case when t.typowner=(select oid from pg_roles where rolname=current_user)
+      then '@migration_owner' else pg_get_userbyid(t.typowner) end,
+    'acl', coalesce((select jsonb_agg(jsonb_build_object(
+      'grantee', case when x.grantee=0 then 'PUBLIC' when x.grantee=t.typowner then '@migration_owner' else pg_get_userbyid(x.grantee) end,
+      'grantor', case when x.grantor=t.typowner then '@migration_owner' else pg_get_userbyid(x.grantor) end,
+      'privilege',x.privilege_type,'grantable',x.is_grantable)
+      order by case when x.grantee=0 then 'PUBLIC' when x.grantee=t.typowner then '@migration_owner' else pg_get_userbyid(x.grantee) end,
+        case when x.grantor=t.typowner then '@migration_owner' else pg_get_userbyid(x.grantor) end,
+        x.privilege_type,x.is_grantable)
+      from aclexplode(coalesce(t.typacl,acldefault('T',t.typowner))) x),'[]'::jsonb),
     'labels', coalesce((select jsonb_agg(e.enumlabel order by e.enumsortorder)
-      from pg_type t join pg_namespace n on n.oid=t.typnamespace
-      join pg_enum e on e.enumtypid=t.oid
-      where n.nspname='public' and t.typname=tt.name), '[]'::jsonb)
-  ) order by tt.name), '[]'::jsonb) value from target_types tt
+      from pg_enum e where e.enumtypid=t.oid), '[]'::jsonb)
+  ) order by tt.name), '[]'::jsonb) value
+  from target_types tt
+  left join pg_type t on t.typname=tt.name
+    and t.typnamespace='public'::regnamespace
 ), tables as (
   select coalesce(jsonb_agg(jsonb_build_object(
     'schema','public','name', tt.name, 'kind', c.relkind, 'persistence', c.relpersistence,
@@ -59,10 +70,19 @@ with target_tables(name) as (
     'collation',case when a.attcollation=0 then null else a.attcollation::regcollation::text end,
     'default',pg_get_expr(d.adbin,d.adrelid,true),'identity',a.attidentity,
     'generated',a.attgenerated,'storage',a.attstorage,'compression',a.attcompression,
-    'statistics',a.attstattarget
+    'statistics',a.attstattarget,
+    'acl',coalesce((select jsonb_agg(jsonb_build_object(
+      'grantee',case when x.grantee=0 then 'PUBLIC' when x.grantee=tc.relowner then '@migration_owner' else pg_get_userbyid(x.grantee) end,
+      'grantor',case when x.grantor=tc.relowner then '@migration_owner' else pg_get_userbyid(x.grantor) end,
+      'privilege',x.privilege_type,'grantable',x.is_grantable)
+      order by case when x.grantee=0 then 'PUBLIC' when x.grantee=tc.relowner then '@migration_owner' else pg_get_userbyid(x.grantee) end,
+        case when x.grantor=tc.relowner then '@migration_owner' else pg_get_userbyid(x.grantor) end,
+        x.privilege_type,x.is_grantable)
+      from aclexplode(a.attacl) x),'[]'::jsonb)
   ) order by tt.name,a.attnum), '[]'::jsonb) value
   from target_tables tt join pg_attribute a on a.attrelid=to_regclass('public.'||tt.name)
     and a.attnum>0 and not a.attisdropped
+  join pg_class tc on tc.oid=a.attrelid
   left join pg_attrdef d on d.adrelid=a.attrelid and d.adnum=a.attnum
 ), constraints as (
   select coalesce(jsonb_agg(jsonb_build_object(

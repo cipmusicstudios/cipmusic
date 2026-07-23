@@ -171,5 +171,9 @@ select v.result, v.no_go_reasons,
     'payment_object_inventory',s.payment_object_inventory,
     'payment_function_fingerprint',s.payment_function_fingerprint,
     'payment_function_inventory',s.payment_function_inventory
-  ) as baseline
+  ) as baseline,
+  case when v.result='MIGRATION_PREFLIGHT_GO'
+    then 'Proceed only after named approval and maintenance-window confirmation; keep all flags off.'
+    else 'STOP: do not run the migration. Resolve the NO_GO reasons and repeat a fresh preflight.'
+  end as required_action
 from verdict v cross join state s;
