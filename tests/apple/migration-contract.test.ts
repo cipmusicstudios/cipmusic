@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
 const sql = readFileSync('supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql', 'utf8');
+const aggregateSql = readFileSync('supabase/migrations/20260723090000_apple_membership_aggregate_read.sql', 'utf8');
+const readMembership = readFileSync('netlify/functions/read-membership.ts', 'utf8');
 
 test('migration contains required ledgers and no user_membership write', () => {
   assert.match(sql, /^--[\s\S]*\nbegin;/i);
@@ -64,4 +66,32 @@ test('binding, replay, ordering, sandbox and deletion invariants are explicit', 
 test('feature defaults are fail closed', () => {
   assert.match(sql, /values \(true, false, false, false, 'off', false\)/);
   assert.equal((sql.match(/APPLE_LEDGER_WRITE_DISABLED/g) ?? []).length, 2);
+});
+
+test('membership aggregate exposes only safe current summary to service role', () => {
+  assert.match(aggregateSql, /create function public\.billing_get_current_entitlement_summary\(p_user_id uuid\)/i);
+  assert.match(aggregateSql, /^begin;/im);
+  assert.match(aggregateSql, /commit;\s*$/im);
+  assert.match(aggregateSql, /returns table \(environment public\.app_store_environment, currently_grants_premium boolean, valid_until timestamptz\)/i);
+  assert.match(aggregateSql, /security definer stable set search_path = pg_catalog, public/i);
+  assert.match(aggregateSql, /source_environment = 'production'/i);
+  assert.match(aggregateSql, /valid_until > statement_timestamp\(\)/i);
+  assert.match(aggregateSql, /revoke all on function public\.billing_get_current_entitlement_summary\(uuid\) from public, anon, authenticated/i);
+  assert.match(aggregateSql, /grant execute on function public\.billing_get_current_entitlement_summary\(uuid\) to service_role/i);
+  assert.doesNotMatch(aggregateSql, /user_membership/i);
+  assert.doesNotMatch(aggregateSql, /transaction_id|signed_transaction|jws/i);
+});
+
+test('aggregate follow-up is a separately frozen, ordered rollout set', () => {
+  const rollout = readFileSync('docs/apple-membership-aggregate-read-rollout.md', 'utf8');
+  assert.match(rollout, /Phase 1A remains frozen and unchanged/);
+  assert.match(rollout, /20260722010000[\s\S]*20260723090000/);
+  assert.match(rollout, /50a195a0b61a616f07e3cc32d6f7a7ba7d0e521ec2dad55713e0abe0865d580d/);
+  assert.match(rollout, /forward fix or the verified complete-backup restore/i);
+});
+
+test('read-membership returns only UI membership fields, never Apple evidence', () => {
+  assert.match(readMembership, /select\('premium_until, membership_status, auto_renew, current_period_end'\)/);
+  assert.match(readMembership, /billing_get_current_entitlement_summary/);
+  assert.doesNotMatch(readMembership, /transaction_id|original_transaction|signed_transaction|jws|receipt/i);
 });

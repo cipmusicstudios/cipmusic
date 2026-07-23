@@ -3,7 +3,30 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 migration="$repo_root/supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql"
+aggregate_migration="$repo_root/supabase/migrations/20260723090000_apple_membership_aggregate_read.sql"
 test_root="$repo_root/tests/apple/postgres"
+
+verification_output_matches() {
+  local output="$1"
+  local expected="$2"
+  local -a lines=()
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && lines+=("$line")
+  done <<<"$output"
+  [[ "${#lines[@]}" -eq 1 ]] || return 1
+  [[ "${lines[0]%%$'\t'*}" == "$expected" ]]
+}
+
+require_verification_marker() {
+  local label="$1"
+  local output="$2"
+  local expected="$3"
+  if ! verification_output_matches "$output" "$expected"; then
+    echo "$label returned an unsafe result; expected exactly $expected" >&2
+    printf '%s\n' "$output" >&2
+    return 1
+  fi
+}
 
 find_pg_binary() {
   local name="$1"
@@ -109,6 +132,111 @@ db_url="postgresql:///$db_name?host=$socket_dir&port=55439"
 
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/bootstrap.log" 2>&1
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/migration-apply.log" 2>&1
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-incremental-apply.log" 2>&1
+
+# The aggregate migration is an ordered Phase 1A follow-up. Verify its actual
+# signature, definer hardening, grants, and production-only summary semantics.
+aggregate_checks="$(cat <<'SQL'
+do $$
+declare f oid := 'public.billing_get_current_entitlement_summary(uuid)'::regprocedure;
+begin
+  if not exists (select 1 from pg_proc where oid=f and prosecdef
+    and pg_get_userbyid(proowner)=current_user
+    and coalesce(array_to_string(proconfig, ','),'') like '%search_path=pg_catalog, public%') then
+    raise exception 'aggregate function hardening failed';
+  end if;
+  if has_function_privilege('anon', f, 'EXECUTE')
+    or has_function_privilege('authenticated', f, 'EXECUTE')
+    or exists (select 1 from aclexplode(coalesce((select proacl from pg_proc where oid=f),acldefault('f',(select proowner from pg_proc where oid=f)))) a where a.grantee=0 and a.privilege_type='EXECUTE')
+    or not has_function_privilege('service_role', f, 'EXECUTE') then
+    raise exception 'aggregate function grant failed';
+  end if;
+end $$;
+insert into auth.users(id) values ('90000000-0000-4000-8000-000000000001') on conflict do nothing;
+insert into public.billing_entitlements_v2(user_id,source,source_environment,external_entitlement_id,plan,product_id,status,validity,valid_until,source_grants_premium,current_state_quality,source_version_at,source_observed_at)
+values ('90000000-0000-4000-8000-000000000001','apple','production','aggregate-production','premium','com.cipmusic.aurasounds.premium.monthly.v2','active','bounded',statement_timestamp()+interval '30 days',true,'verified',statement_timestamp(),statement_timestamp()),
+('90000000-0000-4000-8000-000000000001','apple','sandbox','aggregate-sandbox','premium','com.cipmusic.aurasounds.premium.monthly.v2','active','bounded',statement_timestamp()+interval '30 days',false,'verified',statement_timestamp(),statement_timestamp());
+do $$
+begin
+  if (select count(*) from public.billing_get_current_entitlement_summary('90000000-0000-4000-8000-000000000001')) <> 2 then raise exception 'aggregate summary rows missing'; end if;
+  if not (select currently_grants_premium from public.billing_get_current_entitlement_summary('90000000-0000-4000-8000-000000000001') where environment='production') then raise exception 'production grant missing'; end if;
+  if (select currently_grants_premium from public.billing_get_current_entitlement_summary('90000000-0000-4000-8000-000000000001') where environment='sandbox') then raise exception 'sandbox granted premium'; end if;
+end $$;
+SQL
+)"
+printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-incremental-assertions.log" 2>&1
+
+# Fresh install is separately exercised so migration ordering cannot be hidden
+# by state from the incremental database above.
+fresh_db=apple_phase1a_aggregate_fresh
+"$PG_CREATEDB" "$fresh_db"
+fresh_url="postgresql:///$fresh_db?host=$socket_dir&port=55439"
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/aggregate-fresh-bootstrap.log" 2>&1
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/aggregate-fresh-phase1a.log" 2>&1
+aggregate_preflight_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql")"
+printf '%s\n' "$aggregate_preflight_output" >"$log_dir/aggregate-preflight.log"
+require_verification_marker "Aggregate preflight" "$aggregate_preflight_output" "AGGREGATE_READ_PREFLIGHT_GO"
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-fresh-follow-up.log" 2>&1
+printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-fresh-assertions.log" 2>&1
+aggregate_postflight_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql")"
+printf '%s\n' "$aggregate_postflight_output" >"$log_dir/aggregate-postflight.log"
+require_verification_marker "Aggregate postflight" "$aggregate_postflight_output" "AGGREGATE_READ_POSTFLIGHT_PASS"
+
+# Verification SQL returns exit 0 for a semantic NO_GO/FAIL row. The harness
+# must still fail closed for those rows, empty output, and ACL drift.
+aggregate_no_go_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql")"
+if verification_output_matches "$aggregate_no_go_output" "AGGREGATE_READ_PREFLIGHT_GO"; then
+  echo "Aggregate preflight NO_GO was accepted" >&2
+  exit 1
+fi
+if verification_output_matches $'AGGREGATE_READ_POSTFLIGHT_FAIL\t[]' "AGGREGATE_READ_POSTFLIGHT_PASS" \
+  || verification_output_matches "" "AGGREGATE_READ_POSTFLIGHT_PASS" \
+  || verification_output_matches $'AGGREGATE_READ_POSTFLIGHT_PASS\t[]\nAGGREGATE_READ_POSTFLIGHT_FAIL\t[]' "AGGREGATE_READ_POSTFLIGHT_PASS"; then
+  echo "Aggregate verification marker parser accepted an unsafe result" >&2
+  exit 1
+fi
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -c \
+  "grant execute on function public.billing_get_current_entitlement_summary(uuid) to public" >"$log_dir/aggregate-public-grant.log" 2>&1
+aggregate_acl_fail_output="$("$PG_PSQL" "$fresh_url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+  -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql")"
+if verification_output_matches "$aggregate_acl_fail_output" "AGGREGATE_READ_POSTFLIGHT_PASS"; then
+  echo "Aggregate postflight accepted PUBLIC execute drift" >&2
+  exit 1
+fi
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -c \
+  "revoke execute on function public.billing_get_current_entitlement_summary(uuid) from public" >"$log_dir/aggregate-public-revoke.log" 2>&1
+
+# Re-applying the follow-up stops without changing the installed function.
+aggregate_before="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"
+set +e
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-duplicate.log" 2>&1
+aggregate_duplicate_rc=$?
+set -e
+aggregate_after="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"
+if [[ "$aggregate_duplicate_rc" -eq 0 || "$aggregate_before" != "$aggregate_after" ]]; then
+  echo "Aggregate follow-up duplicate behavior failed" >&2
+  exit 1
+fi
+
+# An injected failure before COMMIT leaves no SECURITY DEFINER function or ACL.
+aggregate_rollback_db=apple_aggregate_rollback
+"$PG_CREATEDB" "$aggregate_rollback_db"
+aggregate_rollback_url="postgresql:///$aggregate_rollback_db?host=$socket_dir&port=55439"
+"$PG_PSQL" "$aggregate_rollback_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/aggregate-rollback-bootstrap.log" 2>&1
+"$PG_PSQL" "$aggregate_rollback_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/aggregate-rollback-phase1a.log" 2>&1
+aggregate_failure_migration="$work_dir/aggregate-injected-failure.sql"
+awk '{if ($0 == "commit;") print "select 1 / 0;"; print}' "$aggregate_migration" >"$aggregate_failure_migration"
+set +e
+"$PG_PSQL" "$aggregate_rollback_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_failure_migration" >"$log_dir/aggregate-rollback.log" 2>&1
+aggregate_rollback_rc=$?
+set -e
+if [[ "$aggregate_rollback_rc" -eq 0 || "$($PG_PSQL "$aggregate_rollback_url" -X -Atqc "select to_regprocedure('public.billing_get_current_entitlement_summary(uuid)') is null")" != t ]]; then
+  echo "Aggregate follow-up rollback-on-failure check failed" >&2
+  exit 1
+fi
 
 # Duplicate application must stop before changing the installed schema.
 before_count="$($PG_PSQL "$db_url" -X -Atqc "select count(*) from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public';")"
