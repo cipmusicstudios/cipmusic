@@ -71,7 +71,7 @@ export function createVerifyHandler(deps: VerifyDeps) {
       assertTransactionRequestMatch(summary, transactionId || undefined);
 
       if (!controls.appleLedgerWriteEnabled) {
-        return json(200, {ok: true, mode: 'verification-only', persisted: false, membershipSynced: false,
+        return json(200, {ok: true, mode: 'verification-only', persisted: false, membershipSynced: false, membershipReadable: false,
           environment: summary.environment, transactionVerified: true, currentStatusVerified: false});
       }
       const currentProvider = deps.currentStatus ?? new OfficialAppleCurrentStatusProvider(config, verifier);
@@ -92,7 +92,10 @@ export function createVerifyHandler(deps: VerifyDeps) {
         throw new AppleServiceError('CURRENT_STATE_QUARANTINED', 409);
       }
       return json(200, {ok: true, mode: 'ledger-only', persisted: true, membershipSynced: false,
+        membershipReadable: current.environment === 'production' && current.grantsPremium,
+        entitlementGrantsProductionPremium: current.environment === 'production' && current.grantsPremium,
         environment: summary.environment, status: current.normalizedStatus,
+        transactionVerified: true, currentStatusVerified: true,
         binding: result.bindingResult, duplicate: result.duplicate});
     } catch (error) {
       const known = error instanceof AppleServiceError ? error : new AppleServiceError('APPLE_VERIFICATION_FAILED', 502);

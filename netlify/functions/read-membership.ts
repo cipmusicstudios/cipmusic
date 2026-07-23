@@ -1,5 +1,6 @@
 import type {Handler, HandlerEvent, HandlerResponse} from '@netlify/functions';
 import {createSupabaseServiceClient} from './_shared/supabase-service';
+import {aggregateMembership, type AppleEntitlement} from './_shared/membership-aggregate';
 
 const TABLE = 'user_membership';
 
@@ -42,27 +43,6 @@ function json(statusCode: number, body: unknown): HandlerResponse {
  * 故意丢弃：paymentProvider / lastPaymentAt / stripeSubscriptionStatus
  * / lastPaymentStatus / paymentFailureAt 等支付内部状态字段，避免 JWT 鉴权后仍超额泄露。
  */
-function successBody(
-  userId: string,
-  row:
-    | {
-        premium_until: string | null;
-        membership_status: string | null;
-        auto_renew: boolean | null;
-        current_period_end: string | null;
-      }
-    | null,
-) {
-  return {
-    ok: true as const,
-    userId,
-    membershipStatus: row?.membership_status ?? null,
-    premiumUntil: row?.premium_until ?? null,
-    currentPeriodEnd: row?.current_period_end ?? null,
-    autoRenew: row?.auto_renew ?? null,
-  };
-}
-
 function fail(
   status: number,
   code: string,
@@ -101,6 +81,16 @@ function logLine(fields: Record<string, unknown>) {
     }
   }
   console.log('[read-membership]', JSON.stringify(safe));
+}
+
+function isAppleEntitlement(value: unknown): value is AppleEntitlement {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    (record.environment === 'production' || record.environment === 'sandbox') &&
+    typeof record.currently_grants_premium === 'boolean' &&
+    (typeof record.valid_until === 'string' || record.valid_until === null)
+  );
 }
 
 /**
@@ -204,10 +194,19 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     );
   }
 
+  // Phase 1A may deliberately be absent before its approved migration. A missing
+  // aggregate RPC must never hide an existing Stripe/ZPay/manual entitlement.
+  const appleResult = await supabase.rpc('billing_get_current_entitlement_summary', {
+    p_user_id: userId,
+  });
+  const appleRows: AppleEntitlement[] = appleResult.error
+    ? []
+    : (Array.isArray(appleResult.data) ? appleResult.data : []).filter(isAppleEntitlement);
+  const aggregate = aggregateMembership(byUserId.data, appleRows);
   logLine({
     stage: 'ok',
     ok: true,
     membershipFound: byUserId.data != null,
   });
-  return json(200, successBody(userId, byUserId.data));
+  return json(200, {ok: true, userId, ...aggregate});
 };
