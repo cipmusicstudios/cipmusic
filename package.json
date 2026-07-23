@@ -42,6 +42,7 @@
     "test:apple:postgres": "bash scripts/test-apple-postgres-integration.sh",
     "test:apple:readiness:pg17": "bash scripts/test-apple-production-readiness-pg17.sh",
     "test:apple:manifest:pg17-minor": "bash scripts/test-apple-manifest-pg17-minor-compat.sh",
+    "test:apple:manifest:pg17-runtime": "bash scripts/test-apple-manifest-pg17-runtime-compat.sh",
     "build:apple": "node scripts/build-apple-functions.mjs",
     "generate:local-imports": "node scripts/generate-local-import-seeds.mjs",
     "import:songs": "tsx scripts/import-new-songs.ts",

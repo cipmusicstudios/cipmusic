@@ -149,7 +149,7 @@ with expected_tables(name) as (
 ), checks as (
   select c.* from inventory i cross join data_state d cross join membership m
   cross join payment_objects p cross join payment_functions pf cross join lateral (values
-    ('frozen_manifest',pg_temp.phase1a_manifest_sha256()='8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e',pg_temp.phase1a_manifest_sha256()),
+    ('frozen_manifest',pg_temp.phase1a_manifest_sha256()='6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1',pg_temp.phase1a_manifest_sha256()),
     ('migration_history',i.migration_history_count=1,i.migration_history_count::text),
     ('tables',i.table_count=8,i.table_count::text),
     ('types',i.type_count=6,i.type_count::text),

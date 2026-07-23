@@ -5,11 +5,12 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 test_root="$repo_root/tests/apple/postgres"
 up="$repo_root/supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql"
 down="$repo_root/supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql"
+down_batch="$repo_root/supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_approved_batch.sql"
 preflight="$repo_root/supabase/verification/20260722010000_apple_entitlement_production_preflight.sql"
 postflight="$repo_root/supabase/verification/20260722010000_apple_entitlement_postflight.sql"
 rollback_preflight="$repo_root/supabase/verification/20260722010000_apple_entitlement_rollback_preflight.sql"
 manifest="$repo_root/supabase/verification/20260722010000_apple_entitlement_manifest.sql"
-manifest_sha="8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e"
+manifest_sha="6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1"
 up_sha="5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4"
 
 find_pg_binary() {
@@ -58,17 +59,25 @@ log_dir="$work_dir/logs"
 mkdir -p "$socket_dir" "$log_dir"
 server_started=0
 success=0
+cleanup_failed=0
 start_epoch="$(date +%s)"
 
 cleanup() {
   local rc=$?
-  if ((server_started)); then "$PG_PG_CTL" -D "$data_dir" -m fast stop >/dev/null 2>&1 || true; fi
+  if ((server_started)) && ! "$PG_PG_CTL" -D "$data_dir" -m fast stop >"$log_dir/cleanup-stop.log" 2>&1; then
+    echo "ERROR: temporary PostgreSQL server cleanup failed" >&2
+    cleanup_failed=1
+  fi
   if ((success)); then
-    find "$work_dir" -type f -delete 2>/dev/null || true
-    find "$work_dir" -depth -type d -empty -delete 2>/dev/null || true
+    if ! find "$work_dir" -type f -delete 2>/dev/null ||
+       ! find "$work_dir" -depth -type d -empty -delete 2>/dev/null; then
+      echo "ERROR: temporary directory cleanup failed: $work_dir" >&2
+      cleanup_failed=1
+    fi
   else
     echo "PG17 readiness test failed; sanitized logs retained at: $log_dir" >&2
   fi
+  if ((cleanup_failed)); then exit 1; fi
   exit "$rc"
 }
 trap cleanup EXIT INT TERM
@@ -123,46 +132,53 @@ phase1a_manifest_sha() {
   "$PG_PSQL" -d "$1" -X -f "$manifest" -Atc 'select pg_temp.phase1a_manifest_sha256()' | tail -1
 }
 
-run_attested_down() {
+run_approved_down() {
   local db="$1" output="$2"
-  "$PG_PSQL" -d "$db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-    -v external_flag_history_verified=1 -f "$rollback_preflight" \
-    -c "set local app.phase1a_never_enabled_attested='true'" \
-    -f "$down" >"$output" 2>&1
+  "$PG_PSQL" -d "$db" -X -v ON_ERROR_STOP=1 -f "$down_batch" >"$output" 2>&1
 }
 
 run_preflight() {
   local db="$1" output="$2"
-  "$PG_PSQL" "postgresql:///$db" -X -v ON_ERROR_STOP=1 \
+  "$PG_PSQL" "postgresql:///$db" -X -At -F '|' -v ON_ERROR_STOP=1 \
     -v expected_project_ref=hngtwkayovuxhiqustsa \
     -v expected_database="$db" -v expected_role="$PGUSER" \
     -v external_apple_flags_off=1 -f "$preflight" >"$output" 2>&1
   if ((smoke_only)); then
-    grep -q 'MIGRATION_PREFLIGHT_NO_GO' "$output"
-    grep -q 'postgresql_17' "$output"
+    [[ "$(tail -1 "$output" | cut -d'|' -f1)" == MIGRATION_PREFLIGHT_NO_GO ]]
+    jq -e 'map(.check)|index("postgresql_17")' <<<"$(tail -1 "$output" | cut -d'|' -f2)" >/dev/null
   else
-    grep -q 'MIGRATION_PREFLIGHT_GO' "$output"
+    [[ "$(tail -1 "$output" | cut -d'|' -f1)" == MIGRATION_PREFLIGHT_GO ]]
+    [[ "$(tail -1 "$output" | cut -d'|' -f2)" == '[]' ]]
   fi
 }
 
 run_preflight_nogo() {
   local db="$1" output="$2" reason="$3"
-  "$PG_PSQL" "postgresql:///$db" -X -v ON_ERROR_STOP=1 \
+  "$PG_PSQL" "postgresql:///$db" -X -At -F '|' -v ON_ERROR_STOP=1 \
     -v expected_project_ref=hngtwkayovuxhiqustsa -v expected_database="$db" \
     -v expected_role="$PGUSER" -v external_apple_flags_off=1 \
     -f "$preflight" >"$output" 2>&1
-  grep -q 'MIGRATION_PREFLIGHT_NO_GO' "$output"
-  grep -q "$reason" "$output"
+  [[ "$(tail -1 "$output" | cut -d'|' -f1)" == MIGRATION_PREFLIGHT_NO_GO ]]
+  jq -e --arg reason "$reason" 'map(.check)|index($reason)' \
+    <<<"$(tail -1 "$output" | cut -d'|' -f2)" >/dev/null
 }
 
 run_preflight_as_role_nogo() {
   local db="$1" role="$2" output="$3"
-  "$PG_PSQL" -d "$db" -X -v ON_ERROR_STOP=1 -c "set role $role" \
+  "$PG_PSQL" -d "$db" -X -At -F '|' -v ON_ERROR_STOP=1 -c "set role $role" \
     -v expected_project_ref=hngtwkayovuxhiqustsa -v expected_database="$db" \
     -v expected_role="$role" -v external_apple_flags_off=1 \
     -f "$preflight" >"$output" 2>&1
-  grep -q 'MIGRATION_PREFLIGHT_NO_GO' "$output"
-  grep -q 'migration_history_unreadable' "$output"
+  local verdict reasons
+  verdict="$(tail -1 "$output" | cut -d'|' -f1)"
+  reasons="$(tail -1 "$output" | cut -d'|' -f2)"
+  [[ "$verdict" == MIGRATION_PREFLIGHT_NO_GO ]]
+  jq -e 'map(.check)|index("migration_history_unreadable")' <<<"$reasons" >/dev/null
+  if [[ "$role" == phase1a_structure_unreadable ]]; then
+    jq -e 'map(.check)|sort == ["migration_history_structure","migration_history_unreadable","target_version_absent"]' <<<"$reasons" >/dev/null
+  else
+    jq -e 'map(.check)|sort == ["migration_history_unreadable","target_version_absent"]' <<<"$reasons" >/dev/null
+  fi
 }
 
 record_migration() {
@@ -213,10 +229,8 @@ manifest_rejection() {
   "$PG_PSQL" "postgresql:///$db" -X -v ON_ERROR_STOP=1 -c "$mutation" >"$log_dir/$label-mutate.log" 2>&1
   run_postflight_fail "$db" "$log_dir/$label-postflight.log"
   set +e
-  "$PG_PSQL" -d "$db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-    -v external_flag_history_verified=1 -f "$rollback_preflight" \
-    -c "update pg_temp.phase1a_rollback_preflight_attestation set rollback_result='ROLLBACK_SAFE'; set local app.phase1a_never_enabled_attested='true'" \
-    -f "$down" >"$log_dir/$label-down.log" 2>&1
+  "$PG_PSQL" -d "$db" -X -v ON_ERROR_STOP=1 -f "$down_batch" \
+    >"$log_dir/$label-down.log" 2>&1
   local rc=$?
   set -e
   [[ "$rc" -ne 0 ]]
@@ -268,6 +282,9 @@ manifest_rejection trigger "alter table public.billing_runtime_controls disable 
 manifest_rejection acl "grant select on public.billing_runtime_controls to anon"
 manifest_rejection force_rls "alter table public.billing_runtime_controls force row level security"
 manifest_rejection policy "create policy synthetic_policy on public.billing_runtime_controls for select to anon using (true)"
+manifest_rejection custom_table_acl "create role phase1a_custom_table nologin; grant select on public.billing_runtime_controls to phase1a_custom_table"
+manifest_rejection custom_function_acl "create role phase1a_custom_function nologin; grant execute on function public.billing_get_runtime_controls() to phase1a_custom_function"
+manifest_rejection replica_identity "alter table public.billing_runtime_controls replica identity full"
 
 # The approved schema intentionally has zero policies and zero anon table ACLs,
 # so also prove that swaps between two equally-sized unexpected states are
@@ -292,114 +309,15 @@ up_end="$(date +%s)"
 record_migration "$lifecycle_db"
 run_postflight "$lifecycle_db" "$log_dir/postflight-1.log"
 
-# No external immutable history proof means MANUAL_REVIEW even when current
-# values look pristine. A reset statistics epoch is also never SAFE.
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -f "$rollback_preflight" -c 'rollback' >"$log_dir/rollback-preflight-no-history-proof.log" 2>&1
-grep -q 'ROLLBACK_REQUIRES_MANUAL_REVIEW' "$log_dir/rollback-preflight-no-history-proof.log"
-
-# Down cannot run without a preflight record created in this exact transaction.
-set +e
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -c "set local app.phase1a_never_enabled_attested='true'" -f "$down" \
-  >"$log_dir/attestation-missing.log" 2>&1
-missing_attestation_rc=$?
-set -e
-[[ "$missing_attestation_rc" -ne 0 ]]
-grep -q 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED' "$log_dir/attestation-missing.log"
-assert_phase1a_present "$lifecycle_db"
-
-# A real preflight record is bound to backend, transaction, database, artifact
-# identities, result, explicit external proof, and a ten-minute lifetime.
-for attestation_case in missing_external stale wrong_database wrong_up_sha wrong_manifest old_format; do
-  case "$attestation_case" in
-    missing_external) external_value=0; tamper_sql='select 1' ;;
-    stale) external_value=1; tamper_sql="update pg_temp.phase1a_rollback_preflight_attestation set generated_at=clock_timestamp()-interval '11 minutes'" ;;
-    wrong_database) external_value=1; tamper_sql="update pg_temp.phase1a_rollback_preflight_attestation set database_name='another_database'" ;;
-    wrong_up_sha) external_value=1; tamper_sql="update pg_temp.phase1a_rollback_preflight_attestation set up_sha=repeat('0',64)" ;;
-    wrong_manifest) external_value=1; tamper_sql="update pg_temp.phase1a_rollback_preflight_attestation set manifest_sha=repeat('0',64)" ;;
-    old_format) external_value=1; tamper_sql="set local app.phase1a_rollback_approval='ROLLBACK_SAFE:$up_sha'; update pg_temp.phase1a_rollback_preflight_attestation set operation_type='legacy_down'" ;;
-  esac
-  set +e
-  "$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-    -v external_flag_history_verified="$external_value" -f "$rollback_preflight" \
-    -c "$tamper_sql; set local app.phase1a_never_enabled_attested='true'" \
-    -f "$down" >"$log_dir/attestation-$attestation_case.log" 2>&1
-  attestation_rc=$?
-  set -e
-  [[ "$attestation_rc" -ne 0 ]]
-  grep -q 'PHASE1A_ROLLBACK_ATTESTATION_INVALID_OR_EXPIRED' "$log_dir/attestation-$attestation_case.log"
-  assert_phase1a_present "$lifecycle_db"
-done
-
-# Capture a genuine preflight ID, commit, and prove neither the ID nor a
-# session-level setting can revive the ON COMMIT DROP attestation.
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -At -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "select 'captured_preflight_id='||preflight_id from pg_temp.phase1a_rollback_preflight_attestation" \
-  -c 'commit' >"$log_dir/attestation-captured.log" 2>&1
-copied_preflight_id="$(grep -Eo 'captured_preflight_id=[0-9a-f-]{36}' "$log_dir/attestation-captured.log" | cut -d= -f2)"
-[[ -n "$copied_preflight_id" ]]
-set +e
+# A pristine installation is SAFE using database evidence alone. No temp row,
+# UUID, GUC, token, PID, or operator assertion participates in this decision.
 "$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 \
-  -c "set app.phase1a_rollback_preflight_id='$copied_preflight_id'; set app.phase1a_never_enabled_attested='true'; begin" \
-  -f "$down" >"$log_dir/attestation-cross-transaction.log" 2>&1
-cross_transaction_rc=$?
-set -e
-[[ "$cross_transaction_rc" -ne 0 ]]
-grep -q 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED' "$log_dir/attestation-cross-transaction.log"
-
-set +e
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "select set_config('app.phase1a_rollback_preflight_id',preflight_id::text,false),set_config('app.phase1a_never_enabled_attested','true',false) from pg_temp.phase1a_rollback_preflight_attestation; commit; begin" \
-  -f "$down" >"$log_dir/attestation-session-setting-after-commit.log" 2>&1
-session_setting_rc=$?
-set -e
-[[ "$session_setting_rc" -ne 0 ]]
-grep -q 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED' "$log_dir/attestation-session-setting-after-commit.log"
-
-# Keep a genuine attestation alive in session A while independent session B
-# attempts to copy its ID. Temp state is backend-local, so B must fail.
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -At -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "select 'live_preflight_id='||preflight_id from pg_temp.phase1a_rollback_preflight_attestation; select pg_sleep(3)" \
-  -c 'rollback' >"$log_dir/attestation-session-a.log" 2>&1 &
-session_a_pid=$!
-for _ in 1 2 3 4 5 6 7 8 9 10; do
-  live_preflight_id="$(grep -Eo 'live_preflight_id=[0-9a-f-]{36}' "$log_dir/attestation-session-a.log" 2>/dev/null | cut -d= -f2 || true)"
-  [[ -n "$live_preflight_id" ]] && break
-  sleep 0.2
-done
-[[ -n "$live_preflight_id" ]]
-set +e
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 \
-  -c "begin; set local app.phase1a_rollback_preflight_id='$live_preflight_id'; set local app.phase1a_never_enabled_attested='true'" \
-  -f "$down" >"$log_dir/attestation-session-b.log" 2>&1
-cross_session_rc=$?
-set -e
-[[ "$cross_session_rc" -ne 0 ]]
-grep -q 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED' "$log_dir/attestation-session-b.log"
-wait "$session_a_pid"
-
-# A copied ID from database A is also unusable in a real second database.
-cross_database_db=apple_attestation_other_database
-bootstrap_db "$cross_database_db"
-"$PG_PSQL" -d "$cross_database_db" -X -v ON_ERROR_STOP=1 -f "$up" >/dev/null
-record_migration "$cross_database_db"
-set +e
-"$PG_PSQL" -d "$cross_database_db" -X -v ON_ERROR_STOP=1 \
-  -c "begin; set local app.phase1a_rollback_preflight_id='$copied_preflight_id'; set local app.phase1a_never_enabled_attested='true'" \
-  -f "$down" >"$log_dir/attestation-cross-database.log" 2>&1
-cross_database_rc=$?
-set -e
-[[ "$cross_database_rc" -ne 0 ]]
-grep -q 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED' "$log_dir/attestation-cross-database.log"
-assert_phase1a_present "$cross_database_db"
+  -f "$rollback_preflight" >"$log_dir/rollback-preflight-pristine.log" 2>&1
+grep -q '^ ROLLBACK_SAFE ' "$log_dir/rollback-preflight-pristine.log"
 
 assert_payment_data "$lifecycle_db"
 down_start="$(date +%s)"
-run_attested_down "$lifecycle_db" "$log_dir/down.log"
+run_approved_down "$lifecycle_db" "$log_dir/down.log"
 grep -q 'ROLLBACK_SAFE' "$log_dir/down.log"
 down_end="$(date +%s)"
 
@@ -424,14 +342,12 @@ assert_payment_data "$lifecycle_db"
 failed_down_phase_snapshot="$($PG_PSQL -d "$lifecycle_db" -X -Atqc "$phase1a_data_snapshot_sql")"
 failed_down_manifest="$(phase1a_manifest_sha "$lifecycle_db")"
 failed_down_payment_snapshot="$($PG_PSQL -d "$lifecycle_db" -X -Atqc "$payment_data_snapshot_sql")"
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" -c 'rollback' >"$log_dir/rollback-preflight-data.log" 2>&1
+"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 \
+  -f "$rollback_preflight" >"$log_dir/rollback-preflight-data.log" 2>&1
 grep -q 'ROLLBACK_UNSAFE' "$log_dir/rollback-preflight-data.log"
 set +e
-"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "update pg_temp.phase1a_rollback_preflight_attestation set rollback_result='ROLLBACK_SAFE'; set local app.phase1a_never_enabled_attested='true'" \
-  -f "$down" >"$log_dir/down-data-rejection.log" 2>&1
+"$PG_PSQL" -d "$lifecycle_db" -X -v ON_ERROR_STOP=1 \
+  -f "$down_batch" >"$log_dir/down-data-rejection.log" 2>&1
 data_down_rc=$?
 set -e
 [[ "$data_down_rc" -ne 0 ]]
@@ -451,14 +367,12 @@ bootstrap_db "$flag_db"
 record_migration "$flag_db"
 "$PG_PSQL" "postgresql:///$flag_db" -X -v ON_ERROR_STOP=1 -c \
   "update public.billing_runtime_controls set apple_verification_enabled=true,updated_by='synthetic-test'" >/dev/null
-"$PG_PSQL" -d "$flag_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" -c 'rollback' >"$log_dir/rollback-preflight-flag.log" 2>&1
+"$PG_PSQL" -d "$flag_db" -X -v ON_ERROR_STOP=1 \
+  -f "$rollback_preflight" >"$log_dir/rollback-preflight-flag.log" 2>&1
 grep -q 'ROLLBACK_UNSAFE' "$log_dir/rollback-preflight-flag.log"
 set +e
-"$PG_PSQL" -d "$flag_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "update pg_temp.phase1a_rollback_preflight_attestation set rollback_result='ROLLBACK_SAFE'; set local app.phase1a_never_enabled_attested='true'" \
-  -f "$down" >"$log_dir/down-flag-rejection.log" 2>&1
+"$PG_PSQL" -d "$flag_db" -X -v ON_ERROR_STOP=1 \
+  -f "$down_batch" >"$log_dir/down-flag-rejection.log" 2>&1
 flag_down_rc=$?
 set -e
 [[ "$flag_down_rc" -ne 0 ]]
@@ -470,107 +384,152 @@ bootstrap_db "$history_flag_db"
 "$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 -f "$up" >"$log_dir/history-flag-up.log" 2>&1
 record_migration "$history_flag_db"
 "$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 -c "update public.billing_runtime_controls set apple_verification_enabled=true,updated_by='synthetic'; update public.billing_runtime_controls set apple_verification_enabled=false,updated_by=null" >/dev/null
-"$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" -c 'rollback' >"$log_dir/history-flag-off.log" 2>&1
+"$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 \
+  -f "$rollback_preflight" >"$log_dir/history-flag-off.log" 2>&1
 grep -q 'ROLLBACK_REQUIRES_MANUAL_REVIEW' "$log_dir/history-flag-off.log"
 "$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 -c 'select pg_stat_reset()' >/dev/null
-"$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" -c 'rollback' >"$log_dir/history-stats-reset.log" 2>&1
+"$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 \
+  -f "$rollback_preflight" >"$log_dir/history-stats-reset.log" 2>&1
 grep -q 'ROLLBACK_REQUIRES_MANUAL_REVIEW' "$log_dir/history-stats-reset.log"
+
+# Third-review exploit regression: forge the former authorization table and all
+# former session tokens after a flag on->off, cleared updated_by, stats reset,
+# empty business tables, and an exact manifest. The independent guard must fail.
+history_manifest="$(phase1a_manifest_sha "$history_flag_db")"
+history_payment="$($PG_PSQL -d "$history_flag_db" -X -Atqc "$payment_data_snapshot_sql")"
+history_migration_count="$($PG_PSQL -d "$history_flag_db" -X -Atqc "select count(*) from supabase_migrations.schema_migrations where version='20260722010000'")"
 set +e
 "$PG_PSQL" -d "$history_flag_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "set local app.phase1a_never_enabled_attested='true'" \
+  -c "create temporary table phase1a_rollback_preflight_attestation(preflight_id uuid,generated_at timestamptz,backend_pid integer,transaction_id text,database_name text,operation_type text,migration_version text,up_sha text,manifest_sha text,rollback_result text,external_history_attested boolean) on commit drop" \
+  -c "insert into pg_temp.phase1a_rollback_preflight_attestation values (extensions.gen_random_uuid(),clock_timestamp(),pg_backend_pid(),pg_current_xact_id()::text,current_database(),'phase_1a_down','20260722010000','$up_sha','$manifest_sha','ROLLBACK_SAFE',true)" \
+  -c "update pg_temp.phase1a_rollback_preflight_attestation set rollback_result='ROLLBACK_SAFE',backend_pid=pg_backend_pid(),transaction_id=pg_current_xact_id()::text; select set_config('app.phase1a_rollback_preflight_id',extensions.gen_random_uuid()::text,true); set local app.phase1a_never_enabled_attested='true'; set local app.phase1a_rollback_approval='ROLLBACK_SAFE:forged'" \
   -f "$down" >"$log_dir/history-restored-values-down-rejected.log" 2>&1
 history_down_rc=$?
 set -e
 [[ "$history_down_rc" -ne 0 ]]
-grep -q 'PHASE1A_ROLLBACK_ATTESTATION_INVALID_OR_EXPIRED' "$log_dir/history-restored-values-down-rejected.log"
+grep -q 'PHASE1A_NEVER_ENABLED_EVIDENCE_INCOMPLETE' "$log_dir/history-restored-values-down-rejected.log"
 assert_phase1a_present "$history_flag_db"
+[[ "$(phase1a_manifest_sha "$history_flag_db")" == "$history_manifest" ]]
+[[ "$($PG_PSQL -d "$history_flag_db" -X -Atqc "$payment_data_snapshot_sql")" == "$history_payment" ]]
+[[ "$($PG_PSQL -d "$history_flag_db" -X -Atqc "select count(*) from supabase_migrations.schema_migrations where version='20260722010000'")" == "$history_migration_count" ]]
+[[ "$($PG_PSQL -d "$history_flag_db" -X -Atqc 'select count(*) from public.billing_runtime_controls')" == 1 ]]
 
-# Prove INSERT, UPDATE, and DELETE are independently detected. INSERT/DELETE
-# must change both count and hash; UPDATE must preserve count but change hash.
-for mutation in insert update delete; do
-  fingerprint_db="apple_payment_$mutation"
+# A per-table counter reset cannot erase the independent physical/XID evidence:
+# insert+delete+VACUUM+single-table reset still remains MANUAL_REVIEW and blocks.
+table_reset_db=apple_phase1a_table_stats_reset
+bootstrap_db "$table_reset_db"
+"$PG_PSQL" -d "$table_reset_db" -X -v ON_ERROR_STOP=1 -f "$up" >"$log_dir/table-reset-up.log" 2>&1
+record_migration "$table_reset_db"
+"$PG_PSQL" -d "$table_reset_db" -X -v ON_ERROR_STOP=1 \
+  -c "insert into public.app_store_notification_events(environment,endpoint_environment,notification_uuid,notification_type,signed_date,payload_hash) values ('sandbox','sandbox','60000000-0000-4000-8000-000000000001','RESET_HISTORY',now(),repeat('d',64)); delete from public.app_store_notification_events" \
+  -c 'vacuum public.app_store_notification_events' \
+  -c "select pg_stat_reset_single_table_counters('public.app_store_notification_events'::regclass)" >/dev/null
+"$PG_PSQL" -d "$table_reset_db" -X -v ON_ERROR_STOP=1 -f "$rollback_preflight" >"$log_dir/table-reset-preflight.log" 2>&1
+grep -q 'ROLLBACK_REQUIRES_MANUAL_REVIEW' "$log_dir/table-reset-preflight.log"
+set +e
+"$PG_PSQL" -d "$table_reset_db" -X -v ON_ERROR_STOP=1 -f "$down_batch" >"$log_dir/table-reset-down.log" 2>&1
+table_reset_rc=$?
+set -e
+[[ "$table_reset_rc" -ne 0 ]]
+grep -q 'PHASE1A_NEVER_ENABLED_EVIDENCE_INCOMPLETE' "$log_dir/table-reset-down.log"
+assert_phase1a_present "$table_reset_db"
+
+# Prove the per-table detector across user_membership, Stripe, ZPay, and Google
+# Play. INSERT/DELETE change count+hash; UPDATE preserves count but changes hash.
+for scenario in zpay_insert stripe_update google_delete membership_update; do
+  fingerprint_db="apple_payment_$scenario"
   bootstrap_db "$fingerprint_db"
   baseline_vars "$fingerprint_db"
-  before_count="$(payment_table_count "$fingerprint_db" membership_orders)"
-  before_hash="$(payment_table_hash "$fingerprint_db" membership_orders)"
-  case "$mutation" in
-    insert) mutation_sql="insert into public.membership_orders(id,user_id,payment_provider,amount_cents) values ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000001','zpay',2000)" ;;
-    update) mutation_sql='update public.membership_orders set amount_cents=amount_cents+1' ;;
-    delete) mutation_sql='delete from public.membership_orders' ;;
+  case "$scenario" in
+    zpay_insert) table=membership_orders; count_changes=1; mutation_sql="insert into public.membership_orders(id,user_id,payment_provider,amount_cents) values ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000001','zpay',2000)" ;;
+    stripe_update) table=membership_stripe_subscriptions; count_changes=0; mutation_sql="update public.membership_stripe_subscriptions set status='past_due'" ;;
+    google_delete) table=membership_google_play_purchases; count_changes=1; mutation_sql='delete from public.membership_google_play_purchases' ;;
+    membership_update) table=user_membership; count_changes=0; mutation_sql="update public.user_membership set membership_status='basic'" ;;
   esac
+  before_count="$(payment_table_count "$fingerprint_db" "$table")"
+  before_hash="$(payment_table_hash "$fingerprint_db" "$table")"
   "$PG_PSQL" -d "$fingerprint_db" -X -v ON_ERROR_STOP=1 -c "$mutation_sql" >/dev/null
-  after_count="$(payment_table_count "$fingerprint_db" membership_orders)"
-  after_hash="$(payment_table_hash "$fingerprint_db" membership_orders)"
+  after_count="$(payment_table_count "$fingerprint_db" "$table")"
+  after_hash="$(payment_table_hash "$fingerprint_db" "$table")"
   [[ "$before_hash" != "$after_hash" ]]
-  if [[ "$mutation" == update ]]; then
-    [[ "$before_count" == "$after_count" ]]
-  else
+  if ((count_changes)); then
     [[ "$before_count" != "$after_count" ]]
+  else
+    [[ "$before_count" == "$after_count" ]]
   fi
   if assert_payment_data "$fingerprint_db"; then
-    echo "ERROR: intentional $mutation escaped per-table payment snapshot" >&2
+    echo "ERROR: intentional $scenario escaped per-table payment snapshot" >&2
     exit 1
   fi
 done
 
-# Dual-session race A/C/D: rollback locks first, then writes to a ledger table,
-# runtime controls, and Apple membership writeback all time out. The blocked
-# change is never silently accepted before the successful down transaction.
+# Dual-session race A/C/D, repeated three times each. A granted pg_locks query
+# synchronizes the writer after lock acquisition without timing guesses.
 lock_list="public.billing_runtime_controls,public.app_store_entitlements,public.app_store_transactions,public.app_store_notification_events,public.app_store_binding_tombstones,public.billing_entitlements_v2,public.billing_account_deletion_requests,public.billing_account_deletion_fences,public.user_membership"
 for race_case in ledger controls membership; do
-  race_db="apple_race_$race_case"
-  bootstrap_db "$race_db"
-  baseline_vars "$race_db"
-  "$PG_PSQL" -d "$race_db" -X -v ON_ERROR_STOP=1 -f "$up" >"$log_dir/race-$race_case-up.log" 2>&1
-  record_migration "$race_db"
-  "$PG_PSQL" -d "$race_db" -X -v ON_ERROR_STOP=1 \
-    -c 'begin' -v external_flag_history_verified=1 -f "$rollback_preflight" \
-    -c "lock table $lock_list in access exclusive mode; select pg_sleep(2); set local app.phase1a_never_enabled_attested='true'" \
-    -f "$down" >"$log_dir/race-$race_case-down.log" 2>&1 &
-  down_pid=$!
-  sleep 0.5
-  case "$race_case" in
-    ledger) race_sql="insert into public.app_store_notification_events(environment,endpoint_environment,notification_uuid,notification_type,signed_date,payload_hash) values ('sandbox','sandbox','40000000-0000-4000-8000-000000000001','RACE',now(),repeat('b',64))" ;;
-    controls) race_sql="update public.billing_runtime_controls set apple_verification_enabled=true" ;;
-    membership) race_sql="update public.user_membership set payment_provider='apple'" ;;
-  esac
-  set +e
-  "$PG_PSQL" -d "$race_db" -X -v ON_ERROR_STOP=1 -c "set lock_timeout='500ms'; $race_sql" >"$log_dir/race-$race_case-writer.log" 2>&1
-  writer_rc=$?
-  set -e
-  [[ "$writer_rc" -ne 0 ]]
-  grep -q 'lock timeout' "$log_dir/race-$race_case-writer.log"
-  wait "$down_pid"
-  assert_phase1a_absent "$race_db"
-  assert_payment_data "$race_db"
+  for race_iteration in 1 2 3; do
+    race_db="apple_race_${race_case}_$race_iteration"
+    bootstrap_db "$race_db"
+    baseline_vars "$race_db"
+    "$PG_PSQL" -d "$race_db" -X -v ON_ERROR_STOP=1 -f "$up" >"$log_dir/race-$race_case-$race_iteration-up.log" 2>&1
+    record_migration "$race_db"
+    "$PG_PSQL" -d "$race_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
+      -c "lock table $lock_list in access exclusive mode; select pg_sleep(2)" \
+      -f "$down" >"$log_dir/race-$race_case-$race_iteration-down.log" 2>&1 &
+    down_pid=$!
+    marker_seen=0
+    for _ in {1..50}; do
+      held_locks="$($PG_PSQL -d "$race_db" -X -Atqc "select count(*) from pg_locks l join pg_class c on c.oid=l.relation join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname in ('billing_runtime_controls','app_store_entitlements','app_store_transactions','app_store_notification_events','app_store_binding_tombstones','billing_entitlements_v2','billing_account_deletion_requests','billing_account_deletion_fences','user_membership') and l.mode='AccessExclusiveLock' and l.granted")"
+      if [[ "$held_locks" == 9 ]]; then marker_seen=1; break; fi
+      sleep 0.05
+    done
+    [[ "$marker_seen" == 1 ]]
+    case "$race_case" in
+      ledger) race_sql="insert into public.app_store_notification_events(environment,endpoint_environment,notification_uuid,notification_type,signed_date,payload_hash) values ('sandbox','sandbox','40000000-0000-4000-8000-00000000000$race_iteration','RACE',now(),repeat('b',64))" ;;
+      controls) race_sql="update public.billing_runtime_controls set apple_verification_enabled=true" ;;
+      membership) race_sql="update public.user_membership set payment_provider='apple'" ;;
+    esac
+    set +e
+    "$PG_PSQL" -d "$race_db" -X -v ON_ERROR_STOP=1 -c "set lock_timeout='500ms'; $race_sql" >"$log_dir/race-$race_case-$race_iteration-writer.log" 2>&1
+    writer_rc=$?
+    set -e
+    [[ "$writer_rc" -ne 0 ]]
+    grep -q 'canceling statement due to lock timeout' "$log_dir/race-$race_case-$race_iteration-writer.log"
+    if ! wait "$down_pid"; then echo "ERROR: rollback race background session failed" >&2; exit 1; fi
+    assert_phase1a_absent "$race_db"
+    assert_payment_data "$race_db"
+  done
 done
 
-# Dual-session race B: a writer holding the lock first makes the real down hit
-# its bounded lock_timeout. The writer commits; the entire schema and row remain.
-writer_db=apple_race_writer_first
-bootstrap_db "$writer_db"
-baseline_vars "$writer_db"
-"$PG_PSQL" -d "$writer_db" -X -v ON_ERROR_STOP=1 -f "$up" >"$log_dir/race-writer-up.log" 2>&1
-record_migration "$writer_db"
-"$PG_PSQL" -d "$writer_db" -X -v ON_ERROR_STOP=1 -c "begin; insert into public.app_store_notification_events(environment,endpoint_environment,notification_uuid,notification_type,signed_date,payload_hash) values ('sandbox','sandbox','50000000-0000-4000-8000-000000000001','WRITER_FIRST',now(),repeat('c',64)); select pg_sleep(6); commit" >"$log_dir/race-writer-session.log" 2>&1 &
-writer_pid=$!
-sleep 0.5
-set +e
-"$PG_PSQL" -d "$writer_db" -X -v ON_ERROR_STOP=1 -c 'begin' \
-  -v external_flag_history_verified=1 -f "$rollback_preflight" \
-  -c "set local app.phase1a_never_enabled_attested='true'" \
-  -f "$down" >"$log_dir/race-writer-down.log" 2>&1
-writer_down_rc=$?
-set -e
-[[ "$writer_down_rc" -ne 0 ]]
-grep -q 'lock timeout' "$log_dir/race-writer-down.log"
-wait "$writer_pid"
-assert_phase1a_present "$writer_db"
-[[ "$($PG_PSQL -d "$writer_db" -X -Atqc "select count(*) from public.app_store_notification_events where notification_type='WRITER_FIRST'")" == 1 ]]
-assert_payment_data "$writer_db"
+# Dual-session race B, also repeated three times: writer-first forces the down
+# to hit its bounded lock timeout; the schema and committed row remain intact.
+for writer_iteration in 1 2 3; do
+  writer_db="apple_race_writer_first_$writer_iteration"
+  bootstrap_db "$writer_db"
+  baseline_vars "$writer_db"
+  "$PG_PSQL" -d "$writer_db" -X -v ON_ERROR_STOP=1 -f "$up" >"$log_dir/race-writer-$writer_iteration-up.log" 2>&1
+  record_migration "$writer_db"
+  "$PG_PSQL" -d "$writer_db" -X -v ON_ERROR_STOP=1 -c "begin; insert into public.app_store_notification_events(environment,endpoint_environment,notification_uuid,notification_type,signed_date,payload_hash) values ('sandbox','sandbox','50000000-0000-4000-8000-00000000000$writer_iteration','WRITER_FIRST',now(),repeat('c',64)); select pg_sleep(6); commit" >"$log_dir/race-writer-$writer_iteration-session.log" 2>&1 &
+  writer_pid=$!
+  writer_marker=0
+  for _ in {1..50}; do
+    held_writer_locks="$($PG_PSQL -d "$writer_db" -X -Atqc "select count(*) from pg_locks l join pg_class c on c.oid=l.relation join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname='app_store_notification_events' and l.mode='RowExclusiveLock' and l.granted")"
+    if [[ "$held_writer_locks" -ge 1 ]]; then writer_marker=1; break; fi
+    sleep 0.05
+  done
+  [[ "$writer_marker" == 1 ]]
+  set +e
+  "$PG_PSQL" -d "$writer_db" -X -v ON_ERROR_STOP=1 \
+    -f "$down_batch" >"$log_dir/race-writer-$writer_iteration-down.log" 2>&1
+  writer_down_rc=$?
+  set -e
+  [[ "$writer_down_rc" -ne 0 ]]
+  grep -q 'canceling statement due to lock timeout' "$log_dir/race-writer-$writer_iteration-down.log"
+  if ! wait "$writer_pid"; then echo "ERROR: writer-first background session failed" >&2; exit 1; fi
+  assert_phase1a_present "$writer_db"
+  [[ "$($PG_PSQL -d "$writer_db" -X -Atqc "select count(*) from public.app_store_notification_events where notification_type='WRITER_FIRST'")" == 1 ]]
+  assert_payment_data "$writer_db"
+done
 
 # Run the existing RPC/RLS/replay/concurrency suite on the same PG17 binaries.
 POSTGRES_BIN="$POSTGRES_BIN" "$repo_root/scripts/test-apple-postgres-integration.sh" >"$log_dir/existing-integration.log" 2>&1
@@ -587,11 +546,11 @@ fi
 echo "PASS: preflight -> up -> postflight -> rollback preflight -> down -> up -> postflight"
 echo "PASS: data-present rollback rejected"
 echo "PASS: feature-flag rollback rejected"
-echo "PASS: frozen manifest drift matrix and transaction-local attestation binding rejected"
+echo "PASS: frozen manifest drift matrix including all-role ACL and replica identity rejected"
 echo "PASS: migration-history NO_GO matrix including real unreadable role"
 echo "PASS: flag-history/stats-reset ambiguity and restored-current-value down rejected"
-echo "PASS: cross-transaction/session/database and stale/copied attestation rejected"
-echo "PASS: dual-session rollback races A-D"
+echo "PASS: forged temp row/table and arbitrary session tokens cannot override database evidence"
+echo "PASS: deterministic dual-session rollback races A-D repeated three times"
 echo "PASS: per-table user_membership/Stripe-ZPay/Google Play counts and fingerprints preserved"
 echo "PASS: payment INSERT/UPDATE/DELETE and failed-down full preservation assertions"
 echo "PASS: existing RPC/RLS/idempotency/concurrency suite"

@@ -9,13 +9,15 @@ Production execution or feature enablement.
 
 The readiness package now uses one frozen PostgreSQL 17 catalog manifest across
 postflight, rollback preflight, and the down guard. The rollback locks every
-Phase 1A table plus `user_membership` before checking state. A SAFE decision
-also requires external immutable proof that flags were never enabled; mutable
-controls and resettable PostgreSQL statistics alone can never supply that proof.
-Rollback preflight and down must execute in one explicit transaction and backend;
-the preflight record is temporary, random, ten-minute bounded, and dropped on
-commit. The operator's `SET LOCAL` never-enabled attestation documents process
-completion only—it is not a secret, database fact, or authorization boundary.
+Phase 1A table plus `user_membership` before checking state. The preflight is
+diagnostic only; temp rows, session GUCs and operator attestations were removed
+as authorization inputs because the down role can forge them. The down guard
+independently requires pristine controls, empty data/heap state, exact manifest,
+original migration-XID continuity, untouched write counters/reset epoch and
+migration history. `ROLLBACK_REQUIRES_MANUAL_REVIEW` can never authorize DROP.
+Manual review may only preserve the schema, select a forward fix, or restore a
+verified backup. Run the approved batch in one psql/backend/transaction; SQL
+Editor split runs and transaction poolers are prohibited.
 
 ## Safety boundaries
 
@@ -122,12 +124,16 @@ certificate bytes in phase 1A, so real verification fails closed with `APPLE_ROO
 npm run typecheck:apple
 npm run test:apple
 npm run test:apple:postgres
+npm run test:apple:readiness:pg17
+npm run test:apple:manifest:pg17-runtime
 npm run build:apple
 ```
 
-The PostgreSQL suite requires PostgreSQL 15+ and creates a temporary cluster
-that listens only on a Unix socket. See `tests/apple/postgres/README.md` for
-binary discovery, explicit CI skip behavior, cleanup, and retained failure logs.
+The integration suite requires PostgreSQL 15+; readiness requires PostgreSQL 17,
+and runtime compatibility requires exact 17.6 and 17.10 binary directories.
+Every harness creates temporary clusters that listen only on Unix sockets. See
+`tests/apple/postgres/README.md` for binary discovery, explicit CI skip behavior,
+cleanup, and retained failure logs.
 
 The PKI test creates a temporary EC test chain with the Apple certificate OIDs
 required by the official library and validates a real x5c/ES256 signature path.

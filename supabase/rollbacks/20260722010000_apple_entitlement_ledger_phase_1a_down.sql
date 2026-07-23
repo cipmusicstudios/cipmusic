@@ -13,17 +13,16 @@
 -- reviewed forward fix instead.
 --
 -- DATA-PRESERVATION WARNING: this file deliberately has no CASCADE and will not
--- delete Supabase migration history. Run rollback preflight and down in one
--- explicit transaction, with an explicit LOCAL never-enabled attestation.
+-- delete Supabase migration history. Run the approved rollback batch in one
+-- psql process, one backend, and one explicit transaction. Session-local state
+-- and operator attestations are deliberately ignored: this file independently
+-- recalculates every database-verifiable safety condition under lock.
 -- After a successful down,
 -- use the supported Supabase CLI migration-repair workflow to mark version
 -- 20260722010000 reverted; never hand-delete a migration-history row.
 --
--- Required before execution:
---   BEGIN;
---   \i supabase/verification/20260722010000_apple_entitlement_rollback_preflight.sql
---   SET LOCAL app.phase1a_never_enabled_attested = 'true';
---   \i supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql
+-- Required execution entrypoint:
+--   \i supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_approved_batch.sql
 --
 -- Required after execution:
 --   run the rollback verification in the PG17 readiness harness, verify all
@@ -53,45 +52,30 @@ declare
   v_name text;
   v_count bigint;
   v_runtime public.billing_runtime_controls%rowtype;
-  v_attestation record;
+  v_manifest_sha text;
+  v_business_rows bigint := 0;
+  v_business_heap_bytes bigint;
+  v_business_write_stats bigint;
+  v_controls_n_tup_ins bigint;
+  v_controls_n_tup_upd bigint;
+  v_controls_n_tup_del bigint;
+  v_target_table_count integer;
+  v_catalog_origin_xid_count integer;
+  v_catalog_origin_xid text;
+  v_row_origin_xid text;
+  v_frozen_xids_match_catalog boolean;
+  v_stats_reset timestamptz;
+  v_apple_membership_rows bigint;
+  v_migration_history_count bigint;
 begin
-  if to_regclass('pg_temp.phase1a_rollback_preflight_attestation') is null then
-    raise exception using errcode = '55000',
-      message = 'PHASE1A_SAME_TRANSACTION_PREFLIGHT_REQUIRED';
-  end if;
-
-  select * into v_attestation
-  from pg_temp.phase1a_rollback_preflight_attestation
-  where preflight_id::text=current_setting('app.phase1a_rollback_preflight_id',true);
-
-  if not found then
-    raise exception using errcode='55000',
-      message='PHASE1A_ROLLBACK_ATTESTATION_INVALID_OR_EXPIRED';
-  end if;
-
-  if v_attestation.backend_pid<>pg_backend_pid()
-    or v_attestation.transaction_id<>pg_current_xact_id()::text
-    or v_attestation.database_name<>current_database()
-    or v_attestation.operation_type<>'phase_1a_down'
-    or v_attestation.migration_version<>'20260722010000'
-    or v_attestation.up_sha<>'5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4'
-    or v_attestation.manifest_sha<>'8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e'
-    or v_attestation.rollback_result<>'ROLLBACK_SAFE'
-    or not v_attestation.external_history_attested
-    or v_attestation.generated_at < clock_timestamp()-interval '10 minutes'
-    or v_attestation.generated_at > clock_timestamp()+interval '5 seconds'
-    or current_setting('app.phase1a_never_enabled_attested',true) is distinct from 'true'
-  then
-    raise exception using errcode='55000',
-      message='PHASE1A_ROLLBACK_ATTESTATION_INVALID_OR_EXPIRED';
-  end if;
-
-  if pg_temp.phase1a_manifest_sha256() is distinct from
-    '8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e'
-  then
+  perform pg_stat_clear_snapshot();
+  v_manifest_sha := pg_temp.phase1a_manifest_sha256();
+  if v_manifest_sha is distinct from '6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1' then
     raise exception using errcode='55000', message='PHASE1A_MANIFEST_MISMATCH';
   end if;
 
+  select xmin::text into strict v_row_origin_xid
+  from public.billing_runtime_controls;
   select * into strict v_runtime from public.billing_runtime_controls;
   if v_runtime.singleton is distinct from true
     or v_runtime.apple_verification_enabled
@@ -116,11 +100,46 @@ begin
     'app_store_entitlements'
   ] loop
     execute format('select count(*) from public.%I', v_name) into v_count;
+    v_business_rows := v_business_rows+v_count;
     if v_count <> 0 then
       raise exception using errcode = '55000',
         message = format('PHASE1A_BUSINESS_DATA_PRESENT: public.%s=%s', v_name, v_count);
     end if;
   end loop;
+
+  select count(*),count(distinct c.xmin::text),min(c.xmin::text),
+    bool_and(c.relfrozenxid::text=c.xmin::text),
+    coalesce(sum(pg_relation_size(c.oid)) filter(where c.relname<>'billing_runtime_controls'),-1),
+    coalesce(sum(s.n_tup_ins+s.n_tup_upd+s.n_tup_del)
+      filter(where c.relname<>'billing_runtime_controls'),-1),
+    max(s.n_tup_ins) filter(where c.relname='billing_runtime_controls'),
+    max(s.n_tup_upd) filter(where c.relname='billing_runtime_controls'),
+    max(s.n_tup_del) filter(where c.relname='billing_runtime_controls')
+  into v_target_table_count,v_catalog_origin_xid_count,v_catalog_origin_xid,
+    v_frozen_xids_match_catalog,v_business_heap_bytes,v_business_write_stats,
+    v_controls_n_tup_ins,v_controls_n_tup_upd,v_controls_n_tup_del
+  from pg_class c join pg_namespace n on n.oid=c.relnamespace
+  left join pg_stat_user_tables s on s.relid=c.oid
+  where n.nspname='public' and c.relname in (
+    'billing_runtime_controls','app_store_entitlements','app_store_transactions',
+    'app_store_notification_events','app_store_binding_tombstones',
+    'billing_entitlements_v2','billing_account_deletion_requests',
+    'billing_account_deletion_fences');
+
+  select stats_reset into v_stats_reset from pg_stat_database
+  where datname=current_database();
+
+  if v_target_table_count<>8 or v_catalog_origin_xid_count<>1
+    or v_row_origin_xid<>v_catalog_origin_xid
+    or not coalesce(v_frozen_xids_match_catalog,false)
+    or v_controls_n_tup_ins<>1 or v_controls_n_tup_upd<>0 or v_controls_n_tup_del<>0
+    or v_business_write_stats<>0 or v_business_heap_bytes<>0
+    or v_runtime.updated_at is null
+    or (v_stats_reset is not null and v_stats_reset>v_runtime.updated_at)
+  then
+    raise exception using errcode='55000',
+      message='PHASE1A_NEVER_ENABLED_EVIDENCE_INCOMPLETE';
+  end if;
 
   if to_regclass('public.user_membership') is not null then
     execute $sql$
@@ -131,10 +150,19 @@ begin
               in ('apple', 'app_store', 'apple_app_store')
          or lower(coalesce(to_jsonb(um)->>'provider', ''))
               in ('apple', 'app_store', 'apple_app_store')
-    $sql$ into v_count;
-    if v_count <> 0 then
+    $sql$ into v_apple_membership_rows;
+    if v_apple_membership_rows <> 0 then
       raise exception using errcode = '55000', message = 'PHASE1A_APPLE_WRITEBACK_SUSPECTED';
     end if;
+  end if;
+
+  if to_regclass('supabase_migrations.schema_migrations') is null then
+    raise exception using errcode='55000', message='PHASE1A_MIGRATION_HISTORY_UNREADABLE';
+  end if;
+  select count(*) into v_migration_history_count
+  from supabase_migrations.schema_migrations where version='20260722010000';
+  if v_migration_history_count<>1 then
+    raise exception using errcode='55000', message='PHASE1A_MIGRATION_HISTORY_MISMATCH';
   end if;
 end
 $rollback_guard$;

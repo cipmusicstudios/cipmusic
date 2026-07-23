@@ -33,20 +33,23 @@ with target_tables(name) as (
   ) order by tt.name), '[]'::jsonb) value from target_types tt
 ), tables as (
   select coalesce(jsonb_agg(jsonb_build_object(
-    'name', tt.name, 'kind', c.relkind, 'persistence', c.relpersistence,
+    'schema','public','name', tt.name, 'kind', c.relkind, 'persistence', c.relpersistence,
     'owner', case when c.relowner=(select oid from pg_roles where rolname=current_user)
       then '@migration_owner' else pg_get_userbyid(c.relowner) end,
     'rls', c.relrowsecurity, 'force_rls', c.relforcerowsecurity,
+    'replica_identity',c.relreplident,
+    'replica_identity_index',(select ci.relname from pg_index ri
+      join pg_class ci on ci.oid=ri.indexrelid
+      where ri.indrelid=c.oid and ri.indisreplident),
     'options', coalesce(to_jsonb(c.reloptions),'[]'::jsonb),
     'acl', coalesce((select jsonb_agg(jsonb_build_object(
       'grantee', case when a.grantee=0 then 'PUBLIC' when a.grantee=c.relowner then '@migration_owner' else pg_get_userbyid(a.grantee) end,
       'grantor', case when a.grantor=c.relowner then '@migration_owner' else pg_get_userbyid(a.grantor) end,
       'privilege',a.privilege_type,'grantable',a.is_grantable)
       order by case when a.grantee=0 then 'PUBLIC' when a.grantee=c.relowner then '@migration_owner' else pg_get_userbyid(a.grantee) end,
+        case when a.grantor=c.relowner then '@migration_owner' else pg_get_userbyid(a.grantor) end,
         a.privilege_type,a.is_grantable)
-      from aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a
-      where a.grantee=0 or pg_get_userbyid(a.grantee) in ('anon','authenticated','service_role')
-        or a.grantee=c.relowner), '[]'::jsonb)
+      from aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a), '[]'::jsonb)
   ) order by tt.name), '[]'::jsonb) value
   from target_tables tt left join pg_class c on c.oid=to_regclass('public.'||tt.name)
 ), columns as (
@@ -80,7 +83,7 @@ with target_tables(name) as (
   join pg_class ci on ci.oid=i.indexrelid join pg_am am on am.oid=ci.relam
 ), functions as (
   select coalesce(jsonb_agg(jsonb_build_object(
-    'signature',p.oid::regprocedure::text,
+    'schema','public','signature',p.oid::regprocedure::text,
     'owner',case when p.proowner=(select oid from pg_roles where rolname=current_user)
       then '@migration_owner' else pg_get_userbyid(p.proowner) end,
     'language',l.lanname,'result',pg_get_function_result(p.oid),
@@ -96,10 +99,9 @@ with target_tables(name) as (
       'grantor',case when a.grantor=p.proowner then '@migration_owner' else pg_get_userbyid(a.grantor) end,
       'privilege',a.privilege_type,'grantable',a.is_grantable)
       order by case when a.grantee=0 then 'PUBLIC' when a.grantee=p.proowner then '@migration_owner' else pg_get_userbyid(a.grantee) end,
+        case when a.grantor=p.proowner then '@migration_owner' else pg_get_userbyid(a.grantor) end,
         a.privilege_type,a.is_grantable)
-      from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
-      where a.grantee=0 or pg_get_userbyid(a.grantee) in ('anon','authenticated','service_role')
-        or a.grantee=p.proowner),'[]'::jsonb)
+      from aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a),'[]'::jsonb)
   ) order by p.oid::regprocedure::text), '[]'::jsonb) value
   from pg_proc p join pg_namespace n on n.oid=p.pronamespace
   join pg_language l on l.oid=p.prolang

@@ -3,7 +3,8 @@
 Status: local preparation only. Nothing in this document authorizes a Production
 migration or any Apple feature flag.
 
-PostgreSQL 17.10 isolated lifecycle testing passed on 2026-07-22. See
+PostgreSQL 17.10 isolated lifecycle testing and a real PostgreSQL 17.6/17.10
+runtime manifest comparison passed on 2026-07-22. See
 `docs/apple-entitlement-pg17-readiness-report-2026-07-22.md`.
 The independent Production backup and restore rehearsal also passed; see
 `docs/apple-entitlement-production-backup-restore-report-2026-07-22.md`.
@@ -27,28 +28,32 @@ controls are disabled/off. It contains no statement that reads or writes
 ## Approved down migration
 
 - Path: `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql`
-- SHA-256: `ebac9bbad6630c2dd49bbcbc5aeb3c65697ea9f817e577771935feb7720400e5`
+- SHA-256: `00b610ff1308ab3c76a51ef870c76387f2c82bbfdb3b68a80b7437da484f4298`
 
 The down migration is a fail-closed recovery tool, not an automatic rollback.
 It first takes `ACCESS EXCLUSIVE` locks on all eight Phase 1A tables and
 `public.user_membership`, then performs every safety read and DROP under those
 locks. A five-second lock timeout aborts the entire transaction on contention.
-It requires a fresh rollback-preflight record created in the same backend and
-explicit transaction, plus the operator's transaction-local never-enabled
-attestation. It rechecks the exact frozen manifest, pristine controls and empty
-business tables, and uses no `CASCADE`.
+The rollback preflight is diagnostic only. The down file ignores every temp row,
+UUID, PID, transaction ID, token, GUC, and operator assertion. Under lock it
+independently recomputes the exact manifest, empty tables and physical heaps,
+pristine controls, original migration transaction identity (`pg_class.xmin`,
+table `relfrozenxid`, and control-row `xmin`), table-write statistics/reset
+epoch, migration history, and Apple-looking membership data. Anything other
+than database-proven `ROLLBACK_SAFE` aborts; it uses no `CASCADE`.
 
 The canonical manifest implementation is
 `supabase/verification/20260722010000_apple_entitlement_manifest.sql` (file
-SHA-256 `11d3dc4620e19a76252d048678aeec17f8c6fe6214fd059383c2f628ee6f3120`).
+SHA-256 `96dd13dceb1bac56e9562153310c25896b0528592ac171d6e3ad596b12d8462c`).
 Generate it only on PostgreSQL 17 after applying the frozen up migration, with
 the migration owner as `current_user`, by loading that file and selecting
 `pg_temp.phase1a_manifest_sha256()`. The reviewed manifest SHA-256 is
-`8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e`.
+`6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1`.
 It stable-sorts and records enum labels/order; complete column properties;
 constraint and index deparses; function definition/body, owner, execution
-properties, search path and ACL; trigger definitions/enabled state; table owner,
-persistence, RLS/force-RLS/options/ACL; and policies. OIDs are excluded.
+properties, search path and every-role ACL; trigger definitions/enabled state;
+table owner, persistence, replica identity/index, RLS/force-RLS/options/every-role
+ACL; and policies. OIDs are excluded.
 
 Manifest format v2 records function metadata and `pg_proc.prosrc` separately,
 instead of hashing `pg_get_functiondef` presentation whitespace. The remaining
@@ -56,7 +61,10 @@ official deparsers are implemented by `ruleutils.c`; PostgreSQL's immutable
 `REL_17_6` and `REL_17_10` tags have the identical reviewed source SHA-256
 `f1017456a03b2ca194dc964c55476223d224ecc1ba73b7a60204657f7d7b5f23`.
 Their sole `format_type.c` delta is unrelated `oidvectortypes()` input
-validation. Run `npm run test:apple:manifest:pg17-minor` to recheck this evidence.
+validation. That source review is supplemental. The compatibility gate is the
+real two-server runtime comparison in
+`npm run test:apple:manifest:pg17-runtime`, which requires exact 17.6 and 17.10
+binaries and compares both complete JSON and the frozen SHA.
 
 ## Complete object manifest and dependency order
 
@@ -180,7 +188,11 @@ service RPCs are granted to `service_role`. All six functions pin
   `supabase/verification/20260722010000_apple_entitlement_rollback_preflight.sql`
 - Down migration:
   `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_down.sql`
+- Approved atomic rollback batch:
+  `supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_approved_batch.sql`
 - PG17 lifecycle harness: `scripts/test-apple-production-readiness-pg17.sh`
+- Real PG17.6/17.10 manifest harness:
+  `scripts/test-apple-manifest-pg17-runtime-compat.sh`
 
 The Production preflight emits a membership row count/schema fingerprint and a
 legacy-payment object fingerprint. Preserve those exact values as postflight
@@ -326,17 +338,24 @@ After commit:
 1. Freeze all later rollout actions and confirm flags remain off.
 2. Run rollback preflight. `ROLLBACK_UNSAFE` means preserve evidence and use a
    restore or reviewed forward fix. `ROLLBACK_REQUIRES_MANUAL_REVIEW` means stop.
-3. Start one explicit transaction and run rollback preflight in it. The
-   preflight creates a random execution ID in an `ON COMMIT DROP` temp table and
-   binds it to backend PID, transaction ID, database, operation, migration/up
-   SHA, manifest SHA, result and generation time. It expires after ten minutes.
-4. Only for `ROLLBACK_SAFE`, explicitly run
-   `SET LOCAL app.phase1a_never_enabled_attested = 'true'`, then include the down
-   file without committing or changing sessions. The attestation is not a
-   secret, database fact, authentication mechanism, or authorization boundary;
-   it records completion of the external never-enabled review. Commit/rollback,
-   another session/database, stale/copied IDs and old tokens cannot supply the
-   required temp record.
+3. Manual review is not an override for the destructive down migration. It can
+   select a forward fix, preserve the schema, or restore a verified backup only.
+4. Execute only the approved batch, through one `psql` process and one backend:
+
+   ```bash
+   PGPASSFILE=/secure/path/production.pgpass \
+   /opt/homebrew/opt/postgresql@17/bin/psql \
+     "host=... port=... dbname=... user=... sslmode=require" \
+     -v ON_ERROR_STOP=1 \
+     -f supabase/rollbacks/20260722010000_apple_entitlement_ledger_phase_1a_approved_batch.sql
+   ```
+
+   Use a PostgreSQL Direct connection, or a session pooler only after proving
+   single-session continuity. Do not use the Transaction pooler. Do not run
+   preflight and down in separate `psql` processes, sessions, SQL files, or
+   Supabase SQL Editor clicks. Do not use GUI auto-commit. Never assume two SQL
+   Editor executions reuse one backend; if the editor cannot guarantee one
+   batch/backend/explicit transaction, it is prohibited for down execution.
 5. Verify all Phase 1A objects are absent and legacy membership/payment objects
    are unchanged.
 6. Only after schema verification succeeds, run the supported command:
@@ -351,10 +370,14 @@ After commit:
 The current Phase 1A schema has no immutable flag-change audit table. The
 rollback report outputs controls `updated_at`/`updated_by`, database
 `stats_reset`, `n_tup_upd`, current flags and business/data evidence. PostgreSQL
-statistics and mutable row fields are not an audit log: missing external proof,
-any reset epoch, or an uncertain relationship between migration time and stats
-is manual review, never SAFE. After any enablement, simple DROP rollback is
-permanently disallowed; use a reviewed forward fix or verified restore.
+statistics and mutable fields alone are not an audit log. SAFE additionally
+requires the original migration XID to agree across all eight table catalog
+tuples, every table `relfrozenxid`, and the untouched control row, plus exact
+initial write counters and an unambiguous reset epoch. Missing or contradictory
+evidence is manual review, never SAFE. Manual review is not an override for the
+destructive down migration. After any enablement, simple DROP rollback is
+permanently disallowed; preserve the schema, use a reviewed forward fix, or
+restore a verified backup.
 
 Official references:
 

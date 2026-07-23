@@ -1,112 +1,96 @@
 # Phase 1A PostgreSQL 17 readiness report — 2026-07-22
 
 Scope: local synthetic testing only. No Production connection, credentials, data,
-migration, Netlify setting, Apple setting, or feature flag was used.
+migration, Netlify setting, Apple setting, or feature flag was used. Production
+migration has not executed; verification, ledger, writeback, and Notification V2
+remain disabled.
 
-## Environment
+## Runtime environments
 
-- PostgreSQL: `postgres (PostgreSQL) 17.10 (Homebrew)`
-- Binary directory: `/opt/homebrew/opt/postgresql@17/bin`
-- Cluster: temporary `initdb` directory under `/tmp/cipmusic-apple-pg17.*`
-- Network: `listen_addresses=''`; Unix socket only
-- Port: `55440` (non-default)
-- Authentication: local temporary cluster `trust`; TCP rejected
-- Service state: `postgresql@17 none`; no Homebrew service started
-- Synthetic fixtures only; no copied Production rows or identifiers
+- PostgreSQL 17.10: `postgres (PostgreSQL) 17.10 (Homebrew)`, binaries at
+  `/opt/homebrew/opt/postgresql@17/bin`.
+- PostgreSQL 17.6: official `postgresql-17.6.tar.bz2` from
+  `https://ftp.postgresql.org/pub/source/v17.6/`, archive SHA-256
+  `e0630a3600aea27511715563259ec2111cd5f4353a4b040e0be827f94cd7a8b0`,
+  verified against the adjacent official `SHA256` file.
+- 17.6 configure/build: `CPPFLAGS=-I/opt/homebrew/opt/openssl@3/include`,
+  `LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib`, `./configure --without-readline
+  --without-zlib --without-icu --with-openssl --prefix=<temporary-install>`,
+  `make -j4`, `make install`, then build/install `contrib/pgcrypto`.
+- Both runtimes used fresh `initdb` clusters under `/tmp`, Unix sockets only,
+  `listen_addresses=''`, host authentication rejected, and synthetic fixtures.
+  No Homebrew PostgreSQL service or inherited `PGPASSFILE` was used.
 
 ## Tested artifact integrity
 
-- Frozen up migration SHA-256:
+- Frozen up SHA-256:
   `5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4`
-- Fail-closed down migration SHA-256:
-  `ebac9bbad6630c2dd49bbcbc5aeb3c65697ea9f817e577771935feb7720400e5`
-- Frozen normalized catalog manifest SHA-256:
-  `8ea409d5d99b0dfb65049e8b4ee1fb776b3f16bc992b32a1bac33530d7e4b88e`
+- Fail-closed down SHA-256:
+  `00b610ff1308ab3c76a51ef870c76387f2c82bbfdb3b68a80b7437da484f4298`
+- Approved rollback batch SHA-256:
+  `8370af223fc86be42be143669df3d78f4e6b840ca3fc90b42d55710a0e214a0f`
+- Manifest SQL file SHA-256:
+  `96dd13dceb1bac56e9562153310c25896b0528592ac171d6e3ad596b12d8462c`
+- Frozen normalized manifest SHA-256:
+  `6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1`
 
-The lifecycle results below apply to these exact artifacts. The frozen up
-migration remained identical to `origin/main`.
+The frozen up file remained byte-identical to `origin/main` and Git blob
+`d76750ac9c58fee36d5fba20977b4feba1eb924d`.
 
-## Command
+## Real 17.6/17.10 runtime compatibility
 
-```bash
-POSTGRES_BIN=/opt/homebrew/opt/postgresql@17/bin \
-  npm run test:apple:readiness:pg17
-```
+Both exact server versions ran the same bootstrap, frozen up, and manifest SQL.
+The complete normalized JSON files matched byte-for-byte:
 
-## Matrix
+- PostgreSQL 17.6 JSON SHA-256:
+  `bb996135cd284b002d0311f84ce15c5cd0632172e811268f7df8b424512968d3`
+- PostgreSQL 17.10 JSON SHA-256:
+  `bb996135cd284b002d0311f84ce15c5cd0632172e811268f7df8b424512968d3`
+- Both database-computed frozen manifest SHAs:
+  `6ad498f6d8d81a1c8e70bc6482e9cafa0ebd3af4c62ad306b58ca8e00aff50e1`
 
-| Step | Result |
+`test:apple:manifest:pg17-minor` still checks selected upstream source as
+supplemental evidence. It is not the runtime compatibility gate.
+
+## Lifecycle and negative-test matrix
+
+| Area | Result |
 |---|---|
-| Fresh PG17 cluster and minimal Supabase-compatible bootstrap | PASS |
-| Production preflight | `MIGRATION_PREFLIGHT_GO` |
-| Frozen up migration | PASS |
-| Migration history fixture | PASS |
-| Postflight: enums/tables/112 columns/55 constraints/20 indexes | PASS |
-| Postflight: functions, owners, `SECURITY DEFINER`, `search_path` | PASS |
-| Postflight: RLS, policies, grants and runtime defaults | PASS |
-| All Phase 1A data tables initially empty | PASS |
-| Rollback preflight on pristine installation | `ROLLBACK_SAFE` |
-| Down migration with same-session/transaction temp attestation | PASS |
-| All Phase 1A objects removed | PASS |
-| Synthetic membership/payment objects preserved | PASS |
-| Up migration after down/history repair simulation | PASS |
-| Second postflight | `MIGRATION_POSTFLIGHT_PASS` |
-| Synthetic notification row blocks rollback preflight | `ROLLBACK_UNSAFE` |
-| Down migration independently rejects non-empty data | PASS |
-| Enabled verification flag blocks rollback preflight | `ROLLBACK_UNSAFE` |
-| Down migration independently rejects changed controls | PASS |
-| Existing RPC/RLS/replay/idempotency/concurrency suite on PG17 | PASS |
-| Missing schema/table, malformed, unreadable, malformed+unreadable, already-applied history | six explicit `NO_GO` results |
-| Exact manifest drift matrix | column, constraint, index, function body/security/search path, trigger, ACL, force-RLS, policy rejected |
-| Attestation binding negatives | missing/external/stale/old format, wrong database/up SHA/manifest rejected |
-| Attestation lifetime/isolation | copied ID, commit, new session and real second database rejected |
-| Historical flag ambiguity and stats reset | never `ROLLBACK_SAFE` |
-| Dual-session races | rollback-first ledger/control/membership writes blocked; writer-first down timed out atomically |
-| Per-table payment count + full-row fingerprints | stable through up/down/failed-down/up/concurrency; INSERT/UPDATE/DELETE detected |
-| Failed-down full preservation | exact manifest, all Phase 1A rows/tables/controls and legacy payment snapshots retained |
-| PG17.6/17.10 deparser compatibility | official `ruleutils.c` identical; unrelated `format_type.c` delta verified |
+| PG17.10 preflight → up → postflight → down → up → postflight | PASS |
+| Pristine database-only rollback decision | `ROLLBACK_SAFE` |
+| Data present/current flag enabled | `ROLLBACK_UNSAFE`; down rejected |
+| Flag on→off, `updated_by` cleared, statistics reset | `ROLLBACK_REQUIRES_MANUAL_REVIEW`; down rejected |
+| Insert→delete→VACUUM→single-table stats reset | physical/XID evidence remains; down rejected |
+| Forged same-name temp table/SAFE row/PID/XID/UUID/time/SHA/GUC/token | ignored; down rejected |
+| Down evidence | manifest, empty rows/heaps, original catalog/table/control XID, write counters/reset epoch, history, membership |
+| Manifest drift | column, constraint, index, body/security/search path, trigger, ACL, force-RLS, policy rejected |
+| Custom-role table ACL and function EXECUTE ACL | postflight/preflight/down all rejected |
+| Replica identity FULL drift | postflight/preflight/down all rejected |
+| Migration history | structured GO/NO_GO and exact reason-set parsing; real unreadable role covered |
+| Payment preservation | independent per-table count/full-row hash for membership, Stripe, ZPay, Google Play |
+| Payment mutations | ZPay INSERT, Stripe UPDATE, Google Play DELETE, membership UPDATE detected |
+| Failed down | manifest, all Phase 1A tables/rows/control row, notification row, payment data and history preserved |
+| Rollback-first races A/C/D | granted `pg_locks` synchronization; each repeated 3 times |
+| Writer-first race B | granted `pg_locks` synchronization; repeated 3 times; expected lock timeout only |
+| Background exit propagation | every `wait` checked; unexpected background failure is fatal |
+| Cleanup | server stop and directory deletion checked; cleanup failure prevents PASS |
+| Existing RPC/RLS/replay/idempotency/concurrency suite | PASS |
 
-Lifecycle result:
+The final PG17.10 readiness suite completed in 56 seconds. Up and down each measured
+under one second at shell timer resolution. Race coordination uses observable
+granted locks rather than a fixed start-delay guess.
 
-```text
-PASS: preflight -> up -> postflight -> rollback preflight -> down -> up -> postflight
-PASS: data-present rollback rejected
-PASS: feature-flag rollback rejected
-PASS: frozen manifest drift matrix and transaction-local attestation binding rejected
-PASS: migration-history NO_GO matrix including real unreadable role
-PASS: flag-history/stats-reset ambiguity and restored-current-value down rejected
-PASS: cross-transaction/session/database and stale/copied attestation rejected
-PASS: dual-session rollback races A-D
-PASS: per-table user_membership/Stripe-ZPay/Google Play counts and fingerprints preserved
-PASS: payment INSERT/UPDATE/DELETE and failed-down full preservation assertions
-PASS: existing RPC/RLS/idempotency/concurrency suite
-```
+## Additional quality checks
 
-## Timing and locks
+- Apple TypeScript check: PASS.
+- Apple unit tests: 49/49 PASS.
+- Standalone PostgreSQL integration suite: PASS.
+- Apple function build: PASS for all three functions.
+- TypeScript differential: no new errors (`raw 43/43`, normalized `25/25`).
+- Bash syntax and `git diff --check`: PASS.
+- Source compatibility supplement and real runtime compatibility: PASS.
 
-- Reported up duration: `<1s` (shell timer rounded to `0s`)
-- Reported down duration: `<1s` (shell timer rounded to `0s`)
-- Complete readiness suite: `33s`
-- Expected negative tests produced bounded lock timeouts; no deadlock or partial
-  DDL occurred.
-- Both up and down executed as explicit transactions.
-- The harness uses `lock_timeout=5s`, `statement_timeout=5min`, and
-  `idle_in_transaction_session_timeout=2min` for the down path; the Production
-  runbook requires the same session limits before the up migration.
-
-## Test-development failures resolved before final pass
-
-During harness development, local-only runs caught and corrected:
-
-- an overlong macOS Unix-socket path;
-- invalid psql variable-error handling;
-- SQL CTE scoping in check matrices;
-- ACL checks that incorrectly treated `PUBLIC` as a login role;
-- expected constraint/index counts;
-- XML extraction of the runtime-control row;
-- missing legacy payment-function fingerprint coverage.
-
-These were harness/preflight/down-file issues only. The frozen up migration was
-not modified. Failed temporary clusters were stopped; final successful clusters
-were stopped and removed automatically. This report is the retained durable test
-record.
+The rollback preflight is diagnostic only. No session-local or operator-supplied
+state can authorize down. Manual review is not an override for destructive down;
+it can only select schema preservation, a reviewed forward fix, or restoration
+from a verified backup.

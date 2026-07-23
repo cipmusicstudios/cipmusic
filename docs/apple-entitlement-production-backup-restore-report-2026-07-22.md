@@ -15,8 +15,9 @@ this rehearsal:
   `5e03dc81ec469c469ccdfe47681e81dff9059e0dc894336c5360e69b93f687d4`;
 - historical down migration SHA-256 at rehearsal time (not current):
   `49f278e3360ccc825a54894d631a6ff9ac029a776b9dd668a8c417006987e566`;
-- current approved down migration SHA-256:
-  `ebac9bbad6630c2dd49bbcbc5aeb3c65697ea9f817e577771935feb7720400e5`.
+- current approved down migration SHA-256 after the third-review fail-closed
+  guard revision (not executed in this historical rehearsal):
+  `00b610ff1308ab3c76a51ef870c76387f2c82bbfdb3b68a80b7437da484f4298`.
 
 ## Connection and safety
 
