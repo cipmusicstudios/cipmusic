@@ -2,6 +2,21 @@
 
 Local implementation only. The migration is a review draft and must not be applied as part of phase 1A.
 
+Production migration preparation, backup options, preflight/postflight SQL, and
+the post-commit rollback policy are documented in
+`docs/apple-entitlement-production-readiness.md`. That runbook does not authorize
+Production execution or feature enablement.
+
+Phase 1A supports no post-commit destructive SQL down migration. Before COMMIT,
+an error, timeout, or explicit operator ROLLBACK reverts the frozen up migration's
+single transaction. After COMMIT, keep every flag off and preserve the schema;
+use a reviewed forward fix or restore the verified complete backup. The retained
+down SQL and historical batch paths are permanent fail-closed tripwires that
+always raise `PHASE_1A_POST_COMMIT_DOWN_UNSUPPORTED`. No current database state,
+temporary object, session GUC, token, attestation, or manual approval can unlock
+them. The rollback preflight is now an incident diagnostic only and always emits
+`post_commit_down_supported=false` and `destructive_down_allowed=false`.
+
 ## Safety boundaries
 
 - All runtime controls default to disabled/off and are read only through a service-role RPC.
@@ -107,12 +122,19 @@ certificate bytes in phase 1A, so real verification fails closed with `APPLE_ROO
 npm run typecheck:apple
 npm run test:apple
 npm run test:apple:postgres
+npm run test:apple:readiness:pg17
+npm run test:apple:manifest:pg17-minor
+POSTGRES_17_10_BIN=/opt/homebrew/opt/postgresql@17/bin \
+  npm run test:apple:manifest:pg17-runtime
 npm run build:apple
 ```
 
-The PostgreSQL suite requires PostgreSQL 15+ and creates a temporary cluster
-that listens only on a Unix socket. See `tests/apple/postgres/README.md` for
-binary discovery, explicit CI skip behavior, cleanup, and retained failure logs.
+The integration suite requires PostgreSQL 15+; readiness requires PostgreSQL 17.
+The runtime gate downloads and checksum-verifies the official 17.6 archive,
+builds an isolated 17.6 server, and compares it with an exact 17.10 binary tree.
+Every harness creates temporary clusters that listen only on Unix sockets. See
+`tests/apple/postgres/README.md` for binary discovery, explicit CI skip behavior,
+cleanup, and the explicit debug-only evidence-retention switch.
 
 The PKI test creates a temporary EC test chain with the Apple certificate OIDs
 required by the official library and validates a real x5c/ES256 signature path.

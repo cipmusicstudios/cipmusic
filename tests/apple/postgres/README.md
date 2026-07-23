@@ -23,7 +23,8 @@ Missing PostgreSQL is an actionable failure by default. A CI job that explicitly
 chooses not to provide PostgreSQL may set `APPLE_PG_TEST_ALLOW_SKIP=1`; the job
 will print a visible `SKIP` reason rather than silently passing.
 
-Successful runs remove the temporary cluster and logs. Failed runs retain only
-local test logs and print their path. Fixtures use reserved, synthetic UUIDs and
-opaque fake transaction labels; no receipt, JWS, secret, production identifier,
-or customer data is accepted by this harness.
+All runs stop the temporary server and remove the cluster, socket, and logs;
+cleanup failure makes the suite fail. A failed run may retain its synthetic local
+evidence only when `APPLE_PG_TEST_DEBUG_RETAIN=1` is explicitly set. Fixtures use
+reserved, synthetic UUIDs and opaque fake transaction labels; no receipt, JWS,
+secret, production identifier, or customer data is accepted by this harness.
