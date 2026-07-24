@@ -6,6 +6,7 @@ import type {AppleConfig} from './config';
 import {loadAppleRootCertificates, toAppleEnvironment} from './config';
 import type {AppleEnvironment, AppleTransactionLookup, AppleVerifier} from './types';
 import {AppleServiceError} from './types';
+import {appleExceptionFields, logAppleDiagnostic} from './diagnostics';
 
 export function assertAppleJwsHeader(jws: string): void {
   const encodedHeader = jws.split('.')[0];
@@ -33,9 +34,17 @@ export class OfficialAppleVerifier implements AppleVerifier {
     );
   }
 
-  verifyTransaction(jws: string, environment: AppleEnvironment): Promise<JWSTransactionDecodedPayload> {
-    assertAppleJwsHeader(jws);
-    return this.verifier(environment).verifyAndDecodeTransaction(jws);
+  async verifyTransaction(jws: string, environment: AppleEnvironment): Promise<JWSTransactionDecodedPayload> {
+    logAppleDiagnostic('info', 'jws_verification_started', {environment});
+    try {
+      assertAppleJwsHeader(jws);
+      const decoded = await this.verifier(environment).verifyAndDecodeTransaction(jws);
+      logAppleDiagnostic('info', 'jws_verification_succeeded', {environment});
+      return decoded;
+    } catch (error) {
+      logAppleDiagnostic('warn', 'jws_verification_failed', {environment, ...appleExceptionFields(error)});
+      throw error;
+    }
   }
 
   verifyNotification(jws: string, environment: AppleEnvironment): Promise<ResponseBodyV2DecodedPayload> {
@@ -60,16 +69,34 @@ export class OfficialAppleTransactionLookup implements AppleTransactionLookup {
   }
 
   async lookup(transactionId: string, environment: AppleEnvironment) {
+    logAppleDiagnostic('info', 'apple_lookup_started', {environment, sandboxFallbackEntered: false});
     try {
       const result = await this.client(environment).getTransactionInfo(transactionId);
       if (!result.signedTransactionInfo) throw new AppleServiceError('APPLE_EMPTY_RESPONSE', 502);
+      logAppleDiagnostic('info', 'apple_lookup_succeeded', {
+        environment, sandboxFallbackEntered: false, signedTransactionInfoReceived: true,
+      });
       return {signedTransactionInfo: result.signedTransactionInfo, environment};
     } catch (error) {
+      logAppleDiagnostic('warn', 'apple_lookup_failed', {
+        environment, sandboxFallbackEntered: false, ...appleExceptionFields(error),
+      });
       const mayFallback = environment === 'production' && error instanceof APIException && error.httpStatusCode === 404;
       if (!mayFallback) throw error;
-      const result = await this.client('sandbox').getTransactionInfo(transactionId);
-      if (!result.signedTransactionInfo) throw new AppleServiceError('APPLE_EMPTY_RESPONSE', 502);
-      return {signedTransactionInfo: result.signedTransactionInfo, environment: 'sandbox' as const};
+      logAppleDiagnostic('info', 'sandbox_fallback_entered', {productionHttpStatus: 404});
+      try {
+        const result = await this.client('sandbox').getTransactionInfo(transactionId);
+        if (!result.signedTransactionInfo) throw new AppleServiceError('APPLE_EMPTY_RESPONSE', 502);
+        logAppleDiagnostic('info', 'sandbox_lookup_succeeded', {
+          environment: 'sandbox', sandboxFallbackEntered: true, signedTransactionInfoReceived: true,
+        });
+        return {signedTransactionInfo: result.signedTransactionInfo, environment: 'sandbox' as const};
+      } catch (sandboxError) {
+        logAppleDiagnostic('warn', 'sandbox_lookup_failed', {
+          environment: 'sandbox', sandboxFallbackEntered: true, ...appleExceptionFields(sandboxError),
+        });
+        throw sandboxError;
+      }
     }
   }
 }
