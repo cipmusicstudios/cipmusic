@@ -5,6 +5,8 @@ import {readFileSync} from 'node:fs';
 const sql = readFileSync('supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql', 'utf8');
 const aggregateSql = readFileSync('supabase/migrations/20260723090000_apple_membership_aggregate_read.sql', 'utf8');
 const readMembership = readFileSync('netlify/functions/read-membership.ts', 'utf8');
+const currentMembershipReader = readFileSync('netlify/functions/_shared/read-current-membership.ts', 'utf8');
+const sceneAssetUrl = readFileSync('netlify/functions/scene-asset-url.ts', 'utf8');
 
 test('migration contains required ledgers and no user_membership write', () => {
   assert.match(sql, /^--[\s\S]*\nbegin;/i);
@@ -91,7 +93,12 @@ test('aggregate follow-up is a separately frozen, ordered rollout set', () => {
 });
 
 test('read-membership returns only UI membership fields, never Apple evidence', () => {
-  assert.match(readMembership, /select\('premium_until, membership_status, auto_renew, current_period_end'\)/);
-  assert.match(readMembership, /billing_get_current_entitlement_summary/);
-  assert.doesNotMatch(readMembership, /transaction_id|original_transaction|signed_transaction|jws|receipt/i);
+  assert.match(currentMembershipReader, /select\('premium_until, membership_status, auto_renew, current_period_end'\)/);
+  assert.match(currentMembershipReader, /billing_get_current_entitlement_summary/);
+  assert.match(readMembership, /readCurrentMembership/);
+  assert.match(sceneAssetUrl, /readCurrentMembership/);
+  assert.doesNotMatch(
+    readMembership + currentMembershipReader,
+    /transaction_id|original_transaction|signed_transaction|jws|receipt/i,
+  );
 });

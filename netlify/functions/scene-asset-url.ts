@@ -1,5 +1,6 @@
 import type {Handler, HandlerEvent, HandlerResponse} from '@netlify/functions';
 import {createSupabaseServiceClient} from './_shared/supabase-service';
+import {readCurrentMembership} from './_shared/read-current-membership';
 import {
   buildSceneObjectKey,
   createR2SignedGetUrl,
@@ -71,30 +72,6 @@ function isPortraitOrientation(v: unknown): boolean {
   return v === 'portrait';
 }
 
-function isPremiumEntitled(row: Record<string, unknown> | null): boolean {
-  if (!row) return false;
-  const premiumUntilRaw = row.premium_until;
-  const premiumUntilIso = typeof premiumUntilRaw === 'string' ? premiumUntilRaw : null;
-  if (premiumUntilIso) {
-    const t = Date.parse(premiumUntilIso);
-    if (Number.isFinite(t) && t > Date.now()) return true;
-    return false;
-  }
-  const statusRaw = typeof row.membership_status === 'string' ? row.membership_status : '';
-  const stripeRaw =
-    typeof row.stripe_subscription_status === 'string' ? row.stripe_subscription_status : '';
-  const st = statusRaw.toLowerCase().trim();
-  const stripeSt = stripeRaw.toLowerCase().trim();
-  return (
-    st === 'active' ||
-    st === 'premium' ||
-    st === 'stripe_subscription_active' ||
-    st === 'stripe_subscription_trialing' ||
-    stripeSt === 'active' ||
-    stripeSt === 'trialing'
-  );
-}
-
 function logLine(fields: Record<string, unknown>) {
   const safe: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(fields)) {
@@ -105,7 +82,14 @@ function logLine(fields: Record<string, unknown>) {
   console.log('[scene-asset-url]', JSON.stringify(safe));
 }
 
-export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResponse> => {
+type SceneAssetUrlDeps = {
+  createClient?: typeof createSupabaseServiceClient;
+  createSignedGetUrl?: typeof createR2SignedGetUrl;
+  appleRpcTimeoutMs?: number;
+};
+
+export function createSceneAssetUrlHandler(deps: SceneAssetUrlDeps = {}): Handler {
+  return async (event: HandlerEvent): Promise<HandlerResponse> => {
   if (event.httpMethod === 'OPTIONS') {
     return {statusCode: 204, headers: corsHeaders, body: ''};
   }
@@ -162,7 +146,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     });
   }
 
-  const supabase = createSupabaseServiceClient();
+  const supabase = (deps.createClient ?? createSupabaseServiceClient)();
   if (!supabase) {
     logLine({stage: 'no_service_client', sceneId, ok: false});
     return fail(503, 'SERVICE_ENV_INCOMPLETE', 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY', {
@@ -191,26 +175,20 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   const userId = userRes.data.user.id;
   debug.userIdPresent = true;
 
-  const membershipRes = await supabase
-    .from('user_membership')
-    .select('premium_until, membership_status, stripe_subscription_status, cancel_at_period_end')
-    .eq('user_id', userId)
-    .limit(1)
-    .maybeSingle();
-  debug.membershipChecked = !membershipRes.error;
-  if (membershipRes.error) {
+  const current = await readCurrentMembership(supabase, userId, {
+    ...(deps.appleRpcTimeoutMs == null ? {} : {appleRpcTimeoutMs: deps.appleRpcTimeoutMs}),
+  });
+  debug.membershipChecked = current.ok;
+  if (current.ok === false) {
     logLine({stage: 'membership_query_failed', sceneId, userId, ok: false});
-    return fail(503, 'MEMBERSHIP_QUERY_FAILED', membershipRes.error.message, {
+    return fail(503, 'MEMBERSHIP_QUERY_FAILED', current.error.message, {
       ...debug,
       errorStage: 'membership_query_failed',
-      errorMessage: membershipRes.error.message,
+      errorMessage: current.error.message,
     });
   }
 
-  const entitled = isPremiumEntitled(
-    (membershipRes.data as Record<string, unknown> | null) ?? null,
-  );
-  if (!entitled) {
+  if (!current.membership.isPremium) {
     logLine({stage: 'not_entitled', sceneId, userId, ok: false});
     return fail(403, 'PREMIUM_REQUIRED', 'Premium scene requires an active membership.', {
       ...debug,
@@ -232,7 +210,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
   const objectKey = buildSceneObjectKey(r2Config, filename);
   let signed: {url: string; expiresAt: string};
   try {
-    signed = await createR2SignedGetUrl(objectKey, r2Config.expiresSeconds);
+    signed = await (deps.createSignedGetUrl ?? createR2SignedGetUrl)(objectKey, r2Config.expiresSeconds);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to sign R2 scene URL';
     logLine({stage: 'sign_failed', sceneId, userId, ok: false});
@@ -261,4 +239,7 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
     expiresAt: signed.expiresAt,
     accessMode: 'r2_presigned_get',
   });
-};
+  };
+}
+
+export const handler = createSceneAssetUrlHandler();

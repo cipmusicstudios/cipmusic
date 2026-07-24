@@ -1,6 +1,9 @@
 import type {Handler, HandlerEvent, HandlerResponse} from '@netlify/functions';
 import {createSupabaseServiceClient} from './_shared/supabase-service';
-import {aggregateMembership, type AppleEntitlement} from './_shared/membership-aggregate';
+import {
+  APPLE_SUMMARY_RPC_TIMEOUT_MS,
+  readCurrentMembership,
+} from './_shared/read-current-membership';
 
 const TABLE = 'user_membership';
 
@@ -83,48 +86,10 @@ function logLine(fields: Record<string, unknown>) {
   console.log('[read-membership]', JSON.stringify(safe));
 }
 
-function isAppleEntitlement(value: unknown): value is AppleEntitlement {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
-  const record = value as Record<string, unknown>;
-  return (
-    (record.environment === 'production' || record.environment === 'sandbox') &&
-    typeof record.currently_grants_premium === 'boolean' &&
-    (typeof record.valid_until === 'string' || record.valid_until === null)
-  );
-}
-
 /**
  * Phase B1 安全收口：必须 `Authorization: Bearer <supabase_access_token>`。
  * `userId` 仅来自 Supabase 校验通过的 JWT，绝不信任 body.userId，杜绝任意 UUID 枚举他人会员状态。
  */
-const APPLE_SUMMARY_RPC_TIMEOUT_MS = 1500;
-
-async function readAppleEntitlements(
-  supabase: ReturnType<typeof createSupabaseServiceClient>,
-  userId: string,
-  timeoutMs = APPLE_SUMMARY_RPC_TIMEOUT_MS,
-): Promise<AppleEntitlement[]> {
-  if (!supabase) return [];
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const rpc = Promise.resolve(
-    supabase.rpc('billing_get_current_entitlement_summary', {p_user_id: userId}),
-  ).then(
-    result => ({kind: 'result' as const, result}),
-    () => ({kind: 'rejected' as const}),
-  );
-  const timeout = new Promise<{kind: 'timeout'}>(resolve => {
-    timer = setTimeout(() => resolve({kind: 'timeout'}), timeoutMs);
-  });
-  try {
-    const settled = await Promise.race([rpc, timeout]);
-    if (settled.kind !== 'result' || settled.result.error) return [];
-    return (Array.isArray(settled.result.data) ? settled.result.data : [])
-      .filter(isAppleEntitlement);
-  } finally {
-    if (timer) clearTimeout(timer);
-  }
-}
-
 type ReadMembershipDeps = {
   createClient?: typeof createSupabaseServiceClient;
   appleRpcTimeoutMs?: number;
@@ -202,46 +167,35 @@ export function createReadMembershipHandler(deps: ReadMembershipDeps = {}): Hand
 
   const userId = userRes.data.user.id;
 
-  const byUserId = await supabase
-    .from(TABLE)
-    .select('premium_until, membership_status, auto_renew, current_period_end')
-    .eq('user_id', userId)
-    .limit(1)
-    .maybeSingle();
+  const current = await readCurrentMembership(supabase, userId, {
+    appleRpcTimeoutMs: deps.appleRpcTimeoutMs ?? APPLE_SUMMARY_RPC_TIMEOUT_MS,
+  });
 
-  if (byUserId.error) {
-    console.error('[read-membership] user_id query', byUserId.error);
+  if (current.ok === false) {
+    console.error('[read-membership] user_id query', current.error);
     logLine({stage: 'membership_query_failed', ok: false});
     return fail(
       503,
       'MEMBERSHIP_QUERY_FAILED',
-      byUserId.error.message,
+      current.error.message,
       baseDebug({
         hasAuthHeader: true,
         authValid: true,
         queryAttempted: true,
         errorStage: 'membership_query_failed',
-        errorMessage: byUserId.error.message,
-        supabaseErrorCode: byUserId.error.code != null ? String(byUserId.error.code) : null,
+        errorMessage: current.error.message,
+        supabaseErrorCode: current.error.code ?? null,
       }),
       'Confirm public.user_membership exists and columns match supabase/membership-zpay-schema.sql plus supabase/membership-stripe-schema.sql.',
     );
   }
 
-  // Phase 1A may deliberately be absent before its approved migration. A missing
-  // aggregate RPC must never hide an existing Stripe/ZPay/manual entitlement.
-  const appleRows = await readAppleEntitlements(
-    supabase,
-    userId,
-    deps.appleRpcTimeoutMs ?? APPLE_SUMMARY_RPC_TIMEOUT_MS,
-  );
-  const aggregate = aggregateMembership(byUserId.data, appleRows);
   logLine({
     stage: 'ok',
     ok: true,
-    membershipFound: byUserId.data != null,
+    membershipFound: current.legacyFound,
   });
-  return json(200, {ok: true, userId, ...aggregate});
+  return json(200, {ok: true, userId, ...current.membership});
   };
 }
 
