@@ -30,7 +30,7 @@ with expected as (
     ('function_language',(select lanname='sql' from f),'approved function language required'),
     ('function_owner',(select pg_get_userbyid(proowner)=:'expected_owner' from f),'approved owner required'),
     ('security_definer',(select prosecdef from f),'must be security definer'),
-    ('fixed_search_path',(select coalesce(array_to_string(proconfig,','),'') like '%search_path=pg_catalog, public%' from f),'fixed search_path required'),
+    ('fixed_search_path',(select proconfig=array['search_path=pg_catalog, public']::text[] from f),'fixed search_path required'),
     ('public_revoked',not exists (
       select 1 from f cross join lateral aclexplode(coalesce(f.proacl,acldefault('f',f.proowner))) a
       where a.grantee=0 and a.privilege_type='EXECUTE'

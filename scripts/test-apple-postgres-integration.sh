@@ -351,7 +351,7 @@ do
         "alter function public.billing_get_current_entitlement_summary(uuid) owner to aggregate_wrong_owner" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
     search_path_drift)
       "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
-        "alter function public.billing_get_current_entitlement_summary(uuid) set search_path = public" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+        "alter function public.billing_get_current_entitlement_summary(uuid) set search_path = pg_catalog, public, pg_temp" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
     security_definer_drift)
       "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
         "alter function public.billing_get_current_entitlement_summary(uuid) security invoker" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
