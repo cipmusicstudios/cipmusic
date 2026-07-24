@@ -8,6 +8,7 @@ import {
   fetchAccessToken,
   fetchSubscriptionV2,
   isEntitledState,
+  isGooglePlayBillingEnabled,
   loadServiceAccount,
   pickPremiumLineItem,
 } from './_shared/google-play';
@@ -104,6 +105,15 @@ export const handler: Handler = async (event: HandlerEvent): Promise<HandlerResp
 
   if (event.httpMethod !== 'POST') {
     return fail(405, 'METHOD_NOT_ALLOWED', 'POST required', baseDebug({errorStage: 'wrong_method'}));
+  }
+
+  if (!isGooglePlayBillingEnabled()) {
+    return fail(
+      503,
+      'GOOGLE_PLAY_BILLING_DISABLED',
+      'Google Play Billing verification is temporarily disabled',
+      baseDebug({errorStage: 'feature_disabled'}),
+    );
   }
 
   const token = parseBearer(event);

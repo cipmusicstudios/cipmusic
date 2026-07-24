@@ -65,6 +65,7 @@ export type ServiceAccount = {clientEmail: string; privateKey: string; projectId
 export const GOOGLE_PLAY_CLIENT_EMAIL_ENV = 'GOOGLE_PLAY_CLIENT_EMAIL';
 export const GOOGLE_PLAY_PRIVATE_KEY_ENV = 'GOOGLE_PLAY_PRIVATE_KEY';
 export const GOOGLE_PLAY_PROJECT_ID_ENV = 'GOOGLE_PLAY_PROJECT_ID';
+export const GOOGLE_PLAY_BILLING_ENABLED_ENV = 'google_play_billing_enabled';
 
 /** 三个必需变量名，供 handler 做 missing-env 检查与诊断（不含取值）。 */
 export const GOOGLE_PLAY_SA_ENV_VARS = [
@@ -72,6 +73,14 @@ export const GOOGLE_PLAY_SA_ENV_VARS = [
   GOOGLE_PLAY_PRIVATE_KEY_ENV,
   GOOGLE_PLAY_PROJECT_ID_ENV,
 ] as const;
+
+export function isGooglePlayBillingEnabled(): boolean {
+  const value =
+    process.env[GOOGLE_PLAY_BILLING_ENABLED_ENV]?.trim().toLowerCase() ??
+    process.env.GOOGLE_PLAY_BILLING_ENABLED?.trim().toLowerCase() ??
+    '';
+  return value === 'true' || value === '1' || value === 'yes';
+}
 
 /**
  * 从三个独立环境变量构造服务账号凭据。任一缺失返回 null（调用方据此返回 503，绝不打印 private_key）。
