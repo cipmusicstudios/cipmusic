@@ -12,7 +12,7 @@ export function opaqueRef(value: string | null | undefined): string | null {
   return value ? sha256(value).slice(0, 12) : null;
 }
 
-const SENSITIVE_KEYS = /jws|receipt|signed|payload|token|secret|private|transaction.?id|original.?transaction|user.?id|uuid/i;
+const SENSITIVE_KEYS = /jws|receipt|signed|payload|token|secret|private|authorization|cookie|transaction.?id|original.?transaction|user.?id|uuid/i;
 
 export function safeLogFields(input: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(input).map(([key, value]) => [
