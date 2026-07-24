@@ -209,6 +209,164 @@ fi
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -c \
   "revoke execute on function public.billing_get_current_entitlement_summary(uuid) from public" >"$log_dir/aggregate-public-revoke.log" 2>&1
 
+apply_aggregate_prereqs() {
+  local url="$1" label="$2"
+  "$PG_PSQL" "$url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/$label-bootstrap.log" 2>&1
+  "$PG_PSQL" "$url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/$label-phase1a.log" 2>&1
+}
+
+run_aggregate_preflight() {
+  local url="$1"
+  "$PG_PSQL" "$url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+    -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql"
+}
+
+run_aggregate_postflight() {
+  local url="$1"
+  "$PG_PSQL" "$url" -AtX -F $'\t' -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
+    -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql"
+}
+
+require_aggregate_preflight_no_go() {
+  local label="$1" output="$2"
+  require_verification_marker "$label" "$output" "AGGREGATE_READ_PREFLIGHT_NO_GO"
+}
+
+require_aggregate_postflight_fail() {
+  local label="$1" output="$2"
+  require_verification_marker "$label" "$output" "AGGREGATE_READ_POSTFLIGHT_FAIL"
+}
+
+create_wrong_owner_role() {
+  "$PG_PSQL" "$1" -X -v ON_ERROR_STOP=1 -c \
+    "do \$\$ begin if not exists (select 1 from pg_roles where rolname='aggregate_wrong_owner') then create role aggregate_wrong_owner nologin; end if; end \$\$" >/dev/null
+}
+
+create_aggregate_like_function() {
+  local url="$1" suffix="$2" security_clause="$3" search_path_clause="$4"
+  "$PG_PSQL" "$url" -X -v ON_ERROR_STOP=1 >"$log_dir/$suffix-create-aggregate-like.log" <<SQL
+create function public.billing_get_current_entitlement_summary(p_user_id uuid)
+returns table (environment public.app_store_environment, currently_grants_premium boolean, valid_until timestamptz)
+language sql
+$security_clause
+stable
+$search_path_clause
+as \$function\$
+  select 'production'::public.app_store_environment, false, null::timestamptz
+  where false
+\$function\$;
+SQL
+}
+
+# Negative aggregate preflight matrix. Verification SQL exits successfully with
+# a NO_GO row, and this shell harness fails closed if any unsafe GO is returned.
+for case_name in \
+  missing_phase_prereq text_overload bigint_overload noarg_overload procedure \
+  exact_uuid_plus_text_overload wrong_owner wrong_acl wrong_return_type \
+  wrong_security_definer wrong_search_path
+do
+  case_db="apple_aggregate_preflight_$case_name"
+  "$PG_CREATEDB" "$case_db"
+  case_url="postgresql:///$case_db?host=$socket_dir&port=55439"
+  "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/$case_db-bootstrap.log" 2>&1
+  if [[ "$case_name" != "missing_phase_prereq" ]]; then
+    "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/$case_db-phase1a.log" 2>&1
+  fi
+  case "$case_name" in
+    text_overload)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary(p_user_id text) returns int language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    bigint_overload)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary(p_user_id bigint) returns int language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    noarg_overload)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary() returns int language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    procedure)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create procedure public.billing_get_current_entitlement_summary(p_user_id uuid) language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    exact_uuid_plus_text_overload)
+      create_aggregate_like_function "$case_url" "$case_db" "security definer" "set search_path = pg_catalog, public"
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary(p_user_id text) returns int language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    wrong_owner)
+      create_wrong_owner_role "$case_url"
+      create_aggregate_like_function "$case_url" "$case_db" "security definer" "set search_path = pg_catalog, public"
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "alter function public.billing_get_current_entitlement_summary(uuid) owner to aggregate_wrong_owner" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    wrong_acl)
+      create_aggregate_like_function "$case_url" "$case_db" "security definer" "set search_path = pg_catalog, public"
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "grant execute on function public.billing_get_current_entitlement_summary(uuid) to public" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    wrong_return_type)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary(p_user_id uuid) returns int language sql security definer stable set search_path = pg_catalog, public as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    wrong_security_definer)
+      create_aggregate_like_function "$case_url" "$case_db" "" "set search_path = pg_catalog, public" ;;
+    wrong_search_path)
+      create_aggregate_like_function "$case_url" "$case_db" "security definer" "set search_path = public" ;;
+  esac
+  aggregate_preflight_negative_output="$(run_aggregate_preflight "$case_url")"
+  printf '%s\n' "$aggregate_preflight_negative_output" >"$log_dir/$case_db-preflight.log"
+  require_aggregate_preflight_no_go "Aggregate preflight negative $case_name" "$aggregate_preflight_negative_output"
+done
+
+# Negative aggregate postflight matrix. Each case starts from a correct isolated
+# installation, then introduces exactly one drift and requires FAIL.
+for case_name in \
+  text_overload bigint_overload procedure public_grant anon_grant \
+  authenticated_grant service_role_revoke owner_drift search_path_drift \
+  security_definer_drift function_drop return_signature_drift
+do
+  case_db="apple_aggregate_postflight_$case_name"
+  "$PG_CREATEDB" "$case_db"
+  case_url="postgresql:///$case_db?host=$socket_dir&port=55439"
+  apply_aggregate_prereqs "$case_url" "$case_db"
+  "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/$case_db-aggregate.log" 2>&1
+  case "$case_name" in
+    text_overload)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary(p_user_id text) returns int language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    bigint_overload)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create function public.billing_get_current_entitlement_summary(p_user_id bigint) returns int language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    procedure)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "create procedure public.billing_get_current_entitlement_summary(p_user_id text) language sql as 'select 1'" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    public_grant)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "grant execute on function public.billing_get_current_entitlement_summary(uuid) to public" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    anon_grant)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "grant execute on function public.billing_get_current_entitlement_summary(uuid) to anon" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    authenticated_grant)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "grant execute on function public.billing_get_current_entitlement_summary(uuid) to authenticated" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    service_role_revoke)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "revoke execute on function public.billing_get_current_entitlement_summary(uuid) from service_role" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    owner_drift)
+      create_wrong_owner_role "$case_url"
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "alter function public.billing_get_current_entitlement_summary(uuid) owner to aggregate_wrong_owner" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    search_path_drift)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "alter function public.billing_get_current_entitlement_summary(uuid) set search_path = pg_catalog, public, pg_temp" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    security_definer_drift)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "alter function public.billing_get_current_entitlement_summary(uuid) security invoker" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    function_drop)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "drop function public.billing_get_current_entitlement_summary(uuid)" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+    return_signature_drift)
+      "$PG_PSQL" "$case_url" -X -v ON_ERROR_STOP=1 -c \
+        "drop function public.billing_get_current_entitlement_summary(uuid); create function public.billing_get_current_entitlement_summary(p_user_id uuid) returns int language sql security definer stable set search_path = pg_catalog, public as 'select 1'; revoke all on function public.billing_get_current_entitlement_summary(uuid) from public, anon, authenticated; grant execute on function public.billing_get_current_entitlement_summary(uuid) to service_role" >"$log_dir/$case_db-mutate.log" 2>&1 ;;
+  esac
+  aggregate_postflight_negative_output="$(run_aggregate_postflight "$case_url")"
+  printf '%s\n' "$aggregate_postflight_negative_output" >"$log_dir/$case_db-postflight.log"
+  require_aggregate_postflight_fail "Aggregate postflight negative $case_name" "$aggregate_postflight_negative_output"
+done
+
 # Re-applying the follow-up stops without changing the installed function.
 aggregate_before="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"
 set +e
