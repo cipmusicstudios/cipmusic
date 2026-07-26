@@ -164,7 +164,8 @@ create function test_assert.claim_unclaimed(
   p_transaction_id text,
   p_original_transaction_id text,
   p_product_id text default null,
-  p_summary_hash text default null
+  p_summary_hash text default null,
+  p_signed_date timestamptz default null
 )
 returns table (
   entitlement_id uuid, binding_result text, transaction_duplicate boolean,
@@ -182,7 +183,8 @@ begin
   return query select * from public.billing_claim_verified_unclaimed_app_store_entitlement(
     p_user, p_environment, p_transaction_id, p_original_transaction_id,
     coalesce(p_product_id, v_tx.product_id), v_tx.subscription_group_id,
-    v_tx.app_account_token_hash, v_tx.purchase_date, v_tx.expires_date, v_tx.signed_date,
+    v_tx.app_account_token_hash, v_tx.purchase_date, v_tx.expires_date,
+    coalesce(p_signed_date, v_tx.signed_date),
     v_tx.revocation_date, v_tx.revocation_reason, v_tx.transaction_reason,
     v_tx.ownership_type, v_tx.transaction_status, coalesce(p_summary_hash, v_tx.summary_hash), v_ent.latest_transaction_id,
     v_ent.product_id, v_ent.subscription_group_id, v_ent.app_account_token_hash,
@@ -373,7 +375,8 @@ select * from test_assert.record_tx(
 select test_assert.ok((select binding_state='unclaimed' and user_id is null and app_account_token_hash is null
   from public.app_store_entitlements where original_transaction_id='recovery-original'), 'recovery fixture was not unclaimed');
 select * from test_assert.claim_unclaimed(
-  '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original'
+  '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original',
+  null, repeat('e',64), '2099-07-01T00:00:01Z'
 );
 select test_assert.ok((select binding_state='claimed' and user_id='10000000-0000-4000-8000-000000000003'
   from public.app_store_entitlements where original_transaction_id='recovery-original'), 'verified unclaimed claim failed');
@@ -383,6 +386,8 @@ select test_assert.ok((select user_id='10000000-0000-4000-8000-000000000003'
 select test_assert.ok((select currently_grants_premium
   from public.billing_get_current_entitlement_status('10000000-0000-4000-8000-000000000003')
   where external_entitlement_id='recovery-original'), 'canceled-active entitlement did not grant through valid_until');
+select test_assert.ok((select signed_date='2099-07-01T00:00:01Z' and summary_hash=repeat('e',64)
+  from public.app_store_transactions where transaction_id='recovery-tx'), 'newer Apple JWS evidence was not recorded');
 
 -- Same-user retry is idempotent; another user and mismatched evidence fail closed.
 select * from test_assert.claim_unclaimed(
@@ -395,6 +400,14 @@ do $$ begin
     raise exception 'ASSERTION_FAILED: cross-user recovery claim succeeded';
   exception when unique_violation then
     perform test_assert.ok(sqlerrm='APP_STORE_ALREADY_BOUND','wrong cross-user recovery error');
+  end;
+  begin
+    perform * from test_assert.claim_unclaimed(
+      '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original',
+      null, repeat('d',64), '2099-07-01T00:00:00Z');
+    raise exception 'ASSERTION_FAILED: older re-signed JWS succeeded';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='TRANSACTION_REPLAY_MISMATCH','wrong older JWS error');
   end;
   begin
     perform * from test_assert.claim_unclaimed(

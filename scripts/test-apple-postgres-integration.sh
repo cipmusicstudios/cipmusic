@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 migration="$repo_root/supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql"
 aggregate_migration="$repo_root/supabase/migrations/20260723090000_apple_membership_aggregate_read.sql"
 recovery_migration="$repo_root/supabase/migrations/20260726190000_claim_verified_unclaimed_apple_entitlement.sql"
+resigned_jws_recovery_migration="$repo_root/supabase/migrations/20260726210000_allow_resigned_jws_unclaimed_recovery.sql"
 test_root="$repo_root/tests/apple/postgres"
 
 verification_output_matches() {
@@ -135,6 +136,7 @@ db_url="postgresql:///$db_name?host=$socket_dir&port=55439"
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/migration-apply.log" 2>&1
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-incremental-apply.log" 2>&1
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$recovery_migration" >"$log_dir/recovery-incremental-apply.log" 2>&1
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$resigned_jws_recovery_migration" >"$log_dir/resigned-jws-recovery-incremental-apply.log" 2>&1
 
 # The aggregate migration is an ordered Phase 1A follow-up. Verify its actual
 # signature, definer hardening, grants, and production-only summary semantics.

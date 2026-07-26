@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 const sql = readFileSync('supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql', 'utf8');
 const aggregateSql = readFileSync('supabase/migrations/20260723090000_apple_membership_aggregate_read.sql', 'utf8');
 const recoverySql = readFileSync('supabase/migrations/20260726190000_claim_verified_unclaimed_apple_entitlement.sql', 'utf8');
+const resignedJwsRecoverySql = readFileSync('supabase/migrations/20260726210000_allow_resigned_jws_unclaimed_recovery.sql', 'utf8');
 const readMembership = readFileSync('netlify/functions/read-membership.ts', 'utf8');
 const currentMembershipReader = readFileSync('netlify/functions/_shared/read-current-membership.ts', 'utf8');
 const sceneAssetUrl = readFileSync('netlify/functions/scene-asset-url.ts', 'utf8');
@@ -45,6 +46,21 @@ test('unclaimed recovery RPC is forward-only, atomic, and service-role-only', ()
   assert.match(recoverySql, /revoke all on function public\.billing_claim_verified_unclaimed_app_store_entitlement[\s\S]*from public, anon, authenticated/i);
   assert.doesNotMatch(recoverySql, /public\.user_membership/i);
   assert.doesNotMatch(recoverySql, /update\s+public\.billing_runtime_controls/i);
+});
+
+test('re-signed JWS recovery only permits a monotonic signing time', () => {
+  assert.match(resignedJwsRecoverySql, /^begin;/im);
+  assert.match(resignedJwsRecoverySql, /commit;\s*$/im);
+  assert.match(resignedJwsRecoverySql, /create or replace function public\.billing_claim_verified_unclaimed_app_store_entitlement/i);
+  assert.match(resignedJwsRecoverySql, /p_signed_date < v_tx\.signed_date/i);
+  assert.match(resignedJwsRecoverySql, /if p_signed_date > v_tx\.signed_date[\s\S]*signed_date = p_signed_date[\s\S]*summary_hash = p_summary_hash/i);
+  assert.match(resignedJwsRecoverySql, /v_tx\.purchase_date is distinct from p_purchase_date/i);
+  assert.match(resignedJwsRecoverySql, /v_tx\.expires_date is distinct from p_expires_date/i);
+  assert.match(resignedJwsRecoverySql, /v_tx\.transaction_status <> p_transaction_status/i);
+  assert.match(resignedJwsRecoverySql, /v_ent\.status_fingerprint <> p_status_fingerprint/i);
+  assert.match(resignedJwsRecoverySql, /revoke all on function public\.billing_claim_verified_unclaimed_app_store_entitlement[\s\S]*from public, anon, authenticated/i);
+  assert.doesNotMatch(resignedJwsRecoverySql, /public\.user_membership/i);
+  assert.doesNotMatch(resignedJwsRecoverySql, /update\s+public\.billing_runtime_controls/i);
 });
 
 test('binding, replay, ordering, sandbox and deletion invariants are explicit', () => {
