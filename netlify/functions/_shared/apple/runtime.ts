@@ -99,6 +99,10 @@ export async function writeTransactionLedger(
       throw new AppleServiceError('SUBSCRIPTION_BOUND_TO_ANOTHER_ACCOUNT', 409);
     }
     if (/TRANSACTION_REPLAY_MISMATCH/.test(message)) {
+      if (claimIntent === 'restore' && current.currentStateQuality === 'verified'
+        && summary.appAccountToken == null && current.appAccountTokenHash == null) {
+        return claimVerifiedUnclaimedTransaction(supabase, userId, endpointEnvironment, summary, current);
+      }
       throw new AppleServiceError('TRANSACTION_REPLAY_CONFLICT', 409);
     }
     if (/LEGACY_CLAIM_CONFIRMATION_REQUIRED/.test(message)) {
@@ -120,6 +124,65 @@ export async function writeTransactionLedger(
     || !['verified', 'quarantined'].includes(String(row.current_state_quality))) {
     throw new AppleServiceError('LEDGER_RESPONSE_INVALID', 503);
   }
-  return {bindingResult: row.binding_result, duplicate: row.transaction_duplicate,
+  const result = {bindingResult: row.binding_result, duplicate: row.transaction_duplicate,
+    currentStateQuality: String(row.current_state_quality)};
+  if (claimIntent === 'restore' && current.currentStateQuality === 'verified'
+    && result.bindingResult === 'unclaimed' && result.duplicate
+    && summary.appAccountToken == null && current.appAccountTokenHash == null) {
+    return claimVerifiedUnclaimedTransaction(supabase, userId, endpointEnvironment, summary, current);
+  }
+  return result;
+}
+
+async function claimVerifiedUnclaimedTransaction(
+  supabase: SupabaseClient,
+  userId: string,
+  environment: AppleEnvironment,
+  summary: TransactionSummary,
+  current: CurrentEntitlementStatus,
+): Promise<{bindingResult: string; duplicate: boolean; currentStateQuality: string}> {
+  const {data, error} = await supabase.rpc('billing_claim_verified_unclaimed_app_store_entitlement', {
+    p_user_id: userId,
+    p_environment: environment,
+    p_transaction_id: summary.transactionId,
+    p_original_transaction_id: summary.originalTransactionId,
+    p_product_id: summary.productId,
+    p_subscription_group_id: summary.subscriptionGroupId,
+    p_app_account_token_hash: null,
+    p_purchase_date: summary.purchaseDate,
+    p_expires_date: summary.expiresDate,
+    p_signed_date: summary.signedDate,
+    p_revocation_date: summary.revocationDate,
+    p_revocation_reason: summary.revocationReason,
+    p_transaction_reason: summary.transactionReason,
+    p_ownership_type: summary.ownershipType,
+    p_transaction_status: summary.transactionStatus,
+    p_summary_hash: summary.summaryHash,
+    p_current_transaction_id: current.latestTransactionId,
+    p_current_product_id: current.productId,
+    p_current_subscription_group_id: current.subscriptionGroupId,
+    p_current_app_account_token_hash: null,
+    p_status_fingerprint: current.statusFingerprint,
+  });
+  if (error) {
+    const message = String(error.message ?? '');
+    if (/ALREADY_BOUND|BINDING_BLOCKED|TOKEN_PRESENT/.test(message)) {
+      throw new AppleServiceError('SUBSCRIPTION_BOUND_TO_ANOTHER_ACCOUNT', 409);
+    }
+    if (/REPLAY_MISMATCH|CHAIN_MISMATCH|EVIDENCE_MISMATCH|PRODUCTION_ONLY/.test(message)) {
+      throw new AppleServiceError('TRANSACTION_REPLAY_CONFLICT', 409);
+    }
+    if (/APPLE_LEDGER_WRITE_DISABLED/.test(message)) {
+      throw new AppleServiceError('FEATURE_DISABLED', 503);
+    }
+    throw new AppleServiceError('LEDGER_WRITE_FAILED', 503);
+  }
+  const row = firstRecord(data);
+  if (!row || !['claimed', 'already_claimed'].includes(String(row.binding_result))
+    || row.transaction_duplicate !== true
+    || !['verified', 'quarantined'].includes(String(row.current_state_quality))) {
+    throw new AppleServiceError('LEDGER_RESPONSE_INVALID', 503);
+  }
+  return {bindingResult: String(row.binding_result), duplicate: true,
     currentStateQuality: String(row.current_state_quality)};
 }
