@@ -17,6 +17,46 @@ insert into auth.users(id) values
  ('40000000-0000-4000-8000-000000000006');
 SQL
 
+run_psql -q <<'SQL'
+select * from test_assert.record_tx(
+ '40000000-0000-4000-8000-000000000001','production','recovery-race-tx','recovery-race-original',
+ '2099-07-02T00:00:00Z','2099-07-02T00:00:00Z','canceled_active',true,
+ 'com.cipmusic.aurasounds.premium.monthly.v2','2099-08-02T00:00:00Z',false,'restore',false);
+SQL
+
+recovery_a_log="$APPLE_PG_LOG_DIR/concurrency-recovery-a.log"
+recovery_b_log="$APPLE_PG_LOG_DIR/concurrency-recovery-b.log"
+set +e
+run_psql -q >"$recovery_a_log" 2>&1 <<'SQL' &
+select * from test_assert.claim_unclaimed(
+ '40000000-0000-4000-8000-000000000001','production','recovery-race-tx','recovery-race-original');
+SQL
+recovery_a_pid=$!
+run_psql -q >"$recovery_b_log" 2>&1 <<'SQL' &
+select * from test_assert.claim_unclaimed(
+ '40000000-0000-4000-8000-000000000002','production','recovery-race-tx','recovery-race-original');
+SQL
+recovery_b_pid=$!
+wait "$recovery_a_pid"; recovery_a_rc=$?
+wait "$recovery_b_pid"; recovery_b_rc=$?
+set -e
+if [[ $(( (recovery_a_rc == 0) + (recovery_b_rc == 0) )) -ne 1 ]]; then
+  echo "Concurrent unclaimed recovery did not produce exactly one winner; logs: $APPLE_PG_LOG_DIR" >&2
+  exit 1
+fi
+if ! grep -q 'APP_STORE_ALREADY_BOUND' "$recovery_a_log" "$recovery_b_log"; then
+  echo "Concurrent unclaimed recovery loser did not fail closed; logs: $APPLE_PG_LOG_DIR" >&2
+  exit 1
+fi
+run_psql -q <<'SQL'
+select test_assert.ok(
+ (select binding_state='claimed' and user_id in (
+   '40000000-0000-4000-8000-000000000001','40000000-0000-4000-8000-000000000002')
+  from public.app_store_entitlements where original_transaction_id='recovery-race-original')
+ and (select count(*)=1 from public.billing_entitlements_v2 where external_entitlement_id='recovery-race-original'),
+ 'concurrent unclaimed recovery projection mismatch');
+SQL
+
 first_log="$APPLE_PG_LOG_DIR/concurrency-first.log"
 second_log="$APPLE_PG_LOG_DIR/concurrency-second.log"
 

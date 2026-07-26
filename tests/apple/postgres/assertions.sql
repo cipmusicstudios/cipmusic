@@ -158,6 +158,38 @@ grant execute on function test_assert.record_tx(
   timestamptz, text, text, text
 ) to service_role;
 
+create function test_assert.claim_unclaimed(
+  p_user uuid,
+  p_environment public.app_store_environment,
+  p_transaction_id text,
+  p_original_transaction_id text,
+  p_product_id text default null,
+  p_summary_hash text default null
+)
+returns table (
+  entitlement_id uuid, binding_result text, transaction_duplicate boolean,
+  current_state_quality public.app_store_current_state_quality
+)
+language plpgsql security definer set search_path=pg_catalog,test_assert,public as $$
+declare
+  v_tx public.app_store_transactions%rowtype;
+  v_ent public.app_store_entitlements%rowtype;
+begin
+  select * into strict v_tx from public.app_store_transactions
+  where environment=p_environment and transaction_id=p_transaction_id;
+  select * into strict v_ent from public.app_store_entitlements
+  where id=v_tx.entitlement_id;
+  return query select * from public.billing_claim_verified_unclaimed_app_store_entitlement(
+    p_user, p_environment, p_transaction_id, p_original_transaction_id,
+    coalesce(p_product_id, v_tx.product_id), v_tx.subscription_group_id,
+    v_tx.app_account_token_hash, v_tx.purchase_date, v_tx.expires_date, v_tx.signed_date,
+    v_tx.revocation_date, v_tx.revocation_reason, v_tx.transaction_reason,
+    v_tx.ownership_type, v_tx.transaction_status, coalesce(p_summary_hash, v_tx.summary_hash), v_ent.latest_transaction_id,
+    v_ent.product_id, v_ent.subscription_group_id, v_ent.app_account_token_hash,
+    v_ent.status_fingerprint
+  );
+end $$;
+
 create function test_assert.call_generic_ledger_as_invoker() returns void
 language plpgsql security invoker set search_path=pg_catalog,test_assert,extensions,public as $$
 begin
@@ -331,6 +363,74 @@ select test_assert.ok((select latest_transaction_id='tx-new' and normalized_stat
   from public.app_store_entitlements where original_transaction_id='original-001'), 'old state overwrote new');
 select test_assert.ok((select product_id='com.cipmusic.aurasounds.premium.yearly.v2' and source_grants_premium
   from public.billing_entitlements_v2 where external_entitlement_id='original-001'), 'projection did not use locked entitlement');
+
+-- A verified duplicate restore may atomically recover a tokenless Production chain.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original',
+  '2099-07-01T00:00:00Z','2099-07-01T00:00:00Z','canceled_active',true,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-08-01T00:00:00Z',false,'restore',false
+);
+select test_assert.ok((select binding_state='unclaimed' and user_id is null and app_account_token_hash is null
+  from public.app_store_entitlements where original_transaction_id='recovery-original'), 'recovery fixture was not unclaimed');
+select * from test_assert.claim_unclaimed(
+  '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original'
+);
+select test_assert.ok((select binding_state='claimed' and user_id='10000000-0000-4000-8000-000000000003'
+  from public.app_store_entitlements where original_transaction_id='recovery-original'), 'verified unclaimed claim failed');
+select test_assert.ok((select user_id='10000000-0000-4000-8000-000000000003'
+  and status='canceled_active' and source_grants_premium and valid_until='2099-08-01T00:00:00Z'
+  from public.billing_entitlements_v2 where external_entitlement_id='recovery-original'), 'canceled-active projection failed');
+select test_assert.ok((select currently_grants_premium
+  from public.billing_get_current_entitlement_status('10000000-0000-4000-8000-000000000003')
+  where external_entitlement_id='recovery-original'), 'canceled-active entitlement did not grant through valid_until');
+
+-- Same-user retry is idempotent; another user and mismatched evidence fail closed.
+select * from test_assert.claim_unclaimed(
+  '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original'
+);
+do $$ begin
+  begin
+    perform * from test_assert.claim_unclaimed(
+      '10000000-0000-4000-8000-000000000004','production','recovery-tx','recovery-original');
+    raise exception 'ASSERTION_FAILED: cross-user recovery claim succeeded';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='APP_STORE_ALREADY_BOUND','wrong cross-user recovery error');
+  end;
+  begin
+    perform * from test_assert.claim_unclaimed(
+      '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original',
+      'com.cipmusic.aurasounds.premium.yearly.v2');
+    raise exception 'ASSERTION_FAILED: mismatched recovery evidence succeeded';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='TRANSACTION_REPLAY_MISMATCH','wrong recovery mismatch error');
+  end;
+  begin
+    perform * from test_assert.claim_unclaimed(
+      '10000000-0000-4000-8000-000000000003','production','recovery-tx','recovery-original',
+      null, repeat('f',64));
+    raise exception 'ASSERTION_FAILED: mismatched immutable summary hash succeeded';
+  exception when unique_violation then
+    perform test_assert.ok(sqlerrm='TRANSACTION_REPLAY_MISMATCH','wrong recovery summary mismatch error');
+  end;
+end $$;
+
+-- Sandbox remains unclaimable through the Production recovery RPC and cannot grant Premium.
+select * from test_assert.record_tx(
+  '10000000-0000-4000-8000-000000000003','sandbox','recovery-sandbox-tx','recovery-sandbox-original',
+  '2099-07-01T00:00:00Z','2099-07-01T00:00:00Z','active',false,
+  'com.cipmusic.aurasounds.premium.monthly.v2','2099-08-01T00:00:00Z',false,'restore',false
+);
+do $$ begin
+  begin
+    perform * from test_assert.claim_unclaimed(
+      '10000000-0000-4000-8000-000000000003','sandbox','recovery-sandbox-tx','recovery-sandbox-original');
+    raise exception 'ASSERTION_FAILED: sandbox recovery claim succeeded';
+  exception when invalid_parameter_value then
+    perform test_assert.ok(sqlerrm='UNCLAIMED_RECOVERY_PRODUCTION_ONLY','wrong sandbox recovery error');
+  end;
+end $$;
+select test_assert.ok(not exists(select 1 from public.billing_entitlements_v2
+  where external_entitlement_id='recovery-sandbox-original' and source_grants_premium), 'sandbox projected Premium');
 
 -- Natural expiry with unchanged signed evidence deterministically disables the Apple source.
 select * from test_assert.record_tx(

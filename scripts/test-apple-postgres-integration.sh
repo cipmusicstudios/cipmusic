@@ -4,6 +4,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 migration="$repo_root/supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql"
 aggregate_migration="$repo_root/supabase/migrations/20260723090000_apple_membership_aggregate_read.sql"
+recovery_migration="$repo_root/supabase/migrations/20260726190000_claim_verified_unclaimed_apple_entitlement.sql"
 test_root="$repo_root/tests/apple/postgres"
 
 find_pg_binary() {
@@ -111,6 +112,7 @@ db_url="postgresql:///$db_name?host=$socket_dir&port=55439"
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/bootstrap.log" 2>&1
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/migration-apply.log" 2>&1
 "$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-incremental-apply.log" 2>&1
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$recovery_migration" >"$log_dir/recovery-incremental-apply.log" 2>&1
 
 # The aggregate migration is an ordered Phase 1A follow-up. Verify its actual
 # signature, definer hardening, grants, and production-only summary semantics.
@@ -153,9 +155,43 @@ fresh_url="postgresql:///$fresh_db?host=$socket_dir&port=55439"
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
   -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_preflight.sql" >"$log_dir/aggregate-preflight.log" 2>&1
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/aggregate-fresh-follow-up.log" 2>&1
+"$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -f "$recovery_migration" >"$log_dir/recovery-fresh-follow-up.log" 2>&1
 printf '%s\n' "$aggregate_checks" | "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 >"$log_dir/aggregate-fresh-assertions.log" 2>&1
 "$PG_PSQL" "$fresh_url" -X -v ON_ERROR_STOP=1 -v expected_owner="$(id -un)" \
   -f "$repo_root/supabase/verification/20260723090000_apple_membership_aggregate_read_postflight.sql" >"$log_dir/aggregate-postflight.log" 2>&1
+
+# Recovery follow-up is single-apply: duplicate deployment fails in preflight
+# without replacing the installed SECURITY DEFINER function.
+recovery_signature='public.billing_claim_verified_unclaimed_app_store_entitlement(uuid,public.app_store_environment,text,text,text,text,text,timestamptz,timestamptz,timestamptz,timestamptz,integer,text,text,text,text,text,text,text,text,text)'
+recovery_before="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('$recovery_signature'::regprocedure)")"
+set +e
+"$PG_PSQL" "$db_url" -X -v ON_ERROR_STOP=1 -f "$recovery_migration" >"$log_dir/recovery-duplicate.log" 2>&1
+recovery_duplicate_rc=$?
+set -e
+recovery_after="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('$recovery_signature'::regprocedure)")"
+if [[ "$recovery_duplicate_rc" -eq 0 ]] || ! grep -q 'recovery function already exists' "$log_dir/recovery-duplicate.log" \
+  || [[ "$recovery_before" != "$recovery_after" ]]; then
+  echo "Recovery follow-up duplicate behavior failed" >&2
+  exit 1
+fi
+
+# An injected failure before COMMIT leaves the pre-migration schema unchanged.
+recovery_rollback_db=apple_recovery_rollback
+"$PG_CREATEDB" "$recovery_rollback_db"
+recovery_rollback_url="postgresql:///$recovery_rollback_db?host=$socket_dir&port=55439"
+"$PG_PSQL" "$recovery_rollback_url" -X -v ON_ERROR_STOP=1 -f "$test_root/bootstrap.sql" >"$log_dir/recovery-rollback-bootstrap.log" 2>&1
+"$PG_PSQL" "$recovery_rollback_url" -X -v ON_ERROR_STOP=1 -f "$migration" >"$log_dir/recovery-rollback-phase1a.log" 2>&1
+"$PG_PSQL" "$recovery_rollback_url" -X -v ON_ERROR_STOP=1 -f "$aggregate_migration" >"$log_dir/recovery-rollback-aggregate.log" 2>&1
+recovery_failure_migration="$work_dir/recovery-injected-failure.sql"
+awk '{if ($0 == "commit;") print "select 1 / 0;"; print}' "$recovery_migration" >"$recovery_failure_migration"
+set +e
+"$PG_PSQL" "$recovery_rollback_url" -X -v ON_ERROR_STOP=1 -f "$recovery_failure_migration" >"$log_dir/recovery-rollback.log" 2>&1
+recovery_rollback_rc=$?
+set -e
+if [[ "$recovery_rollback_rc" -eq 0 || "$($PG_PSQL "$recovery_rollback_url" -X -Atqc "select to_regprocedure('$recovery_signature') is null")" != t ]]; then
+  echo "Recovery follow-up rollback-on-failure check failed" >&2
+  exit 1
+fi
 
 # Re-applying the follow-up stops without changing the installed function.
 aggregate_before="$($PG_PSQL "$db_url" -X -Atqc "select pg_get_functiondef('public.billing_get_current_entitlement_summary(uuid)'::regprocedure)")"

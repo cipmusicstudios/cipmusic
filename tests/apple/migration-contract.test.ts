@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 
 const sql = readFileSync('supabase/migrations/20260722010000_apple_entitlement_ledger_phase_1a.sql', 'utf8');
 const aggregateSql = readFileSync('supabase/migrations/20260723090000_apple_membership_aggregate_read.sql', 'utf8');
+const recoverySql = readFileSync('supabase/migrations/20260726190000_claim_verified_unclaimed_apple_entitlement.sql', 'utf8');
 const readMembership = readFileSync('netlify/functions/read-membership.ts', 'utf8');
 
 test('migration contains required ledgers and no user_membership write', () => {
@@ -26,6 +27,22 @@ test('security definer functions are locked down and search_path fixed', () => {
   }
   assert.match(sql, /revoke all on public\.app_store_entitlements from service_role/i);
   assert.doesNotMatch(sql, /grant (select|insert|update|delete)[^;]+ to service_role/i);
+});
+
+test('unclaimed recovery RPC is forward-only, atomic, and service-role-only', () => {
+  assert.match(recoverySql, /^begin;/im);
+  assert.match(recoverySql, /commit;\s*$/im);
+  assert.match(recoverySql, /security definer[\s\S]*set search_path = pg_catalog, public/i);
+  assert.match(recoverySql, /p_environment <> 'production'/i);
+  assert.match(recoverySql, /binding_state = 'unclaimed'[\s\S]*user_id is null[\s\S]*app_account_token_hash is null/i);
+  assert.match(recoverySql, /for update/i);
+  assert.match(recoverySql, /APP_STORE_ALREADY_BOUND/);
+  assert.match(recoverySql, /TRANSACTION_REPLAY_MISMATCH/);
+  assert.match(recoverySql, /v_tx\.summary_hash <> p_summary_hash/i);
+  assert.match(recoverySql, /insert into public\.billing_entitlements_v2/i);
+  assert.match(recoverySql, /revoke all on function public\.billing_claim_verified_unclaimed_app_store_entitlement[\s\S]*from public, anon, authenticated/i);
+  assert.doesNotMatch(recoverySql, /public\.user_membership/i);
+  assert.doesNotMatch(recoverySql, /update\s+public\.billing_runtime_controls/i);
 });
 
 test('binding, replay, ordering, sandbox and deletion invariants are explicit', () => {
